@@ -1,23 +1,33 @@
 ---
-import MainLayout from '../layouts/MainLayout.astro';
-import Container from '../components/ui/Container.astro';
-import Card from '../components/ui/Card.astro';
+import MainLayout from "../layouts/MainLayout.astro";
+import Container from "../components/ui/Container.astro";
+import Card from "../components/ui/Card.astro";
 ---
 
 <MainLayout>
   <!-- Hero Section -->
   <section class="bg-gradient-to-b from-ocean-50 to-white py-20">
     <Container>
-      <div class="text-center max-w-4xl mx-auto">
-        <h1 class="mb-6">Open Source Marine Software and Data</h1>
-        <p class="text-xl text-navy-600 mb-8 leading-relaxed">
-          Building better tools for understanding and navigating the sea through open source collaboration.
+      <div class="text-center max-w-2xl mx-auto">
+        <h1 class="mb-6 font-bold">Open Source Marine Software and Data</h1>
+        <p class="text-2xl text-navy-600 mb-8 leading-relaxed">
+          Understand and navigate the sea with tools
+          <br />built through open source collaboration.
         </p>
         <div class="flex flex-wrap gap-4 justify-center">
           <a href="/tides" class="btn btn-primary">
             Explore Tides
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
             </svg>
           </a>
           <a href="/about" class="btn btn-outline">Learn More</a>
@@ -34,18 +44,41 @@ import Card from '../components/ui/Card.astro';
         <!-- Tides -->
         <Card hover>
           <div class="text-ocean-600 mb-4">
-            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            <svg
+              class="w-12 h-12"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              ></path>
             </svg>
           </div>
           <h3 class="mb-3">Tide Predictions</h3>
           <p class="text-navy-600 mb-4">
-            Accurate tide predictions powered by the Neaps engine, with data from thousands of stations worldwide.
+            Accurate tide predictions powered by the Neaps engine, with data
+            from thousands of stations worldwide.
           </p>
-          <a href="/tides" class="text-ocean-600 hover:text-ocean-700 font-medium inline-flex items-center gap-1">
+          <a
+            href="/tides"
+            class="text-ocean-600 hover:text-ocean-700 font-medium inline-flex items-center gap-1"
+          >
             Explore tides
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"></path>
             </svg>
           </a>
         </Card>
@@ -53,18 +86,41 @@ import Card from '../components/ui/Card.astro';
         <!-- Bathymetry -->
         <Card hover>
           <div class="text-ocean-600 mb-4">
-            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            <svg
+              class="w-12 h-12"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+              ></path>
             </svg>
           </div>
           <h3 class="mb-3">Crowd Depth</h3>
           <p class="text-navy-600 mb-4">
-            Collect and share depth data from your vessel to contribute to crowd-sourced bathymetry programs.
+            Collect and share depth data from your vessel to contribute to
+            crowd-sourced bathymetry programs.
           </p>
-          <a href="/bathymetry" class="text-ocean-600 hover:text-ocean-700 font-medium inline-flex items-center gap-1">
+          <a
+            href="/bathymetry"
+            class="text-ocean-600 hover:text-ocean-700 font-medium inline-flex items-center gap-1"
+          >
             Learn more
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"></path>
             </svg>
           </a>
         </Card>
@@ -72,18 +128,40 @@ import Card from '../components/ui/Card.astro';
         <!-- API -->
         <Card hover>
           <div class="text-ocean-600 mb-4">
-            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+            <svg
+              class="w-12 h-12"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
             </svg>
           </div>
           <h3 class="mb-3">Developer API</h3>
           <p class="text-navy-600 mb-4">
-            Access our data programmatically through well-documented APIs for tides and bathymetry.
+            Access our data programmatically through well-documented APIs for
+            tides and bathymetry.
           </p>
-          <a href="/api" class="text-ocean-600 hover:text-ocean-700 font-medium inline-flex items-center gap-1">
+          <a
+            href="/api"
+            class="text-ocean-600 hover:text-ocean-700 font-medium inline-flex items-center gap-1"
+          >
             View docs
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"></path>
             </svg>
           </a>
         </Card>
@@ -97,13 +175,15 @@ import Card from '../components/ui/Card.astro';
       <div class="max-w-3xl mx-auto text-center">
         <h2 class="mb-6">Open as in "The Ocean"</h2>
         <p class="text-lg text-navy-700 leading-relaxed mb-4">
-          The ocean is a commons. We all depend on it, and we are all responsible for preserving it. 
-          Centuries of mariners, hydrographers, scientists, and engineers chose to share what they learned 
-          about the sea, and we've all benefited.
+          The ocean is a commons. We all depend on it, and we are all
+          responsible for preserving it. Centuries of mariners, hydrographers,
+          scientists, and engineers chose to share what they learned about the
+          sea, and we've all benefited.
         </p>
         <p class="text-lg text-navy-700 leading-relaxed">
-          Open source software works the same way. By freely sharing what we build—and collaborating openly—we 
-          create tools that are better, more reliable, and more useful to everyone.
+          Open source software works the same way. By freely sharing what we
+          build—and collaborating openly—we create tools that are better, more
+          reliable, and more useful to everyone.
         </p>
       </div>
     </Container>
@@ -112,24 +192,32 @@ import Card from '../components/ui/Card.astro';
   <!-- CTA Section -->
   <section class="py-16">
     <Container>
-      <div class="bg-gradient-to-r from-ocean-600 to-ocean-700 rounded-2xl p-12 text-center text-white">
+      <div
+        class="bg-gradient-to-r from-ocean-600 to-ocean-700 rounded-2xl p-12 text-center text-white"
+      >
         <h2 class="mb-4 text-white">Get Involved</h2>
         <p class="text-xl mb-8 text-ocean-50 max-w-2xl mx-auto">
-          Join our community of mariners, developers, and ocean enthusiasts building better tools for the sea.
+          Join our community of mariners, developers, and ocean enthusiasts
+          building better tools for the sea.
         </p>
         <div class="flex flex-wrap gap-4 justify-center">
-          <a 
-            href="https://github.com/openwatersio" 
+          <a
+            href="https://github.com/openwatersio"
             target="_blank"
             rel="noopener noreferrer"
             class="btn bg-white text-ocean-700 hover:bg-ocean-50"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+              ></path>
             </svg>
             View on GitHub
           </a>
-          <a href="mailto:info@openwaters.io" class="btn bg-ocean-800 text-white hover:bg-ocean-900">
+          <a
+            href="mailto:info@openwaters.io"
+            class="btn bg-ocean-800 text-white hover:bg-ocean-900"
+          >
             Get in Touch
           </a>
         </div>
