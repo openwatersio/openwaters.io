@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Outer circle - ocean blue -->
+  <circle cx="64" cy="64" r="60" fill="#0284c7" stroke="#0369a1" stroke-width="3"/>
+  
+  <!-- Inner circle - lighter blue -->
+  <circle cx="64" cy="64" r="45" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+  
+  <!-- Wave pattern -->
+  <path d="M 20 64 Q 30 54, 40 64 T 60 64 T 80 64 T 100 64 T 108 64" 
+        stroke="#ffffff" 
+        stroke-width="3" 
+        fill="none" 
+        opacity="0.6"/>
+  
+  <path d="M 20 74 Q 30 64, 40 74 T 60 74 T 80 74 T 100 74 T 108 74" 
+        stroke="#ffffff" 
+        stroke-width="2.5" 
+        fill="none" 
+        opacity="0.4"/>
+</svg>
