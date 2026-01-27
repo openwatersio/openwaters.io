@@ -7,7 +7,12 @@
     @apply bg-white text-navy-900 antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold text-navy-900;
   }
 
@@ -36,7 +41,7 @@
   }
 
   a {
-    @apply text-ocean-600 hover:text-ocean-700 transition-colors;
+    @apply text-ocean-600 transition-colors hover:text-ocean-700;
   }
 
   p {
@@ -46,7 +51,7 @@
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200 inline-flex items-center gap-2;
+    @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors duration-200;
   }
 
   .btn-primary {
@@ -62,15 +67,15 @@
   }
 
   .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
   .card {
-    @apply bg-white rounded-lg shadow-md border border-navy-100 p-6;
+    @apply rounded-lg border border-navy-100 bg-white p-6 shadow-md;
   }
 
   .card-hover {
-    @apply card hover:shadow-lg transition-shadow duration-200;
+    @apply card transition-shadow duration-200 hover:shadow-lg;
   }
 }
 

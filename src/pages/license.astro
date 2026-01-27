@@ -1,21 +1,21 @@
 ---
-import MainLayout from '../layouts/MainLayout.astro';
-import Container from '../components/ui/Container.astro';
-import Card from '../components/ui/Card.astro';
+import MainLayout from "../layouts/MainLayout.astro";
+import Container from "../components/ui/Container.astro";
+import Card from "../components/ui/Card.astro";
 ---
 
-<MainLayout 
+<MainLayout
   title="License"
   description="License information for code and data provided by Open Waters."
 >
   <Container class="py-16">
-    <div class="max-w-4xl mx-auto">
+    <div class="mx-auto max-w-4xl">
       <h1 class="mb-8">License Information</h1>
-      
-      <div class="prose prose-lg max-w-none mb-12">
+
+      <div class="prose prose-lg mb-12 max-w-none">
         <p class="text-xl text-navy-600">
-          Open Waters is committed to open source software and open data. Below you'll find information 
-          about how our code and data are licensed.
+          Open Waters is committed to open source software and open data. Below
+          you'll find information about how our code and data are licensed.
         </p>
       </div>
 
@@ -23,29 +23,41 @@ import Card from '../components/ui/Card.astro';
         <!-- Software License -->
         <Card>
           <div class="flex items-start gap-4">
-            <div class="text-ocean-600 mt-1">
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+            <div class="mt-1 text-ocean-600">
+              <svg
+                class="h-8 w-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
               </svg>
             </div>
             <div class="flex-1">
-              <h2 class="text-2xl font-semibold mb-3">Software License</h2>
-              <p class="text-navy-600 mb-4">
-                All software projects developed by Open Waters are released under the 
+              <h2 class="mb-3 text-2xl font-semibold">Software License</h2>
+              <p class="mb-4 text-navy-600">
+                All software projects developed by Open Waters are released
+                under the
                 <strong>MIT License</strong> unless otherwise specified.
               </p>
-              <div class="bg-navy-50 p-4 rounded-lg font-mono text-sm mb-4">
+              <div class="mb-4 rounded-lg bg-navy-50 p-4 font-mono text-sm">
                 <p class="mb-2">MIT License</p>
-                <p class="text-navy-600 text-xs leading-relaxed">
-                  Permission is hereby granted, free of charge, to any person obtaining a copy of this 
-                  software and associated documentation files (the "Software"), to deal in the Software 
-                  without restriction, including without limitation the rights to use, copy, modify, merge, 
-                  publish, distribute, sublicense, and/or sell copies of the Software.
+                <p class="text-xs leading-relaxed text-navy-600">
+                  Permission is hereby granted, free of charge, to any person
+                  obtaining a copy of this software and associated documentation
+                  files (the "Software"), to deal in the Software without
+                  restriction, including without limitation the rights to use,
+                  copy, modify, merge, publish, distribute, sublicense, and/or
+                  sell copies of the Software.
                 </p>
               </div>
               <p class="text-sm text-navy-600">
-                This means you are free to use, modify, and distribute our code for any purpose, including 
-                commercial applications.
+                This means you are free to use, modify, and distribute our code
+                for any purpose, including commercial applications.
               </p>
             </div>
           </div>
@@ -54,36 +66,52 @@ import Card from '../components/ui/Card.astro';
         <!-- Data License -->
         <Card>
           <div class="flex items-start gap-4">
-            <div class="text-ocean-600 mt-1">
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+            <div class="mt-1 text-ocean-600">
+              <svg
+                class="h-8 w-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
+                ></path>
               </svg>
             </div>
             <div class="flex-1">
-              <h2 class="text-2xl font-semibold mb-3">Data License</h2>
-              <p class="text-navy-600 mb-4">
-                Data provided by Open Waters is generally licensed under the 
-                <strong>Creative Commons CC0 1.0 Universal (CC0 1.0) Public Domain Dedication</strong> 
-                or <strong>Open Database License (ODbL)</strong>, depending on the dataset.
+              <h2 class="mb-3 text-2xl font-semibold">Data License</h2>
+              <p class="mb-4 text-navy-600">
+                Data provided by Open Waters is generally licensed under the
+                <strong
+                  >Creative Commons CC0 1.0 Universal (CC0 1.0) Public Domain
+                  Dedication</strong
+                >
+                or <strong>Open Database License (ODbL)</strong>, depending on
+                the dataset.
               </p>
-              <div class="space-y-3 mb-4">
+              <div class="mb-4 space-y-3">
                 <div class="border-l-4 border-ocean-400 pl-4">
-                  <h3 class="font-semibold mb-1">CC0 1.0 - Public Domain</h3>
+                  <h3 class="mb-1 font-semibold">CC0 1.0 - Public Domain</h3>
                   <p class="text-sm text-navy-600">
-                    Our original datasets are released to the public domain, allowing unrestricted use 
-                    without attribution requirements.
+                    Our original datasets are released to the public domain,
+                    allowing unrestricted use without attribution requirements.
                   </p>
                 </div>
                 <div class="border-l-4 border-ocean-400 pl-4">
-                  <h3 class="font-semibold mb-1">ODbL - Share-Alike</h3>
+                  <h3 class="mb-1 font-semibold">ODbL - Share-Alike</h3>
                   <p class="text-sm text-navy-600">
-                    Some datasets, particularly those derived from or incorporating other ODbL data, 
-                    require that derivative works be shared under the same license.
+                    Some datasets, particularly those derived from or
+                    incorporating other ODbL data, require that derivative works
+                    be shared under the same license.
                   </p>
                 </div>
               </div>
               <p class="text-sm text-navy-600">
-                Each dataset includes specific license information in its documentation and metadata.
+                Each dataset includes specific license information in its
+                documentation and metadata.
               </p>
             </div>
           </div>
@@ -92,60 +120,90 @@ import Card from '../components/ui/Card.astro';
         <!-- Third-Party Data -->
         <Card>
           <div class="flex items-start gap-4">
-            <div class="text-ocean-600 mt-1">
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <div class="mt-1 text-ocean-600">
+              <svg
+                class="h-8 w-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
               </svg>
             </div>
             <div class="flex-1">
-              <h2 class="text-2xl font-semibold mb-3">Third-Party Data</h2>
-              <p class="text-navy-600 mb-4">
-                We incorporate data from various sources, each with their own licensing terms:
+              <h2 class="mb-3 text-2xl font-semibold">Third-Party Data</h2>
+              <p class="mb-4 text-navy-600">
+                We incorporate data from various sources, each with their own
+                licensing terms:
               </p>
               <ul class="space-y-2 text-navy-600">
                 <li class="flex items-start gap-2">
-                  <span class="text-ocean-600 mt-1">•</span>
-                  <span><strong>NOAA Tide Data:</strong> Public domain data from the National Oceanic and Atmospheric Administration</span>
+                  <span class="mt-1 text-ocean-600">•</span>
+                  <span
+                    ><strong>NOAA Tide Data:</strong> Public domain data from the
+                    National Oceanic and Atmospheric Administration</span
+                  >
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="text-ocean-600 mt-1">•</span>
-                  <span><strong>IHO TICON Database:</strong> International Hydrographic Organization tide constituent data</span>
+                  <span class="mt-1 text-ocean-600">•</span>
+                  <span
+                    ><strong>IHO TICON Database:</strong> International Hydrographic
+                    Organization tide constituent data</span
+                  >
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="text-ocean-600 mt-1">•</span>
-                  <span><strong>Community Contributions:</strong> Crowd-sourced data subject to contributor agreements</span>
+                  <span class="mt-1 text-ocean-600">•</span>
+                  <span
+                    ><strong>Community Contributions:</strong> Crowd-sourced data
+                    subject to contributor agreements</span
+                  >
                 </li>
               </ul>
-              <p class="text-sm text-navy-600 mt-4">
-                When using our data, please review the specific license and attribution requirements for 
-                each source.
+              <p class="mt-4 text-sm text-navy-600">
+                When using our data, please review the specific license and
+                attribution requirements for each source.
               </p>
             </div>
           </div>
         </Card>
 
         <!-- Attribution -->
-        <Card class="bg-ocean-50 border-ocean-200">
-          <h2 class="text-2xl font-semibold mb-3">Attribution Guidelines</h2>
-          <p class="text-navy-600 mb-4">
-            While not always required, we appreciate attribution when you use our work. Here's how you 
-            can credit Open Waters:
+        <Card class="border-ocean-200 bg-ocean-50">
+          <h2 class="mb-3 text-2xl font-semibold">Attribution Guidelines</h2>
+          <p class="mb-4 text-navy-600">
+            While not always required, we appreciate attribution when you use
+            our work. Here's how you can credit Open Waters:
           </p>
-          <div class="bg-white p-4 rounded-lg border border-ocean-200">
+          <div class="rounded-lg border border-ocean-200 bg-white p-4">
             <p class="font-mono text-sm text-navy-800">
-              Data/Software from <a href="https://openwaters.io" class="text-ocean-600 hover:text-ocean-700">Open Waters</a> 
-              (<a href="https://github.com/openwatersio" class="text-ocean-600 hover:text-ocean-700">github.com/openwatersio</a>)
+              Data/Software from <a
+                href="https://openwaters.io"
+                class="text-ocean-600 hover:text-ocean-700">Open Waters</a
+              >
+              (<a
+                href="https://github.com/openwatersio"
+                class="text-ocean-600 hover:text-ocean-700"
+                >github.com/openwatersio</a
+              >)
             </p>
           </div>
         </Card>
 
         <!-- Questions -->
-        <Card class="bg-navy-50 border-navy-200">
+        <Card class="border-navy-200 bg-navy-50">
           <div class="text-center">
-            <h2 class="text-2xl font-semibold mb-3">Questions About Licensing?</h2>
-            <p class="text-navy-600 mb-6">
-              If you have questions about how you can use our code or data, or need clarification on 
-              licensing terms, please don't hesitate to reach out.
+            <h2 class="mb-3 text-2xl font-semibold">
+              Questions About Licensing?
+            </h2>
+            <p class="mb-6 text-navy-600">
+              If you have questions about how you can use our code or data, or
+              need clarification on licensing terms, please don't hesitate to
+              reach out.
             </p>
             <a href="mailto:info@openwaters.io" class="btn btn-primary">
               Contact Us
@@ -155,12 +213,13 @@ import Card from '../components/ui/Card.astro';
       </div>
 
       <!-- Additional Info -->
-      <div class="mt-12 p-6 bg-navy-50 rounded-lg border border-navy-200">
-        <h3 class="font-semibold mb-2 text-navy-900">Important Note</h3>
+      <div class="mt-12 rounded-lg border border-navy-200 bg-navy-50 p-6">
+        <h3 class="mb-2 font-semibold text-navy-900">Important Note</h3>
         <p class="text-sm text-navy-600">
-          This page provides a general overview of our licensing approach. For specific projects, always 
-          refer to the LICENSE file included in each repository or dataset. When in doubt, check the 
-          project's README or contact us directly.
+          This page provides a general overview of our licensing approach. For
+          specific projects, always refer to the LICENSE file included in each
+          repository or dataset. When in doubt, check the project's README or
+          contact us directly.
         </p>
       </div>
     </div>
@@ -169,14 +228,14 @@ import Card from '../components/ui/Card.astro';
 
 <style>
   .prose {
-    color: theme('colors.navy.800');
+    color: theme("colors.navy.800");
   }
 
   .prose a {
-    color: theme('colors.ocean.600');
+    color: theme("colors.ocean.600");
   }
 
   .prose a:hover {
-    color: theme('colors.ocean.700');
+    color: theme("colors.ocean.700");
   }
 </style>

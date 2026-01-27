@@ -1,5 +1,5 @@
 ---
-import { cn } from '../../utils/cn';
+import { cn } from "../../utils/cn";
 
 interface Props {
   class?: string;
@@ -8,6 +8,6 @@ interface Props {
 const { class: className } = Astro.props;
 ---
 
-<div class={cn('container-custom', className)}>
+<div class={cn("container-custom", className)}>
   <slot />
 </div>

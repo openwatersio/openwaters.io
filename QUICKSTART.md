@@ -50,6 +50,7 @@ colors: {
 ### Content
 
 All pages are in `src/pages/`:
+
 - `index.astro` - Homepage
 - `about.astro` - About page
 - `tides/` - Tide-related pages
@@ -60,6 +61,7 @@ All pages are in `src/pages/`:
 ### Components
 
 Reusable components in `src/components/`:
+
 - `layout/` - Header, Footer
 - `ui/` - Card, Container, etc.
 - `react/` - Interactive React components (to be added)
@@ -75,8 +77,8 @@ touch src/pages/your-page.astro
 
 ```astro
 ---
-import MainLayout from '../layouts/MainLayout.astro';
-import Container from '../components/ui/Container.astro';
+import MainLayout from "../layouts/MainLayout.astro";
+import Container from "../components/ui/Container.astro";
 ---
 
 <MainLayout title="Your Page">
@@ -94,7 +96,7 @@ Edit `src/components/layout/Header.astro`:
 ```javascript
 const navItems = [
   // ... existing items
-  { name: 'Your Page', href: '/your-page' },
+  { name: "Your Page", href: "/your-page" },
 ];
 ```
 
@@ -128,6 +130,7 @@ npm run build
 See `DEPLOYMENT.md` for detailed deployment instructions.
 
 Quick deploy to Netlify:
+
 1. Push to GitHub
 2. Connect repo on Netlify
 3. Done! Auto-deploys on push
@@ -142,11 +145,13 @@ Quick deploy to Netlify:
 ## 🐛 Troubleshooting
 
 **Port already in use?**
+
 ```bash
 npm run dev -- --port 3000
 ```
 
 **Build errors?**
+
 ```bash
 # Clear cache and rebuild
 rm -rf dist .astro node_modules
@@ -155,6 +160,7 @@ npm run build
 ```
 
 **Tailwind not working?**
+
 - Check `global.css` is imported in layout
 - Verify `content` paths in `tailwind.config.mjs`
 

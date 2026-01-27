@@ -1,5 +1,5 @@
 ---
-import { cn } from '../../utils/cn';
+import { cn } from "../../utils/cn";
 
 interface Props {
   class?: string;
@@ -9,6 +9,6 @@ interface Props {
 const { class: className, hover = false } = Astro.props;
 ---
 
-<div class={cn(hover ? 'card-hover' : 'card', className)}>
+<div class={cn(hover ? "card-hover" : "card", className)}>
   <slot />
 </div>

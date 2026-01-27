@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(source ~/.zshrc)",
+      "Bash(npx husky init)"
+    ]
+  }
+}

@@ -5,6 +5,7 @@ This guide covers deploying the Open Waters website to various hosting platforms
 ## Prerequisites
 
 Before deploying, ensure:
+
 - All environment variables are configured
 - The site builds successfully locally (`npm run build`)
 - All tests pass (if applicable)
@@ -126,8 +127,9 @@ npm run build
 ### Static Hosting
 
 The `dist/` folder contains static files that can be hosted on:
+
 - Apache
-- Nginx  
+- Nginx
 - AWS S3 + CloudFront
 - Google Cloud Storage
 - Any static file server
@@ -138,7 +140,7 @@ The `dist/` folder contains static files that can be hosted on:
 server {
     listen 80;
     server_name openwaters.io www.openwaters.io;
-    
+
     # Redirect to HTTPS
     return 301 https://$server_name$request_uri;
 }
@@ -146,18 +148,18 @@ server {
 server {
     listen 443 ssl http2;
     server_name openwaters.io www.openwaters.io;
-    
+
     # SSL certificates
     ssl_certificate /path/to/cert.pem;
     ssl_certificate_key /path/to/key.pem;
-    
+
     root /var/www/openwaters.io/dist;
     index index.html;
-    
+
     location / {
         try_files $uri $uri/ /404.html;
     }
-    
+
     # Cache static assets
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
         expires 1y;
@@ -180,18 +182,18 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'npm'
-      
+          node-version: "18"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build site
         run: npm run build
         env:
@@ -200,7 +202,7 @@ jobs:
           PUBLIC_SITE_URL: ${{ secrets.PUBLIC_SITE_URL }}
           PUBLIC_GITHUB_ORG: ${{ secrets.PUBLIC_GITHUB_ORG }}
           PUBLIC_CONTACT_EMAIL: ${{ secrets.PUBLIC_CONTACT_EMAIL }}
-      
+
       - name: Deploy to Netlify
         uses: netlify/actions/cli@master
         with:
@@ -215,18 +217,21 @@ jobs:
 ### For openwaters.io:
 
 **A Records:**
+
 ```
 @ → [Your hosting IP]
 www → [Your hosting IP]
 ```
 
 **CNAME Records (if using Netlify/Vercel):**
+
 ```
 www → [your-site].netlify.app
 @ → [your-site].netlify.app (via ALIAS/ANAME)
 ```
 
 **API Subdomain:**
+
 ```
 api → [Your API server IP/domain]
 ```
@@ -279,10 +284,12 @@ api → [Your API server IP/domain]
 If issues occur after deployment:
 
 ### On Netlify/Vercel:
+
 - Use the platform's rollback feature
 - Or redeploy a previous commit
 
 ### Manual Hosting:
+
 - Keep previous build in `dist.backup/`
 - Swap directories if needed
 - Keep git tags for releases
@@ -290,6 +297,7 @@ If issues occur after deployment:
 ## Security
 
 ### SSL/TLS:
+
 - Use Let's Encrypt for free certificates
 - Enable HTTPS-only mode
 - Configure HSTS headers
@@ -316,6 +324,7 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsaf
 ## Support
 
 For deployment issues:
+
 - Check Astro documentation: https://docs.astro.build/en/guides/deploy/
 - Open Waters GitHub: https://github.com/openwatersio
 - Email: info@openwaters.io
