@@ -1,110 +1,59 @@
-# openwaters.io
+# Open Waters Monorepo
 
-Open source marine software and data platform.
+This repository contains both the Open Waters website and API.
 
-## About
+## Structure
 
-Open Waters provides open source tools and data for understanding and navigating the sea, including:
-
-- **Tide Predictions**: Accurate predictions powered by the Neaps engine
-- **Crowd Depth**: Crowd-sourced bathymetry data collection
-- **Developer APIs**: Programmatic access to marine data
-
-## Tech Stack
-
-- **Astro** - Fast, modern static site generator
-- **React** - Interactive components
-- **Tailwind CSS** - Utility-first styling
-- **TypeScript** - Type-safe development
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+ and npm
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/openwatersio/openwaters.io.git
-cd openwaters.io
-
-# Install dependencies
-npm install
-
-# Copy environment variables
-cp .env.example .env
-
-# Start development server
-npm run dev
 ```
-
-The site will be available at `http://localhost:4321`
+.
+├── website/          # Astro static site (openwaters.io)
+├── api/              # Express API as Vercel serverless function (api.openwaters.io)
+├── vercel.json       # Vercel deployment configuration
+└── package.json      # Monorepo root with workspaces
+```
 
 ## Development
 
+### Start both website and API:
 ```bash
-# Start dev server
 npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Type checking
-npm run astro check
 ```
 
-## Project Structure
+This runs:
+- **Website** at http://localhost:4321
+- **API** at http://localhost:3001
 
-```
-openwaters-io/
-├── public/              # Static assets
-├── src/
-│   ├── components/      # Reusable components
-│   │   ├── layout/      # Header, Footer, etc.
-│   │   ├── ui/          # UI components
-│   │   └── react/       # React components
-│   ├── layouts/         # Page layouts
-│   ├── pages/           # Route pages
-│   ├── styles/          # Global styles
-│   └── utils/           # Utility functions
-├── astro.config.mjs     # Astro configuration
-├── tailwind.config.mjs  # Tailwind configuration
-└── tsconfig.json        # TypeScript configuration
+### Start individually:
+```bash
+npm run dev:website   # Astro site only
+npm run dev:api       # API only
 ```
 
-## Pages
+## Deployment to Vercel
 
-- `/` - Homepage
-- `/about` - About Open Waters
-- `/tides` - Tide predictions overview
-  - `/tides/stations` - Interactive station map
-  - `/tides/database` - Tide database info
-  - `/tides/neaps` - About the Neaps engine
-- `/bathymetry` - Crowd Depth project
-- `/api` - API documentation
-- `/license` - License information
+### One-time setup:
+1. Install Vercel CLI: `npm i -g vercel`
+2. Login: `vercel login`
+3. Link project: `vercel link`
 
-## Contributing
+### Deploy:
+```bash
+vercel              # Preview deployment
+vercel --prod       # Production deployment
+```
 
-We welcome contributions! Please see our contributing guidelines for more information.
+### Configure domains in Vercel Dashboard:
+- Set `openwaters.io` as primary domain (website)
+- Add `api.openwaters.io` as additional domain (API routes)
 
-## License
+The `vercel.json` configuration automatically routes `/api/*` requests to the Express API serverless function.
 
-MIT License - see LICENSE file for details
+## API Routes
 
-## Links
+- `https://api.openwaters.io/tides/*` - Tide predictions (powered by @neaps/api)
+- `https://api.openwaters.io/bathymetry/*` - Crowd-sourced depth data (coming soon)
+- `https://api.openwaters.io/health` - Health check
 
-- **Website**: https://openwaters.io
-- **GitHub**: https://github.com/openwatersio
-- **Email**: info@openwaters.io
+## Environment Variables
 
-## Acknowledgments
-
-- NOAA for tide data
-- IHO for the TICON database
-- The open source community
+Copy `website/.env.example` to configure local development (not needed for production—Vercel uses its own env config).
