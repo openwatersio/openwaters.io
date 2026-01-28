@@ -13,7 +13,7 @@
   h4,
   h5,
   h6 {
-    @apply font-semibold text-navy-900;
+    @apply text-balance font-semibold text-navy-900;
   }
 
   h1 {
@@ -38,6 +38,10 @@
 
   h6 {
     @apply text-base md:text-lg;
+  }
+
+  .text-lead {
+    @apply text-balance text-2xl text-navy-600;
   }
 
   a {

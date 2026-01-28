@@ -18,6 +18,7 @@
     "astro": "^4.15.0",
     "clsx": "^2.1.1",
     "maplibre-gl": "^4.7.0",
+    "neaps": "^0.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.5.0",

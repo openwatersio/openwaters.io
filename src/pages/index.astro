@@ -10,9 +10,9 @@ import Card from "../components/ui/Card.astro";
     <Container>
       <div class="mx-auto max-w-2xl text-center">
         <h1 class="mb-6 font-bold">Open Source Marine Software and Data</h1>
-        <p class="mb-8 text-2xl leading-relaxed text-navy-600">
-          Understand and navigate the sea with tools
-          <br />built through open source collaboration.
+        <p class="text-lead mb-8">
+          Understand and navigate the sea with tools built through open source
+          collaboration.
         </p>
         <div class="flex flex-wrap justify-center gap-4">
           <a href="/tides" class="btn btn-primary">
@@ -39,8 +39,7 @@ import Card from "../components/ui/Card.astro";
   <!-- Features Section -->
   <section class="py-16">
     <Container>
-      <h2 class="mb-12 text-center">What We Offer</h2>
-      <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+      <div class="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
         <!-- Tides -->
         <Card hover>
           <div class="mb-4 text-ocean-600">
@@ -58,10 +57,10 @@ import Card from "../components/ui/Card.astro";
               ></path>
             </svg>
           </div>
-          <h3 class="mb-3">Tide Predictions</h3>
+          <h3 class="mb-3">Tides</h3>
           <p class="mb-4 text-navy-600">
-            Accurate tide predictions powered by the Neaps engine, with data
-            from thousands of stations worldwide.
+            Tide predictions powered by the Neaps engine, with data from
+            thousands of stations worldwide.
           </p>
           <a
             href="/tides"
@@ -100,7 +99,7 @@ import Card from "../components/ui/Card.astro";
               ></path>
             </svg>
           </div>
-          <h3 class="mb-3">Crowd Depth</h3>
+          <h3 class="mb-3">Bathymetry</h3>
           <p class="mb-4 text-navy-600">
             Collect and share depth data from your vessel to contribute to
             crowd-sourced bathymetry programs.
@@ -124,47 +123,6 @@ import Card from "../components/ui/Card.astro";
             </svg>
           </a>
         </Card>
-
-        <!-- API -->
-        <Card hover>
-          <div class="mb-4 text-ocean-600">
-            <svg
-              class="h-12 w-12"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-            </svg>
-          </div>
-          <h3 class="mb-3">Developer API</h3>
-          <p class="mb-4 text-navy-600">
-            Access our data programmatically through well-documented APIs for
-            tides and bathymetry.
-          </p>
-          <a
-            href="/api"
-            class="inline-flex items-center gap-1 font-medium text-ocean-600 hover:text-ocean-700"
-          >
-            View docs
-            <svg
-              class="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"></path>
-            </svg>
-          </a>
-        </Card>
       </div>
     </Container>
   </section>
@@ -173,7 +131,7 @@ import Card from "../components/ui/Card.astro";
   <section class="bg-navy-50 py-16">
     <Container>
       <div class="mx-auto max-w-3xl text-center">
-        <h2 class="mb-6">Open as in "The Ocean"</h2>
+        <h2 class="mb-6">"Open" as in "The Ocean"</h2>
         <p class="mb-4 text-lg leading-relaxed text-navy-700">
           The ocean is a commons. We all depend on it, and we are all
           responsible for preserving it. Centuries of mariners, hydrographers,

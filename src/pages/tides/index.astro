@@ -13,7 +13,7 @@ import Card from "../../components/ui/Card.astro";
     <Container>
       <div class="mx-auto max-w-3xl text-center">
         <h1 class="mb-6">Tide Predictions</h1>
-        <p class="text-xl leading-relaxed text-navy-600">
+        <p class="text-lead">
           Access accurate tide predictions for thousands of stations worldwide,
           powered by open source software and open data.
         </p>
@@ -216,15 +216,36 @@ import Card from "../../components/ui/Card.astro";
             <p class="text-navy-600">
               Tide predictions are calculated using harmonic analysis, a method
               that breaks down the complex tidal signal into a series of simple
-              wave components called harmonic constituents. Each constituent
-              represents the effect of a specific astronomical or oceanographic
-              force on the tides.
+              wave components called
+              <a href="/tides/harmonics">harmonic constituents</a>. Each
+              constituent represents the effect of a specific astronomical or
+              oceanographic force on the tides.
             </p>
             <p class="mt-4 text-navy-600">
               Our predictions are based on harmonic constituents derived from
               historical tide observations at reference stations, and offsets
               for subordinate stations that are referenced to nearby primary
               stations.
+            </p>
+            <p class="mt-4">
+              <a
+                href="/tides/harmonics"
+                class="inline-flex items-center gap-1 text-sm font-medium"
+              >
+                Learn more about harmonic constituents
+                <svg
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
             </p>
           </div>
         </Card>

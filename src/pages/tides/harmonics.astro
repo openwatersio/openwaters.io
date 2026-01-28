@@ -1,0 +1,409 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Card from "../../components/ui/Card.astro";
+import { TideChart } from "../../components/tides/TideCharts";
+
+// List of common tidal constituents with their descriptions
+const constituents = [
+  { code: "M2", description: "Principal lunar semidiurnal", supported: true },
+  { code: "S2", description: "Principal solar semidiurnal", supported: true },
+  {
+    code: "N2",
+    description: "Larger lunar elliptic semidiurnal",
+    supported: true,
+  },
+  { code: "K1", description: "Lunar diurnal", supported: true },
+  { code: "K2", description: "Lunisolar semidiurnal", supported: true },
+  { code: "O1", description: "Lunar diurnal", supported: true },
+  { code: "P1", description: "Solar diurnal", supported: true },
+  { code: "Q1", description: "Larger lunar elliptic diurnal", supported: true },
+  {
+    code: "M4",
+    description: "Shallow water overtides of principal lunar",
+    supported: true,
+  },
+  {
+    code: "M6",
+    description: "Shallow water overtides of principal lunar",
+    supported: true,
+  },
+  { code: "MK3", description: "Shallow water terdiurnal", supported: true },
+  {
+    code: "S4",
+    description: "Shallow water overtides of principal solar",
+    supported: true,
+  },
+  {
+    code: "MN4",
+    description: "Shallow water quarter diurnal",
+    supported: true,
+  },
+  { code: "NU2", description: "Larger lunar evectional", supported: true },
+  {
+    code: "S6",
+    description: "Shallow water overtides of principal solar",
+    supported: true,
+  },
+  { code: "MU2", description: "Variational", supported: true },
+  {
+    code: "2N2",
+    description: "Lunar elliptical semidiurnal second-order",
+    supported: true,
+  },
+  { code: "OO1", description: "Lunar diurnal second-order", supported: true },
+  { code: "LAM2", description: "Smaller lunar evectional", supported: true },
+  { code: "S1", description: "Solar diurnal", supported: true },
+  {
+    code: "M1",
+    description: "Smaller lunar elliptic diurnal",
+    supported: true,
+  },
+  {
+    code: "J1",
+    description: "Smaller lunar elliptic diurnal",
+    supported: true,
+  },
+  { code: "MM", description: "Lunar monthly", supported: true },
+  { code: "SSA", description: "Solar semiannual", supported: true },
+  { code: "SA", description: "Solar annual", supported: true },
+  {
+    code: "MSF",
+    description: "Lunisolar synodic fortnightly",
+    supported: true,
+  },
+  { code: "MF", description: "Lunisolar fortnightly", supported: true },
+  {
+    code: "RHO1",
+    description: "Larger lunar evectional diurnal",
+    supported: true,
+  },
+  { code: "T2", description: "Larger solar elliptic", supported: true },
+  {
+    code: "L2",
+    description: "Smaller lunar elliptic semidiurnal",
+    supported: true,
+  },
+  { code: "2Q1", description: "Larger elliptic diurnal", supported: true },
+  { code: "2SM2", description: "Shallow water semidiurnal", supported: true },
+  { code: "M3", description: "Lunar terdiurnal", supported: true },
+  {
+    code: "MS4",
+    description: "Shallow water quarter diurnal",
+    supported: true,
+  },
+  { code: "2MK3", description: "Shallow water terdiurnal", supported: true },
+];
+---
+
+<MainLayout
+  title="Harmonic Constituents"
+  description="Learn how harmonic constituents work to create accurate tide predictions. Understanding the building blocks of tidal analysis."
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-4xl">
+      <h1 class="mb-6">How Harmonic Constituents Work</h1>
+
+      <div class="prose prose-lg mb-12 max-w-none">
+        <p class="text-xl text-navy-600">
+          Tide predictions are created by adding up the effects of potentially
+          hundreds of factors like the location of the sun, the moon, and the
+          benthic environment. These constituents are derived from analyzing
+          past water levels.
+        </p>
+      </div>
+
+      <!-- How It Works -->
+      <div class="mb-16">
+        <h2 class="mb-6 text-3xl font-semibold">How It Works</h2>
+
+        <div class="space-y-6">
+          <Card>
+            <h3 class="mb-3 text-xl font-semibold">Single Constituent</h3>
+            <p class="mb-4 text-navy-600">
+              You can think of each tidal constituent as a sine wave. For
+              example, below is a single constituent, M2, or "Principal lunar
+              semidiurnal constituent" for Monterey, California during the first
+              week of January 2018:
+            </p>
+            <div class="rounded-lg bg-navy-50 p-4">
+              <TideChart type="single" />
+            </div>
+            <p class="mt-4 text-navy-600">
+              If this constituent, which measures the regular effect of the moon
+              on water levels, were the only one that affected the tides, then
+              tides would go up and down in a regular pattern.
+            </p>
+          </Card>
+
+          <Card>
+            <h3 class="mb-3 text-xl font-semibold">Multiple Constituents</h3>
+            <p class="mb-4 text-navy-600">
+              However, once you add more constituents to measure more effects,
+              it gets complicated. To simplify, let's take just four
+              constituents and plot them for the same location:
+            </p>
+            <div class="rounded-lg bg-navy-50 p-4">
+              <TideChart type="multiple" />
+            </div>
+          </Card>
+
+          <Card>
+            <h3 class="mb-3 text-xl font-semibold">All Constituents</h3>
+            <p class="mb-4 text-navy-600">
+              Just for fun, let's take a look at <strong>all</strong> the defined
+              constituents:
+            </p>
+            <div class="rounded-lg bg-navy-50 p-4">
+              <TideChart type="all" />
+            </div>
+          </Card>
+
+          <Card>
+            <h3 class="mb-3 text-xl font-semibold">Combined Prediction</h3>
+            <p class="mb-4 text-navy-600">
+              If we add all these constituents together, they cancel each other
+              or amplify each other, leading to an accurate tide prediction:
+            </p>
+            <div class="rounded-lg bg-navy-50 p-4">
+              <TideChart type="combined" />
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <!-- Constituent Properties -->
+      <div class="mb-16">
+        <h2 class="mb-6 text-3xl font-semibold">Constituent Properties</h2>
+        <Card>
+          <p class="mb-4 text-navy-600">
+            Each tidal constituent is defined by three key properties that
+            determine its contribution to the overall tide prediction:
+          </p>
+          <ul class="space-y-3 text-navy-600">
+            <li class="flex items-start gap-2">
+              <span class="mt-1 text-ocean-600">•</span>
+              <span>
+                <strong>Amplitude:</strong> The strength of this constituent's effect
+                on water levels, typically measured in meters or feet.
+              </span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-1 text-ocean-600">•</span>
+              <span>
+                <strong>Phase (Epoch):</strong> The timing offset relative to an astronomical
+                reference, measured in degrees.
+              </span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-1 text-ocean-600">•</span>
+              <span>
+                <strong>Speed:</strong> How quickly this constituent oscillates, measured
+                in degrees per hour.
+              </span>
+            </li>
+          </ul>
+        </Card>
+      </div>
+
+      <!-- Where Constituents Come From -->
+      <div class="mb-16">
+        <h2 class="mb-6 text-3xl font-semibold">
+          Where Tidal Constituents Come From
+        </h2>
+        <div class="space-y-4">
+          <Card>
+            <h3 class="mb-3 text-xl font-semibold">Harmonic Analysis</h3>
+            <p class="text-navy-600">
+              Tidal constituents are derived by running harmonic analysis on
+              observed water levels. This involves fitting sinusoidal functions
+              to historical tide gauge data to extract the amplitude and phase
+              of each constituent.
+            </p>
+          </Card>
+
+          <Card>
+            <h3 class="mb-3 text-xl font-semibold">Published Data</h3>
+            <p class="text-navy-600">
+              Some agencies, like NOAA, publish tidal constituents that are
+              available on their website and via an API. Other agencies do not
+              provide constituents directly, but do provide data on observed
+              water levels that can be analyzed.
+            </p>
+          </Card>
+
+          <Card>
+            <h3 class="mb-3 text-xl font-semibold">Generate Your Own</h3>
+            <p class="text-navy-600">
+              If you have at least a year of hourly observations, you can
+              generate your own tidal constituents. These can be used locally or
+              contributed to our growing
+              <a href="/tides/database">database of global tide stations</a>.
+            </p>
+          </Card>
+        </div>
+      </div>
+
+      <!-- Supported Constituents Table -->
+      <div class="mb-16">
+        <h2 class="mb-6 text-3xl font-semibold">Supported Constituents</h2>
+        <p class="mb-4 text-navy-600">
+          Neaps supports all the major tidal constituents used by NOAA and other
+          agencies. Here are the constituents currently supported:
+        </p>
+        <Card class="overflow-hidden p-0">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-navy-50">
+                <tr>
+                  <th
+                    class="px-4 py-3 text-left text-sm font-semibold text-navy-900"
+                  >
+                    Code
+                  </th>
+                  <th
+                    class="px-4 py-3 text-left text-sm font-semibold text-navy-900"
+                  >
+                    Description
+                  </th>
+                  <th
+                    class="px-4 py-3 text-left text-sm font-semibold text-navy-900"
+                  >
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-navy-100">
+                {
+                  constituents.map((c) => (
+                    <tr class="hover:bg-navy-50">
+                      <td class="px-4 py-3 font-mono text-sm font-medium text-navy-900">
+                        {c.code}
+                      </td>
+                      <td class="px-4 py-3 text-sm text-navy-600">
+                        {c.description}
+                      </td>
+                      <td class="px-4 py-3 text-sm">
+                        {c.supported ? (
+                          <span class="inline-flex items-center gap-1 text-green-600">
+                            <svg
+                              class="h-4 w-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            Supported
+                          </span>
+                        ) : (
+                          <span class="text-navy-400">Not supported</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
+
+      <!-- Resources -->
+      <div class="mb-16">
+        <h2 class="mb-6 text-3xl font-semibold">Further Reading</h2>
+        <Card>
+          <p class="mb-4 text-navy-600">
+            To learn more about tidal constituents and harmonic analysis, these
+            resources are helpful:
+          </p>
+          <ul class="">
+            <li>
+              <span class="mt-1 text-ocean-600">•</span>
+              <a
+                href="https://github.com/sam-cox/pytides/wiki/Theory-of-the-Harmonic-Model-of-Tides"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:underline"
+              >
+                Theory of the Harmonic Model of Tides
+              </a>
+              - An exhaustive description of how Pytides and Neaps handle tidal constituents.
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-1 text-ocean-600">•</span>
+              <a
+                href="https://tidesandcurrents.noaa.gov/harmonic.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:underline"
+              >
+                NOAA Overview of Harmonics
+              </a>
+              - Official NOAA documentation on harmonic constants.
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-1 text-ocean-600">•</span>
+              <a
+                href="https://flaterco.com/xtide/harmonics.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:underline"
+              >
+                About Harmonic Constants and Sub Station Corrections
+              </a>
+              - The classic XTide description of harmonic constituents.
+            </li>
+          </ul>
+        </Card>
+      </div>
+
+      <!-- CTA -->
+      <Card
+        class="border-0 bg-gradient-to-r from-ocean-600 to-ocean-700 text-white"
+      >
+        <div class="text-center">
+          <h2 class="mb-4 text-3xl font-semibold text-white">
+            Explore the Tide Database
+          </h2>
+          <p class="mb-6 text-xl text-ocean-50">
+            Browse harmonic constituents for thousands of tide stations
+            worldwide, or contribute your own data to the open source database.
+          </p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <a
+              href="/tides/database"
+              class="btn bg-white text-ocean-700 hover:bg-ocean-50"
+            >
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+                ></path>
+              </svg>
+              View Database
+            </a>
+            <a
+              href="/tides/neaps"
+              class="btn bg-ocean-800 text-white hover:bg-ocean-900"
+            >
+              Learn About Neaps
+            </a>
+          </div>
+        </div>
+      </Card>
+    </div>
+  </Container>
+</MainLayout>
