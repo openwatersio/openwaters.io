@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   Map,
   Source,
@@ -7,7 +7,6 @@ import {
   GeolocateControl,
   type MapMouseEvent,
   NavigationControl,
-  ScaleControl,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { stations } from "@neaps/tide-database";

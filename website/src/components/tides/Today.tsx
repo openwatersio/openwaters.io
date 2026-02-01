@@ -4,6 +4,7 @@ import { useStation } from "neaps";
 import type { Station } from "@neaps/tide-database";
 import { Temporal } from "@js-temporal/polyfill";
 import { cn } from "../../utils/cn";
+import type { Extreme } from "@neaps/tide-predictor";
 
 // Format timezone name with UTC offset (e.g., "America/New_York" → "New York (UTC-5)")
 function formatTimezoneWithOffset(timeZone: string) {
@@ -48,7 +49,7 @@ export default function Today({
   });
 
   const nextTide = today.extremes?.find(
-    (extreme) => extreme.time.valueOf() > now.epochMilliseconds,
+    (extreme: Extreme) => extreme.time.valueOf() > now.epochMilliseconds,
   );
 
   const nowPrediction =
@@ -116,7 +117,7 @@ export default function Today({
                 </tr>
               </thead>
               <tbody>
-                {today.extremes.map((extreme) => (
+                {today.extremes.map((extreme: Extreme) => (
                   <tr
                     className={cn({
                       "border-b border-navy-100 hover:bg-navy-50": true,

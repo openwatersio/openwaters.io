@@ -43,17 +43,17 @@ type Predictor = ReturnType<typeof useStation>;
 export function TideGraph({ station }: Props) {
   const [predictor, setPredictor] = useState<Predictor>();
   const [data, setData] = useState<TideDataPoint[]>([]);
-  const [startDate, setStartDate] = useState<string>(() => {
+  const [startDate] = useState<string>(() => {
     const now = new Date();
     return now.toISOString().split("T")[0];
   });
-  const [endDate, setEndDate] = useState<string>(() => {
+  const [endDate] = useState<string>(() => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 3);
     return tomorrow.toISOString().split("T")[0];
   });
   const [datum, setDatum] = useState<string>("");
-  const [units, setUnits] = useState<"meters" | "feet">("feet");
+  const [units] = useState<"meters" | "feet">("feet");
 
   useEffect(() => {
     const predictor = useStation(station);

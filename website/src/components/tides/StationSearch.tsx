@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import lunr from "lunr";
 import { stations, type Station } from "@neaps/tide-database";
 
@@ -22,7 +22,7 @@ export function StationSearch() {
   }, []);
 
   const stationMap = useMemo(() => {
-    const map = new Map();
+    const map = new Map<string, Station>();
     stations.forEach((station: any) => {
       map.set(station.id, station);
     });
@@ -47,13 +47,7 @@ export function StationSearch() {
 
         const searchResults = lunrIndex.search(wildcardQuery);
         const mapped = searchResults.slice(0, 10).map((result: any) => {
-          const station = stationMap.get(result.ref);
-          return {
-            id: result.ref,
-            name: station?.name || result.ref,
-            country: station?.country,
-            region: station?.region,
-          };
+          return stationMap.get(result.ref)!;
         });
         setResults(mapped);
         setShowResults(true);
