@@ -1,6 +1,6 @@
 import tidePrediction from "@neaps/tide-predictor";
 
-// Monterey, CA harmonic constituents (station 9413450)
+// Monterey, CA harmonic constituents (station noaa/9413450)
 const montereyConstituents = [
   { name: "M2", amplitude: 0.491, phase: 181.3 },
   { name: "S2", amplitude: 0.13, phase: 180.1 },

@@ -1,0 +1,166 @@
+---
+import MainLayout from "../../../layouts/MainLayout.astro";
+import Container from "../../../components/ui/Container.astro";
+import Card from "../../../components/ui/Card.astro";
+import { findStation } from "neaps";
+import tidePredictor from "@neaps/tide-predictor";
+import Today from "../../../components/tides/Today";
+import { StationMap } from "../../../components/tides/StationMap";
+import { TideGraph } from "../../../components/tides/TideGraph";
+import { CoordinateFormat } from "coordinate-format";
+
+// Enable server-side rendering for this route
+export const prerender = false;
+
+const station = findStation(Astro.params.id || "");
+
+if (!station) {
+  throw new Error(`Tide station not found: ${Astro.params.id}`);
+}
+
+const coordFormat = new CoordinateFormat();
+
+const referenceStation =
+  station.offsets?.reference && findStation(station.offsets.reference);
+
+const usedConstituents = new Set(
+  station.harmonic_constituents
+    ?.filter((c) => tidePredictor.constituents[c.name])
+    .map((c: any) => c.name) || [],
+);
+---
+
+<MainLayout title={station.name} description={`Tide station: ${station.name}`}>
+  <Container class="py-16">
+    <div class="mx-auto grid max-w-5xl gap-8 lg:grid-cols-3">
+      {/* Main content */}
+      <div class="lg:col-span-2">
+        <a
+          href="/tides/stations"
+          class="mb-6 inline-block text-ocean-600 hover:text-ocean-700"
+        >
+          ← Back to stations
+        </a>
+
+        <div class="mb-4">
+          <h1 class="text-4xl">{station.name.replace(/_/g, " ")}</h1>
+          <div>
+            <p class="text-slate-500">
+              {coordFormat.latitude(station.latitude)},
+              {coordFormat.longitude(station.longitude)}
+            </p>
+          </div>
+          {
+            referenceStation && (
+              <div>
+                Reference:
+                <a href={`/tides/stations/${referenceStation.id}`}>
+                  {referenceStation.name}
+                </a>
+              </div>
+            )
+          }
+        </div>
+
+        <Card class="mb-8">
+          <Today station={station} />
+          <TideGraph client:load station={station} />
+        </Card>
+
+        <Card class="mb-8 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold text-navy-900">Station Data</h2>
+            <div>
+              <a
+                href={`https://github.com/neaps-js/database/blob/main/data/${station.id}.json`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-ocean-600 hover:text-ocean-700"
+              >
+                View raw data on GitHub
+              </a>
+            </div>
+          </div>
+          <p>
+            Station data from the the <a href="/tides/database"
+              >Neaps Tide Database</a
+            >
+          </p>
+
+          <div>
+            <p class="text-sm font-semibold text-navy-600">Source</p>
+            <p class="text-navy-900">
+              <a
+                href={station.source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-ocean-600 hover:text-ocean-700"
+              >
+                {station.source.name}
+              </a>
+              ID: {station.source.id}
+            </p>
+          </div>
+          <h3 class="text-base font-bold text-navy-900">
+            Harmonic Constituents
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead>
+                <tr class="border-b border-navy-200">
+                  <th class="px-4 py-2 text-left font-semibold text-navy-900">
+                    Constituent
+                  </th>
+                  <th class="px-4 py-2 text-left font-semibold text-navy-900">
+                    Amplitude
+                  </th>
+                  <th class="px-4 py-2 text-left font-semibold text-navy-900">
+                    Phase
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  station.harmonic_constituents.map((constituent) => (
+                    <tr class="border-b border-navy-100 hover:bg-navy-50">
+                      <td class="px-4 py-2 font-mono text-sm">
+                        {usedConstituents.has(constituent.name) ? (
+                          <span
+                            class="text-green-600"
+                            aria-label="Supported by Neaps"
+                          >
+                            ✓
+                          </span>
+                        ) : (
+                          <span
+                            class="text-red-600"
+                            aria-label="Not supported by Neaps"
+                          >
+                            ✗
+                          </span>
+                        )}
+
+                        {constituent.name}
+                      </td>
+                      <td class="px-4 py-2 text-sm tabular-nums">
+                        {constituent.amplitude.toFixed(3)}
+                      </td>
+                      <td class="px-4 py-2 text-sm tabular-nums">
+                        {constituent.phase.toFixed(1)}°
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
+
+      {/* Sidebar */}
+      <div class="lg:col-span-1">
+        <StationMap client:load station={station} />
+      </div>
+    </div>
+  </Container>
+</MainLayout>

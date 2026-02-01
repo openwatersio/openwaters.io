@@ -16,4 +16,5 @@ export default defineConfig({
       noExternal: ["maplibre-gl"],
     },
   },
+  output: "hybrid",
 });
