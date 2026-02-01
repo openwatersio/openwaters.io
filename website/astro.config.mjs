@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
-import pagefind from "astro-pagefind";
+import vercel from "@astrojs/vercel";
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,12 +11,12 @@ export default defineConfig({
       applyBaseStyles: false,
     }),
     react(),
-    pagefind(),
   ],
   vite: {
     ssr: {
       noExternal: ["maplibre-gl"],
     },
   },
-  output: "hybrid",
+  adapter: vercel({}),
+  output: "static",
 });

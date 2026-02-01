@@ -1,6 +1,4 @@
 ---
-import Search from "astro-pagefind/components/Search";
-
 const navItems = [
   { name: "About", href: "/about" },
   { name: "Tides", href: "/tides" },
@@ -56,10 +54,6 @@ const currentPath = Astro.url.pathname;
           ))
         }
       </ul>
-
-      <div class="hidden md:block">
-        <Search />
-      </div>
 
       <!-- Mobile Menu Button -->
       <button
