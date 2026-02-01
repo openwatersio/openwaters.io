@@ -5,17 +5,17 @@ import Card from "../../components/ui/Card.astro";
 ---
 
 <MainLayout
-  title="Tide Predictions"
-  description="Accurate tide predictions powered by the Neaps engine, with data from thousands of stations worldwide."
+  title="Tides"
+  description="Tide predictions powered by the Neaps engine, with data from thousands of stations worldwide."
 >
   <!-- Hero -->
   <section class="bg-gradient-to-b from-ocean-50 to-white py-16">
     <Container>
       <div class="mx-auto max-w-3xl text-center">
-        <h1 class="mb-6">Tide Predictions</h1>
+        <h1 class="mb-6">Tides</h1>
         <p class="text-lead">
-          Access accurate tide predictions for thousands of stations worldwide,
-          powered by open source software and open data.
+          Tide predictions for thousands of stations worldwide, powered by open
+          source software and open data.
         </p>
       </div>
     </Container>
@@ -26,7 +26,7 @@ import Card from "../../components/ui/Card.astro";
     <div class="mx-auto max-w-4xl">
       <!-- Features Grid -->
       <div class="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card hover>
+        <Card href="/tides/stations">
           <div class="flex items-start gap-3">
             <div class="text-ocean-600">
               <svg
@@ -49,8 +49,7 @@ import Card from "../../components/ui/Card.astro";
                 Explore our interactive map to find tide stations near you or
                 search by location.
               </p>
-              <a
-                href="/tides/stations"
+              <span
                 class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
               >
                 View station map
@@ -66,101 +65,12 @@ import Card from "../../components/ui/Card.astro";
                     stroke-width="2"
                     d="M9 5l7 7-7 7"></path>
                 </svg>
-              </a>
+              </span>
             </div>
           </div>
         </Card>
 
-        <Card hover>
-          <div class="flex items-start gap-3">
-            <div class="text-ocean-600">
-              <svg
-                class="h-8 w-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
-                ></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="mb-2 text-lg font-semibold">Tide Database</h3>
-              <p class="mb-3 text-sm text-navy-600">
-                Access our comprehensive database of harmonic constituents and
-                station metadata.
-              </p>
-              <a
-                href="/tides/database"
-                class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
-              >
-                Explore database
-                <svg
-                  class="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"></path>
-                </svg>
-              </a>
-            </div>
-          </div>
-        </Card>
-
-        <Card hover>
-          <div class="flex items-start gap-3">
-            <div class="text-ocean-600">
-              <svg
-                class="h-8 w-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="mb-2 text-lg font-semibold">Neaps Engine</h3>
-              <p class="mb-3 text-sm text-navy-600">
-                Learn about the open source tide prediction engine that powers
-                our predictions.
-              </p>
-              <a
-                href="/tides/neaps"
-                class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
-              >
-                About Neaps
-                <svg
-                  class="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"></path>
-                </svg>
-              </a>
-            </div>
-          </div>
-        </Card>
-
-        <Card hover>
+        <Card href="/api">
           <div class="flex items-start gap-3">
             <div class="text-ocean-600">
               <svg
@@ -183,8 +93,7 @@ import Card from "../../components/ui/Card.astro";
                 Access tide predictions programmatically through our
                 well-documented API.
               </p>
-              <a
-                href="/api"
+              <span
                 class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
               >
                 View API docs
@@ -200,7 +109,94 @@ import Card from "../../components/ui/Card.astro";
                     stroke-width="2"
                     d="M9 5l7 7-7 7"></path>
                 </svg>
-              </a>
+              </span>
+            </div>
+          </div>
+        </Card>
+
+        <Card href="/tides/database">
+          <div class="flex items-start gap-3">
+            <div class="text-ocean-600">
+              <svg
+                class="h-8 w-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
+                ></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="mb-2 text-lg font-semibold">Tide Database</h3>
+              <p class="mb-3 text-sm text-navy-600">
+                Access our comprehensive database of harmonic constituents and
+                station metadata.
+              </p>
+              <span
+                class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
+              >
+                Explore database
+                <svg
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"></path>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </Card>
+
+        <Card href="/tides/neaps">
+          <div class="flex items-start gap-3">
+            <div class="text-ocean-600">
+              <svg
+                class="h-8 w-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="mb-2 text-lg font-semibold">Neaps Engine</h3>
+              <p class="mb-3 text-sm text-navy-600">
+                Learn about the open source tide prediction engine that powers
+                our predictions.
+              </p>
+              <span
+                class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
+              >
+                About Neaps
+                <svg
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"></path>
+                </svg>
+              </span>
             </div>
           </div>
         </Card>
@@ -249,66 +245,6 @@ import Card from "../../components/ui/Card.astro";
             </p>
           </div>
         </Card>
-      </div>
-
-      <!-- Station Types -->
-      <div class="mb-16">
-        <h2 class="mb-6 text-3xl font-semibold">Station Types</h2>
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Card>
-            <div class="flex items-start gap-3">
-              <div class="rounded-full bg-ocean-100 p-2 text-ocean-700">
-                <svg
-                  class="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 13l4 4L19 7"></path>
-                </svg>
-              </div>
-              <div>
-                <h3 class="mb-2 font-semibold">Reference Stations</h3>
-                <p class="text-sm text-navy-600">
-                  Primary stations with harmonic constituents derived from years
-                  of tide observations. These provide the most accurate
-                  predictions.
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          <Card>
-            <div class="flex items-start gap-3">
-              <div class="rounded-full bg-ocean-100 p-2 text-ocean-700">
-                <svg
-                  class="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
-              </div>
-              <div>
-                <h3 class="mb-2 font-semibold">Subordinate Stations</h3>
-                <p class="text-sm text-navy-600">
-                  Secondary stations that reference a nearby primary station
-                  with time and height offsets. These provide good predictions
-                  for locations without long-term observations.
-                </p>
-              </div>
-            </div>
-          </Card>
-        </div>
       </div>
 
       <!-- Data Sources -->

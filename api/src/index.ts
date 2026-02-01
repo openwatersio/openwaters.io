@@ -1,9 +1,9 @@
 import express from "express";
-import { routes } from "@neaps/api";
+import { createApp } from "@neaps/api";
 
 const app = express();
 
-app.use("/", routes);
+app.use("/", createApp());
 
 // Placeholder for bathymetry API
 // TODO: Replace with actual bathymetry API from @openwatersio/crowd-depth/packages/api once published

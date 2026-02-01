@@ -2,114 +2,31 @@
 import MainLayout from "../../../layouts/MainLayout.astro";
 import Container from "../../../components/ui/Container.astro";
 import Card from "../../../components/ui/Card.astro";
+import { StationsMap } from "../../../components/tides/StationsMap";
 ---
 
 <MainLayout
   title="Tide Stations"
   description="Browse and search thousands of tide stations worldwide on an interactive map."
 >
+  <StationsMap client:load />
   <Container class="py-16">
     <div class="mx-auto max-w-6xl">
-      <h1 class="mb-6">Tide Stations</h1>
-      <p class="mb-12 text-xl text-navy-600">
-        Browse thousands of tide stations worldwide. Search by location, filter
-        by type and source, and view detailed predictions.
-      </p>
-
-      <!-- Placeholder for interactive map -->
-      <Card class="mb-8">
-        <div
-          class="rounded-lg border-2 border-dashed border-navy-200 bg-navy-50 p-12 text-center"
-        >
-          <svg
-            class="mx-auto mb-4 h-16 w-16 text-navy-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-            ></path>
-          </svg>
-          <h3 class="mb-2 text-xl font-semibold text-navy-900">
-            Interactive Map Coming Soon
-          </h3>
-          <p class="mb-4 text-navy-600">
-            We're building an interactive map to help you explore tide stations.
-            Check back soon!
-          </p>
-          <p class="text-sm text-navy-500">
-            In the meantime, you can access station data through our API or
-            GitHub repository.
-          </p>
-        </div>
-      </Card>
-
-      <!-- Filters Placeholder -->
-      <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-        <Card>
-          <h3 class="mb-3 font-semibold">Filter by Type</h3>
-          <div class="space-y-2">
-            <label
-              class="flex cursor-not-allowed items-center gap-2 text-navy-600 opacity-50"
-            >
-              <input type="checkbox" class="rounded text-ocean-600" disabled />
-              <span>Reference Stations</span>
-            </label>
-            <label
-              class="flex cursor-not-allowed items-center gap-2 text-navy-600 opacity-50"
-            >
-              <input type="checkbox" class="rounded text-ocean-600" disabled />
-              <span>Subordinate Stations</span>
-            </label>
-          </div>
-        </Card>
-
-        <Card>
-          <h3 class="mb-3 font-semibold">Filter by Source</h3>
-          <div class="space-y-2">
-            <label
-              class="flex cursor-not-allowed items-center gap-2 text-navy-600 opacity-50"
-            >
-              <input type="checkbox" class="rounded text-ocean-600" disabled />
-              <span>NOAA</span>
-            </label>
-            <label
-              class="flex cursor-not-allowed items-center gap-2 text-navy-600 opacity-50"
-            >
-              <input type="checkbox" class="rounded text-ocean-600" disabled />
-              <span>TICON</span>
-            </label>
-          </div>
-        </Card>
-
-        <Card>
-          <h3 class="mb-3 font-semibold">Search</h3>
-          <input
-            type="text"
-            placeholder="Station name or location..."
-            class="w-full rounded-lg border border-navy-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ocean-500"
-            disabled
-          />
-        </Card>
-      </div>
+      <!-- Interactive Map -->
+      <Card class="mb-8 p-0" />
 
       <!-- Alternative Access Methods -->
       <div class="space-y-6">
         <h2 class="text-2xl font-semibold">Access Station Data</h2>
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Card hover>
+          <Card href="/api">
             <h3 class="mb-3 text-lg font-semibold">Via API</h3>
             <p class="mb-4 text-sm text-navy-600">
               Query stations programmatically through our RESTful API. Perfect
               for integrating into your applications.
             </p>
-            <a
-              href="/api"
+            <span
               class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
             >
               View API Documentation
@@ -125,19 +42,16 @@ import Card from "../../../components/ui/Card.astro";
                   stroke-width="2"
                   d="M9 5l7 7-7 7"></path>
               </svg>
-            </a>
+            </span>
           </Card>
 
-          <Card hover>
+          <Card href="/tides/database">
             <h3 class="mb-3 text-lg font-semibold">Via GitHub</h3>
             <p class="mb-4 text-sm text-navy-600">
               Browse the complete database, download station data, or contribute
               improvements on GitHub.
             </p>
-            <a
-              href="https://github.com/neaps/tide-database"
-              target="_blank"
-              rel="noopener noreferrer"
+            <span
               class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
             >
               View on GitHub
@@ -154,7 +68,7 @@ import Card from "../../../components/ui/Card.astro";
                   d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                 ></path>
               </svg>
-            </a>
+            </span>
           </Card>
         </div>
       </div>

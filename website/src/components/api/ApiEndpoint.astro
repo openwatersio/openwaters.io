@@ -1,0 +1,106 @@
+---
+import type { EndpointInfo } from "../../utils/openapi";
+import Card from "../ui/Card.astro";
+
+interface Props {
+  endpoint: EndpointInfo;
+}
+
+const { endpoint } = Astro.props;
+
+const methodColors: Record<string, string> = {
+  GET: "bg-green-100 text-green-800",
+  POST: "bg-blue-100 text-blue-800",
+  PUT: "bg-yellow-100 text-yellow-800",
+  PATCH: "bg-orange-100 text-orange-800",
+  DELETE: "bg-red-100 text-red-800",
+};
+
+// Get example response from first successful response
+const successResponse = Object.entries(endpoint.responses).find(([code]) =>
+  code.startsWith("2"),
+)?.[1];
+const exampleResponse =
+  successResponse && "content" in successResponse
+    ? successResponse.content?.["application/json"]?.example
+    : null;
+---
+
+<Card class="mb-6">
+  <div class="space-y-4">
+    <!-- Method and Path -->
+    <div class="flex items-center gap-3">
+      <span
+        class={`rounded px-2 py-1 text-xs font-bold ${methodColors[endpoint.method] || "bg-navy-100 text-navy-800"}`}
+      >
+        {endpoint.method}
+      </span>
+      <span class="font-mono text-sm text-navy-900">{endpoint.path}</span>
+    </div>
+
+    <!-- Summary and Description -->
+    {endpoint.summary && <p>{endpoint.summary}</p>}
+    {endpoint.description && <p>{endpoint.description}</p>}
+
+    <!-- Parameters -->
+    {
+      endpoint.parameters && endpoint.parameters.length > 0 && (
+        <div>
+          <h4 class="mb-0 text-lg">Parameters</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-navy-50">
+                <tr>
+                  <th class="px-3 py-2 text-left">Name</th>
+                  <th class="px-3 py-2 text-left">Location</th>
+                  <th class="px-3 py-2 text-left">Type</th>
+                  <th class="px-3 py-2 text-left">Required</th>
+                  <th class="px-3 py-2 text-left">Description</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-navy-100">
+                {endpoint.parameters.map((param) => (
+                  <tr>
+                    <td class="px-3 py-2 font-mono">{param.name}</td>
+                    <td class="px-3 py-2">
+                      <span class="rounded bg-navy-100 px-2 py-1 text-xs">
+                        {param.in}
+                      </span>
+                    </td>
+                    <td class="px-3 py-2 font-mono text-xs">
+                      {param.schema && "type" in param.schema
+                        ? param.schema.type
+                        : ""}
+                    </td>
+                    <td class="px-3 py-2">
+                      {param.required ? (
+                        <span class="text-red-600">✓</span>
+                      ) : (
+                        <span class="text-navy-400">—</span>
+                      )}
+                    </td>
+                    <td class="px-3 py-2 text-navy-600">{param.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )
+    }
+
+    <!-- Example Response -->
+    {
+      exampleResponse && (
+        <div>
+          <h4>Example Response</h4>
+          <div class="overflow-x-auto rounded-lg bg-navy-900 p-4 text-white">
+            <pre class="text-sm">
+              <code>{JSON.stringify(exampleResponse, null, 2)}</code>
+            </pre>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</Card>

@@ -10,28 +10,10 @@ import Card from "../components/ui/Card.astro";
     <Container>
       <div class="mx-auto max-w-2xl text-center">
         <h1 class="mb-6 font-bold">Open Source Marine Software and Data</h1>
-        <p class="text-lead mb-8">
+        <p class="text-lead">
           Understand and navigate the sea with tools built through open source
           collaboration.
         </p>
-        <div class="flex flex-wrap justify-center gap-4">
-          <a href="/tides" class="btn btn-primary">
-            Explore Tides
-            <svg
-              class="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-            </svg>
-          </a>
-          <a href="/about" class="btn btn-outline">Learn More</a>
-        </div>
       </div>
     </Container>
   </section>
@@ -41,8 +23,8 @@ import Card from "../components/ui/Card.astro";
     <Container>
       <div class="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
         <!-- Tides -->
-        <Card hover>
-          <div class="mb-4 text-ocean-600">
+        <Card href="/tides" class="space-y-3">
+          <div class="text-ocean-600">
             <svg
               class="h-12 w-12"
               fill="none"
@@ -57,13 +39,12 @@ import Card from "../components/ui/Card.astro";
               ></path>
             </svg>
           </div>
-          <h3 class="mb-3">Tides</h3>
-          <p class="mb-4 text-navy-600">
+          <h3>Tides</h3>
+          <p class="text-navy-600">
             Tide predictions powered by the Neaps engine, with data from
             thousands of stations worldwide.
           </p>
-          <a
-            href="/tides"
+          <span
             class="inline-flex items-center gap-1 font-medium text-ocean-600 hover:text-ocean-700"
           >
             Explore tides
@@ -79,12 +60,12 @@ import Card from "../components/ui/Card.astro";
                 stroke-width="2"
                 d="M9 5l7 7-7 7"></path>
             </svg>
-          </a>
+          </span>
         </Card>
 
         <!-- Bathymetry -->
-        <Card hover>
-          <div class="mb-4 text-ocean-600">
+        <Card href="/bathymetry" class="space-y-3">
+          <div class="text-ocean-600">
             <svg
               class="h-12 w-12"
               fill="none"
@@ -99,13 +80,12 @@ import Card from "../components/ui/Card.astro";
               ></path>
             </svg>
           </div>
-          <h3 class="mb-3">Bathymetry</h3>
-          <p class="mb-4 text-navy-600">
+          <h3>Bathymetry</h3>
+          <p class="text-navy-600">
             Collect and share depth data from your vessel to contribute to
             crowd-sourced bathymetry programs.
           </p>
-          <a
-            href="/bathymetry"
+          <span
             class="inline-flex items-center gap-1 font-medium text-ocean-600 hover:text-ocean-700"
           >
             Learn more
@@ -121,28 +101,8 @@ import Card from "../components/ui/Card.astro";
                 stroke-width="2"
                 d="M9 5l7 7-7 7"></path>
             </svg>
-          </a>
+          </span>
         </Card>
-      </div>
-    </Container>
-  </section>
-
-  <!-- Mission Section -->
-  <section class="bg-navy-50 py-16">
-    <Container>
-      <div class="mx-auto max-w-3xl text-center">
-        <h2 class="mb-6">"Open" as in "The Ocean"</h2>
-        <p class="mb-4 text-lg leading-relaxed text-navy-700">
-          The ocean is a commons. We all depend on it, and we are all
-          responsible for preserving it. Centuries of mariners, hydrographers,
-          scientists, and engineers chose to share what they learned about the
-          sea, and we've all benefited.
-        </p>
-        <p class="text-lg leading-relaxed text-navy-700">
-          Open source software works the same way. By freely sharing what we
-          build—and collaborating openly—we create tools that are better, more
-          reliable, and more useful to everyone.
-        </p>
       </div>
     </Container>
   </section>
@@ -151,10 +111,10 @@ import Card from "../components/ui/Card.astro";
   <section class="py-16">
     <Container>
       <div
-        class="rounded-2xl bg-gradient-to-r from-ocean-600 to-ocean-700 p-12 text-center text-white"
+        class="mx-auto max-w-4xl space-y-6 rounded-2xl bg-gradient-to-b from-ocean-600 to-ocean-700 p-10 text-center text-white"
       >
-        <h2 class="mb-4 text-white">Get Involved</h2>
-        <p class="mx-auto mb-8 max-w-2xl text-xl text-ocean-50">
+        <h3 class="text-white">Get Involved</h3>
+        <p class="mx-auto max-w-2xl text-balance text-xl text-ocean-50">
           Join our community of mariners, developers, and ocean enthusiasts
           building better tools for the sea.
         </p>

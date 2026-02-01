@@ -2,6 +2,7 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
+import { stations } from "@neaps/tide-database";
 ---
 
 <MainLayout
@@ -10,98 +11,64 @@ import Card from "../../components/ui/Card.astro";
 >
   <Container class="py-16">
     <div class="mx-auto max-w-4xl">
-      <h1 class="mb-6">Tide Database</h1>
-
-      <div class="prose prose-lg mb-12 max-w-none">
-        <p class="text-xl text-navy-600">
-          Our comprehensive tide database contains harmonic constituents and
-          metadata for thousands of tide stations around the world, curated from
-          authoritative sources and community contributions.
-        </p>
+      <div class="flex items-center justify-between">
+        <h1 class="mb-2">Tide Database</h1>
+        <a
+          href="https://github.com/neaps/tide-database"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline inline-flex items-center gap-2"
+        >
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+            ></path>
+          </svg>
+          View on GitHub
+        </a>
       </div>
 
-      <!-- Quick Stats -->
-      <div class="mb-16 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Card class="text-center">
-          <div class="mb-1 text-3xl font-bold text-ocean-600">8,000+</div>
-          <div class="text-sm text-navy-600">Stations</div>
-        </Card>
-        <Card class="text-center">
-          <div class="mb-1 text-3xl font-bold text-ocean-600">100+</div>
-          <div class="text-sm text-navy-600">Countries</div>
-        </Card>
-        <Card class="text-center">
-          <div class="mb-1 text-3xl font-bold text-ocean-600">2,000+</div>
-          <div class="text-sm text-navy-600">Reference Stations</div>
-        </Card>
-        <Card class="text-center">
-          <div class="mb-1 text-3xl font-bold text-ocean-600">100%</div>
-          <div class="text-sm text-navy-600">Open Data</div>
-        </Card>
+      <p class="text-lead mb-4">A public database of tide harmonics</p>
+      <div class="prose prose-xl mb-12 max-w-none text-pretty">
+        <p>
+          This database includes harmonic constituents for tide prediction from
+          various sources around the world. These constants can be used with a
+          tide harmonic calculator like <a href="/tides/neaps">Neaps</a> to perform
+          tide predictions.
+        </p>
       </div>
 
       <!-- What's Included -->
       <div class="mb-16">
-        <h2 class="mb-6 text-3xl font-semibold">What's Included</h2>
-        <div class="space-y-4">
-          <Card>
-            <h3 class="mb-3 text-xl font-semibold">Station Metadata</h3>
-            <ul class="space-y-2 text-navy-600">
-              <li class="flex items-start gap-2">
-                <span class="mt-1 text-ocean-600">•</span>
-                <span>Station ID, name, and location (latitude/longitude)</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="mt-1 text-ocean-600">•</span>
-                <span>Station type (reference or subordinate)</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="mt-1 text-ocean-600">•</span>
-                <span>Data source and last update timestamp</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="mt-1 text-ocean-600">•</span>
-                <span>Time zone information</span>
-              </li>
-            </ul>
+        <!-- Quick Stats -->
+        <div class="mb-16 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <Card class="text-center">
+            <div class="mb-1 text-3xl font-bold text-ocean-600">
+              {stations.length}
+            </div>
+            <div class="text-sm text-navy-600">Stations</div>
           </Card>
-
-          <Card>
-            <h3 class="mb-3 text-xl font-semibold">Harmonic Constituents</h3>
-            <ul class="space-y-2 text-navy-600">
-              <li class="flex items-start gap-2">
-                <span class="mt-1 text-ocean-600">•</span>
-                <span>37+ tidal constituents per reference station</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="mt-1 text-ocean-600">•</span>
-                <span>Amplitude and phase (epoch) for each constituent</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="mt-1 text-ocean-600">•</span>
-                <span>Datum offsets (MLLW, MSL, MHW, etc.)</span>
-              </li>
-            </ul>
+          <Card class="text-center">
+            <div class="mb-1 text-3xl font-bold text-ocean-600">
+              {new Set(stations.map((s) => s.country)).size}
+            </div>
+            <div class="text-sm text-navy-600">Countries</div>
           </Card>
-
-          <Card>
-            <h3 class="mb-3 text-xl font-semibold">
-              Subordinate Station Offsets
-            </h3>
-            <ul class="space-y-2 text-navy-600">
-              <li class="flex items-start gap-2">
-                <span class="mt-1 text-ocean-600">•</span>
-                <span>Reference station linkage</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="mt-1 text-ocean-600">•</span>
-                <span>Time offsets for high and low tides</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="mt-1 text-ocean-600">•</span>
-                <span>Height multipliers and offsets</span>
-              </li>
-            </ul>
+          <Card class="text-center">
+            <div class="mb-1 text-3xl font-bold text-ocean-600">
+              {
+                new Set(
+                  stations.flatMap((s) =>
+                    (s.harmonic_constituents ?? []).map((c) => c.name),
+                  ),
+                ).size
+              }
+            </div>
+            <div class="text-sm text-navy-600">Constituents</div>
+          </Card>
+          <Card class="text-center">
+            <div class="mb-1 text-3xl font-bold text-ocean-600">100%</div>
+            <div class="text-sm text-navy-600">Open Data</div>
           </Card>
         </div>
       </div>
@@ -109,84 +76,67 @@ import Card from "../../components/ui/Card.astro";
       <!-- Data Sources -->
       <div class="mb-16">
         <h2 class="mb-6 text-3xl font-semibold">Data Sources</h2>
-        <Card class="border-navy-200 bg-navy-50">
-          <div class="space-y-4">
-            <div class="flex items-start gap-3">
-              <div class="mt-1 rounded-full bg-ocean-600 p-2 text-white">
-                <svg
-                  class="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <div>
-                <h3 class="mb-1 font-semibold">NOAA CO-OPS</h3>
-                <p class="text-sm text-navy-600">
-                  Primary source for US coastal stations. Harmonic constituents
-                  derived from years of continuous water level observations at
-                  NOAA tide gauge stations.
-                </p>
-              </div>
+        <div class="space-y-4">
+          <div class="flex items-start gap-3">
+            <div class="mt-1 rounded-full bg-ocean-600 p-2 text-white">
+              <svg
+                class="size-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
             </div>
-
-            <div class="flex items-start gap-3">
-              <div class="mt-1 rounded-full bg-ocean-600 p-2 text-white">
-                <svg
-                  class="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+            <div>
+              <h3 class="mb-1 text-2xl font-semibold">
+                <a
+                  href="https://tidesandcurrents.noaa.gov/web_services_info.html"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <div>
-                <h3 class="mb-1 font-semibold">IHO TICON</h3>
-                <p class="text-sm text-navy-600">
-                  International Hydrographic Organization's Tide Constituent
-                  Database provides global coverage with contributions from
-                  hydrographic offices worldwide.
-                </p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <div class="mt-1 rounded-full bg-ocean-600 p-2 text-white">
-                <svg
-                  class="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <div>
-                <h3 class="mb-1 font-semibold">Community Contributions</h3>
-                <p class="text-sm text-navy-600">
-                  Additional stations and improvements contributed by mariners,
-                  researchers, and developers through our open source
-                  repository.
-                </p>
-              </div>
+                  NOAA
+                </a>
+              </h3>
+              <p>
+                Primary source for US coastal stations. Harmonic constituents
+                derived from years of continuous water level observations at
+                NOAA tide gauge stations.
+              </p>
             </div>
           </div>
-        </Card>
+
+          <div class="flex items-start gap-3">
+            <div class="mt-1 rounded-full bg-ocean-600 p-2 text-white">
+              <svg
+                class="size-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="mb-1 text-2xl font-semibold">
+                <a href="https://www.seanoe.org/data/00980/109129/">
+                  TICON-4
+                </a>
+              </h3>
+              <p>
+                TIdal CONstants based on GESLA-4 sea-level records contains 50
+                estimated tidal constituents from 4200+ tide gauges distributed
+                globally.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Access the Database -->
@@ -194,7 +144,11 @@ import Card from "../../components/ui/Card.astro";
         <h2 class="mb-6 text-3xl font-semibold">Access the Database</h2>
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Card hover>
+          <Card
+            href="https://github.com/neaps/tide-database"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <div class="flex items-start gap-3">
               <div class="text-ocean-600">
                 <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
@@ -206,13 +160,10 @@ import Card from "../../components/ui/Card.astro";
               <div>
                 <h3 class="mb-2 text-lg font-semibold">GitHub Repository</h3>
                 <p class="mb-3 text-sm text-navy-600">
-                  Browse the full database, submit corrections, or add new
-                  stations through our GitHub repository.
+                  Browse the full database, make improvements, or add new
+                  sources through our GitHub repository.
                 </p>
-                <a
-                  href="https://github.com/neaps/tide-database"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <span
                   class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
                 >
                   View on GitHub
@@ -229,12 +180,16 @@ import Card from "../../components/ui/Card.astro";
                       d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                     ></path>
                   </svg>
-                </a>
+                </span>
               </div>
             </div>
           </Card>
 
-          <Card hover>
+          <Card
+            href="https://github.com/neaps/tide-database/releases"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <div class="flex items-start gap-3">
               <div class="text-ocean-600">
                 <svg
@@ -257,10 +212,7 @@ import Card from "../../components/ui/Card.astro";
                   Download the complete database as JSON or CSV files for
                   offline use or integration into your own applications.
                 </p>
-                <a
-                  href="https://github.com/neaps/tide-database/releases"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <span
                   class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
                 >
                   Download Data
@@ -277,12 +229,12 @@ import Card from "../../components/ui/Card.astro";
                       d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                     ></path>
                   </svg>
-                </a>
+                </span>
               </div>
             </div>
           </Card>
 
-          <Card hover>
+          <Card href="/tides/stations">
             <div class="flex items-start gap-3">
               <div class="text-ocean-600">
                 <svg
@@ -305,8 +257,7 @@ import Card from "../../components/ui/Card.astro";
                   Explore stations visually on our interactive map, filter by
                   type and source, and view detailed information.
                 </p>
-                <a
-                  href="/tides/stations"
+                <span
                   class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
                 >
                   Browse Stations
@@ -322,12 +273,12 @@ import Card from "../../components/ui/Card.astro";
                       stroke-width="2"
                       d="M9 5l7 7-7 7"></path>
                   </svg>
-                </a>
+                </span>
               </div>
             </div>
           </Card>
 
-          <Card hover>
+          <Card href="/api">
             <div class="flex items-start gap-3">
               <div class="text-ocean-600">
                 <svg
@@ -350,8 +301,7 @@ import Card from "../../components/ui/Card.astro";
                   Query stations and retrieve harmonic data programmatically
                   through our RESTful API.
                 </p>
-                <a
-                  href="/api"
+                <span
                   class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
                 >
                   View API Docs
@@ -367,7 +317,7 @@ import Card from "../../components/ui/Card.astro";
                       stroke-width="2"
                       d="M9 5l7 7-7 7"></path>
                   </svg>
-                </a>
+                </span>
               </div>
             </div>
           </Card>

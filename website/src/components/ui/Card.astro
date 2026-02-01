@@ -1,14 +1,15 @@
 ---
 import { cn } from "../../utils/cn";
 
-interface Props {
-  class?: string;
-  hover?: boolean;
-}
+type Props = astroHTML.JSX.HTMLAttributes | astroHTML.JSX.AnchorHTMLAttributes;
 
-const { class: className, hover = false } = Astro.props;
+const { class: className, ...attrs } = Astro.props;
+const Tag = "href" in attrs ? "a" : "div";
 ---
 
-<div class={cn(hover ? "card-hover" : "card", className)}>
+<Tag
+  {...attrs}
+  class={cn("href" in attrs ? "card-hover block" : "card", className)}
+>
   <slot />
-</div>
+</Tag>
