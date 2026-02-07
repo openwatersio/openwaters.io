@@ -11,6 +11,7 @@ import {
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { GeoJSONSource } from "maplibre-gl";
 import { StationSearch } from "./StationSearch";
+import { BottomDrawer } from "../ui/BottomDrawer";
 import { useNeapsAPI } from "../../utils/useNeapsAPI";
 
 interface Station {
@@ -122,8 +123,10 @@ function StationPopup({
   );
 }
 
-export function StationsMap() {
+export function StationsMap({ children }: { children?: React.ReactNode }) {
   const mapRef = useRef<any>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
   const { data: stations } = useNeapsAPI<Station[]>("/tides/stations");
   const [hoveredPopup, setHoveredPopup] = useState<{
     name: string;
@@ -202,7 +205,6 @@ export function StationsMap() {
   }, []);
 
   const handleMouseLeave = useCallback((e: MapMouseEvent) => {
-    console.log("mouse leave", e);
     setCursor("auto");
     setHoveredPopup(null);
   }, []);
@@ -212,11 +214,11 @@ export function StationsMap() {
       ref={mapRef}
       hash={true}
       initialViewState={{
-        longitude: 0,
+        longitude: -60,
         latitude: 20,
-        zoom: 1,
+        zoom: 2,
       }}
-      style={{ width: "100%", height: "600px" }}
+      style={{ position: "absolute", top: 0, left: 0, bottom: 0, right: 0 }}
       mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
       attributionControl={false}
       interactiveLayerIds={["clusters", "stations-point"]}
@@ -224,8 +226,28 @@ export function StationsMap() {
       onClick={handleClick}
       onMouseEnter={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      padding={{
+        left: sidebarRef.current?.offsetWidth ?? 0 + 20,
+        top: 96,
+        right: 20,
+        bottom: 20,
+      }}
     >
-      <StationSearch />
+      {/* Desktop sidebar */}
+      <div
+        ref={sidebarRef}
+        className="header-padding absolute left-4 top-0 z-10 hidden w-96 flex-col gap-4 md:flex"
+      >
+        <StationSearch />
+        {children}
+      </div>
+
+      {/* Mobile bottom sheet */}
+      <BottomDrawer>
+        <StationSearch />
+        {children}
+      </BottomDrawer>
+
       <GeolocateControl fitBoundsOptions={{ maxZoom: 9 }} />
       <NavigationControl showCompass={false} visualizePitch={false} />
       <Source

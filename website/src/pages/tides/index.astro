@@ -2,6 +2,7 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
+import FeatureCard from "../../components/ui/FeatureCard.astro";
 ---
 
 <MainLayout
@@ -26,180 +27,37 @@ import Card from "../../components/ui/Card.astro";
     <div class="mx-auto max-w-4xl">
       <!-- Features Grid -->
       <div class="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card href="/tides/stations">
-          <div class="flex items-start gap-3">
-            <div class="text-ocean-600">
-              <svg
-                class="h-8 w-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-                ></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="mb-2 text-lg font-semibold">Browse Stations</h3>
-              <p class="mb-3 text-sm text-navy-600">
-                Explore our interactive map to find tide stations near you or
-                search by location.
-              </p>
-              <span
-                class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
-              >
-                View station map
-                <svg
-                  class="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"></path>
-                </svg>
-              </span>
-            </div>
-          </div>
-        </Card>
+        <FeatureCard
+          href="/tides/stations"
+          title="Tide Predictions"
+          description="Explore tide predictions from stations near you or search by location."
+          action="View station map"
+          icon="mdi:map-outline"
+        />
 
-        <Card href="/api">
-          <div class="flex items-start gap-3">
-            <div class="text-ocean-600">
-              <svg
-                class="h-8 w-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                ></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="mb-2 text-lg font-semibold">Developer API</h3>
-              <p class="mb-3 text-sm text-navy-600">
-                Access tide predictions programmatically through our
-                well-documented API.
-              </p>
-              <span
-                class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
-              >
-                View API docs
-                <svg
-                  class="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"></path>
-                </svg>
-              </span>
-            </div>
-          </div>
-        </Card>
+        <FeatureCard
+          href="/api"
+          title="Developer API"
+          description="Access tide predictions programmatically through a REST API."
+          action="View API docs"
+          icon="mdi:code-greater-than"
+        />
 
-        <Card href="/tides/database">
-          <div class="flex items-start gap-3">
-            <div class="text-ocean-600">
-              <svg
-                class="h-8 w-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
-                ></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="mb-2 text-lg font-semibold">Tide Database</h3>
-              <p class="mb-3 text-sm text-navy-600">
-                Access our comprehensive database of harmonic constituents and
-                station metadata.
-              </p>
-              <span
-                class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
-              >
-                Explore database
-                <svg
-                  class="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"></path>
-                </svg>
-              </span>
-            </div>
-          </div>
-        </Card>
+        <FeatureCard
+          href="/tides/neaps"
+          title="Neaps Engine"
+          description="Learn about the open source tide prediction engine that powers our predictions."
+          action="About Neaps"
+          icon="mdi:code"
+        />
 
-        <Card href="/tides/neaps">
-          <div class="flex items-start gap-3">
-            <div class="text-ocean-600">
-              <svg
-                class="h-8 w-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="mb-2 text-lg font-semibold">Neaps Engine</h3>
-              <p class="mb-3 text-sm text-navy-600">
-                Learn about the open source tide prediction engine that powers
-                our predictions.
-              </p>
-              <span
-                class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
-              >
-                About Neaps
-                <svg
-                  class="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"></path>
-                </svg>
-              </span>
-            </div>
-          </div>
-        </Card>
+        <FeatureCard
+          href="/tides/database"
+          title="Tide Database"
+          description="Access our comprehensive database of harmonic constituents and station metadata."
+          action="Explore database"
+          icon="mdi:database-outline"
+        />
       </div>
 
       <!-- About Tide Predictions -->
@@ -217,12 +75,7 @@ import Card from "../../components/ui/Card.astro";
               constituent represents the effect of a specific astronomical or
               oceanographic force on the tides.
             </p>
-            <p class="mt-4 text-navy-600">
-              Our predictions are based on harmonic constituents derived from
-              historical tide observations at reference stations, and offsets
-              for subordinate stations that are referenced to nearby primary
-              stations.
-            </p>
+
             <p class="mt-4">
               <a
                 href="/tides/harmonics"
@@ -244,49 +97,6 @@ import Card from "../../components/ui/Card.astro";
               </a>
             </p>
           </div>
-        </Card>
-      </div>
-
-      <!-- Data Sources -->
-      <div>
-        <h2 class="mb-6 text-3xl font-semibold">Data Sources</h2>
-        <Card class="border-navy-200 bg-navy-50">
-          <p class="mb-4 text-navy-600">
-            Our tide database incorporates data from multiple authoritative
-            sources:
-          </p>
-          <ul class="space-y-3">
-            <li class="flex items-start gap-3">
-              <span class="mt-1 text-ocean-600">•</span>
-              <div>
-                <strong class="text-navy-900">NOAA CO-OPS:</strong>
-                <span class="text-navy-600">
-                  Harmonic constituents for US coastal stations from the
-                  National Oceanic and Atmospheric Administration</span
-                >
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <span class="mt-1 text-ocean-600">•</span>
-              <div>
-                <strong class="text-navy-900">IHO TICON:</strong>
-                <span class="text-navy-600">
-                  International tide constituent database from the International
-                  Hydrographic Organization</span
-                >
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <span class="mt-1 text-ocean-600">•</span>
-              <div>
-                <strong class="text-navy-900">Community Contributions:</strong>
-                <span class="text-navy-600">
-                  Additional stations and data contributed by the marine
-                  community</span
-                >
-              </div>
-            </li>
-          </ul>
         </Card>
       </div>
     </div>

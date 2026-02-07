@@ -25,7 +25,6 @@ export function useNeapsAPI<T>(
     setLoading(true);
     fetchNeapsAPI<T>(path, params)
       .then((data) => {
-        console.log("FETCHED DATA:", data);
         setData(data);
         setError(null);
       })
@@ -47,7 +46,6 @@ export async function fetchNeapsAPI<T>(
 ): Promise<T> {
   const url = new URL(path, API_HOST);
   url.search = new URLSearchParams(params).toString();
-  console.log("FETCHING URL:", url.toString());
 
   const res = await fetch(url.toString());
   if (!res.ok) {

@@ -1,0 +1,45 @@
+---
+import { Icon } from "astro-icon/components";
+
+export type Props = {
+  title: string;
+  description: string;
+  action?: string;
+  icon?: string;
+};
+
+const { title, description, action, icon } = Astro.props;
+---
+
+<div class="flex items-center gap-3">
+  <div class="text-ocean-600">
+    {icon ? <Icon name={icon} class="size-8" /> : <slot name="icon" />}
+  </div>
+  <div>
+    <h3 class="mb-0 text-base font-semibold">{title}</h3>
+    <p class="text-xs text-navy-600">
+      {description}
+    </p>
+
+    {
+      action && (
+        <span class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700">
+          {action}
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </span>
+      )
+    }
+  </div>
+</div>

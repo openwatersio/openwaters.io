@@ -1,7 +1,8 @@
 ---
+import type { HTMLAttributes } from "astro/types";
 import { cn } from "../../utils/cn";
 
-type Props = astroHTML.JSX.HTMLAttributes | astroHTML.JSX.AnchorHTMLAttributes;
+export type Props = HTMLAttributes<"a"> | HTMLAttributes<"div">;
 
 const { class: className, ...attrs } = Astro.props;
 const Tag = "href" in attrs ? "a" : "div";

@@ -2,15 +2,18 @@
 import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 import "../styles/global.css";
+import { cn } from "../utils/cn";
 
 interface Props {
   title?: string;
   description?: string;
+  fullscreen?: boolean;
 }
 
 const {
   title = "Open Waters - Open Source Marine Software and Data",
   description = "Open source tools and data for understanding and navigating the sea. Tide predictions, bathymetry, and more.",
+  fullscreen = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -46,11 +49,14 @@ const fullTitle =
     <meta name="twitter:description" content={description} />
 
     <script
+      is:inline
       defer
       data-domain="openwaters.io"
       src="https://plausible.io/js/script.js"></script>
   </head>
-  <body class="flex min-h-screen flex-col">
+  <body
+    class={cn({ "flex min-h-screen flex-col": true, fullscreen: fullscreen })}
+  >
     <Header />
     <main class="flex-1">
       <slot />

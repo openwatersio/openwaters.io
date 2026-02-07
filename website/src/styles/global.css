@@ -7,6 +7,20 @@
     @apply bg-white text-navy-900 antialiased;
   }
 
+  header {
+    @apply fixed left-0 right-0 top-0 z-50 mx-4 my-4 rounded-[36px] border-b border-transparent p-4 transition-all duration-300 ease-in-out;
+  }
+
+  header.scrolled,
+  .fullscreen header {
+    @apply bg-white/70 shadow-md shadow-navy-200/50 backdrop-blur-lg;
+  }
+
+  main,
+  .header-padding {
+    padding-top: 96px; /* Height of fixed header */
+  }
+
   h1,
   h2,
   h3,
@@ -81,10 +95,24 @@
   .card-hover {
     @apply card transition-shadow duration-200 hover:shadow-lg;
   }
+
+  .card-glass {
+    @apply rounded-lg bg-white/70 p-6 shadow-md backdrop-blur-lg;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* MapLibre controls offset for fixed header */
+.fullscreen .maplibregl-ctrl-top-right {
+  top: 96px;
+  right: 16px;
+}
+
+.fullscreen .maplibregl-ctrl-top-left {
+  top: 96px;
 }

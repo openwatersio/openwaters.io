@@ -1,77 +1,51 @@
 ---
 import MainLayout from "../../../layouts/MainLayout.astro";
-import Container from "../../../components/ui/Container.astro";
-import Card from "../../../components/ui/Card.astro";
 import { StationsMap } from "../../../components/tides/StationsMap";
+import Feature from "../../../components/ui/Feature.astro";
 ---
 
 <MainLayout
   title="Tide Stations"
   description="Browse and search thousands of tide stations worldwide on an interactive map."
+  fullscreen
 >
-  <StationsMap client:load />
-  <Container class="py-16">
-    <div class="mx-auto max-w-6xl">
-      <!-- Interactive Map -->
-      <Card class="mb-8 p-0" />
+  <StationsMap client:load>
+    <div class="card-glass overflow-hidden rounded-3xl p-0">
+      <h6 class="px-4 pb-1 pt-3 text-base text-slate-500">Developer Tools</h6>
+      <ul class="divide-y divide-navy-200">
+        <li>
+          <a class="block px-4 py-3 hover:bg-ocean-200/50" href="/api">
+            <Feature
+              title="API"
+              description="Station data and predictions via a REST API."
+              icon="mdi:code-greater-than"
+            />
+          </a>
+        </li>
 
-      <!-- Alternative Access Methods -->
-      <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Access Station Data</h2>
+        <li>
+          <a class="block px-4 py-3 hover:bg-ocean-200/50" href="/tides/neaps">
+            <Feature
+              title="Neaps"
+              description="An open source tide prediction engine."
+              icon="mdi:code"
+            />
+          </a>
+        </li>
 
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Card href="/api">
-            <h3 class="mb-3 text-lg font-semibold">Via API</h3>
-            <p class="mb-4 text-sm text-navy-600">
-              Query stations programmatically through our RESTful API. Perfect
-              for integrating into your applications.
-            </p>
-            <span
-              class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
-            >
-              View API Documentation
-              <svg
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"></path>
-              </svg>
-            </span>
-          </Card>
-
-          <Card href="/tides/database">
-            <h3 class="mb-3 text-lg font-semibold">Via GitHub</h3>
-            <p class="mb-4 text-sm text-navy-600">
-              Browse the complete database, download station data, or contribute
-              improvements on GitHub.
-            </p>
-            <span
-              class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
-            >
-              View on GitHub
-              <svg
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                ></path>
-              </svg>
-            </span>
-          </Card>
-        </div>
-      </div>
+        <li>
+          <a
+            class="block px-4 py-3 hover:bg-ocean-200/50"
+            href="/tides/database"
+          >
+            <Feature
+              title="Tide Database"
+              description="Harmonic constituents for thousands of stations globally."
+              icon="mdi:database-outline"
+            />
+          </a>
+        </li>
+      </ul>
     </div>
-  </Container>
+  </StationsMap>
 </MainLayout>

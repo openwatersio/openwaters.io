@@ -8,7 +8,11 @@ interface Station {
   region?: string;
 }
 
-export function StationSearch() {
+interface StationSearchProps {
+  onFocus?: () => void;
+}
+
+export function StationSearch({ onFocus }: StationSearchProps = {}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<Station[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -38,48 +42,33 @@ export function StationSearch() {
   }, []);
 
   return (
-    <div className="absolute left-4 top-4 z-10 w-80">
-      <div className="relative">
-        <input
-          type="text"
-          placeholder="Search stations..."
-          value={searchQuery}
-          onChange={(e) => handleSearch(e.target.value)}
-          onFocus={() => searchQuery && setShowResults(true)}
-          className="w-full rounded-lg border border-navy-200 bg-white px-4 py-2 text-sm placeholder-navy-400 shadow-md focus:outline-none focus:ring-2 focus:ring-ocean-500"
-        />
-        {searchQuery && (
-          <button
-            onClick={() => {
-              setSearchQuery("");
-              setResults([]);
-              setShowResults(false);
-            }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-navy-400 hover:text-navy-600"
-          >
-            ✕
-          </button>
-        )}
-      </div>
+    <div>
+      <input
+        type="search"
+        placeholder="Search Tide Stations..."
+        value={searchQuery}
+        onChange={(e) => handleSearch(e.target.value)}
+        onFocus={() => {
+          onFocus?.();
+          searchQuery && setShowResults(true);
+        }}
+        className="card card-glass w-full rounded-full px-5 py-3 text-base placeholder-navy-400 shadow-md transition-all duration-300 ease-in-out focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-500"
+      />
 
-      {showResults && results.length > 0 && (
-        <div className="absolute top-full mt-2 w-full rounded-lg border border-navy-200 bg-white shadow-lg">
-          <ul className="max-h-80 overflow-y-auto">
+      {showResults && (
+        <div className="card card-glass mt-4 w-full overflow-hidden rounded-3xl border-none p-0">
+          <ul className="max-h-80 divide-y divide-navy-200 overflow-y-auto">
             {results.map((result, index) => (
               <li key={result.id}>
                 <button
                   onClick={() => handleSelectResult(result.id)}
-                  className={`w-full px-4 py-3 text-left hover:bg-ocean-50 ${
-                    index !== results.length - 1
-                      ? "border-b border-navy-100"
-                      : ""
-                  }`}
+                  className={"w-full px-5 py-3 text-left hover:bg-ocean-200/50"}
                 >
-                  <div className="font-semibold text-navy-900">
+                  <div className="text-navy-90s0 text-base font-semibold">
                     {result.name}
                   </div>
                   {(result.country || result.region) && (
-                    <div className="text-xs text-navy-500">
+                    <div className="text-sm text-navy-500">
                       {[result.country, result.region]
                         .filter(Boolean)
                         .join(", ")}
@@ -88,13 +77,12 @@ export function StationSearch() {
                 </button>
               </li>
             ))}
+            {results.length === 0 && searchQuery.trim() !== "" && (
+              <li className="px-5 py-4 text-center text-lg text-navy-500">
+                No stations found
+              </li>
+            )}
           </ul>
-        </div>
-      )}
-
-      {showResults && results.length === 0 && searchQuery.trim() !== "" && (
-        <div className="absolute top-full mt-2 w-full rounded-lg border border-navy-200 bg-white px-4 py-3 text-center text-sm text-navy-500 shadow-lg">
-          No stations found
         </div>
       )}
     </div>
