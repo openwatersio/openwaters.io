@@ -8,7 +8,8 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@neaps/api": "^0.3.0",
+    "@neaps/api": "^0.3.2",
+    "@neaps/tide-database": "^0.4.20260216",
     "express": "^4.18.2"
   },
   "devDependencies": {
