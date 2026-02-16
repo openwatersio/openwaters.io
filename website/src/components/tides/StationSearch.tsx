@@ -58,7 +58,7 @@ export function StationSearch({ onFocus }: StationSearchProps = {}) {
       {showResults && (
         <div className="card card-glass mt-4 w-full overflow-hidden rounded-3xl border-none p-0">
           <ul className="max-h-80 divide-y divide-navy-200 overflow-y-auto">
-            {results.map((result, index) => (
+            {results.map((result) => (
               <li key={result.id}>
                 <button
                   onClick={() => handleSelectResult(result.id)}
