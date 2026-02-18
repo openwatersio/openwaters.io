@@ -14,5 +14,11 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "@neaps/api": "^0.3.3",
+    "@neaps/tide-database": "^0.6.20260218",
+    "@neaps/tide-predictor": "^0.7.0",
+    "neaps": "^0.5.1"
   }
 }
