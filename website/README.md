@@ -101,7 +101,7 @@ MIT License - see LICENSE file for details
 
 - **Website**: https://openwaters.io
 - **GitHub**: https://github.com/openwatersio
-- **Email**: info@openwaters.io
+- **Email**: hello@openwaters.io
 
 ## Acknowledgments
 

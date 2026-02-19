@@ -8,6 +8,7 @@ import {
   extractEndpoints,
   groupEndpointsByTag,
 } from "../utils/openapi";
+import { CONTACT_EMAIL } from "../utils/constants";
 
 // Fetch and process OpenAPI spec at build time
 const spec = await getOpenAPISpec();
@@ -114,7 +115,7 @@ const groupedEndpoints = groupEndpointsByTag(endpoints, "Tides");
               </svg>
               GitHub
             </a>
-            <a href="mailto:info@openwaters.io" class="btn btn-secondary">
+            <a href={`mailto:${CONTACT_EMAIL}`} class="btn btn-secondary">
               Email Support
             </a>
           </div>

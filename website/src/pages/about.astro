@@ -2,6 +2,7 @@
 import MainLayout from "../layouts/MainLayout.astro";
 import Container from "../components/ui/Container.astro";
 import { Icon } from "astro-icon/components";
+import { CONTACT_EMAIL } from "../utils/constants";
 ---
 
 <MainLayout
@@ -121,7 +122,7 @@ import { Icon } from "astro-icon/components";
             <Icon name="mdi:github" class="size-6" />
             View on GitHub
           </a>
-          <a href="mailto:info@openwaters.io" class="btn btn-secondary">
+          <a href={`mailto:${CONTACT_EMAIL}`} class="btn btn-secondary">
             Contact Us
           </a>
         </div>

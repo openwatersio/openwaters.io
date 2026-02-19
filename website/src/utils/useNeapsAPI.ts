@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-
-const API_HOST =
-  import.meta.env.PUBLIC_TIDES_API_URL || "http://localhost:3001";
+import { API_HOST } from "./constants";
 
 interface UseNeapsAPIOptions {
   skip?: boolean;
