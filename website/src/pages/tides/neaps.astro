@@ -14,7 +14,7 @@ import { Icon } from "astro-icon/components";
       <div class="flex items-center justify-between">
         <h1 class="mb-2">Neaps</h1>
         <a
-          href="https://github.com/neaps/neaps"
+          href="https://github.com/openwatersio/neaps"
           target="_blank"
           rel="noopener noreferrer"
           class="btn btn-outline inline-flex items-center gap-2"
@@ -161,7 +161,7 @@ import { Icon } from "astro-icon/components";
             <div>
               <h3 class="mb-3 text-xl font-semibold">Installation</h3>
               <div class="rounded-lg bg-navy-900 p-4 text-white">
-                <pre class="text-sm"><code>npm install @neaps/neaps</code></pre>
+                <pre class="text-sm"><code>npm install neaps</code></pre>
               </div>
             </div>
 
@@ -171,25 +171,28 @@ import { Icon } from "astro-icon/components";
                 class="overflow-x-auto rounded-lg bg-navy-900 p-4 text-white"
               >
                 <pre
-                  class="text-sm"><code>{`import { TideStation } from '@neaps/neaps';
+                  class="text-sm"><code>{`import {
+  getTimelinePrediction,
+  getExtremesPrediction
+} from 'neaps';
 
-// Load station data
-const station = new TideStation({
-  id: '9414290',
-  name: 'San Francisco',
-  constituents: { /* harmonic constituents */ }
-});
+const start = new Date();
+const end = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-// Get predictions for today
-const predictions = station.getPredictions({
-  start: new Date(),
-  end: new Date(Date.now() + 24 * 60 * 60 * 1000)
+// Get water level predictions for San Francisco
+const { timeline } = getTimelinePrediction({
+  latitude: 37.8063,
+  longitude: -122.4659,
+  start,
+  end
 });
 
 // Find high and low tides
-const extrema = station.getExtrema({
-  start: new Date(),
-  end: new Date(Date.now() + 24 * 60 * 60 * 1000)
+const { extremes } = getExtremesPrediction({
+  latitude: 37.8063,
+  longitude: -122.4659,
+  start,
+  end
 });`}</code></pre>
               </div>
             </div>
@@ -212,7 +215,7 @@ const extrema = station.getExtrema({
           </p>
           <div class="flex flex-wrap justify-center gap-4">
             <a
-              href="https://github.com/neaps/neaps"
+              href="https://github.com/openwatersio/neaps"
               target="_blank"
               rel="noopener noreferrer"
               class="btn bg-white text-ocean-700 hover:bg-ocean-50"
