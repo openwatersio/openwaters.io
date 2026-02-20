@@ -1,6 +1,7 @@
 ---
 import type { EndpointInfo } from "../../utils/openapi";
 import Card from "../ui/Card.astro";
+import { API_HOST } from "../../utils/constants.ts";
 
 interface Props {
   endpoint: EndpointInfo;
@@ -35,7 +36,9 @@ const exampleResponse =
       >
         {endpoint.method}
       </span>
-      <span class="font-mono text-sm text-navy-900">{endpoint.path}</span>
+      <span class="font-mono text-sm text-navy-900"
+        >{API_HOST}{endpoint.path}</span
+      >
     </div>
 
     <!-- Summary and Description -->

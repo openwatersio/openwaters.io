@@ -3,6 +3,13 @@ import { createApp } from "@neaps/api";
 
 const app = express();
 
+app.get("/", (req, res) => {
+  res.json({
+    name: "Open Waters API",
+    documentation: "https://openwaters.io/api",
+  });
+});
+
 app.use("/", createApp());
 
 // Placeholder for bathymetry API
