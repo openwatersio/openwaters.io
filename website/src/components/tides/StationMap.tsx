@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Station } from "@neaps/tide-database";
 import { useNeapsAPI } from "../../utils/useNeapsAPI";
+import { Distance } from "../TideHeight";
 
 interface Props {
   station: Station;
@@ -22,7 +23,7 @@ export function StationMap({ station }: Props) {
   const markers = useRef<Map<string, maplibregl.Marker>>(new Map());
   const { data: nearbyStationsData } = useNeapsAPI<NearbyStation[]>(
     "/tides/stations",
-    { latitude: station.latitude, longitude: station.longitude },
+    { latitude: station.latitude, longitude: station.longitude, maxResults: 5 },
   );
   const nearbyStations = nearbyStationsData ?? [];
   const [hoveredStationId, setHoveredStationId] = useState<string | null>(null);
@@ -155,7 +156,7 @@ export function StationMap({ station }: Props) {
                     {nearby.name}
                   </p>
                   <p className="text-right text-xs text-navy-600">
-                    {(nearby.distance || 0).toFixed(1)} km
+                    <Distance meters={(nearby.distance || 0) * 1000} />
                   </p>
                 </a>
               ))}

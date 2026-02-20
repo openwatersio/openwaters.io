@@ -148,8 +148,6 @@ export function TideGraph({ station, extremesData, timelineData }: Props) {
         },
       },
       y: {
-        // suggestedMin: Math.min(0, minLevel - padding),
-        // suggestedMax: maxLevel + padding,
         ticks: {
           stepSize: maxLevel - minLevel > 3 ? 1 : 0.5,
           callback: function (value: any) {
