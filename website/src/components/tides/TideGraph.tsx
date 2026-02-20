@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useStation } from "neaps";
+import { useMemo } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +14,7 @@ import {
 import { Line } from "react-chartjs-2";
 import "chartjs-adapter-date-fns";
 import type { Station } from "@neaps/tide-database";
+import type { ExtremesResponse, TimelineResponse } from "../../utils/tides";
 
 ChartJS.register(
   CategoryScale,
@@ -28,67 +28,42 @@ ChartJS.register(
   TimeScale,
 );
 
-interface Props {
-  station: Station;
-}
-
 interface TideDataPoint {
   time: Date;
   level: number;
   label?: string;
 }
 
-type Predictor = ReturnType<typeof useStation>;
+interface Props {
+  station: Station;
+  extremesData: ExtremesResponse | null;
+  timelineData: TimelineResponse | null;
+}
 
-export function TideGraph({ station }: Props) {
-  const [predictor, setPredictor] = useState<Predictor>();
-  const [data, setData] = useState<TideDataPoint[]>([]);
-  const [startDate] = useState<string>(() => {
-    const now = new Date();
-    return now.toISOString().split("T")[0];
-  });
-  const [endDate] = useState<string>(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 3);
-    return tomorrow.toISOString().split("T")[0];
-  });
-  const [datum, setDatum] = useState<string>("");
-  const [units] = useState<"meters" | "feet">("feet");
+export function TideGraph({ station, extremesData, timelineData }: Props) {
+  const units: "meters" | "feet" = "feet";
+  const isReference = station.type === "reference";
 
-  useEffect(() => {
-    const predictor = useStation(station);
-    setPredictor(predictor);
-    if (!datum && predictor.defaultDatum) setDatum(predictor.defaultDatum);
-  }, [station]);
-
-  useEffect(() => {
-    if (!predictor) return;
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    if (station.type === "reference") {
-      const prediction = predictor.getTimelinePrediction({
-        start,
-        end,
-        timeFidelity: 6,
-        datum,
-        units,
-      });
-
-      setData(prediction.timeline);
-    } else {
-      const prediction = predictor.getExtremesPrediction({
-        start,
-        end,
-        timeFidelity: 6,
-        datum,
-        units,
-      });
-
-      setData(prediction.extremes || []);
+  const data: TideDataPoint[] = useMemo(() => {
+    if (isReference && timelineData) {
+      return timelineData.timeline.map((p) => ({
+        time: new Date(p.time),
+        level: p.level,
+      }));
     }
-  }, [startDate, endDate, datum, predictor]);
+    if (!isReference && extremesData) {
+      return extremesData.extremes.map((p) => ({
+        time: new Date(p.time),
+        level: p.level,
+        label: p.label,
+      }));
+    }
+    return [];
+  }, [isReference, timelineData, extremesData]);
+
+  const datum =
+    (isReference ? timelineData?.datum : extremesData?.datum) ||
+    station.chart_datum;
 
   const minLevel = data.length > 0 ? Math.min(...data.map((d) => d.level)) : 0;
   const maxLevel = data.length > 0 ? Math.max(...data.map((d) => d.level)) : 2;
@@ -124,7 +99,7 @@ export function TideGraph({ station }: Props) {
       {
         label: "Current Time",
         data: [
-          { x: currentTime, y: minLevel - padding },
+          { x: currentTime, y: Math.min(0, minLevel - padding) },
           { x: currentTime, y: maxLevel + padding },
         ],
         borderColor: "rgba(249, 115, 22, 0.5)",
@@ -134,6 +109,8 @@ export function TideGraph({ station }: Props) {
       },
     ],
   };
+
+  const unitsLabel = units === "feet" ? "ft" : "m";
 
   const chartOptions = {
     responsive: true,
@@ -153,7 +130,7 @@ export function TideGraph({ station }: Props) {
             return pointDateStyle.format(new Date(context[0].parsed.x));
           },
           label: (context: any) => {
-            return `${(context.parsed.y ?? 0).toFixed(2)} ${units === "meters" ? "m" : "ft"}`;
+            return `${(context.parsed.y ?? 0).toFixed(2)} ${unitsLabel}`;
           },
         },
       },
@@ -171,11 +148,12 @@ export function TideGraph({ station }: Props) {
         },
       },
       y: {
-        min: minLevel - padding,
-        max: maxLevel + padding,
+        // suggestedMin: Math.min(0, minLevel - padding),
+        // suggestedMax: maxLevel + padding,
         ticks: {
+          stepSize: maxLevel - minLevel > 3 ? 1 : 0.5,
           callback: function (value: any) {
-            return `${value.toFixed(0)} ${units === "meters" ? "m" : "ft"}`;
+            return `${value} ${unitsLabel}`;
           },
         },
         title: {
@@ -188,49 +166,6 @@ export function TideGraph({ station }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div>
-          <label className="block text-sm font-semibold text-navy-900">
-            Start Date
-          </label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="mt-1 block w-full rounded border border-navy-200 px-3 py-2 text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-navy-900">
-            End Date
-          </label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="mt-1 block w-full rounded border border-navy-200 px-3 py-2 text-sm"
-          />
-        </div>
-        {datums.length > 0 && (
-          <div>
-            <label className="block text-sm font-semibold text-navy-900">
-              Datum
-            </label>
-            <select
-              value={datum || defaultDatum}
-              onChange={(e) => setDatum(e.target.value)}
-              className="mt-1 block w-full rounded border border-navy-200 px-3 py-2 text-sm"
-            >
-              {datums.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div> */}
-
       <div className="">
         {data.length > 0 ? (
           <div>

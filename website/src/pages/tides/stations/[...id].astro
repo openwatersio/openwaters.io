@@ -2,158 +2,293 @@
 import MainLayout from "../../../layouts/MainLayout.astro";
 import Container from "../../../components/ui/Container.astro";
 import Card from "../../../components/ui/Card.astro";
-import { findStation } from "neaps";
-import tidePredictor from "@neaps/tide-predictor";
-import Today from "../../../components/tides/Today";
+import type { Station } from "@neaps/tide-database";
+import { TideStation } from "../../../components/tides/TideStation";
 import { StationMap } from "../../../components/tides/StationMap";
-import { TideGraph } from "../../../components/tides/TideGraph";
 import { CoordinateFormat } from "coordinate-format";
+import { Icon } from "astro-icon/components";
+import { API_HOST } from "../../../utils/constants";
 
 // Enable server-side rendering for this route
 export const prerender = false;
 
-const station = findStation(Astro.params.id || "");
-
-if (!station) {
-  throw new Error(`Tide station not found: ${Astro.params.id}`);
+const response = await fetch(`${API_HOST}/tides/stations/${Astro.params.id}`);
+if (!response.ok) {
+  return new Response(null, { status: 404 });
 }
+const station: Station = await response.json();
 
 const coordFormat = new CoordinateFormat();
 
-const referenceStation =
-  station.offsets?.reference && findStation(station.offsets.reference);
-
-const usedConstituents = new Set(
-  station.harmonic_constituents
-    ?.filter((c) => tidePredictor.constituents[c.name])
-    .map((c: any) => c.name) || [],
-);
+let referenceStation: Station | null = null;
+if (station.offsets?.reference) {
+  const refResponse = await fetch(
+    `${API_HOST}/tides/stations/${station.offsets.reference}`,
+  );
+  if (refResponse.ok) {
+    referenceStation = await refResponse.json();
+  }
+}
 ---
 
 <MainLayout title={station.name} description={`Tide station: ${station.name}`}>
   <Container class="py-16">
     <div class="mx-auto grid max-w-5xl gap-8 lg:grid-cols-3">
       {/* Main content */}
-      <div class="lg:col-span-2">
-        <a
-          href="/tides/stations"
-          class="mb-6 inline-block text-ocean-600 hover:text-ocean-700"
-        >
-          ← Back to stations
-        </a>
-
+      <div class="space-y-8 lg:col-span-2">
         <div class="mb-4">
-          <h1 class="text-4xl">{station.name.replace(/_/g, " ")}</h1>
+          <a
+            href="/tides/stations"
+            class="inline-block text-ocean-600 hover:text-ocean-700"
+          >
+            ← Back to stations
+          </a>
+
+          <h1 class="mb-0 text-4xl">{station.name}</h1>
+          <p class="text-slate-500">
+            {[station.region, station.country].filter(Boolean).join(", ")}
+          </p>
           <div>
-            <p class="text-slate-500">
+            <p class="text-xs text-slate-500">
               {coordFormat.latitude(station.latitude)},
               {coordFormat.longitude(station.longitude)}
             </p>
           </div>
-          {
-            referenceStation && (
-              <div>
-                Reference:
-                <a href={`/tides/stations/${referenceStation.id}`}>
-                  {referenceStation.name}
-                </a>
-              </div>
-            )
-          }
         </div>
 
-        <Card class="mb-8">
-          <Today station={station} />
-          <TideGraph client:load station={station} />
+        {
+          station.disclaimers &&
+            station.disclaimers !== "No obvious issues" && (
+              <div class="mb-4 flex items-center gap-3 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+                <Icon
+                  name="mdi:alert-circle-outline"
+                  class="mt-0.5 h-5 w-5 shrink-0"
+                />
+                {station.disclaimers}
+              </div>
+            )
+        }
+
+        <Card>
+          <TideStation client:load station={station} />
         </Card>
 
-        <Card class="mb-8 space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-navy-900">Station Data</h2>
-            <div>
+        <Card>
+          <section>
+            <div
+              class="mb-6 flex items-center justify-between gap-8 border-b border-navy-200 pb-4"
+            >
+              <div>
+                <h3 class="text-xl">Station Data</h3>
+                <p class="text-sm">
+                  Data for this station comes from the
+                  <a href="/tides/database">Tide Database</a>.
+                </p>
+              </div>
               <a
-                href={`https://github.com/neaps-js/database/blob/main/data/${station.id}.json`}
+                href={`https://github.com/openwatersio/tide-database/blob/main/data/${station.id}.json`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-ocean-600 hover:text-ocean-700"
+                class="btn inline-flex items-center gap-2"
               >
-                View raw data on GitHub
+                Station Data
+                <Icon name="mdi:chevron-right" class="h-4 w-4" />
               </a>
             </div>
-          </div>
-          <p>
-            Station data from the the <a href="/tides/database"
-              >Neaps Tide Database</a
-            >
-          </p>
 
-          <div>
-            <p class="text-sm font-semibold text-navy-600">Source</p>
-            <p class="text-navy-900">
-              <a
-                href={station.source.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-ocean-600 hover:text-ocean-700"
-              >
-                {station.source.name}
-              </a>
-              ID: {station.source.id}
-            </p>
-          </div>
-          <h3 class="text-base font-bold text-navy-900">
-            Harmonic Constituents
-          </h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-xs">
-              <thead>
-                <tr class="border-b border-navy-200">
-                  <th class="px-4 py-2 text-left font-semibold text-navy-900">
-                    Constituent
-                  </th>
-                  <th class="px-4 py-2 text-left font-semibold text-navy-900">
-                    Amplitude
-                  </th>
-                  <th class="px-4 py-2 text-left font-semibold text-navy-900">
-                    Phase
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
+            <dl>
+              <dt>Source</dt>
+              <dd>
+                <a
+                  href={station.source.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {station.source.name}
+                </a>
+              </dd>
+
+              <dt>Source ID</dt>
+              <dd class="font-mono">{station.source.id}</dd>
+
+              <dt>License</dt>
+              <dd>
+                <a
+                  href={station.license.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {station.license.type}
+                </a>
                 {
-                  station.harmonic_constituents.map((constituent) => (
-                    <tr class="border-b border-navy-100 hover:bg-navy-50">
-                      <td class="px-4 py-2 font-mono text-sm">
-                        {usedConstituents.has(constituent.name) ? (
-                          <span
-                            class="text-green-600"
-                            aria-label="Supported by Neaps"
-                          >
-                            ✓
-                          </span>
-                        ) : (
-                          <span
-                            class="text-red-600"
-                            aria-label="Not supported by Neaps"
-                          >
-                            ✗
-                          </span>
-                        )}
-
-                        {constituent.name}
-                      </td>
-                      <td class="px-4 py-2 text-sm tabular-nums">
-                        {constituent.amplitude.toFixed(3)}
-                      </td>
-                      <td class="px-4 py-2 text-sm tabular-nums">
-                        {constituent.phase.toFixed(1)}°
-                      </td>
-                    </tr>
-                  ))
+                  !station.license.commercial_use && (
+                    <span class="ml-2 rounded bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800">
+                      Non-commercial
+                    </span>
+                  )
                 }
-              </tbody>
-            </table>
-          </div>
+              </dd>
+
+              {
+                station.license.notes && (
+                  <>
+                    <dt>License Notes</dt>
+                    <dd class="text-navy-600">{station.license.notes}</dd>
+                  </>
+                )
+              }
+
+              <dt>Type</dt>
+              <dd class="capitalize">{station.type}</dd>
+
+              {
+                referenceStation && station.offsets && (
+                  <>
+                    <dt>Reference Station</dt>
+                    <dd>
+                      <a href={`/tides/stations/${referenceStation.id}`}>
+                        {referenceStation.name}
+                      </a>
+                    </dd>
+
+                    <dt>Height Offsets</dt>
+                    <dd>
+                      High: {station.offsets.height.high}
+                      {station.offsets.height.type === "ratio" ? "x" : "m"},
+                      Low: {station.offsets.height.low}
+                      {station.offsets.height.type === "ratio" ? "x" : "m"}
+                      <span class="ml-1 text-navy-500">
+                        ({station.offsets.height.type})
+                      </span>
+                    </dd>
+
+                    <dt>Time Offsets</dt>
+                    <dd>
+                      High: {station.offsets.time.high > 0 ? "+" : ""}
+                      {station.offsets.time.high} min, Low:{" "}
+                      {station.offsets.time.low > 0 ? "+" : ""}
+                      {station.offsets.time.low} min
+                    </dd>
+                  </>
+                )
+              }
+
+              <dt>Timezone</dt>
+              <dd>{station.timezone}</dd>
+
+              <dt>Chart Datum</dt>
+              <dd>{station.chart_datum}</dd>
+
+              {
+                station.epoch && (
+                  <>
+                    <dt>Epoch</dt>
+                    <dd>
+                      {station.epoch.start} – {station.epoch.end}
+                    </dd>
+                  </>
+                )
+              }
+            </dl>
+          </section>
+        </Card>
+
+        <Card>
+          <section>
+            <div
+              class="mb-6 flex items-center justify-between gap-8 border-b border-navy-100 pb-4"
+            >
+              <div>
+                <h3 class="text-xl">API</h3>
+                <p class="text-sm">
+                  Access tide predictions for this station via the
+                  <a href="/api">API</a>.
+                </p>
+              </div>
+              <a href="/api" class="btn inline-flex items-center gap-2">
+                API Docs
+                <Icon name="mdi:chevron-right" class="h-4 w-4" />
+              </a>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <h4 class="mb-2 text-sm font-semibold text-navy-600">
+                  Get station info
+                </h4>
+                <div class="flex items-center gap-3">
+                  <span
+                    class="rounded bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
+                    >GET</span
+                  >
+                  <span class="font-mono text-sm text-navy-900"
+                    >{API_HOST}/tides/stations/{station.id}</span
+                  >
+                </div>
+              </div>
+
+              <div>
+                <h4 class="mb-2 text-sm font-semibold text-navy-600">
+                  Get tide extremes (high/low)
+                </h4>
+                <div class="flex items-center gap-3">
+                  <span
+                    class="rounded bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
+                    >GET</span
+                  >
+                  <span class="font-mono text-sm text-navy-900"
+                    >{API_HOST}/tides/stations/{station.id}/extremes</span
+                  >
+                </div>
+              </div>
+            </div>
+          </section>
+        </Card>
+        <Card>
+          <section>
+            <div
+              class="mb-6 flex items-center justify-between gap-8 border-b border-navy-100 pb-4"
+            >
+              <div>
+                <h3 class="text-xl">JavaScript</h3>
+                <p class="text-sm">
+                  Use the <a href="/tides/neaps">neaps</a>
+                  npm library to compute tide predictions locally.
+                </p>
+              </div>
+              <a href="/tides/neaps" class="btn inline-flex items-center gap-2">
+                Neaps Docs
+                <Icon name="mdi:chevron-right" class="h-4 w-4" />
+              </a>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <h4 class="mb-2 text-sm font-semibold text-navy-600">
+                  Install
+                </h4>
+                <pre
+                  class="overflow-x-auto rounded-lg bg-navy-900 p-4 text-sm text-white"><code>npm install neaps</code></pre>
+              </div>
+
+              <div>
+                <h4 class="mb-2 text-sm font-semibold text-navy-600">
+                  Get tide predictions
+                </h4>
+                <pre
+                  class="overflow-x-auto rounded-lg bg-navy-900 p-4 text-sm text-white"><code>{`import { findStation } from "neaps";
+
+const station = findStation("${station.id}");
+
+// Get highs and lows for a specific date range
+const extremes = station.getExtremesPrediction({
+  start: new Date("2025-01-01"),
+  end: new Date("2025-01-02"),
+});
+console.log(extremes);`}</code></pre>
+              </div>
+            </div>
+          </section>
         </Card>
       </div>
 

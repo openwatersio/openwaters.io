@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { stationsNear } from "neaps";
 import type { Station } from "@neaps/tide-database";
+import { useNeapsAPI } from "../../utils/useNeapsAPI";
 
 interface Props {
   station: Station;
 }
 
-interface NearbyStationWithDistance extends Station {
+interface NearbyStation {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
   distance?: number;
 }
 
@@ -16,16 +20,12 @@ export function StationMap({ station }: Props) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const markers = useRef<Map<string, maplibregl.Marker>>(new Map());
-  const [nearbyStations, setNearbyStations] = useState<
-    NearbyStationWithDistance[]
-  >([]);
+  const { data: nearbyStationsData } = useNeapsAPI<NearbyStation[]>(
+    "/tides/stations",
+    { latitude: station.latitude, longitude: station.longitude },
+  );
+  const nearbyStations = nearbyStationsData ?? [];
   const [hoveredStationId, setHoveredStationId] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Get nearby stations
-    const nearby = stationsNear(station);
-    setNearbyStations(nearby as NearbyStationWithDistance[]);
-  }, [station]);
 
   useEffect(() => {
     if (!mapContainer.current) return;

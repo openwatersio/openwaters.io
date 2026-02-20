@@ -1,10 +1,10 @@
+import { useMemo } from "react";
 import { DateTime } from "../DateTime";
 import { TideHeight } from "../TideHeight";
-import { useStation } from "neaps";
 import type { Station } from "@neaps/tide-database";
 import { Temporal } from "@js-temporal/polyfill";
 import { cn } from "../../utils/cn";
-import type { Extreme } from "@neaps/tide-predictor";
+import type { ExtremesResponse, TimelineResponse } from "../../utils/tides";
 
 // Format timezone name with UTC offset (e.g., "America/New_York" → "New York (UTC-5)")
 function formatTimezoneWithOffset(timeZone: string) {
@@ -27,36 +27,60 @@ function formatTimezoneWithOffset(timeZone: string) {
 
 export type TodayProps = {
   station: Station;
+  extremesData: ExtremesResponse | null;
+  timelineData: TimelineResponse | null;
   now?: Temporal.Instant;
 };
 
 export default function Today({
   station,
+  extremesData,
+  timelineData,
   now = Temporal.Now.instant(),
 }: TodayProps) {
-  const start = Temporal.Now.zonedDateTimeISO(station.timezone).subtract({
-    hours: 6,
-    minutes: 30,
-  });
-  const end = start.add({ hours: 25 });
+  const start = useMemo(() => {
+    return Temporal.Now.zonedDateTimeISO(station.timezone).subtract({
+      hours: 6,
+      minutes: 30,
+    });
+  }, [station.timezone]);
 
-  const predictor = useStation(station);
-  const isReference = predictor.type === "reference";
+  const end = useMemo(() => start.add({ hours: 25 }), [start]);
 
-  const today = predictor.getExtremesPrediction({
-    start: new Date(start.toInstant().epochMilliseconds),
-    end: new Date(end.toInstant().epochMilliseconds),
-  });
+  const isReference = station.type === "reference";
 
-  const nextTide = today.extremes?.find(
-    (extreme: Extreme) => extreme.time.valueOf() > now.epochMilliseconds,
+  // Filter extremes to the ~25h window for today's display
+  const extremes = useMemo(() => {
+    if (!extremesData?.extremes) return [];
+    const startMs = start.toInstant().epochMilliseconds;
+    const endMs = end.toInstant().epochMilliseconds;
+    return extremesData.extremes.filter((e) => {
+      const t = new Date(e.time).valueOf();
+      return t >= startMs && t <= endMs;
+    });
+  }, [extremesData, start, end]);
+
+  const datum = extremesData?.datum || station.chart_datum;
+
+  const nextTide = extremes.find(
+    (extreme) => new Date(extreme.time).valueOf() > now.epochMilliseconds,
   );
 
-  const nowPrediction =
-    isReference &&
-    useStation(station).getWaterLevelAtTime({
-      time: new Date(now.epochMilliseconds),
-    });
+  // Find the closest timeline point to now for current water level
+  const nowLevel = useMemo(() => {
+    if (!isReference || !timelineData?.timeline?.length) return undefined;
+    const nowMs = now.epochMilliseconds;
+    let closest = timelineData.timeline[0];
+    let closestDiff = Math.abs(new Date(closest.time).valueOf() - nowMs);
+    for (const point of timelineData.timeline) {
+      const diff = Math.abs(new Date(point.time).valueOf() - nowMs);
+      if (diff < closestDiff) {
+        closest = point;
+        closestDiff = diff;
+      }
+    }
+    return closest.level;
+  }, [isReference, timelineData, now]);
 
   return (
     <div className="space-y-4 tabular-nums">
@@ -96,11 +120,11 @@ export default function Today({
                 &#8595;
               </span>
             )}
-            {nowPrediction && <TideHeight value={nowPrediction.level} />}
+            {nowLevel != null && <TideHeight value={nowLevel} />}
           </div>
-          <div>{predictor.defaultDatum}</div>
+          <div>{datum}</div>
         </div>
-        {today.extremes && today.extremes.length > 0 ? (
+        {extremes.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -117,18 +141,19 @@ export default function Today({
                 </tr>
               </thead>
               <tbody>
-                {today.extremes.map((extreme: Extreme) => (
+                {extremes.map((extreme) => (
                   <tr
                     className={cn({
                       "border-b border-navy-100 hover:bg-navy-50": true,
                       "text-navy-500":
-                        extreme.time.valueOf() < now.epochMilliseconds,
+                        new Date(extreme.time).valueOf() <
+                        now.epochMilliseconds,
                     })}
-                    key={extreme.time.toISOString()}
+                    key={extreme.time}
                   >
                     <td className="px-4 py-2 text-right">
                       <DateTime
-                        datetime={extreme.time.toISOString()}
+                        datetime={extreme.time}
                         timeZone={station.timezone}
                         timeStyle="short"
                       />
