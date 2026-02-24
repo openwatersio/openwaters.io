@@ -41,7 +41,7 @@ interface Props {
 }
 
 export function TideGraph({ station, extremesData, timelineData }: Props) {
-  const units: "meters" | "feet" = "feet";
+  const units = timelineData?.units || extremesData?.units || "meters";
   const isReference = station.type === "reference";
 
   const data: TideDataPoint[] = useMemo(() => {

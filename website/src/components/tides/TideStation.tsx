@@ -3,6 +3,7 @@ import type { Station } from "@neaps/tide-database";
 import { Temporal } from "@js-temporal/polyfill";
 import { useNeapsAPI } from "../../utils/useNeapsAPI";
 import type { ExtremesResponse, TimelineResponse } from "../../utils/tides";
+import { preferredUnits } from "../../utils/units";
 import Today from "./Today";
 import { TideGraph } from "./TideGraph";
 
@@ -33,12 +34,12 @@ export function TideStation({ station }: Props) {
 
   const { data: extremesData, loading } = useNeapsAPI<ExtremesResponse>(
     `/tides/stations/${station.id}/extremes`,
-    { start: startDate, end: endDate },
+    { start: startDate, end: endDate, units: preferredUnits },
   );
 
   const { data: timelineData } = useNeapsAPI<TimelineResponse>(
     `/tides/stations/${station.id}/timeline`,
-    { start: startDate, end: endDate },
+    { start: startDate, end: endDate, units: preferredUnits },
     { skip: !isReference },
   );
 

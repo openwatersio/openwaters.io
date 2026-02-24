@@ -1,13 +1,4 @@
-const IMPERIAL_LOCALES = ["en-US", "en-LR", "my-MM"];
-
-const locale =
-  typeof navigator !== "undefined" ? navigator.language : undefined;
-
-function usesImperialUnits(locale: string | undefined): boolean {
-  return !!locale && IMPERIAL_LOCALES.includes(locale);
-}
-
-const imperial = usesImperialUnits(locale);
+import { imperial } from "../utils/units";
 
 const FEET_PER_METER = 3.28084;
 const MILES_PER_METER = 0.000621371;
@@ -55,5 +46,11 @@ export function TideHeight({
   value: number;
   precision?: number;
 }) {
-  return <Distance meters={value} precision={precision} />;
+  const unit = imperial ? "ft" : "m";
+  return (
+    <span className="tabular-nums">
+      {value.toFixed(precision)}
+      <span className="text-[0.8em]"> {unit}</span>
+    </span>
+  );
 }
