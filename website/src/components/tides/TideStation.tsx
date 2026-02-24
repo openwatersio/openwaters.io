@@ -12,8 +12,6 @@ interface Props {
 }
 
 export function TideStation({ station }: Props) {
-  const isReference = station.type === "reference";
-
   // Compute a single date range that covers both components:
   // - Today needs extremes from -6.5h to +18.5h
   // - TideGraph needs data from now to +3 days
@@ -40,7 +38,6 @@ export function TideStation({ station }: Props) {
   const { data: timelineData } = useNeapsAPI<TimelineResponse>(
     `/tides/stations/${station.id}/timeline`,
     { start: startDate, end: endDate, units: preferredUnits },
-    { skip: !isReference },
   );
 
   if (loading) {

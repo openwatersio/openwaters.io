@@ -28,12 +28,6 @@ ChartJS.register(
   TimeScale,
 );
 
-interface TideDataPoint {
-  time: Date;
-  level: number;
-  label?: string;
-}
-
 interface Props {
   station: Station;
   extremesData: ExtremesResponse | null;
@@ -42,31 +36,35 @@ interface Props {
 
 export function TideGraph({ station, extremesData, timelineData }: Props) {
   const units = timelineData?.units || extremesData?.units || "meters";
-  const isReference = station.type === "reference";
 
-  const data: TideDataPoint[] = useMemo(() => {
-    if (isReference && timelineData) {
-      return timelineData.timeline.map((p) => ({
-        time: new Date(p.time),
-        level: p.level,
-      }));
-    }
-    if (!isReference && extremesData) {
-      return extremesData.extremes.map((p) => ({
-        time: new Date(p.time),
-        level: p.level,
-        label: p.label,
-      }));
-    }
-    return [];
-  }, [isReference, timelineData, extremesData]);
+  const timelinePoints = useMemo(() => {
+    if (!timelineData) return [];
+    return timelineData.timeline.map((p) => ({
+      time: new Date(p.time),
+      level: p.level,
+    }));
+  }, [timelineData]);
+
+  const extremePoints = useMemo(() => {
+    if (!extremesData) return [];
+    return extremesData.extremes.map((p) => ({
+      time: new Date(p.time),
+      level: p.level,
+      label: p.label,
+    }));
+  }, [extremesData]);
 
   const datum =
-    (isReference ? timelineData?.datum : extremesData?.datum) ||
-    station.chart_datum;
+    timelineData?.datum || extremesData?.datum || station.chart_datum;
 
-  const minLevel = data.length > 0 ? Math.min(...data.map((d) => d.level)) : 0;
-  const maxLevel = data.length > 0 ? Math.max(...data.map((d) => d.level)) : 2;
+  const minLevel =
+    timelinePoints.length > 0
+      ? Math.min(...timelinePoints.map((d) => d.level))
+      : 0;
+  const maxLevel =
+    timelinePoints.length > 0
+      ? Math.max(...timelinePoints.map((d) => d.level))
+      : 2;
   const padding = (maxLevel - minLevel) * 0.1 || 0.5;
 
   const pointDateStyle = Intl.DateTimeFormat(undefined, {
@@ -85,8 +83,20 @@ export function TideGraph({ station, extremesData, timelineData }: Props) {
   const chartData = {
     datasets: [
       {
+        label: "High/Low",
+        data: extremePoints.map((d) => ({ x: d.time, y: d.level })),
+        borderColor: "transparent",
+        backgroundColor: "#0284c7",
+        borderWidth: 0,
+        fill: false,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointStyle: "circle" as const,
+        showLine: false,
+      },
+      {
         label: "Water Level",
-        data: data.map((d) => ({ x: d.time, y: d.level })),
+        data: timelinePoints.map((d) => ({ x: d.time, y: d.level })),
         borderColor: "#0ea5e9",
         backgroundColor: "rgba(14, 165, 233, 0.1)",
         borderWidth: 2,
@@ -124,13 +134,19 @@ export function TideGraph({ station, extremesData, timelineData }: Props) {
       },
       tooltip: {
         displayColors: false,
+        filter: (item: any) => item.dataset.label !== "Current Time",
         callbacks: {
           title: (context: any) => {
             if (context.length === 0) return "";
             return pointDateStyle.format(new Date(context[0].parsed.x));
           },
           label: (context: any) => {
-            return `${(context.parsed.y ?? 0).toFixed(2)} ${unitsLabel}`;
+            const value = `${(context.parsed.y ?? 0).toFixed(2)} ${unitsLabel}`;
+            if (context.dataset.label === "High/Low") {
+              const extreme = extremePoints[context.dataIndex];
+              return extreme?.label ? `${extreme.label}: ${value}` : value;
+            }
+            return value;
           },
         },
       },
@@ -165,7 +181,7 @@ export function TideGraph({ station, extremesData, timelineData }: Props) {
   return (
     <div className="space-y-4">
       <div className="">
-        {data.length > 0 ? (
+        {timelinePoints.length > 0 ? (
           <div>
             <Line data={chartData} options={chartOptions} />
           </div>

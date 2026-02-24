@@ -47,8 +47,6 @@ export default function Today({
 
   const end = useMemo(() => start.add({ hours: 25 }), [start]);
 
-  const isReference = station.type === "reference";
-
   // Filter extremes to the ~25h window for today's display
   const extremes = useMemo(() => {
     if (!extremesData?.extremes) return [];
@@ -68,7 +66,7 @@ export default function Today({
 
   // Find the closest timeline point to now for current water level
   const nowLevel = useMemo(() => {
-    if (!isReference || !timelineData?.timeline?.length) return undefined;
+    if (!timelineData?.timeline?.length) return undefined;
     const nowMs = now.epochMilliseconds;
     let closest = timelineData.timeline[0];
     let closestDiff = Math.abs(new Date(closest.time).valueOf() - nowMs);
@@ -80,7 +78,7 @@ export default function Today({
       }
     }
     return closest.level;
-  }, [isReference, timelineData, now]);
+  }, [timelineData, now]);
 
   return (
     <div className="space-y-4 tabular-nums">
