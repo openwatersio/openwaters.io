@@ -40,19 +40,19 @@ import { Icon } from "astro-icon/components";
         <!-- Quick Stats -->
         <div class="mb-16 grid grid-cols-2 gap-4 md:grid-cols-4">
           <Card class="text-center">
-            <div class="mb-1 text-3xl font-bold text-ocean-600">
+            <div class="text-ocean-600 mb-1 text-3xl font-bold">
               {stations.length}
             </div>
-            <div class="text-sm text-navy-600">Stations</div>
+            <div class="text-navy-600 text-sm">Stations</div>
           </Card>
           <Card class="text-center">
-            <div class="mb-1 text-3xl font-bold text-ocean-600">
+            <div class="text-ocean-600 mb-1 text-3xl font-bold">
               {new Set(stations.map((s) => s.country)).size}
             </div>
-            <div class="text-sm text-navy-600">Countries</div>
+            <div class="text-navy-600 text-sm">Countries</div>
           </Card>
           <Card class="text-center">
-            <div class="mb-1 text-3xl font-bold text-ocean-600">
+            <div class="text-ocean-600 mb-1 text-3xl font-bold">
               {
                 new Set(
                   stations.flatMap((s) =>
@@ -61,11 +61,11 @@ import { Icon } from "astro-icon/components";
                 ).size
               }
             </div>
-            <div class="text-sm text-navy-600">Constituents</div>
+            <div class="text-navy-600 text-sm">Constituents</div>
           </Card>
           <Card class="text-center">
-            <div class="mb-1 text-3xl font-bold text-ocean-600">100%</div>
-            <div class="text-sm text-navy-600">Open Data</div>
+            <div class="text-ocean-600 mb-1 text-3xl font-bold">100%</div>
+            <div class="text-navy-600 text-sm">Open Data</div>
           </Card>
         </div>
       </div>
@@ -75,7 +75,7 @@ import { Icon } from "astro-icon/components";
         <h2 class="mb-6 text-3xl font-semibold">Data Sources</h2>
         <div class="space-y-4">
           <div class="flex items-start gap-3">
-            <div class="mt-1 rounded-full bg-ocean-600 p-2 text-white">
+            <div class="bg-ocean-600 mt-1 rounded-full p-2 text-white">
               <svg
                 class="size-4"
                 fill="none"
@@ -106,7 +106,7 @@ import { Icon } from "astro-icon/components";
           </div>
 
           <div class="flex items-start gap-3">
-            <div class="mt-1 rounded-full bg-ocean-600 p-2 text-white">
+            <div class="bg-ocean-600 mt-1 rounded-full p-2 text-white">
               <svg
                 class="size-4"
                 fill="none"
@@ -156,12 +156,12 @@ import { Icon } from "astro-icon/components";
               </div>
               <div>
                 <h3 class="mb-2 text-lg font-semibold">GitHub Repository</h3>
-                <p class="mb-3 text-sm text-navy-600">
+                <p class="text-navy-600 mb-3 text-sm">
                   Browse the full database, make improvements, or add new
                   sources through our GitHub repository.
                 </p>
                 <span
-                  class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
+                  class="text-ocean-600 hover:text-ocean-700 inline-flex items-center gap-1 text-sm font-medium"
                 >
                   View on GitHub
                   <svg
@@ -205,12 +205,12 @@ import { Icon } from "astro-icon/components";
               </div>
               <div>
                 <h3 class="mb-2 text-lg font-semibold">Direct Download</h3>
-                <p class="mb-3 text-sm text-navy-600">
+                <p class="text-navy-600 mb-3 text-sm">
                   Download the complete database as JSON or CSV files for
                   offline use or integration into your own applications.
                 </p>
                 <span
-                  class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
+                  class="text-ocean-600 hover:text-ocean-700 inline-flex items-center gap-1 text-sm font-medium"
                 >
                   Download Data
                   <svg
@@ -250,12 +250,12 @@ import { Icon } from "astro-icon/components";
               </div>
               <div>
                 <h3 class="mb-2 text-lg font-semibold">Interactive Map</h3>
-                <p class="mb-3 text-sm text-navy-600">
+                <p class="text-navy-600 mb-3 text-sm">
                   Explore stations visually on our interactive map, filter by
                   type and source, and view detailed information.
                 </p>
                 <span
-                  class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
+                  class="text-ocean-600 hover:text-ocean-700 inline-flex items-center gap-1 text-sm font-medium"
                 >
                   Browse Stations
                   <svg
@@ -294,12 +294,12 @@ import { Icon } from "astro-icon/components";
               </div>
               <div>
                 <h3 class="mb-2 text-lg font-semibold">API Access</h3>
-                <p class="mb-3 text-sm text-navy-600">
+                <p class="text-navy-600 mb-3 text-sm">
                   Query stations and retrieve harmonic data programmatically
                   through our RESTful API.
                 </p>
                 <span
-                  class="inline-flex items-center gap-1 text-sm font-medium text-ocean-600 hover:text-ocean-700"
+                  class="text-ocean-600 hover:text-ocean-700 inline-flex items-center gap-1 text-sm font-medium"
                 >
                   View API Docs
                   <svg
@@ -323,13 +323,13 @@ import { Icon } from "astro-icon/components";
 
       <!-- Contributing -->
       <Card
-        class="border-0 bg-gradient-to-r from-ocean-600 to-ocean-700 text-white"
+        class="from-ocean-600 to-ocean-700 border-0 bg-linear-to-r text-white"
       >
         <div class="text-center">
           <h2 class="mb-4 text-3xl font-semibold text-white">
             Contribute to the Database
           </h2>
-          <p class="mb-6 text-xl text-ocean-50">
+          <p class="text-ocean-50 mb-6 text-xl">
             Help improve the tide database by contributing station data,
             corrections, or enhancements. All contributions are welcome!
           </p>
@@ -337,7 +337,7 @@ import { Icon } from "astro-icon/components";
             href="https://github.com/neaps/tide-database"
             target="_blank"
             rel="noopener noreferrer"
-            class="btn bg-white text-ocean-700 hover:bg-ocean-50"
+            class="btn text-ocean-700 hover:bg-ocean-50 bg-white"
           >
             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
               <path

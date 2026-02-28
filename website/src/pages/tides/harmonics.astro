@@ -37,10 +37,10 @@ import { TideChart } from "../../components/tides/TideCharts";
         constituent" for Monterey, California during the first week of January
         2018:
       </p>
-      <div class="rounded-lg bg-navy-50 p-4">
+      <div class="bg-navy-50 rounded-lg p-4">
         <TideChart type="single" />
       </div>
-      <p class="mt-4 text-navy-600">
+      <p class="text-navy-600 mt-4">
         If this constituent, which measures the regular effect of the moon on
         water levels, were the only one that affected the tides, then tides
         would go up and down in a regular pattern.
@@ -52,7 +52,7 @@ import { TideChart } from "../../components/tides/TideCharts";
         complicated. To simplify, let's take just four constituents and plot
         them for the same location:
       </p>
-      <div class="rounded-lg bg-navy-50 p-4">
+      <div class="bg-navy-50 rounded-lg p-4">
         <TideChart type="multiple" />
       </div>
 
@@ -60,7 +60,7 @@ import { TideChart } from "../../components/tides/TideCharts";
       <p>
         Just for fun, let's take a look at <strong>all</strong> the defined constituents:
       </p>
-      <div class="rounded-lg bg-navy-50 p-4">
+      <div class="bg-navy-50 rounded-lg p-4">
         <TideChart type="all" />
       </div>
 
@@ -69,7 +69,7 @@ import { TideChart } from "../../components/tides/TideCharts";
         If we add all these constituents together, they cancel each other or
         amplify each other, leading to an accurate tide prediction:
       </p>
-      <div class="rounded-lg bg-navy-50 p-4">
+      <div class="bg-navy-50 rounded-lg p-4">
         <TideChart type="combined" />
       </div>
 
@@ -78,23 +78,23 @@ import { TideChart } from "../../components/tides/TideCharts";
         Each tidal constituent is defined by three key properties that determine
         its contribution to the overall tide prediction:
       </p>
-      <ul class="space-y-3 text-navy-600">
+      <ul class="text-navy-600 space-y-3">
         <li class="flex items-start gap-2">
-          <span class="mt-1 text-ocean-600">•</span>
+          <span class="text-ocean-600 mt-1">•</span>
           <span>
             <strong>Amplitude:</strong> The strength of this constituent's effect
             on water levels, typically measured in meters or feet.
           </span>
         </li>
         <li class="flex items-start gap-2">
-          <span class="mt-1 text-ocean-600">•</span>
+          <span class="text-ocean-600 mt-1">•</span>
           <span>
             <strong>Phase (Epoch):</strong> The timing offset relative to an astronomical
             reference, measured in degrees.
           </span>
         </li>
         <li class="flex items-start gap-2">
-          <span class="mt-1 text-ocean-600">•</span>
+          <span class="text-ocean-600 mt-1">•</span>
           <span>
             <strong>Speed:</strong> How quickly this constituent oscillates, measured
             in degrees per hour.
@@ -166,7 +166,7 @@ import { TideChart } from "../../components/tides/TideCharts";
       <!-- CTA -->
     </div>
     <Card
-      class="mx-auto mt-12 max-w-3xl space-y-4 border-0 bg-gradient-to-b from-ocean-600 to-ocean-700 text-center text-white"
+      class="from-ocean-600 to-ocean-700 mx-auto mt-12 max-w-3xl space-y-4 border-0 bg-linear-to-b text-center text-white"
     >
       <h2 class="text-3xl font-semibold text-white">
         How OpenWaters.io Predicts Tides
@@ -185,7 +185,7 @@ import { TideChart } from "../../components/tides/TideCharts";
       <div class="flex flex-wrap justify-center gap-4">
         <a
           href="/tides/database"
-          class="btn bg-white text-ocean-700 hover:bg-ocean-50"
+          class="btn text-ocean-700 hover:bg-ocean-50 bg-white"
         >
           <svg
             class="h-5 w-5"
@@ -204,7 +204,7 @@ import { TideChart } from "../../components/tides/TideCharts";
         </a>
         <a
           href="/tides/neaps"
-          class="btn bg-ocean-800 text-white hover:bg-ocean-900"
+          class="btn bg-ocean-800 hover:bg-ocean-900 text-white"
         >
           Explore Neaps
         </a>

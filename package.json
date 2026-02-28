@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@neaps/api": "^0.4.0",
+    "@neaps/react": "https://pkg.pr.new/openwatersio/neaps/@neaps/react@4ef1d35",
     "@neaps/tide-database": "^0.6.20260220",
     "@neaps/tide-predictor": "^0.8.0",
     "neaps": "^0.6.0"

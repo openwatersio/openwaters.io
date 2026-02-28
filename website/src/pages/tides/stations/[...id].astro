@@ -3,9 +3,8 @@ import MainLayout from "../../../layouts/MainLayout.astro";
 import Container from "../../../components/ui/Container.astro";
 import Card from "../../../components/ui/Card.astro";
 import type { Station } from "@neaps/tide-database";
-import { TideStation } from "../../../components/tides/TideStation";
-import { StationMap } from "../../../components/tides/StationMap";
-import { CoordinateFormat } from "coordinate-format";
+import { TideStationIsland } from "../../../components/tides/TideStationIsland";
+import { NearbyStationsIsland } from "../../../components/tides/NearbyStations";
 import { Icon } from "astro-icon/components";
 import { API_HOST } from "../../../utils/constants";
 
@@ -17,8 +16,6 @@ if (!response.ok) {
   return new Response(null, { status: 404 });
 }
 const station: Station = await response.json();
-
-const coordFormat = new CoordinateFormat();
 
 let referenceStation: Station | null = null;
 if (station.offsets?.reference) {
@@ -35,25 +32,14 @@ if (station.offsets?.reference) {
   <Container class="py-16">
     <div class="mx-auto grid max-w-5xl gap-8 lg:grid-cols-3">
       {/* Main content */}
-      <div class="space-y-8 lg:col-span-2">
-        <div class="mb-4">
+      <div class="space-y-4 lg:col-span-2">
+        <div>
           <a
             href="/tides/stations"
-            class="inline-block text-ocean-600 hover:text-ocean-700"
+            class="text-ocean-600 hover:text-ocean-700 inline-block"
           >
             ← Back to stations
           </a>
-
-          <h1 class="mb-0 text-4xl">{station.name}</h1>
-          <p class="text-slate-500">
-            {[station.region, station.country].filter(Boolean).join(", ")}
-          </p>
-          <div>
-            <p class="text-xs text-slate-500">
-              {coordFormat.latitude(station.latitude)},
-              {coordFormat.longitude(station.longitude)}
-            </p>
-          </div>
         </div>
 
         {
@@ -69,14 +55,12 @@ if (station.offsets?.reference) {
             )
         }
 
-        <Card>
-          <TideStation client:load station={station} />
-        </Card>
+        <TideStationIsland client:load id={station.id} />
 
         <Card>
           <section>
             <div
-              class="mb-6 flex items-center justify-between gap-8 border-b border-navy-200 pb-4"
+              class="border-navy-200 mb-6 flex items-center justify-between gap-8 border-b pb-4"
             >
               <div>
                 <h3 class="text-xl">Station Data</h3>
@@ -157,7 +141,7 @@ if (station.offsets?.reference) {
                       {station.offsets.height.type === "ratio" ? "x" : "m"},
                       Low: {station.offsets.height.low}
                       {station.offsets.height.type === "ratio" ? "x" : "m"}
-                      <span class="ml-1 text-navy-500">
+                      <span class="text-navy-500 ml-1">
                         ({station.offsets.height.type})
                       </span>
                     </dd>
@@ -196,7 +180,7 @@ if (station.offsets?.reference) {
         <Card>
           <section>
             <div
-              class="mb-6 flex items-center justify-between gap-8 border-b border-navy-100 pb-4"
+              class="border-navy-100 mb-6 flex items-center justify-between gap-8 border-b pb-4"
             >
               <div>
                 <h3 class="text-xl">API</h3>
@@ -213,30 +197,30 @@ if (station.offsets?.reference) {
 
             <div class="space-y-4">
               <div>
-                <h4 class="mb-2 text-sm font-semibold text-navy-600">
+                <h4 class="text-navy-600 mb-2 text-sm font-semibold">
                   Get station info
                 </h4>
                 <div class="flex items-center gap-3">
                   <span
-                    class="rounded bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
+                    class="rounded-sm bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
                     >GET</span
                   >
-                  <span class="font-mono text-sm text-navy-900"
+                  <span class="text-navy-900 font-mono text-sm"
                     >{API_HOST}/tides/stations/{station.id}</span
                   >
                 </div>
               </div>
 
               <div>
-                <h4 class="mb-2 text-sm font-semibold text-navy-600">
+                <h4 class="text-navy-600 mb-2 text-sm font-semibold">
                   Get tide extremes (high/low)
                 </h4>
                 <div class="flex items-center gap-3">
                   <span
-                    class="rounded bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
+                    class="rounded-sm bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
                     >GET</span
                   >
-                  <span class="font-mono text-sm text-navy-900"
+                  <span class="text-navy-900 font-mono text-sm"
                     >{API_HOST}/tides/stations/{station.id}/extremes</span
                   >
                 </div>
@@ -247,7 +231,7 @@ if (station.offsets?.reference) {
         <Card>
           <section>
             <div
-              class="mb-6 flex items-center justify-between gap-8 border-b border-navy-100 pb-4"
+              class="border-navy-100 mb-6 flex items-center justify-between gap-8 border-b pb-4"
             >
               <div>
                 <h3 class="text-xl">JavaScript</h3>
@@ -264,19 +248,19 @@ if (station.offsets?.reference) {
 
             <div class="space-y-4">
               <div>
-                <h4 class="mb-2 text-sm font-semibold text-navy-600">
+                <h4 class="text-navy-600 mb-2 text-sm font-semibold">
                   Install
                 </h4>
                 <pre
-                  class="overflow-x-auto rounded-lg bg-navy-900 p-4 text-sm text-white"><code>npm install neaps</code></pre>
+                  class="bg-navy-900 overflow-x-auto rounded-lg p-4 text-sm text-white"><code>npm install neaps</code></pre>
               </div>
 
               <div>
-                <h4 class="mb-2 text-sm font-semibold text-navy-600">
+                <h4 class="text-navy-600 mb-2 text-sm font-semibold">
                   Get tide predictions
                 </h4>
                 <pre
-                  class="overflow-x-auto rounded-lg bg-navy-900 p-4 text-sm text-white"><code>{`import { findStation } from "neaps";
+                  class="bg-navy-900 overflow-x-auto rounded-lg p-4 text-sm text-white"><code>{`import { findStation } from "neaps";
 
 const station = findStation("${station.id}");
 
@@ -294,7 +278,12 @@ console.log(extremes);`}</code></pre>
 
       {/* Sidebar */}
       <div class="lg:col-span-1">
-        <StationMap client:load station={station} />
+        <NearbyStationsIsland
+          client:load
+          stationId={station.id}
+          latitude={station.latitude}
+          longitude={station.longitude}
+        />
       </div>
     </div>
   </Container>

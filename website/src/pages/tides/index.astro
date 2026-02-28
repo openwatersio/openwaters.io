@@ -10,7 +10,7 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
   description="Tide predictions powered by the Neaps engine, with data from thousands of stations worldwide."
 >
   <!-- Hero -->
-  <section class="bg-gradient-to-b from-ocean-50 to-white py-16">
+  <section class="from-ocean-50 bg-linear-to-b to-white py-16">
     <Container>
       <div class="mx-auto max-w-3xl text-center">
         <h1 class="mb-6">Tides</h1>
@@ -103,22 +103,22 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
   </Container>
 
   <!-- CTA Section -->
-  <section class="mt-16 bg-gradient-to-r from-ocean-600 to-ocean-700 py-16">
+  <section class="from-ocean-600 to-ocean-700 mt-16 bg-linear-to-r py-16">
     <Container>
       <div class="mx-auto max-w-3xl text-center text-white">
         <h2 class="mb-4 text-white">Start Exploring Tides</h2>
-        <p class="mb-8 text-xl text-ocean-50">
+        <p class="text-ocean-50 mb-8 text-xl">
           Find tide predictions for your favorite locations or integrate our API
           into your application.
         </p>
         <div class="flex flex-wrap justify-center gap-4">
           <a
             href="/tides/stations"
-            class="btn bg-white text-ocean-700 hover:bg-ocean-50"
+            class="btn text-ocean-700 hover:bg-ocean-50 bg-white"
           >
             Browse Stations
           </a>
-          <a href="/api" class="btn bg-ocean-800 text-white hover:bg-ocean-900">
+          <a href="/api" class="btn bg-ocean-800 hover:bg-ocean-900 text-white">
             View API Docs
           </a>
         </div>

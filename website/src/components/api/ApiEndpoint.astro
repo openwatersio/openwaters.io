@@ -36,7 +36,7 @@ const exampleResponse =
       >
         {endpoint.method}
       </span>
-      <span class="font-mono text-sm text-navy-900"
+      <span class="text-navy-900 font-mono text-sm"
         >{API_HOST}{endpoint.path}</span
       >
     </div>
@@ -61,12 +61,12 @@ const exampleResponse =
                   <th class="px-3 py-2 text-left">Description</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-navy-100">
+              <tbody class="divide-navy-100 divide-y">
                 {endpoint.parameters.map((param) => (
                   <tr>
                     <td class="px-3 py-2 font-mono">{param.name}</td>
                     <td class="px-3 py-2">
-                      <span class="rounded bg-navy-100 px-2 py-1 text-xs">
+                      <span class="bg-navy-100 rounded px-2 py-1 text-xs">
                         {param.in}
                       </span>
                     </td>
@@ -82,7 +82,7 @@ const exampleResponse =
                         <span class="text-navy-400">—</span>
                       )}
                     </td>
-                    <td class="px-3 py-2 text-navy-600">{param.description}</td>
+                    <td class="text-navy-600 px-3 py-2">{param.description}</td>
                   </tr>
                 ))}
               </tbody>
@@ -97,7 +97,7 @@ const exampleResponse =
       exampleResponse && (
         <div>
           <h4>Example Response</h4>
-          <div class="overflow-x-auto rounded-lg bg-navy-900 p-4 text-white">
+          <div class="bg-navy-900 overflow-x-auto rounded-lg p-4 text-white">
             <pre class="text-sm">
               <code>{JSON.stringify(exampleResponse, null, 2)}</code>
             </pre>
