@@ -5,6 +5,15 @@ import vercel from "@astrojs/vercel";
 
 import icon from "astro-icon";
 
+// Derive API URL for Vercel preview deployments
+if (
+  !process.env.PUBLIC_TIDES_API_URL &&
+  process.env.VERCEL_ENV === "preview" &&
+  process.env.VERCEL_BRANCH_URL
+) {
+  process.env.PUBLIC_TIDES_API_URL = `https://api-${process.env.VERCEL_BRANCH_URL}`;
+}
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://openwaters.io",
