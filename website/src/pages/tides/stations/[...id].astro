@@ -29,10 +29,10 @@ if (station.offsets?.reference) {
 ---
 
 <MainLayout title={station.name} description={`Tide station: ${station.name}`}>
-  <Container class="py-16">
+  <Container>
     <div class="mx-auto grid max-w-5xl gap-8 lg:grid-cols-3">
       {/* Main content */}
-      <div class="space-y-4 lg:col-span-2">
+      <div class="min-w-0 space-y-4 lg:col-span-2">
         <div>
           <a
             href="/tides/stations"
@@ -200,9 +200,9 @@ if (station.offsets?.reference) {
                 <h4 class="text-navy-600 mb-2 text-sm font-semibold">
                   Get station info
                 </h4>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 overflow-x-auto">
                   <span
-                    class="rounded-sm bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
+                    class="shrink-0 rounded-sm bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
                     >GET</span
                   >
                   <span class="text-navy-900 font-mono text-sm"
@@ -215,7 +215,7 @@ if (station.offsets?.reference) {
                 <h4 class="text-navy-600 mb-2 text-sm font-semibold">
                   Get tide extremes (high/low)
                 </h4>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 overflow-x-auto">
                   <span
                     class="rounded-sm bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
                     >GET</span
@@ -277,7 +277,7 @@ console.log(extremes);`}</code></pre>
       </div>
 
       {/* Sidebar */}
-      <div class="lg:col-span-1">
+      <div class="min-w-0 lg:col-span-1">
         <NearbyStationsIsland
           client:load
           stationId={station.id}
