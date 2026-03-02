@@ -10,7 +10,7 @@ import { Icon } from "astro-icon/components";
   description="Collect and share depth data from your marine vessel to contribute to crowd-sourced bathymetry programs."
 >
   <!-- Hero -->
-  <section class="from-ocean-50 bg-linear-to-b to-white py-16">
+  <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-16">
     <Container>
       <div class="mx-auto max-w-3xl text-center">
         <h1 class="mb-6">Crowd Depth</h1>
@@ -30,26 +30,26 @@ import { Icon } from "astro-icon/components";
       <div class="mb-16">
         <h2 class="mb-6 text-3xl font-semibold">What is Crowd Depth?</h2>
         <Card>
-          <p class="text-navy-600 mb-4">
+          <p class="mb-4 text-(--text-secondary)">
             Crowd Depth is an initiative to collect and share depth soundings
             from recreational and commercial vessels to improve nautical charts
             and bathymetric data. By crowdsourcing depth measurements, we can:
           </p>
-          <ul class="text-navy-600 ml-6 space-y-2">
+          <ul class="ml-6 space-y-2 text-(--text-secondary)">
             <li class="flex items-start gap-2">
-              <span class="text-ocean-600 mt-1">•</span>
+              <span class="mt-1 text-(--accent)">•</span>
               <span>Identify uncharted hazards and shallow areas</span>
             </li>
             <li class="flex items-start gap-2">
-              <span class="text-ocean-600 mt-1">•</span>
+              <span class="mt-1 text-(--accent)">•</span>
               <span>Update charts with recent depth changes</span>
             </li>
             <li class="flex items-start gap-2">
-              <span class="text-ocean-600 mt-1">•</span>
+              <span class="mt-1 text-(--accent)">•</span>
               <span>Fill gaps in existing bathymetric coverage</span>
             </li>
             <li class="flex items-start gap-2">
-              <span class="text-ocean-600 mt-1">•</span>
+              <span class="mt-1 text-(--accent)">•</span>
               <span>Make navigation safer for all mariners</span>
             </li>
           </ul>
@@ -62,12 +62,12 @@ import { Icon } from "astro-icon/components";
         <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
           <Card>
             <div
-              class="bg-ocean-100 text-ocean-700 mb-4 flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold"
+              class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-(--accent-bg-subtle) text-xl font-bold text-(--accent-hover)"
             >
               1
             </div>
             <h3 class="mb-2 text-lg font-semibold">Install Plugin</h3>
-            <p class="text-navy-600 text-sm">
+            <p class="text-sm text-(--text-secondary)">
               Install the Crowd Depth plugin for Signal K on your vessel. It
               automatically collects depth and position data while you cruise.
             </p>
@@ -75,12 +75,12 @@ import { Icon } from "astro-icon/components";
 
           <Card>
             <div
-              class="bg-ocean-100 text-ocean-700 mb-4 flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold"
+              class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-(--accent-bg-subtle) text-xl font-bold text-(--accent-hover)"
             >
               2
             </div>
             <h3 class="mb-2 text-lg font-semibold">Collect Data</h3>
-            <p class="text-navy-600 text-sm">
+            <p class="text-sm text-(--text-secondary)">
               The plugin records depth soundings along with GPS coordinates and
               timestamps as you navigate. All processing happens in the
               background.
@@ -89,12 +89,12 @@ import { Icon } from "astro-icon/components";
 
           <Card>
             <div
-              class="bg-ocean-100 text-ocean-700 mb-4 flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold"
+              class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-(--accent-bg-subtle) text-xl font-bold text-(--accent-hover)"
             >
               3
             </div>
             <h3 class="mb-2 text-lg font-semibold">Share & Contribute</h3>
-            <p class="text-navy-600 text-sm">
+            <p class="text-sm text-(--text-secondary)">
               Data is securely uploaded to participating bathymetry programs,
               where it's used to improve charts and navigation products.
             </p>
@@ -107,7 +107,7 @@ import { Icon } from "astro-icon/components";
         <h2 class="mb-6 text-3xl font-semibold">Signal K Plugin</h2>
         <Card>
           <div class="flex items-start gap-4">
-            <div class="text-ocean-600">
+            <div class="text-(--accent)">
               <svg
                 class="h-12 w-12"
                 fill="none"
@@ -126,7 +126,7 @@ import { Icon } from "astro-icon/components";
               <h3 class="mb-3 text-xl font-semibold">
                 Easy Installation on Signal K
               </h3>
-              <p class="text-navy-600 mb-4">
+              <p class="mb-4 text-(--text-secondary)">
                 If you're running Signal K on your vessel, installing Crowd
                 Depth is simple. The plugin integrates seamlessly with your
                 existing navigation system.
@@ -175,10 +175,10 @@ npm install signalk-crowd-depth</code></pre>
         <h2 class="mb-6 text-3xl font-semibold">Data Viewer</h2>
         <Card>
           <div
-            class="border-navy-200 bg-navy-50 rounded-lg border-2 border-dashed p-12 text-center"
+            class="rounded-lg border-2 border-dashed border-(--border) bg-(--surface-subtle) p-12 text-center"
           >
             <svg
-              class="text-navy-400 mx-auto mb-4 h-16 w-16"
+              class="mx-auto mb-4 h-16 w-16 text-(--text-muted)"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -190,10 +190,10 @@ npm install signalk-crowd-depth</code></pre>
                 d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
               ></path>
             </svg>
-            <h3 class="text-navy-900 mb-2 text-xl font-semibold">
+            <h3 class="mb-2 text-xl font-semibold">
               Interactive Map Coming Soon
             </h3>
-            <p class="text-navy-600 mb-4">
+            <p class="mb-4 text-(--text-secondary)">
               We're building an interactive viewer to visualize crowd-sourced
               depth data. Check back soon!
             </p>
@@ -204,25 +204,25 @@ npm install signalk-crowd-depth</code></pre>
       <!-- Privacy & Data Usage -->
       <div>
         <h2 class="mb-6 text-3xl font-semibold">Privacy & Data Usage</h2>
-        <Card class="border-ocean-200 bg-ocean-50">
+        <Card class="border-(--accent) bg-(--accent-bg)">
           <div class="space-y-4">
             <div>
               <h3 class="mb-2 font-semibold">Your Data, Your Control</h3>
-              <p class="text-navy-600 text-sm">
+              <p class="text-sm text-(--text-secondary)">
                 You maintain full control over what data is collected and
                 shared. The plugin allows you to:
               </p>
-              <ul class="text-navy-600 mt-2 ml-6 space-y-1 text-sm">
+              <ul class="mt-2 ml-6 space-y-1 text-sm text-(--text-secondary)">
                 <li class="flex items-start gap-2">
-                  <span class="text-ocean-600">•</span>
+                  <span class="text-(--accent)">•</span>
                   <span>Enable or disable data collection at any time</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="text-ocean-600">•</span>
+                  <span class="text-(--accent)">•</span>
                   <span>Choose which bathymetry programs to share with</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="text-ocean-600">•</span>
+                  <span class="text-(--accent)">•</span>
                   <span>Review data before submission</span>
                 </li>
               </ul>
@@ -230,7 +230,7 @@ npm install signalk-crowd-depth</code></pre>
 
             <div>
               <h3 class="mb-2 font-semibold">Open Data for All</h3>
-              <p class="text-navy-600 text-sm">
+              <p class="text-sm text-(--text-secondary)">
                 Contributed data is shared under open licenses and made
                 available to hydrographic offices, chart makers, and navigation
                 app developers to improve products for all mariners.

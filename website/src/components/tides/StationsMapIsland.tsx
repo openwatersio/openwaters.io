@@ -4,15 +4,14 @@ import "@neaps/react/styles.css";
 import { API_HOST } from "../../utils/constants";
 import { preferredUnits } from "../../utils/units";
 import { BottomDrawer } from "../ui/BottomDrawer";
-
-const MAP_STYLE =
-  "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
+import { useMapStyle } from "../../utils/useMapStyle";
 
 interface Props {
   children?: ReactNode;
 }
 
 export function StationsMapIsland({ children }: Props) {
+  const mapStyle = useMapStyle();
   const handleStationSelect = useCallback((station: { id: string }) => {
     window.location.href = `/tides/stations/${station.id}`;
   }, []);
@@ -22,7 +21,7 @@ export function StationsMapIsland({ children }: Props) {
       {/* Inline height so h-full on StationsMap resolves; calc subtracts the fixed header */}
       <div className="absolute inset-0 h-full w-full">
         <StationsMap
-          mapStyle={MAP_STYLE}
+          mapStyle={mapStyle}
           initialViewState={{
             longitude: -60,
             latitude: 20,

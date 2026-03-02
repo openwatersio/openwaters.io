@@ -45,7 +45,10 @@ if (station.offsets?.reference) {
         {
           station.disclaimers &&
             station.disclaimers !== "No obvious issues" && (
-              <div class="mb-4 flex items-center gap-3 rounded border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+              <div
+                class="mb-4 flex items-center gap-3 rounded border p-4 text-sm"
+                style="background-color: var(--status-red-bg); color: var(--status-red-text); border-color: var(--status-red-border);"
+              >
                 <Icon
                   name="mdi:alert-circle-outline"
                   class="mt-0.5 h-5 w-5 shrink-0"
@@ -60,7 +63,7 @@ if (station.offsets?.reference) {
         <Card>
           <section>
             <div
-              class="border-navy-200 mb-6 flex items-center justify-between gap-8 border-b pb-4"
+              class="mb-6 flex items-center justify-between gap-8 border-b border-(--border) pb-4"
             >
               <div>
                 <h3 class="text-xl">Station Data</h3>
@@ -106,7 +109,7 @@ if (station.offsets?.reference) {
                 </a>
                 {
                   !station.license.commercial_use && (
-                    <span class="ml-2 rounded bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800">
+                    <span class="ml-2 rounded bg-(--status-yellow-bg) px-2 py-0.5 text-xs text-(--status-yellow-text)">
                       Non-commercial
                     </span>
                   )
@@ -117,7 +120,9 @@ if (station.offsets?.reference) {
                 station.license.notes && (
                   <>
                     <dt>License Notes</dt>
-                    <dd class="text-navy-600">{station.license.notes}</dd>
+                    <dd class="text-(--text-secondary)">
+                      {station.license.notes}
+                    </dd>
                   </>
                 )
               }
@@ -141,7 +146,7 @@ if (station.offsets?.reference) {
                       {station.offsets.height.type === "ratio" ? "x" : "m"},
                       Low: {station.offsets.height.low}
                       {station.offsets.height.type === "ratio" ? "x" : "m"}
-                      <span class="text-navy-500 ml-1">
+                      <span class="ml-1 text-(--text-muted)">
                         ({station.offsets.height.type})
                       </span>
                     </dd>
@@ -180,7 +185,7 @@ if (station.offsets?.reference) {
         <Card>
           <section>
             <div
-              class="border-navy-100 mb-6 flex items-center justify-between gap-8 border-b pb-4"
+              class="mb-6 flex items-center justify-between gap-8 border-b border-(--border-subtle) pb-4"
             >
               <div>
                 <h3 class="text-xl">API</h3>
@@ -197,30 +202,30 @@ if (station.offsets?.reference) {
 
             <div class="space-y-4">
               <div>
-                <h4 class="text-navy-600 mb-2 text-sm font-semibold">
+                <h4 class="mb-2 text-sm font-semibold text-(--text-secondary)">
                   Get station info
                 </h4>
                 <div class="flex items-center gap-3 overflow-x-auto">
                   <span
-                    class="shrink-0 rounded-sm bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
+                    class="shrink-0 rounded-sm bg-(--status-green-bg) px-2 py-1 text-xs font-bold text-(--status-green-text)"
                     >GET</span
                   >
-                  <span class="text-navy-900 font-mono text-sm"
+                  <span class="font-mono text-sm"
                     >{API_HOST}/tides/stations/{station.id}</span
                   >
                 </div>
               </div>
 
               <div>
-                <h4 class="text-navy-600 mb-2 text-sm font-semibold">
+                <h4 class="mb-2 text-sm font-semibold text-(--text-secondary)">
                   Get tide extremes (high/low)
                 </h4>
                 <div class="flex items-center gap-3 overflow-x-auto">
                   <span
-                    class="rounded-sm bg-green-100 px-2 py-1 text-xs font-bold text-green-800"
+                    class="rounded-sm bg-(--status-green-bg) px-2 py-1 text-xs font-bold text-(--status-green-text)"
                     >GET</span
                   >
-                  <span class="text-navy-900 font-mono text-sm"
+                  <span class="font-mono text-sm"
                     >{API_HOST}/tides/stations/{station.id}/extremes</span
                   >
                 </div>
@@ -231,7 +236,7 @@ if (station.offsets?.reference) {
         <Card>
           <section>
             <div
-              class="border-navy-100 mb-6 flex items-center justify-between gap-8 border-b pb-4"
+              class="mb-6 flex items-center justify-between gap-8 border-b border-(--border-subtle) pb-4"
             >
               <div>
                 <h3 class="text-xl">JavaScript</h3>
@@ -248,7 +253,7 @@ if (station.offsets?.reference) {
 
             <div class="space-y-4">
               <div>
-                <h4 class="text-navy-600 mb-2 text-sm font-semibold">
+                <h4 class="mb-2 text-sm font-semibold text-(--text-secondary)">
                   Install
                 </h4>
                 <pre
@@ -256,7 +261,7 @@ if (station.offsets?.reference) {
               </div>
 
               <div>
-                <h4 class="text-navy-600 mb-2 text-sm font-semibold">
+                <h4 class="mb-2 text-sm font-semibold text-(--text-secondary)">
                   Get tide predictions
                 </h4>
                 <pre

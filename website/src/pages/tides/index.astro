@@ -10,7 +10,7 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
   description="Tide predictions powered by the Neaps engine, with data from thousands of stations worldwide."
 >
   <!-- Hero -->
-  <section class="from-ocean-50 bg-linear-to-b to-white py-16">
+  <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-16">
     <Container>
       <div class="mx-auto max-w-3xl text-center">
         <h1 class="mb-6">Tides</h1>
@@ -67,7 +67,7 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
         </h2>
         <Card>
           <div class="prose prose-lg max-w-none">
-            <p class="text-navy-600">
+            <p class="text-(--text-secondary)">
               Tide predictions are calculated using harmonic analysis, a method
               that breaks down the complex tidal signal into a series of simple
               wave components called

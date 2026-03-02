@@ -9,9 +9,7 @@ import type { MapRef } from "react-map-gl/maplibre";
 import "@neaps/react/styles.css";
 import { API_HOST } from "../../utils/constants";
 import { preferredUnits } from "../../utils/units";
-
-const MAP_STYLE =
-  "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
+import { useMapStyle } from "../../utils/useMapStyle";
 
 interface Props {
   stationId: string;
@@ -24,6 +22,7 @@ export function NearbyStationsIsland({
   latitude,
   longitude,
 }: Props) {
+  const mapStyle = useMapStyle();
   const mapRef = useRef<MapRef>(null);
 
   const handleStationSelect = useCallback((station: StationSummary) => {
@@ -43,7 +42,7 @@ export function NearbyStationsIsland({
       <div className="flex flex-col gap-4">
         <StationsMap
           ref={mapRef}
-          mapStyle={MAP_STYLE}
+          mapStyle={mapStyle}
           initialViewState={{
             longitude,
             latitude,
@@ -54,7 +53,7 @@ export function NearbyStationsIsland({
           showGeolocation={false}
           popupContent="simple"
           onStationSelect={handleStationSelect}
-          className="border-navy-200 aspect-video w-full overflow-hidden rounded-lg border"
+          className="aspect-video w-full overflow-hidden rounded-lg border border-(--border)"
         />
         <NearbyStations
           stationId={stationId}

@@ -42,21 +42,79 @@
   --color-coral-900: #7f1d1d;
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
+/* Semantic color tokens — automatically flip for dark mode */
+:root {
+  --surface: #ffffff;
+  --surface-subtle: var(--color-navy-50);
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --text: var(--color-navy-900);
+  --text-secondary: var(--color-navy-600);
+  --text-muted: var(--color-navy-500);
+  --border: var(--color-navy-200);
+  --border-subtle: var(--color-navy-100);
+  --accent: var(--color-ocean-600);
+  --accent-hover: var(--color-ocean-700);
+  --accent-bg: var(--color-ocean-50);
+  --accent-bg-subtle: var(--color-ocean-100);
+  --hero-from: var(--color-ocean-50);
+  --hero-to: #ffffff;
+  --shadow: rgba(226, 232, 240, 0.5);
 
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
+  /* Status colors */
+  --status-green-bg: #dcfce7;
+  --status-green-text: #166534;
+  --status-red-bg: #fef2f2;
+  --status-red-text: #991b1b;
+  --status-red-border: #fecaca;
+  --status-yellow-bg: #fefce8;
+  --status-yellow-text: #854d0e;
+  --status-blue-bg: #dbeafe;
+  --status-blue-text: #1e40af;
+  --status-orange-bg: #fff7ed;
+  --status-orange-text: #9a3412;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --surface: var(--color-navy-900);
+    --surface-subtle: var(--color-navy-800);
+    --surface-glass: rgba(15, 23, 42, 0.7);
+    --text: var(--color-navy-100);
+    --text-secondary: var(--color-navy-300);
+    --text-muted: var(--color-navy-400);
+    --border: var(--color-navy-700);
+    --border-subtle: var(--color-navy-700);
+    --accent: var(--color-ocean-400);
+    --accent-hover: var(--color-ocean-300);
+    --accent-bg: var(--color-ocean-950);
+    --accent-bg-subtle: var(--color-ocean-900);
+    --hero-from: var(--color-navy-900);
+    --hero-to: var(--color-navy-950);
+    --shadow: rgba(0, 0, 0, 0.3);
+
+    /* Status colors — lower opacity backgrounds, lighter text */
+    --status-green-bg: rgba(22, 101, 52, 0.2);
+    --status-green-text: #86efac;
+    --status-red-bg: rgba(153, 27, 27, 0.2);
+    --status-red-text: #fca5a5;
+    --status-red-border: rgba(153, 27, 27, 0.3);
+    --status-yellow-bg: rgba(133, 77, 14, 0.2);
+    --status-yellow-text: #fde047;
+    --status-blue-bg: rgba(30, 64, 175, 0.2);
+    --status-blue-text: #93c5fd;
+    --status-orange-bg: rgba(154, 52, 18, 0.2);
+    --status-orange-text: #fdba74;
+  }
+}
+
 @layer base {
   *,
   ::after,
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: var(--border);
   }
 }
 
@@ -65,15 +123,27 @@
 }
 
 @utility btn-primary {
-  @apply bg-ocean-600 hover:bg-ocean-700 focus:ring-ocean-500 text-white focus:ring-2 focus:ring-offset-2 focus:outline-hidden;
+  background-color: var(--accent);
+  color: white;
+  @apply focus:ring-2 focus:ring-offset-2 focus:outline-hidden;
+  &:hover {
+    background-color: var(--accent-hover);
+  }
 }
 
 @utility btn-secondary {
-  @apply bg-navy-100 text-navy-900 hover:bg-navy-200 focus:ring-navy-500 focus:ring-2 focus:ring-offset-2 focus:outline-hidden;
+  background-color: var(--surface-subtle);
+  color: var(--text);
+  @apply focus:ring-2 focus:ring-offset-2 focus:outline-hidden;
 }
 
 @utility btn-outline {
-  @apply border-ocean-600 text-ocean-600 hover:bg-ocean-50 focus:ring-ocean-500 border-2 focus:ring-2 focus:ring-offset-2 focus:outline-hidden;
+  border-color: var(--accent);
+  color: var(--accent);
+  @apply border-2 focus:ring-2 focus:ring-offset-2 focus:outline-hidden;
+  &:hover {
+    background-color: var(--accent-bg);
+  }
 }
 
 @utility container-custom {
@@ -81,7 +151,9 @@
 }
 
 @utility card {
-  @apply border-navy-100 rounded-lg border bg-white p-6 shadow-md;
+  background-color: var(--surface);
+  border-color: var(--border-subtle);
+  @apply rounded-lg border p-6 shadow-md;
 }
 
 @utility card-hover {
@@ -89,7 +161,8 @@
 }
 
 @utility card-glass {
-  @apply rounded-lg bg-white/70 p-6 shadow-md backdrop-blur-lg;
+  background-color: var(--surface-glass);
+  @apply rounded-lg p-6 shadow-md backdrop-blur-lg;
 }
 
 @utility text-balance {
@@ -98,7 +171,9 @@
 
 @layer base {
   body {
-    @apply text-navy-900 bg-white antialiased;
+    background-color: var(--surface);
+    color: var(--text);
+    @apply antialiased;
   }
 
   header {
@@ -108,7 +183,9 @@
 
   header.scrolled,
   .fullscreen header {
-    @apply shadow-navy-200/50 bg-white/70 shadow-md backdrop-blur-lg;
+    background-color: var(--surface-glass);
+    box-shadow: 0 4px 6px -1px var(--shadow);
+    @apply shadow-md backdrop-blur-lg;
   }
 
   main,
@@ -122,7 +199,8 @@
   h4,
   h5,
   h6 {
-    @apply text-navy-900 font-semibold text-balance;
+    color: var(--text);
+    @apply font-semibold text-balance;
   }
 
   h1 {
@@ -150,11 +228,16 @@
   }
 
   .text-lead {
-    @apply text-navy-600 text-2xl text-balance;
+    color: var(--text-secondary);
+    @apply text-2xl text-balance;
   }
 
   a {
-    @apply text-ocean-600 hover:text-ocean-700 transition-colors;
+    color: var(--accent);
+    @apply transition-colors;
+  }
+  a:hover {
+    color: var(--accent-hover);
   }
 
   p {
@@ -166,7 +249,8 @@
   }
 
   dt {
-    @apply text-navy-600 font-semibold;
+    color: var(--text-secondary);
+    @apply font-semibold;
   }
 
   dd {
@@ -174,17 +258,25 @@
   }
 }
 
-/* @neaps/react theme overrides to match website's ocean/navy palette */
-:root {
-  --neaps-primary: #0284c7; /* ocean-600 */
-  --neaps-high: #0ea5e9; /* ocean-500 */
-  --neaps-low: #f59e0b; /* amber-500 */
-  --neaps-secondary: #facc15; /* amber/yellow for subordinate stations */
-  --neaps-bg: #ffffff;
-  --neaps-bg-subtle: #f8fafc; /* navy-50 */
-  --neaps-text: #0f172a; /* navy-900 */
-  --neaps-text-muted: #64748b; /* navy-500 */
-  --neaps-border: #e2e8f0; /* navy-200 */
+/* Prose dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  .prose {
+    --tw-prose-body: var(--color-navy-300);
+    --tw-prose-headings: var(--color-navy-100);
+    --tw-prose-links: var(--color-ocean-400);
+    --tw-prose-bold: var(--color-navy-100);
+    --tw-prose-counters: var(--color-navy-400);
+    --tw-prose-bullets: var(--color-navy-400);
+    --tw-prose-hr: var(--color-navy-700);
+    --tw-prose-quotes: var(--color-navy-300);
+    --tw-prose-quote-borders: var(--color-navy-700);
+    --tw-prose-captions: var(--color-navy-400);
+    --tw-prose-code: var(--color-navy-200);
+    --tw-prose-pre-code: var(--color-navy-200);
+    --tw-prose-pre-bg: var(--color-navy-800);
+    --tw-prose-th-borders: var(--color-navy-600);
+    --tw-prose-td-borders: var(--color-navy-700);
+  }
 }
 
 /* MapLibre controls offset for fixed header */

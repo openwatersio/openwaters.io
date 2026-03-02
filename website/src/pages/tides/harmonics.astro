@@ -37,10 +37,10 @@ import { TideChart } from "../../components/tides/TideCharts";
         constituent" for Monterey, California during the first week of January
         2018:
       </p>
-      <div class="bg-navy-50 rounded-lg p-4">
+      <div class="rounded-lg bg-(--surface-subtle) p-4">
         <TideChart type="single" />
       </div>
-      <p class="text-navy-600 mt-4">
+      <p class="mt-4 text-(--text-secondary)">
         If this constituent, which measures the regular effect of the moon on
         water levels, were the only one that affected the tides, then tides
         would go up and down in a regular pattern.
@@ -52,7 +52,7 @@ import { TideChart } from "../../components/tides/TideCharts";
         complicated. To simplify, let's take just four constituents and plot
         them for the same location:
       </p>
-      <div class="bg-navy-50 rounded-lg p-4">
+      <div class="rounded-lg bg-(--surface-subtle) p-4">
         <TideChart type="multiple" />
       </div>
 
@@ -60,7 +60,7 @@ import { TideChart } from "../../components/tides/TideCharts";
       <p>
         Just for fun, let's take a look at <strong>all</strong> the defined constituents:
       </p>
-      <div class="bg-navy-50 rounded-lg p-4">
+      <div class="rounded-lg bg-(--surface-subtle) p-4">
         <TideChart type="all" />
       </div>
 
@@ -69,7 +69,7 @@ import { TideChart } from "../../components/tides/TideCharts";
         If we add all these constituents together, they cancel each other or
         amplify each other, leading to an accurate tide prediction:
       </p>
-      <div class="bg-navy-50 rounded-lg p-4">
+      <div class="rounded-lg bg-(--surface-subtle) p-4">
         <TideChart type="combined" />
       </div>
 
@@ -78,23 +78,23 @@ import { TideChart } from "../../components/tides/TideCharts";
         Each tidal constituent is defined by three key properties that determine
         its contribution to the overall tide prediction:
       </p>
-      <ul class="text-navy-600 space-y-3">
+      <ul class="space-y-3 text-(--text-secondary)">
         <li class="flex items-start gap-2">
-          <span class="text-ocean-600 mt-1">•</span>
+          <span class="mt-1 text-(--accent)">•</span>
           <span>
             <strong>Amplitude:</strong> The strength of this constituent's effect
             on water levels, typically measured in meters or feet.
           </span>
         </li>
         <li class="flex items-start gap-2">
-          <span class="text-ocean-600 mt-1">•</span>
+          <span class="mt-1 text-(--accent)">•</span>
           <span>
             <strong>Phase (Epoch):</strong> The timing offset relative to an astronomical
             reference, measured in degrees.
           </span>
         </li>
         <li class="flex items-start gap-2">
-          <span class="text-ocean-600 mt-1">•</span>
+          <span class="mt-1 text-(--accent)">•</span>
           <span>
             <strong>Speed:</strong> How quickly this constituent oscillates, measured
             in degrees per hour.
@@ -105,13 +105,13 @@ import { TideChart } from "../../components/tides/TideCharts";
       <!-- Where Constituents Come From -->
       <h2>Where Tidal Constituents Come From</h2>
       <h3>Harmonic Analysis</h3>
-      <p class="text-navy-600">
+      <p class="text-(--text-secondary)">
         Tidal constituents are derived by running harmonic analysis on observed
         water levels. This involves fitting sinusoidal functions to historical
         tide gauge data to extract the amplitude and phase of each constituent.
       </p>
       <h3>Published Data</h3>
-      <p class="text-navy-600">
+      <p class="text-(--text-secondary)">
         Some agencies, like NOAA, publish tidal constituents that are available
         on their website and via an API. Other agencies do not provide
         constituents directly, but do provide data on observed water levels that

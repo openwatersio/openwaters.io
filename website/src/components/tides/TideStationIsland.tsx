@@ -15,7 +15,7 @@ class ErrorBoundary extends Component<
   render() {
     if (this.state.error) {
       return (
-        <div className="rounded border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <div className="rounded border border-(--status-red-border) bg-(--status-red-bg) p-4 text-sm text-(--status-red-text)">
           <strong>Error loading tide station:</strong>{" "}
           {(this.state.error as Error).message}
         </div>

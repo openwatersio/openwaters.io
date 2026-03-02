@@ -11,10 +11,12 @@ import Feature from "../../../components/ui/Feature.astro";
 >
   <StationsMapIsland client:only="react">
     <div class="card-glass overflow-hidden rounded-3xl p-0">
-      <h6 class="px-4 pt-3 pb-1 text-base text-slate-500">Developer Tools</h6>
-      <ul class="divide-navy-200 divide-y">
+      <h6 class="px-4 pt-3 pb-1 text-base text-(--text-muted)">
+        Developer Tools
+      </h6>
+      <ul class="divide-y divide-(--border)">
         <li>
-          <a class="hover:bg-ocean-200/50 block px-4 py-3" href="/api">
+          <a class="block px-4 py-3 hover:bg-(--accent-bg)" href="/api">
             <Feature
               title="API"
               description="Station data and predictions via a REST API."
@@ -24,7 +26,7 @@ import Feature from "../../../components/ui/Feature.astro";
         </li>
 
         <li>
-          <a class="hover:bg-ocean-200/50 block px-4 py-3" href="/tides/neaps">
+          <a class="block px-4 py-3 hover:bg-(--accent-bg)" href="/tides/neaps">
             <Feature
               title="Neaps"
               description="An open source tide prediction engine."
@@ -35,7 +37,7 @@ import Feature from "../../../components/ui/Feature.astro";
 
         <li>
           <a
-            class="hover:bg-ocean-200/50 block px-4 py-3"
+            class="block px-4 py-3 hover:bg-(--accent-bg)"
             href="/tides/database"
           >
             <Feature

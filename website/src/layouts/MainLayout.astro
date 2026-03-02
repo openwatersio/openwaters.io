@@ -48,6 +48,14 @@ const fullTitle =
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
 
+    <script is:inline>
+      const m = window.matchMedia("(prefers-color-scheme: dark)");
+      document.documentElement.classList.toggle("dark", m.matches);
+      m.addEventListener("change", (e) =>
+        document.documentElement.classList.toggle("dark", e.matches),
+      );
+    </script>
+
     <script
       is:inline
       defer
