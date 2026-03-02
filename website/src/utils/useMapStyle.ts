@@ -1,28 +1,37 @@
-import { useSyncExternalStore } from "react";
+import type { StyleSpecification } from "react-map-gl/maplibre";
 
-const LIGHT_STYLE =
-  "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
-const DARK_STYLE =
-  "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
-
-const query =
-  typeof window !== "undefined"
-    ? window.matchMedia("(prefers-color-scheme: dark)")
-    : null;
-
-function subscribe(callback: () => void) {
-  query?.addEventListener("change", callback);
-  return () => query?.removeEventListener("change", callback);
-}
-
-function getSnapshot() {
-  return query?.matches ? DARK_STYLE : LIGHT_STYLE;
-}
-
-function getServerSnapshot() {
-  return LIGHT_STYLE;
-}
+export const MAP_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    satellite: {
+      type: "raster",
+      tiles: [
+        "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/{z}/{y}/{x}.jpg",
+      ],
+      tileSize: 256,
+    },
+    overlay: {
+      type: "raster",
+      tiles: [
+        "https://tiles.maps.eox.at/wmts/1.0.0/overlay_bright_3857/default/g/{z}/{y}/{x}.png",
+      ],
+      tileSize: 256,
+    },
+  },
+  layers: [
+    {
+      id: "satellite",
+      type: "raster",
+      source: "satellite",
+    },
+    {
+      id: "overlay",
+      type: "raster",
+      source: "overlay",
+    },
+  ],
+};
 
 export function useMapStyle() {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return MAP_STYLE;
 }
