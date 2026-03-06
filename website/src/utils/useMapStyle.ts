@@ -40,15 +40,25 @@ function buildStyle(): Promise<StyleSpecification> {
     promise = fetch(VECTOR_SOURCE_URL)
       .then((r) => r.json())
       .then((style: StyleSpecification) => {
-        // Keep only labels and boundary/road lines — no fills or backgrounds
-        const overlayLayers = style.layers.filter(
+        // Insert satellite imagery above fill/background layers but below
+        // labels and lines. The fills act as a loading placeholder so there
+        // is no white flash while satellite tiles load.
+        const firstSymbolIdx = style.layers.findIndex(
           (l: LayerSpecification) => l.type === "symbol" || l.type === "line",
         );
+        const insertAt =
+          firstSymbolIdx === -1 ? style.layers.length : firstSymbolIdx;
+
+        const layers = [
+          ...style.layers.slice(0, insertAt),
+          SATELLITE_LAYER,
+          ...style.layers.slice(insertAt),
+        ];
 
         const composite: StyleSpecification = {
           ...style,
           sources: { ...style.sources, satellite: SATELLITE_SOURCE },
-          layers: [SATELLITE_LAYER, ...overlayLayers],
+          layers,
         };
 
         cached = composite;
