@@ -17,7 +17,7 @@
     "@astrojs/vercel": "^9.0.4",
     "@iconify-json/mdi": "^1.2.3",
     "@neaps/api": "*",
-    "@neaps/react": "https://pkg.pr.new/openwatersio/neaps/@neaps/react@d84bf68",
+    "@neaps/react": "*",
     "@neaps/tide-predictor": "*",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.1",

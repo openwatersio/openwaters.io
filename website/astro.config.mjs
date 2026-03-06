@@ -20,6 +20,12 @@ export default defineConfig({
   integrations: [react(), icon()],
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: ["maplibre-gl"],
+      esbuildOptions: {
+        target: "es2022",
+      },
+    },
     resolve: {
       // Deduplicate React to ensure a single instance across the file: symlink boundary.
       dedupe: ["react", "react-dom", "react/jsx-runtime"],
