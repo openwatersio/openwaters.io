@@ -7,6 +7,12 @@ import { TideStationIsland } from "../../../components/tides/TideStationIsland";
 import { NearbyStationsIsland } from "../../../components/tides/NearbyStations";
 import { Icon } from "astro-icon/components";
 import { API_HOST } from "../../../utils/constants";
+import {
+  createQueryClient,
+  prefetchTideStation,
+  prefetchNearbyStations,
+  dehydrate,
+} from "@neaps/react";
 
 // Enable server-side rendering for this route
 export const prerender = false;
@@ -26,6 +32,21 @@ if (station.offsets?.reference) {
     referenceStation = await refResponse.json();
   }
 }
+
+// Determine locale from Accept-Language header
+const acceptLang = Astro.request.headers.get("accept-language") ?? "";
+const locale = acceptLang.split(",")[0]?.split(";")[0]?.trim() || "en-US";
+
+// Prefetch tide data so React islands render with data immediately
+const queryClient = createQueryClient();
+await Promise.all([
+  prefetchTideStation(queryClient, API_HOST, station.id, { locale }),
+  prefetchNearbyStations(queryClient, API_HOST, {
+    latitude: station.latitude,
+    longitude: station.longitude,
+  }),
+]);
+const dehydratedState = dehydrate(queryClient);
 ---
 
 <MainLayout title={station.name} description={`Tide station: ${station.name}`}>
@@ -58,7 +79,11 @@ if (station.offsets?.reference) {
             )
         }
 
-        <TideStationIsland client:load id={station.id} />
+        <TideStationIsland
+          client:load
+          id={station.id}
+          dehydratedState={dehydratedState}
+        />
 
         <Card class="mt-8">
           <section>
@@ -288,6 +313,7 @@ console.log(extremes);`}</code></pre>
           stationId={station.id}
           latitude={station.latitude}
           longitude={station.longitude}
+          dehydratedState={dehydratedState}
         />
       </div>
     </div>

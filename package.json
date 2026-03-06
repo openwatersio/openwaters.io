@@ -16,10 +16,10 @@
     "concurrently": "^9.2.1"
   },
   "dependencies": {
-    "@neaps/api": "https://pkg.pr.new/openwatersio/neaps/@neaps/api@249",
-    "@neaps/react": "https://pkg.pr.new/openwatersio/neaps/@neaps/react@249",
+    "@neaps/api": "https://pkg.pr.new/openwatersio/neaps/@neaps/api@2b4cce8",
+    "@neaps/react": "https://pkg.pr.new/openwatersio/neaps/@neaps/react@2b4cce8",
     "@neaps/tide-database": "^0.7.20260304",
-    "@neaps/tide-predictor": "https://pkg.pr.new/openwatersio/neaps/@neaps/tide-predictor@249",
-    "neaps": "https://pkg.pr.new/openwatersio/neaps@249"
+    "@neaps/tide-predictor": "https://pkg.pr.new/openwatersio/neaps/@neaps/tide-predictor@2b4cce8",
+    "neaps": "https://pkg.pr.new/openwatersio/neaps@2b4cce8"
   }
 }

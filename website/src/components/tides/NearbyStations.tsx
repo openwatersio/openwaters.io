@@ -1,27 +1,38 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useMemo } from "react";
 import {
   NeapsProvider,
   StationsMap,
   NearbyStations,
+  createQueryClient,
   type StationSummary,
 } from "@neaps/react";
+import { hydrate, type DehydratedState } from "@tanstack/react-query";
 import type { MapRef } from "react-map-gl/maplibre";
 import "@neaps/react/styles.css";
 import { API_HOST } from "../../utils/constants";
-import { preferredUnits } from "../../utils/units";
 import { useMapStyle } from "../../utils/useMapStyle";
 
 interface Props {
   stationId: string;
   latitude: number;
   longitude: number;
+  dehydratedState?: DehydratedState;
 }
 
 export function NearbyStationsIsland({
   stationId,
   latitude,
   longitude,
+  dehydratedState,
 }: Props) {
+  const queryClient = useMemo(() => {
+    const client = createQueryClient();
+    if (dehydratedState) {
+      hydrate(client, dehydratedState);
+    }
+    return client;
+  }, [dehydratedState]);
+
   const mapStyle = useMapStyle();
   const mapRef = useRef<MapRef>(null);
 
@@ -38,7 +49,7 @@ export function NearbyStationsIsland({
   }, [longitude, latitude]);
 
   return (
-    <NeapsProvider baseUrl={API_HOST} units={preferredUnits}>
+    <NeapsProvider baseUrl={API_HOST} queryClient={queryClient}>
       <div className="flex flex-col gap-4">
         <StationsMap
           ref={mapRef}

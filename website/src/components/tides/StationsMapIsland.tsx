@@ -2,7 +2,6 @@ import { type ReactNode, useCallback } from "react";
 import { NeapsProvider, StationsMap, StationSearch } from "@neaps/react";
 import "@neaps/react/styles.css";
 import { API_HOST } from "../../utils/constants";
-import { preferredUnits } from "../../utils/units";
 import { BottomDrawer } from "../ui/BottomDrawer";
 import { useMapStyle } from "../../utils/useMapStyle";
 
@@ -17,7 +16,7 @@ export function StationsMapIsland({ children }: Props) {
   }, []);
 
   return (
-    <NeapsProvider baseUrl={API_HOST} units={preferredUnits}>
+    <NeapsProvider baseUrl={API_HOST}>
       {/* Inline height so h-full on StationsMap resolves; calc subtracts the fixed header */}
       <div className="absolute inset-0 h-full w-full">
         <StationsMap
@@ -32,7 +31,10 @@ export function StationsMapIsland({ children }: Props) {
         >
           {/* Desktop sidebar */}
           <div className="header-padding absolute top-0 left-4 z-10 hidden w-96 flex-col gap-4 md:flex">
-            <StationSearch onSelect={handleStationSelect} />
+            <StationSearch
+              onSelect={handleStationSelect}
+              className="card-glass rounded-3xl p-0"
+            />
             {children}
           </div>
 
