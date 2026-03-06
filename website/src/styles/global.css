@@ -60,6 +60,10 @@
   --hero-to: #ffffff;
   --shadow: rgba(226, 232, 240, 0.5);
 
+  /* Map overlay colors — satellite base is always dark, no dark-mode swap */
+  --neaps-map-text: #ffffff;
+  --neaps-map-bg: #000000;
+
   /* Status colors */
   --status-green-bg: #dcfce7;
   --status-green-text: #166534;

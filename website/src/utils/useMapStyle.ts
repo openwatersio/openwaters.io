@@ -40,20 +40,18 @@ function buildStyle(): Promise<StyleSpecification> {
     promise = fetch(VECTOR_SOURCE_URL)
       .then((r) => r.json())
       .then((style: StyleSpecification) => {
-        // Insert satellite imagery above fill/background layers but below
-        // labels and lines. The fills act as a loading placeholder so there
-        // is no white flash while satellite tiles load.
-        const firstSymbolIdx = style.layers.findIndex(
-          (l: LayerSpecification) => l.type === "symbol" || l.type === "line",
+        // Partition layers: fills/backgrounds below satellite as a loading
+        // placeholder (avoids white flash), everything else on top.
+        const fills = style.layers.filter(
+          (l: LayerSpecification) =>
+            l.type === "background" || l.type === "fill",
         );
-        const insertAt =
-          firstSymbolIdx === -1 ? style.layers.length : firstSymbolIdx;
+        const rest = style.layers.filter(
+          (l: LayerSpecification) =>
+            l.type !== "background" && l.type !== "fill",
+        );
 
-        const layers = [
-          ...style.layers.slice(0, insertAt),
-          SATELLITE_LAYER,
-          ...style.layers.slice(insertAt),
-        ];
+        const layers = [...fills, SATELLITE_LAYER, ...rest];
 
         const composite: StyleSpecification = {
           ...style,
