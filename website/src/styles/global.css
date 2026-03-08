@@ -1,20 +1,195 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+/* Scan @neaps/react source so Tailwind generates its utility classes */
+@source "../../../node_modules/@neaps/react/dist/index.js";
+
+@theme {
+  --color-ocean-50: #f0f9ff;
+  --color-ocean-100: #e0f2fe;
+  --color-ocean-200: #bae6fd;
+  --color-ocean-300: #7dd3fc;
+  --color-ocean-400: #38bdf8;
+  --color-ocean-500: #0ea5e9;
+  --color-ocean-600: #0284c7;
+  --color-ocean-700: #0369a1;
+  --color-ocean-800: #075985;
+  --color-ocean-900: #0c4a6e;
+  --color-ocean-950: #082f49;
+
+  --color-navy-50: #f8fafc;
+  --color-navy-100: #f1f5f9;
+  --color-navy-200: #e2e8f0;
+  --color-navy-300: #cbd5e1;
+  --color-navy-400: #94a3b8;
+  --color-navy-500: #64748b;
+  --color-navy-600: #475569;
+  --color-navy-700: #334155;
+  --color-navy-800: #1e293b;
+  --color-navy-900: #0f172a;
+  --color-navy-950: #020617;
+
+  --color-coral-50: #fef2f2;
+  --color-coral-100: #fee2e2;
+  --color-coral-200: #fecaca;
+  --color-coral-300: #fca5a5;
+  --color-coral-400: #f87171;
+  --color-coral-500: #ef4444;
+  --color-coral-600: #dc2626;
+  --color-coral-700: #b91c1c;
+  --color-coral-800: #991b1b;
+  --color-coral-900: #7f1d1d;
+}
+
+/* Semantic color tokens — automatically flip for dark mode */
+:root {
+  --surface: #ffffff;
+  --surface-subtle: var(--color-navy-50);
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --text: var(--color-navy-900);
+  --text-secondary: var(--color-navy-600);
+  --text-muted: var(--color-navy-500);
+  --border: var(--color-navy-200);
+  --border-subtle: var(--color-navy-100);
+  --accent: var(--color-ocean-600);
+  --accent-hover: var(--color-ocean-700);
+  --accent-bg: var(--color-ocean-50);
+  --accent-bg-subtle: var(--color-ocean-100);
+  --hero-from: var(--color-ocean-50);
+  --hero-to: #ffffff;
+  --shadow: rgba(226, 232, 240, 0.5);
+
+  /* Map overlay colors — satellite base is always dark, no dark-mode swap */
+  --neaps-map-text: #ffffff;
+  --neaps-map-bg: #000000;
+
+  /* Status colors */
+  --status-green-bg: #dcfce7;
+  --status-green-text: #166534;
+  --status-red-bg: #fef2f2;
+  --status-red-text: #991b1b;
+  --status-red-border: #fecaca;
+  --status-yellow-bg: #fefce8;
+  --status-yellow-text: #854d0e;
+  --status-blue-bg: #dbeafe;
+  --status-blue-text: #1e40af;
+  --status-orange-bg: #fff7ed;
+  --status-orange-text: #9a3412;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --surface: var(--color-navy-900);
+    --surface-subtle: var(--color-navy-800);
+    --surface-glass: rgba(15, 23, 42, 0.7);
+    --text: var(--color-navy-100);
+    --text-secondary: var(--color-navy-300);
+    --text-muted: var(--color-navy-400);
+    --border: var(--color-navy-700);
+    --border-subtle: var(--color-navy-700);
+    --accent: var(--color-ocean-400);
+    --accent-hover: var(--color-ocean-300);
+    --accent-bg: var(--color-ocean-950);
+    --accent-bg-subtle: var(--color-ocean-900);
+    --hero-from: var(--color-navy-900);
+    --hero-to: var(--color-navy-950);
+    --shadow: rgba(0, 0, 0, 0.3);
+
+    /* Status colors — lower opacity backgrounds, lighter text */
+    --status-green-bg: rgba(22, 101, 52, 0.2);
+    --status-green-text: #86efac;
+    --status-red-bg: rgba(153, 27, 27, 0.2);
+    --status-red-text: #fca5a5;
+    --status-red-border: rgba(153, 27, 27, 0.3);
+    --status-yellow-bg: rgba(133, 77, 14, 0.2);
+    --status-yellow-text: #fde047;
+    --status-blue-bg: rgba(30, 64, 175, 0.2);
+    --status-blue-text: #93c5fd;
+    --status-orange-bg: rgba(154, 52, 18, 0.2);
+    --status-orange-text: #fdba74;
+  }
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--border);
+  }
+}
+
+@utility btn {
+  @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors duration-200;
+}
+
+@utility btn-primary {
+  background-color: var(--accent);
+  color: white;
+  @apply focus:ring-2 focus:ring-offset-2 focus:outline-hidden;
+  &:hover {
+    background-color: var(--accent-hover);
+  }
+}
+
+@utility btn-secondary {
+  background-color: var(--surface-subtle);
+  color: var(--text);
+  @apply focus:ring-2 focus:ring-offset-2 focus:outline-hidden;
+}
+
+@utility btn-outline {
+  border-color: var(--accent);
+  color: var(--accent);
+  @apply border-2 focus:ring-2 focus:ring-offset-2 focus:outline-hidden;
+  &:hover {
+    background-color: var(--accent-bg);
+  }
+}
+
+@utility container-custom {
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+@utility card {
+  background-color: var(--surface);
+  border-color: var(--border-subtle);
+  @apply rounded-lg border p-6 shadow-md;
+}
+
+@utility card-hover {
+  @apply card transition-shadow duration-200 hover:shadow-lg;
+}
+
+@utility card-glass {
+  background-color: var(--surface-glass);
+  @apply rounded-lg p-6 shadow-md backdrop-blur-lg;
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
 
 @layer base {
   body {
-    @apply bg-white text-navy-900 antialiased;
+    background-color: var(--surface);
+    color: var(--text);
+    @apply antialiased;
   }
 
   header {
-    @apply fixed left-0 right-0 top-0 z-50 border-b border-transparent p-4 duration-300 ease-in-out;
+    @apply fixed top-0 right-0 left-0 z-50 border-b border-transparent p-4 duration-300 ease-in-out;
     transition-property: background-color, border-color, box-shadow;
   }
 
   header.scrolled,
   .fullscreen header {
-    @apply bg-white/70 shadow-md shadow-navy-200/50 backdrop-blur-lg;
+    background-color: var(--surface-glass);
+    box-shadow: 0 4px 6px -1px var(--shadow);
+    @apply shadow-md backdrop-blur-lg;
   }
 
   main,
@@ -28,7 +203,8 @@
   h4,
   h5,
   h6 {
-    @apply text-balance font-semibold text-navy-900;
+    color: var(--text);
+    @apply font-semibold text-balance;
   }
 
   h1 {
@@ -56,11 +232,16 @@
   }
 
   .text-lead {
-    @apply text-balance text-2xl text-navy-600;
+    color: var(--text-secondary);
+    @apply text-2xl text-balance;
   }
 
   a {
-    @apply text-ocean-600 transition-colors hover:text-ocean-700;
+    color: var(--accent);
+    @apply transition-colors;
+  }
+  a:hover {
+    color: var(--accent-hover);
   }
 
   p {
@@ -72,7 +253,8 @@
   }
 
   dt {
-    @apply font-semibold text-navy-600;
+    color: var(--text-secondary);
+    @apply font-semibold;
   }
 
   dd {
@@ -80,43 +262,24 @@
   }
 }
 
-@layer components {
-  .btn {
-    @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors duration-200;
-  }
-
-  .btn-primary {
-    @apply bg-ocean-600 text-white hover:bg-ocean-700 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:ring-offset-2;
-  }
-
-  .btn-secondary {
-    @apply bg-navy-100 text-navy-900 hover:bg-navy-200 focus:outline-none focus:ring-2 focus:ring-navy-500 focus:ring-offset-2;
-  }
-
-  .btn-outline {
-    @apply border-2 border-ocean-600 text-ocean-600 hover:bg-ocean-50 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:ring-offset-2;
-  }
-
-  .container-custom {
-    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
-  }
-
-  .card {
-    @apply rounded-lg border border-navy-100 bg-white p-6 shadow-md;
-  }
-
-  .card-hover {
-    @apply card transition-shadow duration-200 hover:shadow-lg;
-  }
-
-  .card-glass {
-    @apply rounded-lg bg-white/70 p-6 shadow-md backdrop-blur-lg;
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Prose dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  .prose {
+    --tw-prose-body: var(--color-navy-300);
+    --tw-prose-headings: var(--color-navy-100);
+    --tw-prose-links: var(--color-ocean-400);
+    --tw-prose-bold: var(--color-navy-100);
+    --tw-prose-counters: var(--color-navy-400);
+    --tw-prose-bullets: var(--color-navy-400);
+    --tw-prose-hr: var(--color-navy-700);
+    --tw-prose-quotes: var(--color-navy-300);
+    --tw-prose-quote-borders: var(--color-navy-700);
+    --tw-prose-captions: var(--color-navy-400);
+    --tw-prose-code: var(--color-navy-200);
+    --tw-prose-pre-code: var(--color-navy-200);
+    --tw-prose-pre-bg: var(--color-navy-800);
+    --tw-prose-th-borders: var(--color-navy-600);
+    --tw-prose-td-borders: var(--color-navy-700);
   }
 }
 
