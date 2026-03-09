@@ -7,7 +7,7 @@ import { Icon } from "astro-icon/components";
 
 <MainLayout>
   <!-- Hero Section -->
-  <section class="bg-gradient-to-b from-ocean-50 to-white py-20">
+  <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-20">
     <Container>
       <div class="mx-auto max-w-2xl text-center">
         <h1 class="mb-6 font-bold">Open Source Marine Software and Data</h1>
@@ -25,7 +25,7 @@ import { Icon } from "astro-icon/components";
       <div class="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
         <!-- Tides -->
         <Card href="/tides" class="space-y-3">
-          <div class="text-ocean-600">
+          <div class="text-(--accent)">
             <svg
               class="h-12 w-12"
               fill="none"
@@ -41,12 +41,12 @@ import { Icon } from "astro-icon/components";
             </svg>
           </div>
           <h3>Tides</h3>
-          <p class="text-navy-600">
+          <p class="text-(--text-secondary)">
             Tide predictions powered by the Neaps engine, with data from
             thousands of stations worldwide.
           </p>
           <span
-            class="inline-flex items-center gap-1 font-medium text-ocean-600 hover:text-ocean-700"
+            class="inline-flex items-center gap-1 font-medium text-(--accent) hover:text-(--accent-hover)"
           >
             Explore tides
             <svg
@@ -66,7 +66,7 @@ import { Icon } from "astro-icon/components";
 
         <!-- Bathymetry -->
         <Card href="/bathymetry" class="space-y-3">
-          <div class="text-ocean-600">
+          <div class="text-(--accent)">
             <svg
               class="h-12 w-12"
               fill="none"
@@ -82,12 +82,12 @@ import { Icon } from "astro-icon/components";
             </svg>
           </div>
           <h3>Bathymetry</h3>
-          <p class="text-navy-600">
+          <p class="text-(--text-secondary)">
             Collect and share depth data from your vessel to contribute to
             crowd-sourced bathymetry programs.
           </p>
           <span
-            class="inline-flex items-center gap-1 font-medium text-ocean-600 hover:text-ocean-700"
+            class="inline-flex items-center gap-1 font-medium text-(--accent) hover:text-(--accent-hover)"
           >
             Learn more
             <svg
@@ -112,10 +112,10 @@ import { Icon } from "astro-icon/components";
   <section class="py-16">
     <Container>
       <div
-        class="mx-auto max-w-4xl space-y-6 rounded-2xl bg-gradient-to-b from-ocean-600 to-ocean-700 p-10 text-center text-white"
+        class="from-ocean-600 to-ocean-700 mx-auto max-w-4xl space-y-6 rounded-2xl bg-linear-to-b p-10 text-center text-white"
       >
         <h3 class="text-white">Get Involved</h3>
-        <p class="mx-auto max-w-2xl text-balance text-xl text-ocean-50">
+        <p class="text-ocean-50 mx-auto max-w-2xl text-xl text-balance">
           Join our community of mariners, developers, and ocean enthusiasts
           building better tools for the sea.
         </p>
@@ -124,14 +124,14 @@ import { Icon } from "astro-icon/components";
             href="https://github.com/openwatersio"
             target="_blank"
             rel="noopener noreferrer"
-            class="btn bg-white text-ocean-700 hover:bg-ocean-50"
+            class="btn text-ocean-700 hover:bg-ocean-50 bg-white"
           >
             <Icon name="mdi:github" class="size-6" />
             View on GitHub
           </a>
           <a
             href="mailto:helloopenwaters.io"
-            class="btn bg-ocean-800 text-white hover:bg-ocean-900"
+            class="btn bg-ocean-800 hover:bg-ocean-900 text-white"
           >
             Get in Touch
           </a>
