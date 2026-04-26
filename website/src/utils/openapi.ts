@@ -7,11 +7,24 @@ type Parameters = NonNullable<Components["parameters"]>;
 type ParameterObject = Parameters[keyof Parameters];
 
 /**
- * Fetch OpenAPI spec from @neaps/api at build time
+ * Path prefix where the neaps API is mounted in the Open Waters API.
+ * Mirrors what neaps does internally with `servers: [{ url: prefix }]`.
+ */
+const NEAPS_PREFIX = "/tides";
+
+/**
+ * Fetch OpenAPI spec from @neaps/api at build time, prefixing paths with the
+ * mount point used by the Open Waters API.
  */
 export async function getOpenAPISpec(): Promise<OpenAPISpec> {
   const { openapi } = await import("@neaps/api");
-  return openapi;
+  const paths = Object.fromEntries(
+    Object.entries(openapi.paths).map(([path, pathItem]) => [
+      path === "/" ? NEAPS_PREFIX : `${NEAPS_PREFIX}${path}`,
+      pathItem,
+    ]),
+  );
+  return { ...openapi, paths } as OpenAPISpec;
 }
 
 /**
