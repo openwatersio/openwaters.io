@@ -9,45 +9,5 @@ import Feature from "../../../components/ui/Feature.astro";
   description="Browse and search thousands of tide stations worldwide on an interactive map."
   fullscreen
 >
-  <StationsMapIsland client:only="react">
-    <div class="card-glass overflow-hidden rounded-3xl p-0">
-      <h6 class="px-4 pt-3 pb-1 text-base text-(--text-muted)">
-        Developer Tools
-      </h6>
-      <ul class="divide-y divide-(--border)">
-        <li>
-          <a class="block px-4 py-3 hover:bg-(--accent-bg)" href="/api">
-            <Feature
-              title="API"
-              description="Station data and predictions via a REST API."
-              icon="mdi:code-greater-than"
-            />
-          </a>
-        </li>
-
-        <li>
-          <a class="block px-4 py-3 hover:bg-(--accent-bg)" href="/tides/neaps">
-            <Feature
-              title="Neaps"
-              description="An open source tide prediction engine."
-              icon="mdi:code"
-            />
-          </a>
-        </li>
-
-        <li>
-          <a
-            class="block px-4 py-3 hover:bg-(--accent-bg)"
-            href="/tides/database"
-          >
-            <Feature
-              title="Tide Database"
-              description="Harmonic constituents for thousands of stations globally."
-              icon="mdi:database-outline"
-            />
-          </a>
-        </li>
-      </ul>
-    </div>
-  </StationsMapIsland>
+  <StationsMapIsland client:only="react" />
 </MainLayout>
