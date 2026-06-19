@@ -18,7 +18,7 @@
   "dependencies": {
     "@neaps/api": "^0.5.1",
     "@neaps/react": "^0.1.0",
-    "@neaps/tide-database": "^0.8.20260611",
+    "@neaps/tide-database": "^0.8.20260615",
     "@neaps/tide-predictor": "^0.10.0",
     "neaps": "^0.7.0"
   }
