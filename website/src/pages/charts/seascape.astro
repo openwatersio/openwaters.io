@@ -32,45 +32,6 @@ try {
 }
 // Manifest order is alphabetical by internal id; sort by display name instead.
 sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
-
-// Kept as a plain template literal (no backticks / no ${}) so it renders verbatim.
-const maplibreSnippet = `import maplibregl from "maplibre-gl";
-
-const map = new maplibregl.Map({
-  container: "map",
-  center: [-73.96, 40.55],
-  zoom: 11,
-  style: {
-    version: 8,
-    sources: {
-      "seascape-dem": {
-        type: "raster-dem",
-        url: "https://tiles.openwaters.io/seascape/raster.json",
-        encoding: "terrarium", // required — MapLibre defaults to Mapbox encoding
-        tileSize: 512,
-      },
-      seascape: {
-        type: "vector",
-        url: "https://tiles.openwaters.io/seascape/vector.json",
-      },
-    },
-    layers: [
-      {
-        id: "hillshade",
-        type: "hillshade",
-        source: "seascape-dem",
-        paint: { "hillshade-exaggeration": 0.6 },
-      },
-      {
-        id: "contours",
-        type: "line",
-        source: "seascape",
-        "source-layer": "contours",
-        paint: { "line-color": "#3b7", "line-width": 0.5, "line-opacity": 0.4 },
-      },
-    ],
-  },
-});`;
 ---
 
 <MainLayout
@@ -217,44 +178,16 @@ const map = new maplibregl.Map({
       <h2 id="how-to-use" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         How to use
       </h2>
-      <p class="mb-4 text-(--text-secondary)">
-        The bathymetry is available as XYZ tiles in two flavors. Point any
-        mapping library that supports XYZ tiles at these TileJSON URLs —
-        attribution and metadata are included, so libraries credit the sources
-        automatically.
+      <p class="mb-12 text-(--text-secondary)">
+        See the
+        <a
+          href="https://github.com/openwatersio/seascape#usage"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-(--accent) hover:text-(--accent-hover)"
+          >Usage section of the README</a
+        > for tile URLs, a ready-to-use style, and MapLibre examples.
       </p>
-      <ul class="mb-4 ml-6 space-y-2 text-(--text-secondary)">
-        <li class="flex items-start gap-2">
-          <span class="mt-1 text-(--accent)">•</span>
-          <span>
-            <strong>Raster</strong> (Terrarium-encoded DEM) —
-            <a
-              href="https://tiles.openwaters.io/seascape/raster.json"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-(--accent) hover:text-(--accent-hover)">raster.json</a
-            > — depth per pixel, for color-relief shading, hillshade, and 3D terrain.
-          </span>
-        </li>
-        <li class="flex items-start gap-2">
-          <span class="mt-1 text-(--accent)">•</span>
-          <span>
-            <strong>Vector</strong> (MVT) —
-            <a
-              href="https://tiles.openwaters.io/seascape/vector.json"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-(--accent) hover:text-(--accent-hover)">vector.json</a
-            > — bathymetric contour lines at non-uniform depth intervals.
-          </span>
-        </li>
-      </ul>
-      <p class="mb-3 text-(--text-secondary)">
-        A minimal MapLibre setup with hillshade and contours:
-      </p>
-      <div class="bg-navy-900 mb-12 overflow-x-auto rounded-lg p-4 text-white">
-        <pre class="text-sm"><code>{maplibreSnippet}</code></pre>
-      </div>
 
       <!-- License -->
       <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
