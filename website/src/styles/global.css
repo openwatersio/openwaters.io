@@ -194,7 +194,7 @@
 
   main,
   .header-padding {
-    padding-top: 96px; /* Height of fixed header */
+    padding-top: 65px; /* Height of fixed header: 32px content + p-4 + border */
   }
 
   h1,
@@ -285,10 +285,10 @@
 
 /* MapLibre controls offset for fixed header */
 .fullscreen .maplibregl-ctrl-top-right {
-  top: 96px;
+  top: 81px; /* header 65px + 16px gap */
   right: 16px;
 }
 
 .fullscreen .maplibregl-ctrl-top-left {
-  top: 96px;
+  top: 81px;
 }

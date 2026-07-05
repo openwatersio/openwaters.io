@@ -30,7 +30,7 @@ export function StationsMapIsland({ children }: Props) {
           hash
         >
           {/* Desktop sidebar */}
-          <div className="header-padding absolute top-0 left-4 z-10 hidden w-96 flex-col gap-4 md:flex">
+          <div className="header-padding absolute top-4 left-4 z-10 hidden w-96 flex-col gap-4 md:flex">
             <StationSearch
               onSelect={handleStationSelect}
               className="card-glass rounded-3xl p-0"
