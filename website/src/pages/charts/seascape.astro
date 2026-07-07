@@ -36,7 +36,7 @@ sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
 
 <MainLayout
   title="Seascape - Charts"
-  description="Global seafloor bathymetry as raster DEM and vector contour tiles for MapLibre and Mapbox GL."
+  description="A map of the seafloor built from global open bathymetry, served as raster DEM and vector tiles for MapLibre and Mapbox GL."
 >
   <!-- Map hero -->
   <section class="border-b border-(--border)">
@@ -58,11 +58,9 @@ sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
       </a>
 
       <h1 class="mb-4">Seascape</h1>
-      <p class="text-lead mb-8">
-        Global seafloor bathymetry as web map tiles, built from a mosaic of
-        global and regional sources. Served as raster DEM tiles for depth
-        shading and hillshade, and vector contour tiles for crisp lines and
-        labels.
+      <p class="text-lead mb-4">
+        A map of the seafloor built from global open bathymetry with contours,
+        depth shading, and soundings.
       </p>
 
       <div class="mb-12 flex flex-wrap gap-3">
@@ -178,6 +176,15 @@ sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
       <h2 id="how-to-use" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         How to use
       </h2>
+
+      <p class="mb-4 text-(--text-secondary)">
+        Seascape is published as web map tiles: a Terrarium-encoded raster DEM
+        for depth shading, hillshade, and 3D terrain, and vector tiles carrying
+        contour lines, spot soundings, and drying areas. Both work with MapLibre
+        GL, Mapbox GL, or any library that reads TileJSON, and a prebuilt style
+        renders the complete map from a single URL.
+      </p>
+
       <p class="mb-12 text-(--text-secondary)">
         See the
         <a
