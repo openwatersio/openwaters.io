@@ -1,7 +1,7 @@
-import express from "express";
+import express, { type Application } from "express";
 import { createApp } from "@neaps/api";
 
-const app = express();
+const app: Application = express();
 
 app.get("/", (req, res) => {
   res.json({

@@ -3,17 +3,20 @@
   "version": "0.0.1",
   "type": "module",
   "main": "src/index.ts",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -b"
   },
   "dependencies": {
-    "@neaps/api": "*",
+    "@neaps/api": "^0.6.0",
     "@neaps/tide-database": "*",
-    "express": "^4.18.2"
+    "express": "^5.2.1"
   },
   "devDependencies": {
-    "@types/express": "^4.17.17",
+    "@types/express": "^5.0.6",
     "tsx": "^4.22.5",
     "typescript": "^6.0.3"
   }

@@ -2,6 +2,9 @@
   "name": "openwaters-monorepo",
   "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "workspaces": [
     "website",
     "api"
@@ -16,7 +19,7 @@
     "concurrently": "^10.0.3"
   },
   "dependencies": {
-    "@neaps/api": "^0.5.1",
+    "@neaps/api": "^0.6.0",
     "@neaps/react": "^0.1.0",
     "@neaps/tide-database": "^0.8.20260701",
     "@neaps/tide-predictor": "^0.10.0",
