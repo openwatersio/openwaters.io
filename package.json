@@ -13,7 +13,7 @@
     "build": "npm run build -w website"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^10.0.3"
   },
   "dependencies": {
     "@neaps/api": "^0.5.1",
