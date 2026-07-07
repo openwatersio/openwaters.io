@@ -31,7 +31,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.2.7",
     "react-map-gl": "^8.1.1",
-    "tailwind-merge": "^2.5.0",
+    "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.2",
     "typescript": "^6.0.3"
   },
