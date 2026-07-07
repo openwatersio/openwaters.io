@@ -2,6 +2,9 @@
   "name": "openwaters-monorepo",
   "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "workspaces": [
     "website",
     "api"
