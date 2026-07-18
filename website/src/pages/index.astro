@@ -3,6 +3,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 import Container from "../components/ui/Container.astro";
 import Card from "../components/ui/Card.astro";
 import Icon from "../components/Icon.astro";
+import { CONTACT_EMAIL } from "../utils/constants";
 ---
 
 <MainLayout>
@@ -130,7 +131,7 @@ import Icon from "../components/Icon.astro";
             View on GitHub
           </a>
           <a
-            href="mailto:helloopenwaters.io"
+            href={`mailto:${CONTACT_EMAIL}`}
             class="btn bg-ocean-800 hover:bg-ocean-900 text-white"
           >
             Get in Touch
