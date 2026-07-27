@@ -50,14 +50,16 @@ are inert artifacts — no teardown needed (better than Vercel's ephemeral
 deploys). Preview versions share the production worker's env/secrets/bindings;
 fine here since both workers are pure compute.
 
-- [ ] **First choice: Workers Builds** (Cloudflare git integration, dashboard
-      config, no CI code) — connect the repo; it builds every PR, comments the
-      preview URL, and deploys `main` to production. Configure both workers
-      (api + website) against the monorepo.
-- [ ] **Fallback** (if the monorepo build config fights us): GitHub Actions +
-      `cloudflare/wrangler-action` with `CLOUDFLARE_API_TOKEN` /
-      `CLOUDFLARE_ACCOUNT_ID` secrets — PRs run `wrangler versions upload` and
-      comment the preview URL; merges to `main` run `wrangler deploy`.
+- [x] **Workers Builds** (Cloudflare git integration) connected for both workers.
+      Root directory `/`, no build command, deploy/version commands use
+      `--config api/wrangler.jsonc` / `--config website/wrangler.jsonc`. PR #62
+      builds green on both platforms with preview URLs.
+- [x] **pkg.pr.new pins are SHA-based** (`@neaps/api@cc3a8ca`,
+      `@neaps/tide-database@3a91ee9`) — the PR-number URLs are mutable and CI
+      caches served stale builds.
+- [x] `VERCEL_FORCE_NO_BUILD_CACHE=1` set on both Vercel projects (preview env):
+      Vercel restored stale node_modules even after the URL change. Remove it in
+      cleanup once deps are published versions.
 
 ## 3. Cleanup (code / hacks / PRs)
 
