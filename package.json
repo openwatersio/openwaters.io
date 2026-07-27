@@ -20,12 +20,12 @@
   },
   "//": "TEMP: point @neaps/* at pkg.pr.new PR builds for the Cloudflare worker migration (tide-database#103, neaps#293). The override forces the transitive tide-database (under @neaps/api and neaps) to the PR build too. Revert to published versions once merged.",
   "overrides": {
-    "@neaps/tide-database": "https://pkg.pr.new/@neaps/tide-database@103"
+    "@neaps/tide-database": "https://pkg.pr.new/@neaps/tide-database@3a91ee9"
   },
   "dependencies": {
-    "@neaps/api": "https://pkg.pr.new/@neaps/api@293",
+    "@neaps/api": "https://pkg.pr.new/@neaps/api@cc3a8ca",
     "@neaps/react": "^0.1.0",
-    "@neaps/tide-database": "https://pkg.pr.new/@neaps/tide-database@103",
+    "@neaps/tide-database": "https://pkg.pr.new/@neaps/tide-database@3a91ee9",
     "@neaps/tide-predictor": "^0.10.0",
     "neaps": "^0.7.0"
   }
