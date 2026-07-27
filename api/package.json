@@ -8,16 +8,19 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc -b"
+    "build": "tsc -b",
+    "dev:worker": "wrangler dev",
+    "deploy:worker": "wrangler deploy"
   },
   "dependencies": {
-    "@neaps/api": "^0.6.0",
-    "@neaps/tide-database": "*",
+    "@neaps/api": "https://pkg.pr.new/@neaps/api@293",
+    "@neaps/tide-database": "https://pkg.pr.new/@neaps/tide-database@103",
     "express": "^5.2.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "tsx": "^4.22.5",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "wrangler": "^4.110.0"
   }
 }

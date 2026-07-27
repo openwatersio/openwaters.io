@@ -1,0 +1,6 @@
+{
+  "name": "openwaters-api",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat"]
+}

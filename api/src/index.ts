@@ -1,27 +1,6 @@
-import express, { type Application } from "express";
-import { createApp } from "@neaps/api";
+import { createTidesApp } from "./app.js";
 
-const app: Application = express();
-
-app.get("/", (req, res) => {
-  res.json({
-    name: "Open Waters API",
-    documentation: "https://openwaters.io/api",
-  });
-});
-
-app.use("/", createApp());
-
-// Placeholder for bathymetry API
-// TODO: Replace with actual bathymetry API from @openwatersio/crowd-depth/packages/api once published
-app.use("/bathymetry", (req, res) => {
-  res.status(501).json({ error: "Bathymetry API coming soon" });
-});
-
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
-});
+const app = createTidesApp();
 
 // For Vercel serverless functions
 export default app;
