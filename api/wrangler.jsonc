@@ -2,5 +2,10 @@
   "name": "openwaters-api",
   "main": "src/worker.ts",
   "compatibility_date": "2026-06-01",
-  "compatibility_flags": ["nodejs_compat"]
+  "compatibility_flags": ["nodejs_compat"],
+  // Temp hostname during migration: the site worker can't fetch workers.dev on
+  // the same account (error 1042). api.openwaters.io replaces this at cutover.
+  "routes": [{ "pattern": "api-cf.openwaters.io", "custom_domain": true }],
+  "workers_dev": true,
+  "preview_urls": true
 }

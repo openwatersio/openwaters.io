@@ -2,6 +2,7 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@astrojs/react";
 import vercel from "@astrojs/vercel";
+import cloudflare from "@astrojs/cloudflare";
 
 import icon from "astro-icon";
 
@@ -50,6 +51,9 @@ export default defineConfig({
       ],
     },
   },
-  adapter: vercel({}),
+  // TEMP: dual-adapter during the Cloudflare migration (CLOUDFLARE_MIGRATION.md);
+  // Vercel stays the default until DNS cutover.
+  adapter:
+    process.env.DEPLOY_TARGET === "cloudflare" ? cloudflare() : vercel({}),
   output: "static",
 });

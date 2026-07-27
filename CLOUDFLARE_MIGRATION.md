@@ -29,15 +29,17 @@ Vercel still serving production. No custom domains, no DNS changes yet.
 
 - [x] **Tides API** — Worker at `openwaters-api.brandon-782.workers.dev`, verified
       live (predictions, subordinate stations, search). Bundle 5.15 MB gz.
-- [ ] **Website** — deploy to Cloudflare under its generated URL. Needs
-      `@astrojs/cloudflare` (**SSR**) for the dynamic station routes (it is not
-      fully static). Keep the Vercel build working through the transition — select
-      the Astro adapter by env (vercel vs cloudflare) so both deploy from `main`
-      until cutover. Point `PUBLIC_TIDES_API_URL` at the API's `workers.dev` URL
-      for now. Verify pages + station routes render.
-      - Note: those pages import `@neaps/tide-database` at render time → the site
-        Worker bundles the browser build (~5 MB gz). Bundle it, or refactor them to
-        fetch station data from the API.
+- [x] **Website** — Worker at `openwaters-io.brandon-782.workers.dev`, verified
+      (home, prerendered pages, SSR station routes incl. subordinate + 404s).
+      `@astrojs/cloudflare` v12 (Astro 5), selected via `DEPLOY_TARGET=cloudflare`
+      so the Vercel build keeps working from `main` until cutover. Site worker is
+      1.5 MB gz — the station pages only fetch from the API (the tide-database
+      import is type-only), so no 5 MB bundle.
+      - **Gotcha (error 1042)**: a Worker can't fetch another Worker on the same
+        account via `workers.dev`, so the site couldn't reach the API's generated
+        URL. Fix: temp custom domain `api-cf.openwaters.io` on the api worker
+        (cross-zone fetch is fine); `PUBLIC_TIDES_API_URL` defaults to it in
+        `website/wrangler.jsonc`. Replaced by `api.openwaters.io` at cutover.
 
 ## 2. Automate deployment
 
@@ -80,7 +82,8 @@ The flip. Records already live in the CF zone → attach custom domains and chan
 targets. Fast and reversible.
 
 - [ ] Attach custom domains: `api.openwaters.io` → api worker; `openwaters.io` +
-      `www` → website.
+      `www` → website. Then drop the temp `api-cf.openwaters.io` domain and point
+      `PUBLIC_TIDES_API_URL` at `api.openwaters.io`.
 - [ ] Set production `PUBLIC_TIDES_API_URL=https://api.openwaters.io` and redeploy
       the website.
 - [ ] Repoint the DNS records from Vercel to Cloudflare for each host.
