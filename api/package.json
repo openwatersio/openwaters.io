@@ -13,8 +13,8 @@
     "deploy:worker": "wrangler deploy"
   },
   "dependencies": {
-    "@neaps/api": "https://pkg.pr.new/@neaps/api@cc3a8ca",
-    "@neaps/tide-database": "https://pkg.pr.new/@neaps/tide-database@3a91ee9",
+    "@neaps/api": "^0.7.0",
+    "@neaps/tide-database": "^0.9.0",
     "express": "^5.2.1"
   },
   "devDependencies": {
