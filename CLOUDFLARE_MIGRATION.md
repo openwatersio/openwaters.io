@@ -65,18 +65,17 @@ fine here since both workers are pure compute.
 
 Get it all "right" — no temporary hacks — before the flip.
 
-- [ ] Publish the dependency PRs and swap the root `package.json` `@neaps/*` deps
-      + tide-database `overrides` from pkg.pr.new to released versions:
-      tide-database#103 (off-heap pack); neaps#292 (`s-maxage`) + #293
-      (workers-compat) — both edit `@neaps/api`'s `index.ts`, so reconcile them.
-      Re-`npm install` and re-verify.
-- [ ] **Edge caching**: confirm `s-maxage` ships (from #292) and/or add a
-      Cloudflare **Cache Rule** on the API — the live worker currently sends
-      `max-age=3600` only, so the edge doesn't cache and every request runs a
-      prediction. Predictions with explicit `start`/`end` are immutable → high
-      value.
+- [x] Dependency PRs merged and released (tide-database#103 → 0.9, neaps#292 +
+      #293 → @neaps/api 0.7.0, plus repo-wide ESM-only in neaps#301). Root and
+      api `package.json` now use released versions; pkg.pr.new pins and the
+      tide-database override are gone. `VERCEL_FORCE_NO_BUILD_CACHE` (a
+      workaround for stale pkg.pr.new caches) removed from both Vercel projects.
+- [x] **Edge caching**: `s-maxage=3600` verified on the branch preview build
+      (from #292). Production worker picks it up when this branch merges.
+      Optional later: longer TTLs / Cache Rule for immutable explicit-range
+      predictions.
 - [ ] Remove any transitional shims (e.g. the dual-adapter selection) once no
-      longer needed.
+      longer needed — happens in step 6 (reap).
 
 ## 4. Cutover (DNS)
 
