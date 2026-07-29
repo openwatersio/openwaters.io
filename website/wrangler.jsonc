@@ -1,13 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "openwaters-io",
-  "main": "./dist/_worker.js/index.js",
+  // Virtual entrypoint resolved by @astrojs/cloudflare v14's vite plugin;
+  // assets config is generated automatically at build.
+  "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-06-01",
   "compatibility_flags": ["nodejs_compat"],
-  "assets": {
-    "binding": "ASSETS",
-    "directory": "./dist",
-  },
   "routes": [
     { "pattern": "openwaters.io", "custom_domain": true },
     { "pattern": "www.openwaters.io", "custom_domain": true },

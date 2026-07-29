@@ -1,0 +1,18 @@
+---
+import { Icon as AstroIcon } from "astro-icon/components";
+import type { HTMLAttributes } from "astro/types";
+
+// Thin wrapper around astro-icon's <Icon>. astro-icon 1.1.5 types its props as
+// HTMLAttributes<"svg"> from astro/types, which under Astro 7 no longer carries
+// a plain `class`, so `<Icon class="…">` fails `astro check` even though it
+// works at runtime. Re-declaring the props keeps call sites fully typed; the
+// cast hands them to astro-icon, which accepts them at runtime.
+type Props = HTMLAttributes<"svg"> & {
+  name: string;
+  class?: string;
+};
+
+const props = Astro.props;
+---
+
+<AstroIcon {...props as any} />
