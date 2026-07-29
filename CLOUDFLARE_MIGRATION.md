@@ -82,17 +82,22 @@ Get it all "right" — no temporary hacks — before the flip.
 The flip. Records already live in the CF zone → attach custom domains and change
 targets. Fast and reversible.
 
-- [ ] Attach custom domains: `api.openwaters.io` → api worker; `openwaters.io` +
-      `www` → website. Then drop the temp `api-cf.openwaters.io` domain and point
-      `PUBLIC_TIDES_API_URL` at `api.openwaters.io`.
-- [ ] Set production `PUBLIC_TIDES_API_URL=https://api.openwaters.io` and redeploy
-      the website.
-- [ ] Repoint the DNS records from Vercel to Cloudflare for each host.
+- [x] Custom domains attached via `routes` in each wrangler config (delete the
+      old Vercel DNS record, then `wrangler deploy` creates the domain):
+      `api.openwaters.io` → api worker; `openwaters.io` + `www` → website.
+- [x] Website rebuilt with `PUBLIC_TIDES_API_URL=https://api.openwaters.io`
+      (now the default in `website/wrangler.jsonc`).
+- [x] Verified live post-flip: API (s-maxage, reference + subordinate
+      predictions), site (home, tides, stations, charts, database pages, assets,
+      404s, www). Dropping `api-cf.openwaters.io` moved to reap.
 
 ## 5. Verification
 
-- [ ] Each host live on its real domain: endpoints, station pages, TLS, cache
-      headers, predictions (reference + subordinate).
+- [x] Each host live on its real domain: endpoints, station pages, TLS, cache
+      headers, predictions (reference + subordinate). Note: Cloudflare doesn't
+      CDN-cache Worker responses the way Vercel did (`cf-cache-status` absent) —
+      the worker *is* the edge. Fine: warm requests are ~2ms and Workers bills
+      per request, not CPU-time. Cache API inside the worker is a later option.
 - [ ] Watch Workers analytics/logs for errors; sanity-check against the Vercel
       baseline. Let it bake before reaping.
 
@@ -115,7 +120,9 @@ targets. Fast and reversible.
 ## Risks & rollback
 
 - **DNS is reversible** — keep Vercel live until each host is verified on
-  Cloudflare, then repoint back if needed.
+  Cloudflare, then repoint back if needed. Pre-cutover records (for rollback):
+  `api` CNAME `33b895a38a373024.vercel-dns-017.com`; apex A `64.29.17.1` +
+  `216.198.79.1` (Vercel).
 - **tide-database node-build asset**: the node build `readSync`s the pack file.
   Cloudflare (api worker + site SSR) uses the **browser** build and avoids this;
   the concern is only for any Node runtime lingering in the transition.

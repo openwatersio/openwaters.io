@@ -8,13 +8,20 @@
     "binding": "ASSETS",
     "directory": "./dist",
   },
+  "routes": [
+    { "pattern": "openwaters.io", "custom_domain": true },
+    { "pattern": "www.openwaters.io", "custom_domain": true },
+  ],
+  // Routes disable these by default; keep the generated URL and PR previews.
+  "workers_dev": true,
+  "preview_urls": true,
   "build": {
     // DEPLOY_TARGET selects the Cloudflare adapter in astro.config.mjs.
     // PUBLIC_TIDES_API_URL is baked in at build time; env wins so cutover/CI can
     // point at api.openwaters.io.
-    // api-cf, not workers.dev: same-account worker-to-worker fetches over
-    // workers.dev are blocked (error 1042).
-    "command": "DEPLOY_TARGET=cloudflare PUBLIC_TIDES_API_URL=${PUBLIC_TIDES_API_URL:-https://api-cf.openwaters.io} npm run build",
+    // A custom domain, not workers.dev: same-account worker-to-worker fetches
+    // over workers.dev are blocked (error 1042).
+    "command": "DEPLOY_TARGET=cloudflare PUBLIC_TIDES_API_URL=${PUBLIC_TIDES_API_URL:-https://api.openwaters.io} npm run build",
   },
   "observability": {
     "enabled": true,
