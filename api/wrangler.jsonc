@@ -3,7 +3,8 @@
   "main": "src/worker.ts",
   "compatibility_date": "2026-06-01",
   "compatibility_flags": ["nodejs_compat"],
-  "routes": [{ "pattern": "api.openwaters.io", "custom_domain": true }],
+  // No routes: api.openwaters.io lives on the gateway worker (gateway/), which
+  // dispatches /tides* here via a service binding.
   "workers_dev": true,
   "preview_urls": true
 }

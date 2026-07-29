@@ -110,6 +110,18 @@ targets. Fast and reversible.
       `@astrojs/vercel` + the dual-adapter shim, `VERCEL_*` env usage, `.vercel/`
       dirs.
 
+## Post-cutover: API gateway
+
+`api.openwaters.io` moved from the tides worker to a thin gateway worker
+(`gateway/`, `openwaters-api-gateway`) so per-API deploys never touch the
+domain owner. The gateway serves `/` + `/health`, 404s unknown paths, and
+dispatches `/tides*` to `openwaters-api` via a **service binding** (`TIDES`).
+Bindings, not zone routes: same-zone subrequests (the website SSR fetching
+`/tides`) bypass routes but always reach custom domains, so the gateway must
+dispatch itself. Adding an API = one binding + one dispatch line in the
+gateway (e.g. `BATHYMETRY` → the crowd-depth worker, stubbed 501 until it
+exists).
+
 ## Follow-up (deferred)
 
 - **crowd-depth** (`depth.openwaters.io`) — migrate the separate Express repo to a
