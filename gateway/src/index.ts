@@ -1,6 +1,6 @@
 interface Env {
   TIDES: Fetcher;
-  // BATHYMETRY: Fetcher; // bind once the crowd-depth worker is deployed
+  BATHYMETRY: Fetcher;
 }
 
 export default {
@@ -12,11 +12,7 @@ export default {
     }
 
     if (pathname === "/bathymetry" || pathname.startsWith("/bathymetry/")) {
-      // return env.BATHYMETRY.fetch(request);
-      return Response.json(
-        { error: "Bathymetry API coming soon" },
-        { status: 501 },
-      );
+      return env.BATHYMETRY.fetch(request);
     }
 
     if (pathname === "/") {
