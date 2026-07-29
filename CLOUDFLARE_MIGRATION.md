@@ -119,8 +119,10 @@ dispatches `/tides*` to `openwaters-api` via a **service binding** (`TIDES`).
 Bindings, not zone routes: same-zone subrequests (the website SSR fetching
 `/tides`) bypass routes but always reach custom domains, so the gateway must
 dispatch itself. Adding an API = one binding + one dispatch line in the
-gateway (e.g. `BATHYMETRY` → the crowd-depth worker, stubbed 501 until it
-exists).
+gateway. Live since 2026-07-29 with both dispatches (`TIDES` →
+`openwaters-api`, `BATHYMETRY` → `crowd-depth-api`), verified end to end.
+Still to do: a Workers Builds config for the gateway (deploy/version with
+`--cwd gateway`, watch path `gateway/*`) — it deploys manually today.
 
 ## Follow-up (deferred)
 
