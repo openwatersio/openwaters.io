@@ -128,6 +128,15 @@ exists).
   Worker; inventory it first for a real DB / stateful deps (unlike the tides API,
   which is pure compute). It stays on Vercel until then, so the Vercel team can't
   be fully closed yet. Tracked outside this plan.
+- **Deploy the tides worker from its source repo** (`packages/api` in
+  openwatersio/neaps) instead of this repo's `api/` workspace: move the worker
+  entry + `wrangler.jsonc` upstream, point Workers Builds at the neaps repo
+  (watch path `packages/api/*`), and keep the worker name `openwaters-api` so
+  the gateway's `TIDES` binding is untouched. Skips the publish → bump → deploy
+  hop on every API change. This repo's `api/` workspace then shrinks to the
+  Vercel entry, which dies at reap — after which it can be deleted entirely.
+  Consideration: the wrangler config carries account-specific deploy details in
+  an otherwise general-purpose OSS repo (same trade-off gebco makes).
 
 ## Risks & rollback
 
