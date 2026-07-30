@@ -6,5 +6,7 @@
   // No routes: api.openwaters.io lives on the gateway worker (gateway/), which
   // dispatches /tides* here via a service binding.
   "workers_dev": true,
-  "preview_urls": true
+  "preview_urls": true,
+  // The website's dev server defaults to the API on 3001.
+  "dev": { "port": 3001 }
 }

@@ -74,8 +74,9 @@ Get it all "right" — no temporary hacks — before the flip.
       (from #292). Production worker picks it up when this branch merges.
       Optional later: longer TTLs / Cache Rule for immutable explicit-range
       predictions.
-- [ ] Remove any transitional shims (e.g. the dual-adapter selection) once no
-      longer needed — happens in step 6 (reap).
+- [x] Transitional shims removed with the Vercel strip (step 6): the
+      dual-adapter selection and `DEPLOY_TARGET` are gone; the site always
+      builds for Cloudflare.
 
 ## 4. Cutover (DNS)
 
@@ -103,12 +104,21 @@ targets. Fast and reversible.
 
 ## 6. Reap legacy (Vercel)
 
+- [x] Vercel stripped from this repo: both `vercel.json`s, `@astrojs/vercel`,
+      the dual-adapter shim, `VERCEL_*` env usage, `api/src/index.ts` (the
+      serverless entry), `.vercel/` dirs and the `.gitignore` entry.
+      Consequence: Vercel builds now fail, so rollback is limited to repointing
+      DNS at the last successful Vercel deployment.
+      - Local API dev is now `wrangler dev` on port 3001 (`dev.port` in
+        `api/wrangler.jsonc`), matching production's runtime. `tsx` dropped.
+      - A small `cloudflare:node` ambient shim lets `tsc -b` typecheck
+        `worker.ts`, now the api's only entry (`wrangler types` would work too
+        but emits ~15k lines for a worker with no bindings).
 - [ ] Delete/pause the migrated Vercel projects (`openwaters-io`,
       `api-openwaters-io`); disconnect their git integration. (crowd-depth stays
       on Vercel until its follow-up, so keep the team for now.)
-- [ ] Strip Vercel bits: `website/vercel.json`, `api/vercel.json`,
-      `@astrojs/vercel` + the dual-adapter shim, `VERCEL_*` env usage, `.vercel/`
-      dirs.
+- [ ] Drop the leftover `api-cf.openwaters.io` custom domain from the api
+      worker (the 1042 workaround).
 
 ## Post-cutover: API gateway
 

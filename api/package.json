@@ -2,15 +2,13 @@
   "name": "@openwaters/api",
   "version": "0.0.1",
   "type": "module",
-  "main": "src/index.ts",
   "engines": {
-    "node": ">=18"
+    "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "wrangler dev",
     "build": "tsc -b",
-    "dev:worker": "wrangler dev",
-    "deploy:worker": "wrangler deploy"
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@neaps/api": "^0.7.0",
@@ -19,7 +17,6 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "tsx": "^4.23.1",
     "typescript": "^7.0.2",
     "wrangler": "^4.110.0"
   }
