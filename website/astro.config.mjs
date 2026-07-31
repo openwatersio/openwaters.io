@@ -1,18 +1,9 @@
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@astrojs/react";
-import vercel from "@astrojs/vercel";
+import cloudflare from "@astrojs/cloudflare";
 
 import icon from "astro-icon";
-
-// Derive API URL for Vercel preview deployments
-if (
-  !process.env.PUBLIC_TIDES_API_URL &&
-  process.env.VERCEL_ENV === "preview" &&
-  process.env.VERCEL_BRANCH_URL
-) {
-  process.env.PUBLIC_TIDES_API_URL = `https://api-${process.env.VERCEL_BRANCH_URL}`;
-}
 
 // https://astro.build/config
 export default defineConfig({
@@ -50,6 +41,6 @@ export default defineConfig({
       ],
     },
   },
-  adapter: vercel({}),
+  adapter: cloudflare(),
   output: "static",
 });

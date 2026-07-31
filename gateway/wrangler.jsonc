@@ -1,0 +1,20 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "openwaters-api-gateway",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-01",
+  // Owns api.openwaters.io and dispatches to per-API workers via service
+  // bindings. Bindings (not zone routes) so same-zone subrequests — the
+  // website SSR worker fetching /tides — reach the right worker; same-zone
+  // fetches bypass routes but always invoke custom domains.
+  "routes": [{ "pattern": "api.openwaters.io", "custom_domain": true }],
+  "services": [
+    { "binding": "TIDES", "service": "openwaters-api" },
+    { "binding": "BATHYMETRY", "service": "crowd-depth-api" }
+  ],
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": {
+    "enabled": true
+  }
+}

@@ -19,10 +19,10 @@
     "concurrently": "^10.0.3"
   },
   "dependencies": {
-    "@neaps/api": "^0.6.0",
-    "@neaps/react": "^0.1.1",
-    "@neaps/tide-database": "^0.8.20260722",
-    "@neaps/tide-predictor": "^0.10.0",
-    "neaps": "^0.7.0"
+    "@neaps/api": "^0.7.0",
+    "@neaps/react": "^0.2.0",
+    "@neaps/tide-database": "^0.9.0",
+    "@neaps/tide-predictor": "^0.11.0",
+    "neaps": "^0.8.0"
   }
 }

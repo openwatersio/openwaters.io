@@ -28,4 +28,7 @@ dist/
 
 # misc
 .cache/
-.vercel
+
+# cloudflare
+.wrangler/
+*.tsbuildinfo
