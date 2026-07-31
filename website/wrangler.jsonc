@@ -13,12 +13,6 @@
   // Routes disable these by default; keep the generated URL and PR previews.
   "workers_dev": true,
   "preview_urls": true,
-  "build": {
-    // PUBLIC_TIDES_API_URL is baked in at build time; env wins so CI can
-    // override. A custom domain, not workers.dev: same-account
-    // worker-to-worker fetches over workers.dev are blocked (error 1042).
-    "command": "PUBLIC_TIDES_API_URL=${PUBLIC_TIDES_API_URL:-https://api.openwaters.io} npm run build",
-  },
   "observability": {
     "enabled": true,
   },

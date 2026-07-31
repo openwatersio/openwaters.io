@@ -50,10 +50,19 @@ are inert artifacts — no teardown needed (better than Vercel's ephemeral
 deploys). Preview versions share the production worker's env/secrets/bindings;
 fine here since both workers are pure compute.
 
-- [x] **Workers Builds** (Cloudflare git integration) connected for both workers.
-      Root directory `/`, no build command, deploy/version commands use
-      `--config api/wrangler.jsonc` / `--config website/wrangler.jsonc`. PR #62
-      builds green on both platforms with preview URLs.
+- [x] **Workers Builds** (Cloudflare git integration) connected for each worker,
+      root directory `/`, watch paths scoped to the worker's directory:
+      - `openwaters-api` / `openwaters-api-gateway`: no build command;
+        deploy/version use `--config api/wrangler.jsonc` /
+        `--config gateway/wrangler.jsonc`.
+      - `openwaters-io`: build command `npm run build -w website`, then
+        deploy/version with `--cwd website`. The Astro build must run *first*
+        and separately: `@astrojs/cloudflare` v14 emits a config redirect
+        (`.wrangler/deploy/config.json` → the generated `dist/server/
+        wrangler.json`) that gives wrangler the real entrypoint. Running the
+        build from wrangler's own `build.command` fails on a clean checkout,
+        because wrangler validates `main` against our config before the
+        redirect exists.
 - [x] **pkg.pr.new pins are SHA-based** (`@neaps/api@cc3a8ca`,
       `@neaps/tide-database@3a91ee9`) — the PR-number URLs are mutable and CI
       caches served stale builds.
