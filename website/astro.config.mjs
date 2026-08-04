@@ -5,12 +5,26 @@ import cloudflare from "@astrojs/cloudflare";
 
 import icon from "astro-icon";
 
+// astro dev and preview run the site in workerd, which cannot evaluate CommonJS.
+// astro-icon's iconify dependencies still ship CJS entries, so without pre-bundling
+// them for the SSR environment every route that renders an <Icon> fails with
+// "module is not defined". The build is unaffected: the Cloudflare adapter sets
+// `ssr.noExternal = true` there, which bundles them already.
+// https://docs.astro.build/en/guides/integrations-guide/cloudflare/
+const optimizeSsrDeps = {
+  name: "openwaters:optimize-ssr-deps",
+  configEnvironment(name) {
+    if (name === "client") return;
+    return { optimizeDeps: { include: ["@iconify/utils", "@iconify/tools"] } };
+  },
+};
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://openwaters.io",
   integrations: [react(), icon()],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), optimizeSsrDeps],
     optimizeDeps: {
       include: ["maplibre-gl"],
       esbuildOptions: {
