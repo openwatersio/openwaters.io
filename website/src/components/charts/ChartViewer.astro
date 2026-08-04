@@ -1,0 +1,237 @@
+---
+interface Props {
+  chart: "seascape" | "seamap";
+}
+
+const { chart } = Astro.props;
+
+// Descriptions match each chart's page lead.
+const about = {
+  seascape: {
+    name: "Seascape",
+    description:
+      "A map of the seafloor built from global open bathymetry with contours, depth shading, and soundings.",
+    href: "/charts/seascape",
+  },
+  seamap: {
+    name: "Seamap",
+    description:
+      "A nautical-themed map with buoys, beacons, lights, and depths.",
+    href: "/charts/seamap",
+  },
+}[chart];
+---
+
+{
+  /* Positioning lives on the wrapper: MapLibre forces position:relative on its
+    own container, which would override an `absolute` here and collapse it. */
+}
+<div class="absolute inset-0">
+  <div id="map" data-chart={chart} class="h-full w-full"></div>
+</div>
+
+{
+  /* Floats over the map, left-aligned under the site header, so the chart runs
+    edge to edge behind it */
+}
+<div class="header-padding pointer-events-none absolute inset-x-0 top-0 z-10">
+  <div class="flex flex-col items-start gap-3 p-4">
+    <div
+      class="card-glass pointer-events-auto flex max-w-xl flex-wrap items-baseline gap-x-2 p-3! text-sm"
+    >
+      <span class="text-xl font-semibold">{about.name}</span>
+      <span class="hidden text-(--text-secondary) sm:inline">
+        · {about.description}
+      </span>
+      <a
+        href={about.href}
+        class="font-medium text-(--accent) hover:text-(--accent-hover)"
+        >About this map</a
+      >
+    </div>
+
+    <div
+      class="card-glass pointer-events-auto inline-flex gap-1 p-1! text-sm"
+      role="group"
+      aria-label="Depth units"
+    >
+      <button
+        type="button"
+        data-unit="m"
+        aria-pressed="true"
+        class="rounded px-3 py-1 font-medium"
+      >
+        m
+      </button>
+      <button
+        type="button"
+        data-unit="ft"
+        aria-pressed="false"
+        class="rounded px-3 py-1 font-medium"
+      >
+        ft
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import maplibregl from "maplibre-gl";
+  import "maplibre-gl/dist/maplibre-gl.css";
+  // Only the runtime helpers: the styles themselves are fetched from the tile
+  // server, so a chart restyle ships without redeploying the site. These drive
+  // the seascape layers by id, which Seamap embeds under the same names.
+  import { applyState, readDepth, type Unit } from "@openwaters/seascape";
+
+  const TILES = "https://tiles.openwaters.io";
+  const SEASCAPE_TILES = `${TILES}/seascape`;
+  const MAX_ZOOM = 13; // deepest zoom readDepth fetches; the worker overzooms past it
+  const SAFETY_DEPTH = 2; // metres, the style's own default
+
+  const container = document.getElementById("map") as HTMLElement;
+  const chart = (container.dataset.chart ?? "seascape") as
+    "seascape" | "seamap";
+
+  const map = new maplibregl.Map({
+    container,
+    style: `${TILES}/${chart}/style.json`,
+    center: chart === "seascape" ? [-23, 65.4] : [10.24, 56.155],
+    zoom: chart === "seascape" ? 9 : 12,
+    hash: true,
+    dragRotate: false,
+    pitchWithRotate: false,
+    attributionControl: {
+      compact: true,
+      // Sprites aren't a MapLibre source, so their credit can't ride along on one.
+      customAttribution:
+        chart === "seamap"
+          ? '<a href="https://freenauticalchart.net/" target="_blank" rel="noopener">Chart symbols by Adam Lucke (GPL-3.0)</a>'
+          : undefined,
+    },
+  });
+  map.addControl(new maplibregl.NavigationControl());
+  map.addControl(new maplibregl.ScaleControl({ unit: "nautical" }));
+
+  // Seamark icon names are composed from tag values at render time, so a
+  // colour combination the sheet doesn't carry would draw nothing. Every shape
+  // ships a `<shape>/generic` variant; fall back to it.
+  map.on("styleimagemissing", ({ id }) => {
+    const generic = `${id.split("/")[0]}/generic`;
+    if (id === generic || map.hasImage(id)) return;
+    const image = map.getImage(generic);
+    if (image)
+      map.addImage(id, image.data, {
+        pixelRatio: image.pixelRatio,
+        sdf: image.sdf,
+      });
+  });
+
+  // ─── Depth units ──────────────────────────────────────────────────────────
+  const unitButtons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>("[data-unit]"),
+  );
+  const ACTIVE = ["bg-(--accent)", "text-white"];
+  const IDLE = [
+    "cursor-pointer",
+    "text-(--text-secondary)",
+    "hover:text-(--text)",
+  ];
+
+  function setUnit(unit: Unit) {
+    applyState(map, { unit, safety: SAFETY_DEPTH });
+    for (const button of unitButtons) {
+      const on = button.dataset.unit === unit;
+      button.setAttribute("aria-pressed", String(on));
+      button.classList.remove(...ACTIVE, ...IDLE);
+      button.classList.add(...(on ? ACTIVE : IDLE));
+    }
+  }
+
+  for (const button of unitButtons)
+    button.addEventListener("click", () =>
+      setUnit(button.dataset.unit as Unit),
+    );
+
+  map.on("load", () => {
+    if (chart === "seascape") {
+      // Mapterhorn: open global terrain, far finer on land than the bathymetry
+      // mosaic. Ocean is flat 0 there, so this shades land only. Attribution
+      // rides in via its TileJSON. Seamap's style already carries land relief.
+      map.addSource("mapterhorn", {
+        type: "raster-dem",
+        url: "https://tiles.mapterhorn.com/tilejson.json",
+        tileSize: 512,
+        encoding: "terrarium", // MapLibre doesn't read encoding from TileJSON
+      });
+      map.addLayer(
+        {
+          id: "land-hillshade",
+          type: "hillshade",
+          source: "mapterhorn",
+          paint: {
+            "hillshade-exaggeration": 0.3,
+            "hillshade-shadow-color": "#8a7455",
+            "hillshade-highlight-color": "#fffdf2",
+            "hillshade-accent-color": "#b3a184",
+          },
+        },
+        "contour-lines", // under the chart linework, over the land wash
+      );
+    }
+
+    // Coverage footprints ship hidden, and queryRenderedFeatures skips layers
+    // with visibility:none. Render them fully transparent instead, so clicking
+    // can still name the survey a depth came from without washing the chart in
+    // colour.
+    if (map.getLayer("source-fill")) {
+      map.setLayoutProperty("source-fill", "visibility", "visible");
+      map.setPaintProperty("source-fill", "fill-opacity", 0);
+    }
+
+    setUnit("m");
+  });
+
+  // Which surveys cover a clicked point, deepest footprint first (lex-first id
+  // on a tie) — the build's own merge rule, so [0] is where the depth came from.
+  // Deduped by id: a footprint split across tile boundaries hits once per piece.
+  function surveysAt(point: maplibregl.Point) {
+    if (!map.getLayer("source-fill")) return [];
+    const hits = map.queryRenderedFeatures(point, { layers: ["source-fill"] });
+    const byId = new Map(
+      hits.map((f) => [f.properties.source_id, f.properties]),
+    );
+    return [...byId.values()].sort(
+      (a, b) =>
+        b.source_maxzoom - a.source_maxzoom ||
+        (a.source_id < b.source_id ? -1 : 1),
+    );
+  }
+
+  map.on("click", async (e) => {
+    const ele = await readDepth(
+      SEASCAPE_TILES,
+      e.lngLat,
+      Math.min(map.getZoom(), MAX_ZOOM),
+    );
+    if (ele == null) return;
+
+    const depth = Math.round(-ele);
+    // Non-negative values are category codes (0 unknown water, 1 drying,
+    // 2 land); overzoom fractions between codes round to the nearest one.
+    const lines = [
+      `<strong>${
+        ele < 0
+          ? `${depth} m (${Math.round(depth * 3.28084)} ft)`
+          : ["unknown depth", "drying", "land"][Math.min(Math.round(ele), 2)]
+      }</strong>`,
+    ];
+    const surveys = surveysAt(e.point);
+    if (surveys.length)
+      lines.push(`<small>source: ${surveys[0].source_name}</small>`);
+
+    new maplibregl.Popup()
+      .setLngLat(e.lngLat)
+      .setHTML(lines.join("<br>"))
+      .addTo(map);
+  });
+</script>

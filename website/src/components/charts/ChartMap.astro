@@ -1,0 +1,83 @@
+---
+interface Props {
+  class?: string;
+  chart?: "seascape" | "seamap";
+  center: [number, number]; // [lng, lat]
+  zoom: number;
+  interactive?: boolean;
+  /** Small previews credit their sources through the page instead. */
+  attribution?: boolean;
+}
+
+const {
+  class: className,
+  chart = "seascape",
+  center,
+  zoom,
+  interactive = true,
+  attribution = interactive,
+} = Astro.props;
+---
+
+<div
+  class={className}
+  data-chart-map
+  data-chart={chart}
+  data-center={JSON.stringify(center)}
+  data-zoom={zoom}
+  data-interactive={String(interactive)}
+  data-attribution={String(attribution)}
+>
+</div>
+
+<script>
+  import maplibregl from "maplibre-gl";
+  import "maplibre-gl/dist/maplibre-gl.css";
+
+  const TILES = "https://tiles.openwaters.io";
+
+  function init(container: HTMLElement) {
+    const interactive = container.dataset.interactive !== "false";
+    const attribution = container.dataset.attribution !== "false";
+    const chart = container.dataset.chart ?? "seascape";
+    const map = new maplibregl.Map({
+      container,
+      // Styles are fetched at runtime rather than built from the style packages,
+      // so a chart restyle ships without redeploying the site.
+      style: `${TILES}/${chart}/style.json`,
+      center: JSON.parse(container.dataset.center ?? "[0,0]"),
+      zoom: Number(container.dataset.zoom ?? 1),
+      interactive,
+      // don't hijack page scroll on full-width heroes
+      cooperativeGestures: interactive,
+      // dozens of merged sources — expanded attribution would blanket the map
+      attributionControl: attribution ? { compact: true } : false,
+    });
+    if (interactive) map.addControl(new maplibregl.NavigationControl());
+    // Aspect-ratio containers can still be laying out when the map initializes,
+    // leaving the canvas stuck at its initial size.
+    new ResizeObserver(() => map.resize()).observe(container);
+    // compact attribution starts expanded; collapse it to the ⓘ toggle
+    map.once("load", () => {
+      container
+        .querySelector(".maplibregl-ctrl-attrib")
+        ?.classList.remove("maplibregl-compact-show");
+    });
+  }
+
+  // Init on approach rather than up front: a page with several thumbnails would
+  // otherwise fetch tiles for all of them before any are on screen.
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      for (const entry of entries)
+        if (entry.isIntersecting) {
+          obs.unobserve(entry.target);
+          init(entry.target as HTMLElement);
+        }
+    },
+    { rootMargin: "300px" },
+  );
+  document
+    .querySelectorAll("[data-chart-map]")
+    .forEach((el) => observer.observe(el));
+</script>

@@ -1,0 +1,12 @@
+---
+import MainLayout from "../../../layouts/MainLayout.astro";
+import ChartViewer from "../../../components/charts/ChartViewer.astro";
+---
+
+<MainLayout
+  title="Seascape Viewer"
+  description="Explore global open bathymetry: depth shading, contours, and soundings, with depths in metres, feet, or fathoms."
+  fullscreen
+>
+  <ChartViewer chart="seascape" />
+</MainLayout>

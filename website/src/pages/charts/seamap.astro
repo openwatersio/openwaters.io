@@ -1,0 +1,318 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import ChartMap from "../../components/charts/ChartMap.astro";
+import Icon from "../../components/Icon.astro";
+
+// MapLibre's hash is zoom/lat/lng, so the viewer opens on the same framing.
+const viewerHref = ({
+  center,
+  zoom,
+}: {
+  center: [number, number];
+  zoom: number;
+}) => `/charts/seamap/viewer#${zoom}/${center[1]}/${center[0]}`;
+
+// Locations picked by rendering candidates side by side: each frames a place
+// where the feature is the obvious subject, so no per-thumbnail layer tuning.
+const features = [
+  {
+    title: "Depth, contours, and soundings",
+    // Sognefjord: a deep channel between steep walls, so the shading bands,
+    // contours, and soundings all read at once
+    center: [6.4, 61.1] as [number, number],
+    zoom: 10,
+    body: "Seafloor depth from Seascape: shaded depth areas, contour lines, and spot soundings, merged from a mosaic of global open bathymetry.",
+    href: "/charts/seascape",
+    linkText: "About Seascape",
+  },
+  {
+    title: "Seamarks from OpenStreetMap",
+    center: [-1.3, 50.77] as [number, number],
+    zoom: 14,
+    body: "Buoys, beacons, lights, landmarks, and harbours, with IALA buoyage defaults filled in so cardinal and lateral marks carry the right colours and topmarks.",
+  },
+  {
+    title: "Light sectors and characteristics",
+    center: [5.3, 60.4] as [number, number],
+    zoom: 11,
+    body: "Sector lights drawn as coloured arcs with their boundary rays, labelled with standard characteristics like Fl(3)W.30s47m19M.",
+  },
+  {
+    title: "Traffic separation schemes",
+    center: [1.5, 51.0] as [number, number],
+    zoom: 9,
+    body: "Separation zones, traffic lanes, and direction arrows where shipping is routed through busy water.",
+  },
+  {
+    title: "Rocks and obstructions",
+    // Kornati: isolated rocks scattered across open water, so the symbols are
+    // the subject rather than competing with dense buoyage
+    center: [15.35796, 43.87569] as [number, number],
+    zoom: 12.2,
+    body: "Rocks and obstructions marked individually, so isolated dangers stand out from the water around them.",
+  },
+  {
+    title: "Offshore infrastructure",
+    center: [1.45, 51.65] as [number, number],
+    zoom: 11,
+    body: "Wind farms, platforms, and piles with the areas restricted around them, plus submarine cables and pipelines.",
+  },
+];
+
+const sources = [
+  {
+    name: "OpenStreetMap",
+    href: "https://www.openstreetmap.org/copyright",
+    contributes: "seamarks, lights, harbours, and land",
+  },
+  {
+    name: "Seascape",
+    href: "/charts/seascape",
+    contributes: "seafloor depth, contours, and soundings",
+  },
+  {
+    name: "VersaTiles",
+    href: "https://versatiles.org",
+    contributes: "the base map, glyphs, and base sprites",
+  },
+  {
+    name: "Mapterhorn",
+    href: "https://mapterhorn.com",
+    contributes: "land relief",
+  },
+  {
+    name: "freenauticalchart",
+    href: "https://freenauticalchart.net/",
+    contributes: "the chart symbols",
+  },
+];
+---
+
+<MainLayout
+  title="Seamap - Charts"
+  description="A nautical-themed map with buoys, beacons, lights, and depths."
+>
+  <!-- Map hero -->
+  <section class="border-b border-(--border)">
+    {
+      /* Salish Sea: island channels, a dense ferry network, and marinas.
+        Non-interactive so scrolling past doesn't get captured by the map; the
+        viewer is where you pan and zoom. Attribution stays: it's full-width. */
+    }
+    <ChartMap
+      class="h-[70vh] min-h-136 w-full"
+      chart="seamap"
+      center={[-122.9, 48.55]}
+      zoom={9.5}
+      interactive={false}
+      attribution
+    />
+  </section>
+
+  <Container class="py-16">
+    <div class="mx-auto max-w-4xl">
+      <a
+        href="/charts"
+        class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+      >
+        <Icon name="mdi:arrow-left" class="size-4" />
+        All charts
+      </a>
+
+      <div class="flex items-center justify-between">
+        <h1 class="mb-3">Seamap</h1>
+        <div class="flex gap-3">
+          <a
+            href="https://github.com/openwatersio/seamap"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-secondary"
+          >
+            <Icon name="mdi:github" class="size-6" />
+            Code
+          </a>
+          <a href="/charts/seamap/viewer" class="btn btn-primary">
+            <Icon name="mdi:map-outline" class="size-6" />
+            Preview
+          </a>
+        </div>
+      </div>
+      <p class="text-lead mb-4">
+        A nautical-themed map with buoys, beacons, lights, and depths.
+      </p>
+
+      <!-- TOC -->
+      <nav
+        aria-label="On this page"
+        class="mb-12 rounded-lg border border-(--border) bg-(--surface-subtle) px-5 py-4 text-sm"
+      >
+        <span class="mr-2 font-semibold">On this page:</span>
+        <a href="#features" class="text-(--accent) hover:text-(--accent-hover)"
+          >Features</a
+        >
+        <span class="mx-2 text-(--text-muted)">·</span>
+        <a href="#sources" class="text-(--accent) hover:text-(--accent-hover)"
+          >Sources</a
+        >
+        <span class="mx-2 text-(--text-muted)">·</span>
+        <a
+          href="#how-to-use"
+          class="text-(--accent) hover:text-(--accent-hover)">How to use</a
+        >
+        <span class="mx-2 text-(--text-muted)">·</span>
+        <a href="#license" class="text-(--accent) hover:text-(--accent-hover)"
+          >License</a
+        >
+      </nav>
+
+      <!-- Not for navigational use -->
+      <div class="mb-12 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4">
+        <h2
+          class="mb-2 flex items-center gap-2 text-lg font-semibold text-amber-900"
+        >
+          <Icon name="mdi:alert" class="size-5" /> Not for navigational use
+        </h2>
+        <p class="text-sm text-amber-900/90">
+          This is a web map drawn in the style of a nautical chart, which makes
+          it easy to mistake for one. It is not. Seamarks come from
+          crowd-sourced OpenStreetMap data and may be missing, outdated, or
+          wrong, and no hydrographic authority reviews any of it. Depths carry
+          Seascape's caveats: they are not reduced to a chart datum, do not
+          account for tides or water level, and gridded bathymetry omits hazards
+          such as rocks, wrecks, and obstructions. Always consult official
+          nautical charts for navigation.
+        </p>
+      </div>
+
+      <!-- Features -->
+      <h2 id="features" class="mb-6 scroll-mt-24 text-3xl font-semibold">
+        Features
+      </h2>
+      <div class="mb-12 grid gap-8 sm:grid-cols-2">
+        {
+          features.map((feature) => (
+            <div>
+              <a
+                href={viewerHref(feature)}
+                class="mb-3 block overflow-hidden rounded-lg border border-(--border) shadow-sm transition-shadow hover:shadow-md"
+                aria-label={`Open ${feature.title} in the viewer`}
+              >
+                {/* pointer-events-none so the whole preview acts as a link */}
+                <ChartMap
+                  class="pointer-events-none aspect-4/3 w-full"
+                  chart="seamap"
+                  center={feature.center}
+                  zoom={feature.zoom}
+                  interactive={false}
+                />
+              </a>
+              <h3 class="mb-1 text-lg font-semibold">{feature.title}</h3>
+              <p class="text-sm text-(--text-secondary)">{feature.body}</p>
+              {feature.href && (
+                <a
+                  href={feature.href}
+                  class="mt-1 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+                >
+                  {feature.linkText}
+                  <Icon name="mdi:arrow-right" class="size-4" />
+                </a>
+              )}
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Sources -->
+      <h2 id="sources" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Sources
+      </h2>
+      <p class="mb-4 text-(--text-secondary)">
+        Seamap is an assembly. Each piece comes from a separate open project:
+      </p>
+      <ul class="mb-12 ml-6 list-disc space-y-2 text-sm">
+        {
+          sources.map((source) => (
+            <li>
+              <a
+                href={source.href}
+                target={source.href.startsWith("/") ? undefined : "_blank"}
+                rel={
+                  source.href.startsWith("/")
+                    ? undefined
+                    : "noopener noreferrer"
+                }
+                class="text-(--accent) hover:text-(--accent-hover)"
+              >
+                {source.name}
+              </a>
+              <span class="text-(--text-secondary)">
+                {" "}
+                — {source.contributes}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <!-- How to use -->
+      <h2 id="how-to-use" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        How to use
+      </h2>
+      <p class="mb-4 text-(--text-secondary)">
+        Point MapLibre GL, Mapbox GL, or any library that reads a MapLibre style
+        at the published style URL. It carries the base map, bathymetry, and
+        chart symbology together, so nothing else needs configuring:
+      </p>
+      <div class="bg-navy-900 mb-4 overflow-x-auto rounded-lg p-4 text-white">
+        <pre
+          class="text-sm"><code>https://tiles.openwaters.io/seamap/style.json</code></pre>
+      </div>
+      <p class="mb-12 text-(--text-secondary)">
+        The seamark vector tiles are also available on their own at <a
+          href="https://tiles.openwaters.io/seamap/tiles.json"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-(--accent) hover:text-(--accent-hover)">tiles.json</a
+        >, for composing into a style of your own. See the{" "}
+        <a
+          href="https://github.com/openwatersio/seamap/blob/main/style/README.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-(--accent) hover:text-(--accent-hover)"
+          >style package README</a
+        > for the builder API and the sprite sheet.
+      </p>
+
+      <!-- License -->
+      <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        License
+      </h2>
+      {/* TODO(seamap): replace with the resolved licensing terms. */}
+      <div class="rounded-lg border border-dashed border-(--border) p-4">
+        <p class="mb-3 text-(--text-secondary)">
+          Licensing for Seamap is being finalised and will be documented here.
+        </p>
+        <p class="text-sm text-(--text-secondary)">
+          What is settled: the underlying map data is{" "}
+          <a
+            href="https://www.openstreetmap.org/copyright"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-(--accent) hover:text-(--accent-hover)"
+            >© OpenStreetMap contributors</a
+          > under the Open Database License (ODbL), and the chart symbols are GPL-3.0,
+          by Adam Lucke via{" "}
+          <a
+            href="https://freenauticalchart.net/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-(--accent) hover:text-(--accent-hover)"
+            >freenauticalchart.net</a
+          >. Attribution for both is carried in the style, so map libraries
+          credit them automatically.
+        </p>
+      </div>
+    </div>
+  </Container>
+</MainLayout>

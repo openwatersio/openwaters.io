@@ -1,7 +1,7 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
-import SeascapeMap from "../../components/charts/SeascapeMap.astro";
+import ChartMap from "../../components/charts/ChartMap.astro";
 import Icon from "../../components/Icon.astro";
 
 // Source list comes from the currently deployed tiles manifest, joined with
@@ -40,11 +40,7 @@ sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
 >
   <!-- Map hero -->
   <section class="border-b border-(--border)">
-    <SeascapeMap
-      class="h-[60vh] min-h-96 w-full"
-      center={[-23, 65.4]}
-      zoom={9}
-    />
+    <ChartMap class="h-[60vh] min-h-96 w-full" center={[-23, 65.4]} zoom={9} />
   </section>
 
   <Container class="py-16">
@@ -73,14 +69,9 @@ sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
           <Icon name="mdi:github" class="size-6" />
           Code
         </a>
-        <a
-          href="https://openwatersio.github.io/seascape/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn btn-secondary"
-        >
+        <a href="/charts/seascape/viewer" class="btn btn-secondary">
           <Icon name="mdi:map-outline" class="size-6" />
-          Demo
+          Open viewer
         </a>
       </div>
 
