@@ -10,13 +10,12 @@ const about = {
   seascape: {
     name: "Seascape",
     description:
-      "A map of the seafloor built from global open bathymetry with contours, depth shading, and soundings.",
+      "A map of the seafloor with contours, depth shading, and soundings.",
     href: "/charts/seascape",
   },
   seamap: {
     name: "Seamap",
-    description:
-      "A nautical-themed map with buoys, beacons, lights, and depths.",
+    description: "A nautical-themed map with depths, seamarks, and hazards.",
     href: "/charts/seamap",
   },
 }[chart];
@@ -35,57 +34,58 @@ const about = {
     edge to edge behind it */
 }
 <div class="header-padding pointer-events-none absolute inset-x-0 top-0 z-10">
-  <div class="flex flex-col items-start gap-3 p-4">
+  <div class="flex items-start gap-3 p-4">
     <div
-      class="card-glass pointer-events-auto flex max-w-xl flex-wrap items-baseline gap-x-2 p-3! text-sm"
+      class="card-glass pointer-events-auto mr-8 flex flex-wrap items-baseline gap-x-2 p-3 text-sm"
     >
-      <span class="text-xl font-semibold">{about.name}</span>
+      <span class="font-semibold">{about.name}</span>
+      ·
       <span class="hidden text-(--text-secondary) sm:inline">
-        · {about.description}
+        {about.description}
       </span>
       <a
         href={about.href}
-        class="font-medium text-(--accent) hover:text-(--accent-hover)"
-        >About this map</a
+        class="font-medium text-(--accent) hover:text-(--accent-hover)">About</a
       >
     </div>
+  </div>
+</div>
 
-    <div
-      class="card-glass pointer-events-auto inline-flex gap-1 p-1! text-sm"
-      role="group"
-      aria-label="Depth units"
+{/* Bottom left, in place of MapLibre's scale bar */}
+<div class="pointer-events-none absolute bottom-0 left-0 z-10 p-4">
+  <div
+    class="card-glass pointer-events-auto inline-flex gap-1 p-1! text-sm"
+    role="group"
+    aria-label="Depth units"
+  >
+    <button
+      type="button"
+      data-unit="m"
+      aria-pressed="true"
+      class="rounded px-3 py-1 font-medium"
     >
-      <button
-        type="button"
-        data-unit="m"
-        aria-pressed="true"
-        class="rounded px-3 py-1 font-medium"
-      >
-        m
-      </button>
-      <button
-        type="button"
-        data-unit="ft"
-        aria-pressed="false"
-        class="rounded px-3 py-1 font-medium"
-      >
-        ft
-      </button>
-    </div>
+      m
+    </button>
+    <button
+      type="button"
+      data-unit="ft"
+      aria-pressed="false"
+      class="rounded px-3 py-1 font-medium"
+    >
+      ft
+    </button>
   </div>
 </div>
 
 <script>
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
-  // Only the runtime helpers: the styles themselves are fetched from the tile
-  // server, so a chart restyle ships without redeploying the site. These drive
+  // Only the runtime helper: the styles themselves are fetched from the tile
+  // server, so a chart restyle ships without redeploying the site. This drives
   // the seascape layers by id, which Seamap embeds under the same names.
-  import { applyState, readDepth, type Unit } from "@openwaters/seascape";
+  import { applyState, type Unit } from "@openwaters/seascape";
 
   const TILES = "https://tiles.openwaters.io";
-  const SEASCAPE_TILES = `${TILES}/seascape`;
-  const MAX_ZOOM = 13; // deepest zoom readDepth fetches; the worker overzooms past it
   const SAFETY_DEPTH = 2; // metres, the style's own default
 
   const container = document.getElementById("map") as HTMLElement;
@@ -98,19 +98,18 @@ const about = {
     center: chart === "seascape" ? [-23, 65.4] : [10.24, 56.155],
     zoom: chart === "seascape" ? 9 : 12,
     hash: true,
+    // A chart is read north-up and flat. dragRotate alone still leaves the
+    // two-finger twist, shift+arrow keys, and two-finger pitch open.
+    maxPitch: 0,
     dragRotate: false,
     pitchWithRotate: false,
-    attributionControl: {
-      compact: true,
-      // Sprites aren't a MapLibre source, so their credit can't ride along on one.
-      customAttribution:
-        chart === "seamap"
-          ? '<a href="https://freenauticalchart.net/" target="_blank" rel="noopener">Chart symbols by Adam Lucke (GPL-3.0)</a>'
-          : undefined,
-    },
+    touchPitch: false,
+    attributionControl: { compact: true },
   });
-  map.addControl(new maplibregl.NavigationControl());
-  map.addControl(new maplibregl.ScaleControl({ unit: "nautical" }));
+  map.touchZoomRotate.disableRotation();
+  map.keyboard.disableRotation();
+  // No compass: with the map locked north-up there's no bearing to reset.
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
 
   // Seamark icon names are composed from tag values at render time, so a
   // colour combination the sheet doesn't carry would draw nothing. Every shape
@@ -179,59 +178,6 @@ const about = {
       );
     }
 
-    // Coverage footprints ship hidden, and queryRenderedFeatures skips layers
-    // with visibility:none. Render them fully transparent instead, so clicking
-    // can still name the survey a depth came from without washing the chart in
-    // colour.
-    if (map.getLayer("source-fill")) {
-      map.setLayoutProperty("source-fill", "visibility", "visible");
-      map.setPaintProperty("source-fill", "fill-opacity", 0);
-    }
-
     setUnit("m");
-  });
-
-  // Which surveys cover a clicked point, deepest footprint first (lex-first id
-  // on a tie) — the build's own merge rule, so [0] is where the depth came from.
-  // Deduped by id: a footprint split across tile boundaries hits once per piece.
-  function surveysAt(point: maplibregl.Point) {
-    if (!map.getLayer("source-fill")) return [];
-    const hits = map.queryRenderedFeatures(point, { layers: ["source-fill"] });
-    const byId = new Map(
-      hits.map((f) => [f.properties.source_id, f.properties]),
-    );
-    return [...byId.values()].sort(
-      (a, b) =>
-        b.source_maxzoom - a.source_maxzoom ||
-        (a.source_id < b.source_id ? -1 : 1),
-    );
-  }
-
-  map.on("click", async (e) => {
-    const ele = await readDepth(
-      SEASCAPE_TILES,
-      e.lngLat,
-      Math.min(map.getZoom(), MAX_ZOOM),
-    );
-    if (ele == null) return;
-
-    const depth = Math.round(-ele);
-    // Non-negative values are category codes (0 unknown water, 1 drying,
-    // 2 land); overzoom fractions between codes round to the nearest one.
-    const lines = [
-      `<strong>${
-        ele < 0
-          ? `${depth} m (${Math.round(depth * 3.28084)} ft)`
-          : ["unknown depth", "drying", "land"][Math.min(Math.round(ele), 2)]
-      }</strong>`,
-    ];
-    const surveys = surveysAt(e.point);
-    if (surveys.length)
-      lines.push(`<small>source: ${surveys[0].source_name}</small>`);
-
-    new maplibregl.Popup()
-      .setLngLat(e.lngLat)
-      .setHTML(lines.join("<br>"))
-      .addTo(map);
   });
 </script>
