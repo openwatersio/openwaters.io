@@ -32,48 +32,73 @@ try {
 }
 // Manifest order is alphabetical by internal id; sort by display name instead.
 sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
+
+// MapLibre's hash is zoom/lat/lng, so the viewer opens on the same framing.
+const viewerHref = ({
+  center,
+  zoom,
+}: {
+  center: [number, number];
+  zoom: number;
+}) => `/charts/seascape/viewer#${zoom}/${center[1]}/${center[0]}`;
+
+// Westfjords, Iceland: fjords and shoals in high-resolution survey data
+const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
 ---
 
 <MainLayout
   title="Seascape - Charts"
-  description="A map of the seafloor built from global open bathymetry, served as raster DEM and vector tiles for MapLibre and Mapbox GL."
+  description="A map of the seafloor built from global open bathymetry with contours, depth shading, and soundings."
 >
   <!-- Map hero -->
   <section class="border-b border-(--border)">
-    <ChartMap class="h-[60vh] min-h-96 w-full" center={[-23, 65.4]} zoom={9} />
+    {
+      /* Non-interactive so scrolling past doesn't get captured by the map;
+        clicking opens the viewer at this framing instead. Attribution lives
+        in the viewer and in the sections below. */
+    }
+    <a href={viewerHref(hero)} aria-label="Open the viewer at this location">
+      <ChartMap
+        class="pointer-events-none h-[70vh] min-h-136 w-full"
+        center={hero.center}
+        zoom={hero.zoom}
+        interactive={false}
+      />
+    </a>
   </section>
 
   <Container class="py-16">
     <div class="mx-auto max-w-4xl">
       <a
         href="/charts"
-        class="mb-6 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+        class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
       >
         <Icon name="mdi:arrow-left" class="size-4" />
         All charts
       </a>
 
-      <h1 class="mb-4">Seascape</h1>
+      <div class="flex items-center justify-between">
+        <h1 class="mb-3">Seascape</h1>
+        <div class="flex gap-3">
+          <a
+            href="https://github.com/openwatersio/seascape"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-secondary"
+          >
+            <Icon name="mdi:github" class="size-6" />
+            <span class="hidden sm:inline">Code</span>
+          </a>
+          <a href="/charts/seascape/viewer" class="btn btn-primary">
+            <Icon name="mdi:eye" class="size-6" />
+            <span class="hidden sm:inline">Preview</span>
+          </a>
+        </div>
+      </div>
       <p class="text-lead mb-4">
         A map of the seafloor built from global open bathymetry with contours,
         depth shading, and soundings.
       </p>
-
-      <div class="mb-12 flex flex-wrap gap-3">
-        <a
-          href="https://github.com/openwatersio/seascape"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn btn-primary"
-        >
-          <Icon name="mdi:github" class="size-6" />
-          Code
-        </a>
-        <a href="/charts/seascape/viewer" class="btn btn-secondary">
-          <Icon name="mdi:map-outline" class="size-6" />
-          Open viewer
-        </a>
-      </div>
 
       <!-- TOC -->
       <nav
@@ -195,7 +220,7 @@ sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
         <strong>Tiles</strong> — the tile compilation served at <code
           class="rounded bg-(--surface-subtle) px-1"
           >tiles.openwaters.io/seascape</code
-        > is licensed
+        > is licensed{" "}
         <a
           href="https://creativecommons.org/licenses/by/4.0/"
           target="_blank"
@@ -205,28 +230,17 @@ sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
       </p>
       <div class="bg-navy-900 mb-4 overflow-x-auto rounded-lg p-4 text-white">
         <pre
-          class="text-sm"><code>© Open Water Software, LLC (https://openwaters.io/charts/seascape#license)</code></pre>
+          class="text-sm"><code>© Open Waters: Seascape &lt;https://openwaters.io/charts/seascape&gt;</code></pre>
       </div>
       <p class="mb-4 text-(--text-secondary)">
-        The underlying data remains under each source's own open terms, listed
-        above. The full attribution list is carried in the
-        <code class="rounded bg-(--surface-subtle) px-1">attribution</code> field
-        of the TileJSON endpoints (<a
-          href="https://tiles.openwaters.io/seascape/raster.json"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)">raster.json</a
-        >,
-        <a
-          href="https://tiles.openwaters.io/seascape/vector.json"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)">vector.json</a
-        >) and is displayed by MapLibre's attribution control automatically,
-        which satisfies each source's terms.
+        The TileJSON endpoints carry that credit in their{" "}
+        <code class="rounded bg-(--surface-subtle) px-1">attribution</code> field,
+        so MapLibre's attribution control displays it automatically, linking back
+        to this page. The underlying data remains under each source's own open terms,
+        listed above.
       </p>
       <p class="mb-4 text-(--text-secondary)">
-        <strong>Code</strong> — the build pipeline is
+        <strong>Code</strong> — the build pipeline is{" "}
         <a
           href="https://github.com/openwatersio/seascape/blob/main/LICENSE"
           target="_blank"
