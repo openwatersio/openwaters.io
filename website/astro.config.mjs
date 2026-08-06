@@ -19,11 +19,21 @@ const optimizeSsrDeps = {
   },
 };
 
+// astro dev, build, and check all share Vite's default cache directory
+// (node_modules/.vite), and Astro hardcodes it rather than deriving it from its own
+// cacheDir option. Building or type checking while a dev server is running re-optimizes
+// dependencies there, invalidating the content-hashed chunks the running workerd module
+// runner still resolves against, so routes 500 until the server restarts. Moving only
+// the dev server leaves builds and CI on the default cache.
+const cacheDir =
+  process.argv[2] === "dev" ? "node_modules/.vite-dev" : undefined;
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://openwaters.io",
   integrations: [react(), icon()],
   vite: {
+    cacheDir,
     plugins: [tailwindcss(), optimizeSsrDeps],
     optimizeDeps: {
       include: ["maplibre-gl"],
