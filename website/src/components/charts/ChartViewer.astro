@@ -123,7 +123,13 @@ const about = {
   ];
 
   function setUnit(unit: Unit) {
-    applyState(map, { unit, safety: SAFETY_DEPTH });
+    // seamap's style.json ships vector depth bands; applyState defaults
+    // shading to "relief", which would filter the bands out above z6
+    applyState(map, {
+      unit,
+      safety: SAFETY_DEPTH,
+      shading: chart === "seamap" ? "bands" : "relief",
+    });
     for (const button of unitButtons) {
       const on = button.dataset.unit === unit;
       button.setAttribute("aria-pressed", String(on));
