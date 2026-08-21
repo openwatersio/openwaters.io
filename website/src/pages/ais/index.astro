@@ -275,31 +275,10 @@ const licenses = [
     <Container>
       <div class="grid items-center gap-10 lg:grid-cols-2">
         <div class="text-center lg:text-left">
-          <h1 class="mb-2 text-2xl font-bold tracking-wide text-(--accent)">
-            AIS Cast
-          </h1>
-          <h2 class="mb-4">Track global ship traffic in real-time.</h2>
-          <p class="text-lead mb-6 leading-snug">
-            Live vessel positions, streamed in real time. Open source and free
-            for personal use.
+          <h1 class="mb-3">All the ships at sea,<br />instantaneously.</h1>
+          <p class="text-lead mb-6">
+            An open AIS network streamed in real-time over WebSockets.
           </p>
-          <!-- <div
-            class="mb-8 flex flex-wrap justify-center gap-3 lg:justify-start"
-          >
-            <a href="/api/ais" class="btn btn-primary">
-              <Icon name="mdi:code-greater-than" class="size-6" />
-              API reference
-            </a>
-            <a
-              href={REPO}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn btn-secondary"
-            >
-              <Icon name="mdi:github" class="size-6" />
-              Code
-            </a>
-          </div> -->
           <dl
             id="ais-stats"
             data-src={`https://${SERVER}/v1/stats`}
@@ -337,110 +316,106 @@ const licenses = [
   <!-- Usage -->
   <section class="bg-(--surface-subtle) py-16">
     <Container>
-      <div class="mx-auto mb-12 max-w-2xl text-center">
-        <h2 class="mb-3">All the ships at sea,<br />instantaneously.</h2>
+      <div class="mx-auto max-w-4xl">
+        <ul class="grid gap-6 md:grid-cols-3">
+          {
+            [
+              {
+                icon: "mdi:broadcast",
+                title: "Real-time API",
+                text: "Subscribe to bounding boxes or vessels over WebSocket and get every message as it is heard, or fetch a GeoJSON snapshot of what is in a box right now, plus stations and live stats.",
+                link: { label: "API reference", href: "/api/ais" },
+              },
+              {
+                icon: "mdi:open-source-initiative",
+                title: "Open source, open data",
+                text: "An open AIS network powered by MIT-license code, and data re-served under each source's own open license, with the source named on every event.",
+                link: { label: "GitHub", href: REPO },
+              },
+              {
+                icon: "mdi:hand-heart-outline",
+                title: "Free for personal use",
+                text: "Read without an account; a one-click token covers a boat, a dashboard, or a side project. Feeding earns more.",
+                link: { label: "See tiers and limits", href: "#limits" },
+              },
+            ].map((w) => (
+              <li class="flex items-start gap-3">
+                <Icon
+                  name={w.icon}
+                  class="mt-0.5 size-6 shrink-0 text-(--accent)"
+                />
+                <div>
+                  <p class="font-semibold">{w.title}</p>
+                  <p class="text-sm text-(--text-secondary)">
+                    {w.text}{" "}
+                    {w.link && <a href={w.link.href}>{w.link.label}</a>}
+                  </p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Snippets -->
+  <section class="py-16">
+    <Container>
+      <div class="mx-auto mb-10 max-w-2xl text-center">
+        <h2 class="mb-3">Stream vessel data in your favorite language</h2>
         <p class="text-lead">
-          An open AIS network: government feeds and volunteer antennas in, one
-          deduplicated stream out.
+          Open a WebSocket, send one subscribe frame, and every message inside
+          the box arrives as JSON with its source, station, raw sentence, and
+          decoded fields. No token needed.
         </p>
       </div>
-      <div class="grid gap-12 lg:grid-cols-2 lg:items-start">
-        <div class="min-w-0">
-          <ul class="mb-6 space-y-4">
-            {
-              [
-                {
-                  icon: "mdi:broadcast",
-                  title: "Real-time over WebSockets",
-                  text: "Open a WebSocket, subscribe to one or more bounding boxes, and receive every message inside them as it is heard.",
-                },
-                {
-                  icon: "mdi:map-marker-multiple-outline",
-                  title: "Snapshot",
-                  text: "One GET returns GeoJSON of every vessel currently in a box, with name, type, course, speed, and when and where it was last heard.",
-                },
-                {
-                  icon: "mdi:open-source-initiative",
-                  title: "Open source, open data",
-                  text: "An open AIS network powered by MIT-license code, and data re-served under each source's own open license, with the source named on every event.",
-                  link: { label: "GitHub", href: REPO },
-                },
-                {
-                  icon: "mdi:hand-heart-outline",
-                  title: "Free for personal use",
-                  text: "Read without an account; a one-click token covers a boat, a dashboard, or a side project. Feeding earns more.",
-                  link: { label: "See tiers and limits", href: "#limits" },
-                },
-              ].map((w) => (
-                <li class="flex items-start gap-3">
-                  <Icon
-                    name={w.icon}
-                    class="mt-0.5 size-6 shrink-0 text-(--accent)"
-                  />
-                  <div>
-                    <p class="font-semibold">{w.title}</p>
-                    <p class="text-sm text-(--text-secondary)">
-                      {w.text}{" "}
-                      {w.link && <a href={w.link.href}>{w.link.label}</a>}
-                    </p>
-                  </div>
-                </li>
-              ))
-            }
-          </ul>
+      <div data-tabs class="mx-auto max-w-3xl">
+        <div
+          role="tablist"
+          aria-label="Language"
+          class="mb-3 flex flex-wrap gap-1"
+        >
+          {
+            snippets.map((s, i) => (
+              <button
+                id={`tab-${s.id}`}
+                role="tab"
+                type="button"
+                aria-selected={i === 0}
+                tabindex={i === 0 ? 0 : -1}
+                aria-controls={`snippet-${s.id}`}
+                class="rounded-md px-3 py-1.5 text-sm font-medium text-(--text-secondary) hover:bg-(--surface-subtle) aria-selected:bg-(--accent) aria-selected:text-white"
+              >
+                {s.label}
+              </button>
+            ))
+          }
+
+          <a href="/api/ais" class="btn btn-outline ml-auto">
+            <Icon name="mdi:code-greater-than" class="size-6" />
+            API Docs
+          </a>
         </div>
-        <div class="min-w-0">
-          <h2 class="mb-3 text-2xl">
-            Stream vessel data in your favorite language
-          </h2>
-          <p class="mb-6 text-(--text-secondary)">
-            Open a WebSocket, send one subscribe frame, and every message inside
-            the box arrives as JSON with its source, station, raw sentence, and
-            decoded fields. No token needed.
-          </p>
-          <div data-tabs>
+        {
+          snippets.map((s, i) => (
             <div
-              role="tablist"
-              aria-label="Language"
-              class="mb-3 flex flex-wrap gap-1"
+              role="tabpanel"
+              id={`snippet-${s.id}`}
+              aria-labelledby={`tab-${s.id}`}
+              tabindex="0"
+              hidden={i !== 0}
             >
-              {
-                snippets.map((s, i) => (
-                  <button
-                    id={`tab-${s.id}`}
-                    role="tab"
-                    type="button"
-                    aria-selected={i === 0}
-                    tabindex={i === 0 ? 0 : -1}
-                    aria-controls={`snippet-${s.id}`}
-                    class="rounded-md px-3 py-1.5 text-sm font-medium text-(--text-secondary) hover:bg-(--surface-subtle) aria-selected:bg-(--accent) aria-selected:text-white"
-                  >
-                    {s.label}
-                  </button>
-                ))
-              }
+              <Fragment set:html={highlighted[i]} />
             </div>
-            {
-              snippets.map((s, i) => (
-                <div
-                  role="tabpanel"
-                  id={`snippet-${s.id}`}
-                  aria-labelledby={`tab-${s.id}`}
-                  tabindex="0"
-                  hidden={i !== 0}
-                >
-                  <Fragment set:html={highlighted[i]} />
-                </div>
-              ))
-            }
-          </div>
-        </div>
+          ))
+        }
       </div>
     </Container>
   </section>
 
   <!-- Limits -->
-  <section id="limits" class="scroll-mt-24 py-16">
+  <section id="limits" class="scroll-mt-24 bg-(--surface-subtle) py-16">
     <Container>
       <div class="mx-auto mb-10 max-w-2xl text-center">
         <h2 class="mb-3">Limits, but only to keep the lights on</h2>
@@ -539,7 +514,7 @@ const licenses = [
   </section>
 
   <!-- Contribute -->
-  <section id="contribute" class="scroll-mt-24 bg-(--surface-subtle) py-16">
+  <section id="contribute" class="scroll-mt-24 py-16">
     <Container>
       <div class="mx-auto mb-12 max-w-2xl text-center">
         <h2 class="mb-3">Put your receiver on the map.</h2>
@@ -570,8 +545,8 @@ const licenses = [
         }
       </div>
       <p class="mt-8 text-center text-sm text-(--text-secondary)">
-        Watch your station arrive at <code class="rounded bg-(--surface) px-1"
-          >GET /v1/stations</code
+        Watch your station arrive at <code
+          class="rounded bg-(--surface-subtle) px-1">GET /v1/stations</code
         >. Named stations with higher limits, and anything else: <a
           href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a
         >. Developers: <a
@@ -584,7 +559,7 @@ const licenses = [
   </section>
 
   <!-- Coverage & license -->
-  <section class="py-16">
+  <section class="bg-(--surface-subtle) py-16">
     <Container>
       <div class="mx-auto max-w-4xl">
         <h2 id="coverage" class="mb-4 scroll-mt-24 text-3xl font-semibold">
