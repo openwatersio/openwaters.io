@@ -6,7 +6,7 @@ import CodeBlock from "../../components/ui/CodeBlock.astro";
 import Icon from "../../components/Icon.astro";
 import AisMap from "../../components/ais/AisMap.astro";
 import { CONTACT_EMAIL } from "../../utils/constants";
-import { highlight, type SNIPPET_LANGS } from "../../utils/shiki";
+import { highlight, SNIPPET_LANGS } from "../../utils/shiki";
 
 const SERVER = "ais.openwaters.io";
 const REPO = "https://github.com/openwatersio/aiscast";
@@ -170,7 +170,7 @@ const contribute = [
   {
     icon: "mdi:sail-boat",
     title: "Signal K",
-    text: "One plugin, both directions: shares what your receiver hears and shows AIS Cast traffic when it hears none. No account; it mints its own token.",
+    text: "One plugin, both directions: shares what your receiver hears and shows AIS traffic when it hears none. No account; it mints its own token.",
     code: "npm install signalk-aiscast",
     links: [
       { label: "npm", href: "https://www.npmjs.com/package/signalk-aiscast" },
@@ -267,7 +267,7 @@ const licenses = [
 ---
 
 <MainLayout
-  title="AIS Cast"
+  title="AIS"
   description="Live AIS vessel traffic from open government feeds and volunteer receivers, streamed by bounding box over WebSocket. Open data, open source, aisstream.io compatible."
 >
   <!-- Hero -->
@@ -329,7 +329,7 @@ const licenses = [
               {
                 icon: "mdi:open-source-initiative",
                 title: "Open source, open data",
-                text: "An open AIS network powered by MIT-license code, and data re-served under each source's own open license, with the source named on every event.",
+                text: "An open AIS network powered by MIT-license code, and data re-served under each source's own terms, with the source named on every event.",
                 link: { label: "GitHub", href: REPO },
               },
               {

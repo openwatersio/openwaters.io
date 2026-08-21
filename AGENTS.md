@@ -11,17 +11,17 @@ Open Waters is an open-source marine software platform providing tools and data 
 
 ## Technology Stack
 
-| Component | Technology |
-|-----------|------------|
-| Website Framework | Astro 7.x |
-| UI Library | React 19.x |
-| Styling | Tailwind CSS 4.x (CSS-based config in `global.css`) |
-| Language | TypeScript 5.x |
-| Maps | MapLibre GL |
-| Tide Engine | Neaps |
-| API Framework | Express.js |
-| Formatting | Prettier |
-| Pre-commit | Husky + lint-staged |
+| Component         | Technology                                          |
+| ----------------- | --------------------------------------------------- |
+| Website Framework | Astro 7.x                                           |
+| UI Library        | React 19.x                                          |
+| Styling           | Tailwind CSS 4.x (CSS-based config in `global.css`) |
+| Language          | TypeScript 7.x                                      |
+| Maps              | MapLibre GL                                         |
+| Tide Engine       | Neaps                                               |
+| API Framework     | Express.js                                          |
+| Formatting        | Prettier                                            |
+| Pre-commit        | Husky + lint-staged                                 |
 
 ## Project Structure
 
@@ -137,6 +137,7 @@ import Card from "../components/ui/Card.astro";
 ### File-Based Routing
 
 Pages in `src/pages/` map directly to URLs:
+
 - `src/pages/index.astro` → `/`
 - `src/pages/about.astro` → `/about`
 - `src/pages/tides/harmonics.astro` → `/tides/harmonics`
@@ -151,7 +152,7 @@ Always use the `cn()` utility when combining classes:
 import { cn } from "../utils/cn";
 
 // Merges classes and handles conflicts
-cn("p-4 bg-ocean-500", hover && "bg-ocean-600", className)
+cn("p-4 bg-ocean-500", hover && "bg-ocean-600", className);
 ```
 
 ### Avoid Stack Overflow on Large Arrays
@@ -183,6 +184,7 @@ import { TideChart } from "../components/tides/TideCharts";
 ## Environment Variables
 
 Public variables (accessible client-side) use `PUBLIC_` prefix:
+
 - `PUBLIC_TIDES_API_URL`
 - `PUBLIC_BATHYMETRY_API_URL`
 - `PUBLIC_SITE_URL`

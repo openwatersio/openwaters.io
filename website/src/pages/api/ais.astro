@@ -5,14 +5,14 @@ import Container from "../../components/ui/Container.astro";
 import Icon from "../../components/Icon.astro";
 
 const entry = await getEntry("ais", "api");
-if (!entry) throw new Error("AISCast API reference not loaded");
+if (!entry) throw new Error("AIS API reference not loaded");
 const { Content, headings } = await render(entry);
 const sections = headings.filter((h) => h.depth === 2);
 ---
 
 <MainLayout
-  title="AISCast API"
-  description="Reference for the AISCast API: live vessel traffic by bounding box over WebSocket, GeoJSON snapshots, access tokens, and an aisstream.io-compatible stream."
+  title="AIS API"
+  description="Reference for the AIS API: live vessel traffic by bounding box over WebSocket, GeoJSON snapshots, access tokens, and an aisstream.io-compatible stream."
 >
   <Container class="py-16">
     <div class="mx-auto max-w-4xl">
@@ -25,7 +25,7 @@ const sections = headings.filter((h) => h.depth === 2);
       </a>
 
       <div class="flex items-center justify-between">
-        <h1 class="mb-3">AISCast API</h1>
+        <h1 class="mb-3">AIS API</h1>
         <div class="flex gap-3">
           <a
             href="https://github.com/openwatersio/aiscast/blob/main/docs/API.md"

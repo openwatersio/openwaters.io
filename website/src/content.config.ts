@@ -1,6 +1,6 @@
 import { defineCollection } from "astro:content";
 
-// The AISCast API reference is maintained in the aiscast repo and rendered here
+// The AIS API reference is maintained in the aiscast repo and rendered here
 // as-is. Fetched from GitHub rather than ais.openwaters.io so a server outage
 // cannot fail a site build.
 const AIS_API_MD =

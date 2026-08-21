@@ -218,6 +218,8 @@ const { class: className, center, zoom } = Astro.props;
           const seen = Date.parse(p.seen);
           if (!Number.isFinite(seen)) continue;
           const v = vessels.get(p.mmsi) || { seen: 0 };
+          // a live event may already have overtaken this snapshot row
+          if (seen < v.seen) continue;
           Object.assign(v, p, {
             lon: f.geometry.coordinates[0],
             lat: f.geometry.coordinates[1],
