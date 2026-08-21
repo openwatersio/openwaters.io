@@ -1,0 +1,732 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Card from "../../components/ui/Card.astro";
+import CodeBlock from "../../components/ui/CodeBlock.astro";
+import Icon from "../../components/Icon.astro";
+import AisMap from "../../components/ais/AisMap.astro";
+import { CONTACT_EMAIL } from "../../utils/constants";
+import { highlight, type SNIPPET_LANGS } from "../../utils/shiki";
+
+const SERVER = "ais.openwaters.io";
+const REPO = "https://github.com/openwatersio/aiscast";
+const TOKEN_PAGE = "https://openwatersio.github.io/aiscast/token.html";
+
+const bbox = "59,10,60,11";
+const snippets: {
+  id: string;
+  label: string;
+  lang: (typeof SNIPPET_LANGS)[number];
+  code: string;
+}[] = [
+  {
+    id: "js",
+    label: "JavaScript",
+    lang: "js",
+    code: `const ws = new WebSocket("wss://${SERVER}/v1/stream");
+ws.onopen = () =>
+  ws.send(JSON.stringify({
+    type: "subscribe",
+    bbox: [[59, 10, 60, 11]]
+  }));
+ws.onmessage = ({ data }) => {
+  const ev = JSON.parse(data);
+  console.log(ev.mmsi, ev.msg_type, ev.lat, ev.lon);
+};`,
+  },
+  {
+    id: "python",
+    label: "Python",
+    lang: "python",
+    code: `import asyncio, json, websockets
+
+URL = "wss://${SERVER}/v1/stream"
+SUB = {"type": "subscribe", "bbox": [[59, 10, 60, 11]]}
+
+async def main():
+    async with websockets.connect(URL) as ws:
+        await ws.send(json.dumps(SUB))
+        async for frame in ws:
+            ev = json.loads(frame)
+            print(ev["mmsi"], ev["msg_type"],
+                  ev.get("lat"), ev.get("lon"))
+
+asyncio.run(main())`,
+  },
+  {
+    id: "go",
+    label: "Go",
+    lang: "go",
+    code: `url := "wss://${SERVER}/v1/stream"
+c, _, err := websocket.DefaultDialer.Dial(url, nil)
+if err != nil {
+	log.Fatal(err)
+}
+c.WriteJSON(map[string]any{
+	"type": "subscribe",
+	"bbox": [][]float64{{59, 10, 60, 11}},
+})
+for {
+	var ev struct {
+		MMSI    int     \`json:"mmsi"\`
+		MsgType string  \`json:"msg_type"\`
+		Lat     float64 \`json:"lat"\`
+		Lon     float64 \`json:"lon"\`
+	}
+	if err := c.ReadJSON(&ev); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(ev.MMSI, ev.MsgType, ev.Lat, ev.Lon)
+}`,
+  },
+  {
+    id: "rust",
+    label: "Rust",
+    lang: "rust",
+    code: `use futures_util::{SinkExt, StreamExt};
+use tokio_tungstenite::{connect_async, tungstenite::Message};
+
+#[tokio::main]
+async fn main() {
+    let url = "wss://${SERVER}/v1/stream";
+    let (mut ws, _) = connect_async(url).await.unwrap();
+    let sub = r#"{"type":"subscribe","bbox":[[59,10,60,11]]}"#;
+    ws.send(Message::text(sub)).await.unwrap();
+    while let Some(Ok(msg)) = ws.next().await {
+        let Message::Text(frame) = msg else { continue };
+        let ev: serde_json::Value =
+            serde_json::from_str(&frame).unwrap();
+        println!("{} {} {} {}",
+            ev["mmsi"], ev["msg_type"], ev["lat"], ev["lon"]);
+    }
+}`,
+  },
+  {
+    id: "shell",
+    label: "Shell",
+    lang: "sh",
+    code: `# live stream
+SUB='{"type":"subscribe","bbox":[[59,10,60,11]]}'
+echo "$SUB" | websocat -n wss://${SERVER}/v1/stream
+
+# snapshot of what is in the box right now
+curl "https://${SERVER}/v1/vessels?bbox=${bbox}"`,
+  },
+];
+const highlighted = await Promise.all(
+  snippets.map((s) => highlight(s.code, s.lang)),
+);
+
+const tiers = [
+  {
+    name: "Anonymous",
+    text: "For trying things out.",
+  },
+  {
+    name: "Personal",
+    text: "For a boat, a hobby project, or a developer’s laptop.",
+    cta: { label: "Get a token", href: TOKEN_PAGE, primary: true },
+  },
+  {
+    name: "Feeder",
+    text: "Awarded to a station that contributes data.",
+    cta: { label: "Start feeding", href: "#contribute", primary: true },
+  },
+  {
+    name: "Commercial",
+    text: "For products, fleets, or those who need support.",
+    cta: {
+      label: "Contact us",
+      href: `mailto:${CONTACT_EMAIL}`,
+      primary: true,
+    },
+  },
+];
+// one cell per tier: true/false for a check, or a string
+const rows: [string, ...(boolean | string)[]][] = [
+  ["Cost", "Free", "Free", "Free", "Paid"],
+  ["Connections/IP Address", "2", "2", "5", "10 or more"],
+  ["Messages/sec", "20", "50", "200", "Unlimited"],
+  ["Subscribed area", "~10°×10°", "~20°×20°", "Unlimited", "Unlimited"],
+  ["Vessels followed by MMSI", "10", "50", "200", "As agreed"],
+  ["Sending data", false, true, true, true],
+  ["Raw NMEA feed", false, false, true, true],
+];
+
+const contribute = [
+  {
+    icon: "mdi:radio-tower",
+    title: "AIS-catcher",
+    text: "Authenticated HTTP, works behind any NAT. Get a token in your browser, add one flag.",
+    code: `AIS-catcher -H https://${SERVER}/v1/receive USERPWD x:<token> GZIP on INTERVAL 15`,
+    links: [
+      { label: "Get a token", href: TOKEN_PAGE },
+      {
+        label: "AIS-catcher",
+        href: "https://github.com/jvde-github/AIS-catcher",
+      },
+    ],
+  },
+  {
+    icon: "mdi:sail-boat",
+    title: "Signal K",
+    text: "One plugin, both directions: shares what your receiver hears and shows AIS Cast traffic when it hears none. No account; it mints its own token.",
+    code: "npm install signalk-aiscast",
+    links: [
+      { label: "npm", href: "https://www.npmjs.com/package/signalk-aiscast" },
+      { label: "README", href: `${REPO}/tree/main/signalk-plugin#readme` },
+    ],
+  },
+  {
+    icon: "mdi:docker",
+    title: "docker-shipfeeder",
+    text: "Already feeding the aggregators from a container? Add one more UDP destination.",
+    code: `host ${SERVER}, port 10110`,
+    links: [
+      {
+        label: "docker-shipfeeder",
+        href: "https://github.com/sdr-enthusiasts/docker-shipfeeder",
+      },
+    ],
+  },
+  {
+    icon: "mdi:lan-connect",
+    title: "Any NMEA forwarder",
+    text: "Plain !AIVDM sentences over UDP, no token. Your station is a keyed hash of your address, never the address itself.",
+    code: `AIS-catcher -u ${SERVER} 10110`,
+    links: [
+      {
+        label: "ais-forwarder",
+        href: "https://github.com/hkapanen/ais-forwarder",
+      },
+    ],
+  },
+];
+
+const coverage = [
+  {
+    source: "Kystverket",
+    where: "Norwegian coast, 40–60 nm out",
+    freshness: "live",
+  },
+  {
+    source: "Fintraffic Digitraffic",
+    where: "Finnish waters",
+    freshness: "live",
+  },
+  {
+    source: "Volunteer receivers",
+    where: "wherever they are",
+    freshness: "live",
+  },
+  {
+    source: "AISHub aggregate",
+    where: "worldwide terrestrial, ~50k vessels",
+    freshness: "1–6 min (their snapshot refreshes every ~5 min)",
+  },
+  {
+    source: "aisstream.io",
+    where: "worldwide, when it is up",
+    freshness: "live; frequently down",
+  },
+];
+
+const licenses = [
+  {
+    source: "Kystverket",
+    license: "NLOD 2.0",
+    href: "https://data.norge.no/nlod/en/2.0",
+    obligation:
+      "Credit: “Contains data under the Norwegian licence for Open Government data (NLOD) distributed by the Norwegian Coastal Administration.” NLOD is not sublicensable: you are bound by it directly.",
+  },
+  {
+    source: "Fintraffic Digitraffic",
+    license: "CC BY 4.0",
+    href: "https://creativecommons.org/licenses/by/4.0/",
+    obligation:
+      "Credit: “Source: Fintraffic / digitraffic.fi, license CC 4.0 BY.”",
+  },
+  {
+    source: "Volunteer receivers",
+    license: "beta",
+    obligation:
+      "Contributed for re-serving by this server; a written feeder agreement with an open license on the aggregate is the next stage. Credit “aiscast volunteer receivers” for now.",
+  },
+  {
+    source: "AISHub aggregate",
+    license: "AISHub membership",
+    obligation:
+      "Their published terms grant “use” only. Treat as view-only: fine to display, do not build a product on these events alone. May be withdrawn; every event carries source: aishub.",
+  },
+  {
+    source: "aisstream.io",
+    license: "no published terms",
+    obligation: "Best effort, may disappear. source: aisstream.",
+  },
+];
+---
+
+<MainLayout
+  title="AIS Cast"
+  description="Live AIS vessel traffic from open government feeds and volunteer receivers, streamed by bounding box over WebSocket. Open data, open source, aisstream.io compatible."
+>
+  <!-- Hero -->
+  <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-12">
+    <Container>
+      <div class="grid items-center gap-10 lg:grid-cols-2">
+        <div class="text-center lg:text-left">
+          <h1 class="mb-2 text-2xl font-bold tracking-wide text-(--accent)">
+            AIS Cast
+          </h1>
+          <h2 class="mb-4">Track global ship traffic in real-time.</h2>
+          <p class="text-lead mb-6 leading-snug">
+            Live vessel positions, streamed in real time. Open source and free
+            for personal use.
+          </p>
+          <!-- <div
+            class="mb-8 flex flex-wrap justify-center gap-3 lg:justify-start"
+          >
+            <a href="/api/ais" class="btn btn-primary">
+              <Icon name="mdi:code-greater-than" class="size-6" />
+              API reference
+            </a>
+            <a
+              href={REPO}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-secondary"
+            >
+              <Icon name="mdi:github" class="size-6" />
+              Code
+            </a>
+          </div> -->
+          <dl
+            id="ais-stats"
+            data-src={`https://${SERVER}/v1/stats`}
+            class="grid grid-cols-3 gap-4 border-t border-(--border) pt-6 text-center lg:text-left"
+          >
+            <div class="flex flex-col-reverse">
+              <dt class="text-sm text-(--text-muted) uppercase">stations</dt>
+              <dd class="text-4xl font-bold tabular-nums" data-stat="stations">
+                –
+              </dd>
+            </div>
+            <div class="flex flex-col-reverse">
+              <dt class="text-sm text-(--text-muted) uppercase">vessels</dt>
+              <dd class="text-4xl font-bold tabular-nums" data-stat="vessels">
+                –
+              </dd>
+            </div>
+            <div class="flex flex-col-reverse">
+              <dt class="text-sm text-(--text-muted) uppercase">Per Sec</dt>
+              <dd class="text-4xl font-bold tabular-nums" data-stat="rate">
+                –
+              </dd>
+            </div>
+          </dl>
+        </div>
+        <AisMap
+          center={[22, 59.75]}
+          zoom={6}
+          class="aspect-4/3 w-full overflow-hidden rounded-lg border border-(--border) shadow-xl lg:aspect-3/2"
+        />
+      </div>
+    </Container>
+  </section>
+
+  <!-- Usage -->
+  <section class="bg-(--surface-subtle) py-16">
+    <Container>
+      <div class="mx-auto mb-12 max-w-2xl text-center">
+        <h2 class="mb-3">All the ships at sea,<br />instantaneously.</h2>
+        <p class="text-lead">
+          An open AIS network: government feeds and volunteer antennas in, one
+          deduplicated stream out.
+        </p>
+      </div>
+      <div class="grid gap-12 lg:grid-cols-2 lg:items-start">
+        <div class="min-w-0">
+          <ul class="mb-6 space-y-4">
+            {
+              [
+                {
+                  icon: "mdi:broadcast",
+                  title: "Real-time over WebSockets",
+                  text: "Open a WebSocket, subscribe to one or more bounding boxes, and receive every message inside them as it is heard.",
+                },
+                {
+                  icon: "mdi:map-marker-multiple-outline",
+                  title: "Snapshot",
+                  text: "One GET returns GeoJSON of every vessel currently in a box, with name, type, course, speed, and when and where it was last heard.",
+                },
+                {
+                  icon: "mdi:open-source-initiative",
+                  title: "Open source, open data",
+                  text: "An open AIS network powered by MIT-license code, and data re-served under each source's own open license, with the source named on every event.",
+                  link: { label: "GitHub", href: REPO },
+                },
+                {
+                  icon: "mdi:hand-heart-outline",
+                  title: "Free for personal use",
+                  text: "Read without an account; a one-click token covers a boat, a dashboard, or a side project. Feeding earns more.",
+                  link: { label: "See tiers and limits", href: "#limits" },
+                },
+              ].map((w) => (
+                <li class="flex items-start gap-3">
+                  <Icon
+                    name={w.icon}
+                    class="mt-0.5 size-6 shrink-0 text-(--accent)"
+                  />
+                  <div>
+                    <p class="font-semibold">{w.title}</p>
+                    <p class="text-sm text-(--text-secondary)">
+                      {w.text}{" "}
+                      {w.link && <a href={w.link.href}>{w.link.label}</a>}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="min-w-0">
+          <h2 class="mb-3 text-2xl">
+            Stream vessel data in your favorite language
+          </h2>
+          <p class="mb-6 text-(--text-secondary)">
+            Open a WebSocket, send one subscribe frame, and every message inside
+            the box arrives as JSON with its source, station, raw sentence, and
+            decoded fields. No token needed.
+          </p>
+          <div data-tabs>
+            <div
+              role="tablist"
+              aria-label="Language"
+              class="mb-3 flex flex-wrap gap-1"
+            >
+              {
+                snippets.map((s, i) => (
+                  <button
+                    id={`tab-${s.id}`}
+                    role="tab"
+                    type="button"
+                    aria-selected={i === 0}
+                    tabindex={i === 0 ? 0 : -1}
+                    aria-controls={`snippet-${s.id}`}
+                    class="rounded-md px-3 py-1.5 text-sm font-medium text-(--text-secondary) hover:bg-(--surface-subtle) aria-selected:bg-(--accent) aria-selected:text-white"
+                  >
+                    {s.label}
+                  </button>
+                ))
+              }
+            </div>
+            {
+              snippets.map((s, i) => (
+                <div
+                  role="tabpanel"
+                  id={`snippet-${s.id}`}
+                  aria-labelledby={`tab-${s.id}`}
+                  tabindex="0"
+                  hidden={i !== 0}
+                >
+                  <Fragment set:html={highlighted[i]} />
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Limits -->
+  <section id="limits" class="scroll-mt-24 py-16">
+    <Container>
+      <div class="mx-auto mb-10 max-w-2xl text-center">
+        <h2 class="mb-3">Limits, but only to keep the lights on</h2>
+        <p class="text-lead">
+          Everything re-served here is open data or volunteer data its
+          contributor chose to share. These limits exist to keep the service
+          healthy and reward the people who feed it.
+        </p>
+      </div>
+      <div class="card mx-auto max-w-5xl overflow-x-auto">
+        <table class="w-full min-w-2xl table-fixed text-sm">
+          <thead>
+            <tr class="border-b border-(--border)">
+              <th></th>
+              {
+                tiers.map((t) => (
+                  <th
+                    scope="col"
+                    class="px-3 pb-3 text-center align-top font-semibold"
+                  >
+                    {t.name}
+                    <span class="mt-2 block text-xs font-normal text-(--text-secondary)">
+                      {t.text}
+                    </span>
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-(--border-subtle)">
+            {
+              rows.map(([feature, ...cells]) => (
+                <tr>
+                  <th
+                    scope="row"
+                    class="py-2.5 pr-3 text-left font-normal text-(--text-secondary)"
+                  >
+                    {feature}
+                  </th>
+                  {cells.map((c) => (
+                    <td class="px-3 py-2.5 text-center">
+                      {c === true ? (
+                        <Icon
+                          name="mdi:check"
+                          class="inline size-5 text-(--accent)"
+                        />
+                      ) : c === false ? (
+                        <span class="text-(--text-muted)">—</span>
+                      ) : (
+                        c
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td></td>
+              {
+                tiers.map((t) => (
+                  <td class="px-3 pt-5 text-center">
+                    {t.cta && (
+                      <a
+                        href={t.cta.href}
+                        class:list={[
+                          "btn text-sm text-nowrap",
+                          t.cta.primary ? "btn-primary" : "btn-secondary",
+                        ]}
+                      >
+                        {t.cta.label}
+                      </a>
+                    )}
+                  </td>
+                ))
+              }
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p
+        class="mx-auto mt-10 max-w-3xl text-center text-sm text-(--text-muted)"
+      >
+        Limits apply per token and per network address: at most 8 concurrent
+        streams from one address, however many tokens are behind it. Over a
+        per-second rate the stream thins and stays up; over a connection, area,
+        or MMSI-list limit you are refused with a message that says so.
+        Following vessels by MMSI is bounded by the list, not by area, so a
+        world-wide MMSI subscription is allowed in every tier. Need more, or
+        unsure which tier you are? <a href={`mailto:${CONTACT_EMAIL}`}
+          >{CONTACT_EMAIL}</a
+        >.
+      </p>
+    </Container>
+  </section>
+
+  <!-- Contribute -->
+  <section id="contribute" class="scroll-mt-24 bg-(--surface-subtle) py-16">
+    <Container>
+      <div class="mx-auto mb-12 max-w-2xl text-center">
+        <h2 class="mb-3">Put your receiver on the map.</h2>
+        <p class="text-lead">
+          Whatever your antenna hears is re-served to everyone, and deduplicated
+          against every other station.
+        </p>
+      </div>
+      <div class="grid gap-6 sm:grid-cols-2">
+        {
+          contribute.map((c) => (
+            <Card class="flex min-w-0 flex-col">
+              <div class="mb-3 flex items-center gap-3">
+                <Icon name={c.icon} class="size-8 text-(--accent)" />
+                <h3 class="text-lg font-semibold">{c.title}</h3>
+              </div>
+              <p class="mb-3 text-sm text-(--text-secondary)">{c.text}</p>
+              <CodeBlock class="mb-3" code={c.code} />
+              <div class="mt-auto flex flex-wrap gap-4 text-sm">
+                {c.links.map((l) => (
+                  <a href={l.href} target="_blank" rel="noopener noreferrer">
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+            </Card>
+          ))
+        }
+      </div>
+      <p class="mt-8 text-center text-sm text-(--text-secondary)">
+        Watch your station arrive at <code class="rounded bg-(--surface) px-1"
+          >GET /v1/stations</code
+        >. Named stations with higher limits, and anything else: <a
+          href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a
+        >. Developers: <a
+          href={`${REPO}/blob/main/CONTRIBUTING.md`}
+          target="_blank"
+          rel="noopener noreferrer">CONTRIBUTING.md</a
+        >.
+      </p>
+    </Container>
+  </section>
+
+  <!-- Coverage & license -->
+  <section class="py-16">
+    <Container>
+      <div class="mx-auto max-w-4xl">
+        <h2 id="coverage" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          Coverage
+        </h2>
+        <p class="mb-4 text-(--text-secondary)">
+          Every event says which of these it came from.
+        </p>
+        <div class="mb-12 overflow-x-auto">
+          <table class="w-full min-w-lg text-sm">
+            <thead class="bg-(--surface-subtle)">
+              <tr>
+                <th scope="col" class="px-3 py-2 text-left">Source</th>
+                <th scope="col" class="px-3 py-2 text-left">Where</th>
+                <th scope="col" class="px-3 py-2 text-left">Freshness</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-(--border-subtle)">
+              {
+                coverage.map((row) => (
+                  <tr>
+                    <td class="px-3 py-2 font-medium">{row.source}</td>
+                    <td class="px-3 py-2 text-(--text-secondary)">
+                      {row.where}
+                    </td>
+                    <td class="px-3 py-2 text-(--text-secondary)">
+                      {row.freshness}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          License
+        </h2>
+        <p class="mb-4 text-(--text-secondary)">
+          Licensing is per source, and the aggregate is not relicensed: each
+          event is re-served under the terms of the source it came from, which
+          is why <code class="rounded bg-(--surface-subtle) px-1">source</code> is
+          on every event and every vessel. If you display or redistribute the data,
+          carry the source's attribution through.
+        </p>
+        <div class="mb-6 overflow-x-auto">
+          <table class="w-full min-w-lg text-sm">
+            <thead class="bg-(--surface-subtle)">
+              <tr>
+                <th scope="col" class="px-3 py-2 text-left">Source</th>
+                <th scope="col" class="px-3 py-2 text-left">License</th>
+                <th scope="col" class="px-3 py-2 text-left">What you must do</th
+                >
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-(--border-subtle)">
+              {
+                licenses.map((row) => (
+                  <tr>
+                    <td class="px-3 py-2 font-medium">{row.source}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">
+                      {row.href ? (
+                        <a
+                          href={row.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {row.license}
+                        </a>
+                      ) : (
+                        row.license
+                      )}
+                    </td>
+                    <td class="px-3 py-2 text-(--text-secondary)">
+                      {row.obligation}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="text-(--text-secondary)">
+          The server, viewer, and plugin are{" "}
+          <a
+            href={`${REPO}/blob/main/LICENSE`}
+            target="_blank"
+            rel="noopener noreferrer">MIT</a
+          >. The full position on licensing, privacy, and how the project funds
+          itself without relicensing data is in the repo's{" "}
+          <a
+            href={`${REPO}/blob/main/PLAN.md`}
+            target="_blank"
+            rel="noopener noreferrer">PLAN.md</a
+          >.
+        </p>
+      </div>
+    </Container>
+  </section>
+</MainLayout>
+
+<script>
+  // Snippet tabs: click or arrow keys
+  document.querySelectorAll<HTMLElement>("[data-tabs]").forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>("[role=tab]")];
+    const panels = [...root.querySelectorAll<HTMLElement>("[role=tabpanel]")];
+    const select = (i: number) => {
+      tabs.forEach((t, j) => {
+        t.setAttribute("aria-selected", String(i === j));
+        t.tabIndex = i === j ? 0 : -1;
+      });
+      panels.forEach((p, j) => (p.hidden = i !== j));
+      tabs[i]!.focus();
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => select(i));
+      tab.addEventListener("keydown", (e) => {
+        const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (d) select((i + d + tabs.length) % tabs.length);
+      });
+    });
+  });
+
+  // Live stats: active stations, vessels in the cache, deduplicated events/sec.
+  const stats = document.getElementById("ais-stats");
+  if (stats) {
+    const src = stats.dataset.src!;
+    const show = (key: string, value: number | string) => {
+      stats.querySelector(`[data-stat=${key}]`)!.textContent =
+        typeof value === "number" ? Math.round(value).toLocaleString() : value;
+    };
+    const poll = async () => {
+      try {
+        const s = await (await fetch(src)).json();
+        show("stations", s.stations.active);
+        show("vessels", `${Math.round(s.vessels.total / 1000)}k`);
+        show("rate", s.events.per_second);
+      } catch {
+        // leave the placeholders; the hero works without numbers
+      }
+    };
+    poll();
+    setInterval(poll, 5000);
+  }
+</script>

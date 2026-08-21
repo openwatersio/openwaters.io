@@ -1,0 +1,520 @@
+---
+interface Props {
+  class?: string;
+  center: [number, number]; // [lng, lat]
+  zoom: number;
+}
+
+const { class: className, center, zoom } = Astro.props;
+---
+
+<div
+  class={className}
+  data-ais-map
+  data-center={JSON.stringify(center)}
+  data-zoom={zoom}
+>
+</div>
+
+<style is:global>
+  .ais-pulses {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .maplibregl-popup-content {
+    font:
+      12px/1.5 system-ui,
+      sans-serif;
+    max-width: 24em;
+    color: #0f172a;
+  }
+  .maplibregl-popup-content h3 {
+    margin: 0 0 4px;
+    font-size: 14px;
+  }
+  .maplibregl-popup-content table td {
+    padding: 0 6px 0 0;
+    vertical-align: top;
+  }
+  .maplibregl-popup-content pre {
+    margin: 4px 0 0;
+    font-size: 10px;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+</style>
+
+<script>
+  // Adapted from the aiscast viewer (github.com/openwatersio/aiscast/viewer).
+  import maplibregl, {
+    type ExpressionSpecification,
+    type LngLatLike,
+  } from "maplibre-gl";
+  import "maplibre-gl/dist/maplibre-gl.css";
+
+  const SERVER = "https://ais.openwaters.io";
+  const WS = SERVER.replace(/^http/, "ws") + "/v1/stream";
+  const TTL = 30 * 60e3; // drop after 30 min unseen, same as aiscast
+  const PULSE_MS = 1200;
+
+  // Licensing is per source, so only sources actually seen are credited.
+  const LICENSES: Record<string, string> = {
+    kystverket:
+      '<a href="https://www.kystverket.no/">Kystverket</a> (NLOD 2.0)',
+    digitraffic:
+      'Source: <a href="https://www.digitraffic.fi/">Fintraffic / digitraffic.fi</a>, license CC 4.0 BY',
+  };
+  const NAV = [
+    "Under way using engine",
+    "At anchor",
+    "Not under command",
+    "Restricted manoeuvrability",
+    "Constrained by draught",
+    "Moored",
+    "Aground",
+    "Fishing",
+    "Under way sailing",
+    "HSC",
+    "WIG",
+    "",
+    "",
+    "",
+    "AIS-SART",
+    "",
+  ];
+  const CLASS_COLORS: Record<string, string> = {
+    cargo: "#2e7d32",
+    tanker: "#c62828",
+    passenger: "#1565c0",
+    fishing: "#ef6c00",
+    pleasure: "#8e24aa",
+    special: "#00838f",
+    aton: "#6d4c41",
+    base: "#37474f",
+    sar: "#d81b60",
+    other: "#f9a825",
+  };
+  const POSITION_TYPES = new Set([
+    "PositionReport",
+    "StandardClassBPositionReport",
+    "ExtendedClassBPositionReport",
+    "LongRangeAisBroadcastMessage",
+    "StandardSearchAndRescueAircraftReport",
+    "BaseStationReport",
+    "AidsToNavigationReport",
+  ]);
+
+  type Vessel = {
+    lat?: number;
+    lon?: number;
+    cog?: number;
+    sog?: number;
+    heading?: number;
+    nav_status?: number;
+    type?: number;
+    kind?: string;
+    name?: string;
+    seen: number;
+    source?: string;
+    station?: string;
+    msg_type?: string;
+    nmea?: string[];
+  };
+
+  function shipClass(kind?: string, t?: number) {
+    if (kind && kind !== "vessel") return kind;
+    if (!t) return "other";
+    if (t === 30) return "fishing";
+    if (t === 36 || t === 37) return "pleasure";
+    if (t >= 50 && t <= 59) return "special";
+    if (t >= 60 && t <= 69) return "passenger";
+    if (t >= 70 && t <= 79) return "cargo";
+    if (t >= 80 && t <= 89) return "tanker";
+    return "other";
+  }
+
+  const esc = (s: unknown) =>
+    String(s).replace(
+      /[&<>"]/g,
+      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!,
+    );
+
+  function triangle() {
+    const s = 24,
+      c = document.createElement("canvas");
+    c.width = c.height = s;
+    const g = c.getContext("2d")!;
+    g.beginPath();
+    g.moveTo(s / 2, 1);
+    g.lineTo(s - 3, s - 2);
+    g.lineTo(s / 2, s * 0.7);
+    g.lineTo(3, s - 2);
+    g.closePath();
+    g.fillStyle = "#000";
+    g.fill();
+    return g.getImageData(0, 0, s, s);
+  }
+
+  function init(container: HTMLElement) {
+    const map = new maplibregl.Map({
+      container,
+      style: "https://tiles.openfreemap.org/styles/fiord",
+      center: JSON.parse(container.dataset.center ?? "[0,0]"),
+      zoom: Number(container.dataset.zoom ?? 1),
+      cooperativeGestures: true, // don't hijack page scroll in the hero
+      attributionControl: false,
+    });
+    new ResizeObserver(() => map.resize()).observe(container);
+
+    let attribution: maplibregl.AttributionControl | null = null;
+    const seenSources = new Set<string>();
+    function noteSource(src: string) {
+      if (!src || seenSources.has(src)) return;
+      seenSources.add(src);
+      setAttribution();
+    }
+    function setAttribution() {
+      if (attribution) map.removeControl(attribution);
+      const customAttribution = [...seenSources].map(
+        (s) => LICENSES[s] || `AIS: ${esc(s)}`,
+      );
+      attribution = new maplibregl.AttributionControl({
+        compact: true,
+        customAttribution,
+      });
+      map.addControl(attribution);
+      // compact attribution starts expanded; collapse it to the ⓘ toggle
+      container
+        .querySelector(".maplibregl-ctrl-attrib")
+        ?.classList.remove("maplibregl-compact-show");
+    }
+
+    const vessels = new Map<number, Vessel>();
+    let dirty = false;
+
+    function bboxParam() {
+      const b = map.getBounds();
+      const clamp = (v: number, lo: number, hi: number) =>
+        Math.max(lo, Math.min(hi, v));
+      return [
+        clamp(b.getSouth(), -90, 90),
+        clamp(b.getWest(), -180, 180),
+        clamp(b.getNorth(), -90, 90),
+        clamp(b.getEast(), -180, 180),
+      ];
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch(
+          `${SERVER}/v1/vessels?bbox=${bboxParam().join(",")}`,
+        );
+        const fc = await res.json();
+        for (const f of fc.features) {
+          const p = f.properties;
+          const seen = Date.parse(p.seen);
+          if (!Number.isFinite(seen)) continue;
+          const v = vessels.get(p.mmsi) || { seen: 0 };
+          Object.assign(v, p, {
+            lon: f.geometry.coordinates[0],
+            lat: f.geometry.coordinates[1],
+            seen,
+          });
+          vessels.set(p.mmsi, v);
+          noteSource(p.source);
+        }
+        dirty = true;
+      } catch (e) {
+        console.warn("snapshot failed", e);
+      }
+    }
+
+    // ---- live stream ----
+    let ws: WebSocket | undefined,
+      backoff = 1000;
+    function connect() {
+      ws = new WebSocket(WS);
+      ws.onopen = () => {
+        backoff = 1000;
+        subscribe();
+      };
+      ws.onclose = () => {
+        setTimeout(connect, backoff);
+        backoff = Math.min(backoff * 2, 30e3);
+      };
+      ws.onerror = () => ws?.close();
+      ws.onmessage = (e) => {
+        const ev = JSON.parse(e.data);
+        if (ev.type === "event") onEvent(ev);
+      };
+    }
+    function subscribe() {
+      if (ws?.readyState === 1)
+        ws.send(JSON.stringify({ type: "subscribe", bbox: [bboxParam()] }));
+    }
+
+    function onEvent(ev: any) {
+      const m = ev.message || {};
+      const v = vessels.get(ev.mmsi) || { kind: "vessel", seen: 0 };
+      const t = Date.parse(ev.time);
+      if (!Number.isFinite(t)) return;
+      // late arrivals (AISHub lags minutes) fold in static fields only, so the marker never jumps backwards
+      const stale = v.lat != null && t < v.seen - 1000;
+      if (ev.lat != null && !stale) {
+        v.lat = ev.lat;
+        v.lon = ev.lon;
+      }
+      if (POSITION_TYPES.has(ev.msg_type) && !stale) {
+        const lr = ev.msg_type === "LongRangeAisBroadcastMessage";
+        v.cog = m.Cog != null && m.Cog < (lr ? 511 : 360) ? m.Cog : undefined;
+        v.sog = m.Sog != null && m.Sog < (lr ? 63 : 102.3) ? m.Sog : undefined;
+        v.heading =
+          m.TrueHeading != null && m.TrueHeading < 511
+            ? m.TrueHeading
+            : undefined;
+      }
+      if (m.NavigationalStatus != null && m.NavigationalStatus !== 15 && !stale)
+        v.nav_status = m.NavigationalStatus;
+      const name = m.Name || m.ReportA?.Name;
+      if (name) v.name = name;
+      const type = m.Type || m.ReportB?.ShipType;
+      if (type) v.type = type;
+      if (ev.msg_type === "AidsToNavigationReport") v.kind = "aton";
+      else if (ev.msg_type === "BaseStationReport") v.kind = "base";
+      else if (ev.msg_type === "StandardSearchAndRescueAircraftReport")
+        v.kind = "sar";
+      if (!stale)
+        Object.assign(v, {
+          seen: t,
+          source: ev.source,
+          station: ev.station,
+          msg_type: ev.msg_type,
+          nmea: ev.nmea,
+        });
+      vessels.set(ev.mmsi, v);
+      noteSource(ev.source);
+      if (v.lat != null && !stale) pulse(v);
+      dirty = true;
+    }
+
+    // ---- update pulses: expanding ring on a 2D canvas over the map; the rAF loop only runs while rings are live ----
+    const pulseCanvas = document.createElement("canvas");
+    pulseCanvas.className = "ais-pulses";
+    const pulseCtx = pulseCanvas.getContext("2d")!;
+    const pulses: { lon: number; lat: number; t0: number; color: string }[] =
+      [];
+    let pulseRaf = 0;
+    function pulse(v: Vessel) {
+      // zoomed out, rings pile into solid blobs over busy ports
+      if (map.getZoom() < 5) return;
+      pulses.push({
+        lon: v.lon!,
+        lat: v.lat!,
+        t0: performance.now(),
+        color: CLASS_COLORS[shipClass(v.kind, v.type)]!,
+      });
+      if (!pulseRaf) pulseRaf = requestAnimationFrame(drawPulses);
+    }
+    function drawPulses(now: number) {
+      const dpr = devicePixelRatio,
+        w = pulseCanvas.clientWidth,
+        h = pulseCanvas.clientHeight;
+      if (pulseCanvas.width !== w * dpr || pulseCanvas.height !== h * dpr) {
+        pulseCanvas.width = w * dpr;
+        pulseCanvas.height = h * dpr;
+      }
+      pulseCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      pulseCtx.clearRect(0, 0, w, h);
+      let i = 0;
+      for (const p of pulses) {
+        const k = (now - p.t0) / PULSE_MS;
+        if (k >= 1) continue;
+        pulses[i++] = p;
+        const { x, y } = map.project([p.lon, p.lat]);
+        const r = 4 + 12 * (1 - (1 - k) ** 3); // ease-out: ring expands fast, then settles
+        pulseCtx.strokeStyle = p.color;
+        // 4px halo hugging the outside of the 1.5px ring: centred at r + half ring + half halo
+        pulseCtx.globalAlpha = (1 - k) * 0.5;
+        pulseCtx.lineWidth = 4;
+        pulseCtx.beginPath();
+        pulseCtx.arc(x, y, r + 0.75 + 2, 0, 2 * Math.PI);
+        pulseCtx.stroke();
+        pulseCtx.globalAlpha = 1 - k;
+        pulseCtx.lineWidth = 1.5;
+        pulseCtx.beginPath();
+        pulseCtx.arc(x, y, r, 0, 2 * Math.PI);
+        pulseCtx.stroke();
+      }
+      pulses.length = i;
+      pulseRaf = pulses.length ? requestAnimationFrame(drawPulses) : 0;
+    }
+
+    // ---- rendering ----
+    function render() {
+      const now = Date.now(),
+        features: GeoJSON.Feature[] = [];
+      for (const [mmsi, v] of vessels) {
+        if (now - v.seen > TTL) {
+          vessels.delete(mmsi);
+          continue;
+        }
+        if (v.lat == null || v.lon == null) continue;
+        const hdg = v.heading ?? v.cog;
+        features.push({
+          type: "Feature",
+          id: mmsi,
+          geometry: { type: "Point", coordinates: [v.lon, v.lat] },
+          properties: {
+            mmsi,
+            name: v.name || "",
+            hdg,
+            hasHdg: hdg != null,
+            cls: shipClass(v.kind, v.type),
+            age: (now - v.seen) / 60e3,
+          },
+        });
+      }
+      (map.getSource("ais") as maplibregl.GeoJSONSource | undefined)?.setData({
+        type: "FeatureCollection",
+        features,
+      });
+    }
+    setInterval(() => {
+      if (dirty) {
+        dirty = false;
+        render();
+      }
+    }, 1000);
+    setInterval(render, 15e3); // age fading without events
+
+    function popup(mmsi: number, lngLat: LngLatLike) {
+      const v = vessels.get(mmsi);
+      if (!v || v.lat == null || v.lon == null) return;
+      const row = (k: string, val: unknown) =>
+        val == null || val === ""
+          ? ""
+          : `<tr><td>${k}</td><td>${esc(val)}</td></tr>`;
+      const html = `<h3>${esc(v.name || mmsi)}</h3><table>
+        ${row("MMSI", mmsi)}
+        ${row("Class", shipClass(v.kind, v.type) + (v.type ? ` (${v.type})` : ""))}
+        ${row("SOG", v.sog != null ? v.sog.toFixed(1) + " kn" : null)}
+        ${row("COG", v.cog != null ? v.cog.toFixed(1) + "°" : null)}
+        ${row("HDG", v.heading != null ? v.heading + "°" : null)}
+        ${row("Status", v.nav_status != null ? NAV[v.nav_status] || v.nav_status : null)}
+        ${row("Position", `${v.lat.toFixed(5)}, ${v.lon.toFixed(5)}`)}
+        ${row("Seen", new Date(v.seen).toISOString().replace("T", " ").slice(0, 19) + "Z")}
+        ${row("Source", v.source + (v.station && v.station !== v.source ? ` / ${v.station}` : ""))}
+        ${row("Last", v.msg_type)}
+      </table>${v.nmea ? `<pre>${esc(v.nmea.join("\n"))}</pre>` : ""}`;
+      new maplibregl.Popup().setLngLat(lngLat).setHTML(html).addTo(map);
+    }
+
+    map.on("load", () => {
+      setAttribution();
+      map.getCanvasContainer().appendChild(pulseCanvas);
+      map.addImage("ship", triangle(), { sdf: true });
+      map.addSource("ais", {
+        type: "geojson",
+        data: { type: "FeatureCollection", features: [] },
+        promoteId: "mmsi",
+      });
+      // Class colour when fresh, desaturating to grey over 15 min (Lab interpolation keeps the fade perceptually even).
+      const color = [
+        "interpolate-lab",
+        ["linear"],
+        ["get", "age"],
+        0,
+        [
+          "match",
+          ["get", "cls"],
+          ...Object.entries(CLASS_COLORS).flat(),
+          "#616161",
+        ],
+        15,
+        "#9e9e9e",
+      ] as unknown as ExpressionSpecification;
+      map.addLayer({
+        id: "ais-still",
+        type: "circle",
+        source: "ais",
+        filter: ["!", ["get", "hasHdg"]],
+        paint: {
+          "circle-radius": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            4,
+            1.5,
+            7,
+            2.5,
+            10,
+            4,
+          ],
+          "circle-color": color,
+          "circle-stroke-width": 1,
+          "circle-stroke-color": "rgba(255,255,255,0.5)",
+        },
+      });
+      map.addLayer({
+        id: "ais-moving",
+        type: "symbol",
+        source: "ais",
+        filter: ["get", "hasHdg"],
+        layout: {
+          "icon-image": "ship",
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 4, 0.2, 10, 1],
+          "icon-rotate": ["get", "hdg"],
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+        },
+        paint: {
+          "icon-color": color,
+          "icon-halo-color": "rgba(255,255,255,0.5)",
+          "icon-halo-width": 1,
+        },
+      });
+      map.addLayer({
+        id: "ais-label",
+        type: "symbol",
+        source: "ais",
+        minzoom: 11,
+        layout: {
+          "text-field": ["get", "name"],
+          "text-size": 11,
+          "text-offset": [0, 1.2],
+          "text-anchor": "top",
+          "text-optional": true,
+        },
+        paint: { "text-halo-color": "#fff", "text-halo-width": 1.5 },
+      });
+      for (const layer of ["ais-still", "ais-moving"]) {
+        map.on(
+          "mouseenter",
+          layer,
+          () => (map.getCanvas().style.cursor = "pointer"),
+        );
+        map.on("mouseleave", layer, () => (map.getCanvas().style.cursor = ""));
+        map.on("click", layer, (e) =>
+          popup(e.features![0]!.properties.mmsi, e.lngLat),
+        );
+      }
+      refresh();
+      connect();
+    });
+
+    let moveTimer: ReturnType<typeof setTimeout>;
+    map.on("moveend", () => {
+      clearTimeout(moveTimer);
+      moveTimer = setTimeout(() => {
+        refresh();
+        subscribe();
+      }, 300);
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-ais-map]").forEach(init);
+</script>

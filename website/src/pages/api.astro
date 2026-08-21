@@ -3,6 +3,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 import Container from "../components/ui/Container.astro";
 import Card from "../components/ui/Card.astro";
 import ApiEndpoint from "../components/api/ApiEndpoint.astro";
+import Icon from "../components/Icon.astro";
 import {
   getOpenAPISpec,
   extractEndpoints,
@@ -26,6 +27,20 @@ const groupedEndpoints = groupEndpointsByTag(endpoints, "Tides");
       <p class="mb-12 text-xl text-(--text-secondary)">
         Access marine data programmatically through free and open source APIs.
       </p>
+      <!-- AIS -->
+      <Card href="/api/ais" class="mb-16 flex items-start gap-4">
+        <Icon name="mdi:radar" class="size-8 shrink-0 text-(--accent)" />
+        <div>
+          <h2 class="mb-2 text-2xl font-semibold">AISCast API</h2>
+          <p class="text-(--text-secondary)">
+            Live vessel traffic streamed by bounding box over WebSocket, with a
+            GeoJSON snapshot of current positions and an aisstream.io-compatible
+            endpoint. Documented separately, including the native stream
+            protocol and access tokens.
+          </p>
+        </div>
+      </Card>
+
       <!-- Getting Started -->
       <div class="mb-16">
         <h2 class="mb-6 text-3xl font-semibold">Getting Started</h2>

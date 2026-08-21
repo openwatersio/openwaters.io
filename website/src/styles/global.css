@@ -233,7 +233,7 @@
 
   .text-lead {
     color: var(--text-secondary);
-    @apply text-2xl text-balance;
+    @apply text-2xl leading-tight text-balance;
   }
 
   a {

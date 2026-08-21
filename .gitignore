@@ -32,3 +32,6 @@ dist/
 # cloudflare
 .wrangler/
 *.tsbuildinfo
+
+# AI assistant state
+.claude/
