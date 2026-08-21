@@ -24,7 +24,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-query": "^5.101.4",
     "astro": "^7.1.6",
-    "astro-icon": "^1.1.5",
+    "astro-icon": "^1.2.0",
     "clsx": "^2.1.1",
     "coordinate-format": "^1.0.0",
     "maplibre-gl": "^5.24.0",
