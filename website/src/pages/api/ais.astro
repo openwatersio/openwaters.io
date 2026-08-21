@@ -1,0 +1,86 @@
+---
+import { getEntry, render } from "astro:content";
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Icon from "../../components/Icon.astro";
+
+const entry = await getEntry("ais", "api");
+if (!entry) throw new Error("AIS API reference not loaded");
+const { Content, headings } = await render(entry);
+const sections = headings.filter((h) => h.depth === 2);
+---
+
+<MainLayout
+  title="AIS API"
+  description="Reference for the AIS API: live vessel traffic by bounding box over WebSocket, GeoJSON snapshots, access tokens, and an aisstream.io-compatible stream."
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-4xl">
+      <a
+        href="/api"
+        class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+      >
+        <Icon name="mdi:arrow-left" class="size-4" />
+        All APIs
+      </a>
+
+      <div class="flex items-center justify-between">
+        <h1 class="mb-3">AIS API</h1>
+        <div class="flex gap-3">
+          <a
+            href="https://github.com/openwatersio/aiscast/blob/main/docs/API.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-secondary"
+          >
+            <Icon name="mdi:github" class="size-6" />
+            <span class="hidden sm:inline">Source</span>
+          </a>
+          <a href="/ais" class="btn btn-primary">
+            <Icon name="mdi:radar" class="size-6" />
+            <span class="hidden sm:inline">About</span>
+          </a>
+        </div>
+      </div>
+      <p class="text-lead mb-4">
+        Live vessel traffic streamed by bounding box, with a snapshot of current
+        positions and an aisstream.io-compatible stream.
+      </p>
+
+      <nav
+        aria-label="On this page"
+        class="mb-12 rounded-lg border border-(--border) bg-(--surface-subtle) px-5 py-4 text-sm"
+      >
+        <span class="mr-2 font-semibold">On this page:</span>
+        {
+          sections.map((h, i) => (
+            <>
+              {i > 0 && <span class="mx-2 text-(--text-muted)">·</span>}
+              <a
+                href={`#${h.slug}`}
+                class="text-(--accent) hover:text-(--accent-hover)"
+              >
+                {h.text}
+              </a>
+            </>
+          ))
+        }
+      </nav>
+
+      <article class="prose max-w-none">
+        <Content />
+      </article>
+    </div>
+  </Container>
+</MainLayout>
+
+<style>
+  /* Reference tables are wide; scroll them rather than the page. */
+  article :global(table) {
+    display: block;
+    overflow-x: auto;
+  }
+  article :global(h2) {
+    scroll-margin-top: 6rem;
+  }
+</style>

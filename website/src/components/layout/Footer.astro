@@ -3,13 +3,13 @@ import { CONTACT_EMAIL } from "../../utils/constants";
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="mt-auto bg-navy-900 text-navy-100">
+<footer class="bg-navy-900 text-navy-100 mt-auto">
   <div class="container-custom py-12">
     <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
       <!-- Brand -->
       <div>
         <h3 class="mb-2 text-xl font-bold text-white">Open Waters</h3>
-        <p class="text-sm text-navy-300">
+        <p class="text-navy-300 text-sm">
           Open source marine software and data
         </p>
       </div>
@@ -21,35 +21,42 @@ const currentYear = new Date().getFullYear();
           <li>
             <a
               href="/about"
-              class="text-sm text-navy-300 transition-colors hover:text-ocean-400"
+              class="text-navy-300 hover:text-ocean-400 text-sm transition-colors"
               >About</a
             >
           </li>
           <li>
             <a
               href="/tides"
-              class="text-sm text-navy-300 transition-colors hover:text-ocean-400"
+              class="text-navy-300 hover:text-ocean-400 text-sm transition-colors"
               >Tides</a
             >
           </li>
           <li>
             <a
+              href="/ais"
+              class="text-navy-300 hover:text-ocean-400 text-sm transition-colors"
+              >AIS</a
+            >
+          </li>
+          <li>
+            <a
               href="/bathymetry"
-              class="text-sm text-navy-300 transition-colors hover:text-ocean-400"
+              class="text-navy-300 hover:text-ocean-400 text-sm transition-colors"
               >Bathymetry</a
             >
           </li>
           <li>
             <a
               href="/api"
-              class="text-sm text-navy-300 transition-colors hover:text-ocean-400"
+              class="text-navy-300 hover:text-ocean-400 text-sm transition-colors"
               >API</a
             >
           </li>
           <li>
             <a
               href="/license"
-              class="text-sm text-navy-300 transition-colors hover:text-ocean-400"
+              class="text-navy-300 hover:text-ocean-400 text-sm transition-colors"
               >License</a
             >
           </li>
@@ -65,7 +72,7 @@ const currentYear = new Date().getFullYear();
               href="https://github.com/openwatersio"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-sm text-navy-300 transition-colors hover:text-ocean-400"
+              class="text-navy-300 hover:text-ocean-400 inline-flex items-center gap-2 text-sm transition-colors"
             >
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path
@@ -78,7 +85,7 @@ const currentYear = new Date().getFullYear();
           <li>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              class="inline-flex items-center gap-2 text-sm text-navy-300 transition-colors hover:text-ocean-400"
+              class="text-navy-300 hover:text-ocean-400 inline-flex items-center gap-2 text-sm transition-colors"
             >
               <svg
                 class="h-5 w-5"
@@ -102,12 +109,12 @@ const currentYear = new Date().getFullYear();
 
     <!-- Copyright -->
     <div
-      class="mt-8 border-t border-navy-800 pt-8 text-center text-sm text-navy-400"
+      class="border-navy-800 text-navy-400 mt-8 border-t pt-8 text-center text-sm"
     >
       <p>
         © {currentYear} Open Waters. Some rights reserved. <a
           href="/license"
-          class="transition-colors hover:text-ocean-400">View license</a
+          class="hover:text-ocean-400 transition-colors">View license</a
         >
       </p>
     </div>
