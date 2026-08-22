@@ -7,16 +7,19 @@ import { cn } from "../utils/cn";
 interface Props {
   title?: string;
   description?: string;
+  image?: string; // site-relative path to a preview image for link unfurls
   fullscreen?: boolean;
 }
 
 const {
   title = "Open Waters - Open Source Marine Software and Data",
   description = "Open source tools and data for understanding and navigating the sea. Tide predictions, bathymetry, and more.",
+  image,
   fullscreen = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const imageURL = image && new URL(image, Astro.site);
 const fullTitle =
   title === "Open Waters - Open Source Marine Software and Data"
     ? title
@@ -42,11 +45,13 @@ const fullTitle =
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Open Waters" />
+    {imageURL && <meta property="og:image" content={imageURL} />}
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
+    {imageURL && <meta name="twitter:image" content={imageURL} />}
 
     <script is:inline>
       const m = window.matchMedia("(prefers-color-scheme: dark)");
