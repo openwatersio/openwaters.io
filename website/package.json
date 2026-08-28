@@ -22,7 +22,7 @@
     "@openwaters/seascape": "^0.2.1",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
-    "@tanstack/react-query": "^5.101.4",
+    "@tanstack/react-query": "^5.102.3",
     "astro": "^7.2.6",
     "astro-icon": "^1.2.0",
     "clsx": "^2.1.1",
