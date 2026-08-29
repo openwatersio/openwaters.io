@@ -1,0 +1,200 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Card from "../../components/ui/Card.astro";
+import CodeBlock from "../../components/ui/CodeBlock.astro";
+import Icon from "../../components/Icon.astro";
+import SkyDome from "../../components/sky/SkyDome";
+
+const REPO = "https://github.com/openwatersio/almanac";
+const ROADMAP = `${REPO}/blob/main/docs/ROADMAP.md`;
+
+const features = [
+  {
+    icon: "mdi:wifi-off",
+    title: "Offline by construction",
+    body: "Zero network calls and zero runtime data files. Everything on this page is computed in your browser from pure geometry — the same code runs on a boat with no signal.",
+  },
+  {
+    icon: "mdi:call-split",
+    title: "Twin ports, one behavior",
+    body: "TypeScript and Swift implementations validated against a shared corpus of JPL Horizons, USNO and Espenak fixtures. Neither port is the other's oracle.",
+  },
+  {
+    icon: "mdi:weather-night",
+    title: "Sun, Moon and eclipses",
+    body: "Positions, rise and set, all three twilights, transit, moon phase and illumination, and lunar eclipses with contact times and local visibility.",
+  },
+  {
+    icon: "mdi:target",
+    title: "Held to a tolerance",
+    body: "Rise and set times agree with USNO to within a minute across 1950–2100, and eclipse peaks match the Espenak catalog to roughly 15 seconds.",
+  },
+];
+
+const tsCode = `import { sunEvents, nextLunarEclipse, lunarEclipseVisibility } from '@openwaters/almanac';
+
+const observer = { latitudeDeg: 48.5, longitudeDeg: -123.0 };
+
+// Sunrise, sunset, twilights and transit for the next 24 hours
+const now = new Date();
+const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+for (const { kind, time } of sunEvents(now, tomorrow, observer)) {
+  console.log(kind, time.toISOString());
+}
+
+// The next lunar eclipse, and whether you'll see it
+const eclipse = nextLunarEclipse(now);
+const visibility = lunarEclipseVisibility(eclipse, observer);
+console.log(eclipse.kind, eclipse.peak, visibility.visibleAtPeak);`;
+
+const swiftCode = `import Almanac
+import Foundation
+
+let observer = try Observer(latitudeDeg: 48.5, longitudeDeg: -123.0)
+
+let now = Date()
+let tomorrow = now.addingTimeInterval(24 * 60 * 60)
+for event in try sunEvents(from: now, to: tomorrow, observer: observer) {
+  print(event.kind, event.time)
+}
+
+let eclipse = try nextLunarEclipse(after: now)
+let visibility = try lunarEclipseVisibility(eclipse, observer: observer)
+print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)`;
+---
+
+<MainLayout
+  title="Sky"
+  description="Almanac — an offline sun and moon engine for Swift and TypeScript. Positions, rise and set, twilight, moon phase, and lunar eclipses, computed from pure geometry with no network."
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-4xl">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <span class="text-(--accent)">
+            <Icon name="mdi:weather-sunset-up" class="size-10" />
+          </span>
+          <h1 class="mb-0">Almanac</h1>
+        </div>
+        <a
+          href={REPO}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline inline-flex items-center gap-2"
+        >
+          <Icon name="mdi:github" class="size-6" />
+          View on GitHub
+        </a>
+      </div>
+
+      <div class="text-lead mt-2 mb-4">
+        An offline sun &amp; moon engine for Swift and TypeScript
+      </div>
+
+      <div class="prose prose-xl mb-10 max-w-none">
+        <p>
+          Where the Sun and Moon are, when they rise and set, how the Moon is
+          lit, and when the Earth's shadow crosses it. No network, no data files
+          to ship, no API key — just geometry, in your app or on your boat. The
+          sky below is live: it is this library running in your browser right
+          now.
+        </p>
+      </div>
+
+      <SkyDome client:only="react">
+        <div slot="fallback" class="space-y-6">
+          <div
+            class="aspect-2/1 w-full animate-pulse rounded-xl bg-(--surface-subtle)"
+          >
+          </div>
+          <div class="h-6 w-full animate-pulse rounded bg-(--surface-subtle)">
+          </div>
+        </div>
+      </SkyDome>
+
+      <!-- Key Features -->
+      <div class="mt-16 mb-16">
+        <h2 class="mb-6 text-3xl font-semibold">Key Features</h2>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {
+            features.map((feature) => (
+              <Card>
+                <div class="flex items-start gap-3">
+                  <div class="text-(--accent)">
+                    <Icon name={feature.icon} class="size-8" />
+                  </div>
+                  <div>
+                    <h3 class="mb-2 text-lg font-semibold">{feature.title}</h3>
+                    <p class="text-sm text-(--text-secondary)">
+                      {feature.body}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Usage -->
+      <div class="mb-16">
+        <h2 class="mb-6 text-3xl font-semibold">Using Almanac</h2>
+        <Card>
+          <div class="space-y-6">
+            <div>
+              <h3 class="mb-3 text-xl font-semibold">TypeScript</h3>
+              <CodeBlock code="npm install @openwaters/almanac" class="mb-3" />
+              <CodeBlock code={tsCode} />
+            </div>
+
+            <div>
+              <h3 class="mb-3 text-xl font-semibold">Swift</h3>
+              <CodeBlock
+                code={`.package(url: "https://github.com/openwatersio/almanac.git", from: "0.1.0")`}
+                class="mb-3"
+              />
+              <CodeBlock code={swiftCode} />
+            </div>
+          </div>
+        </Card>
+        <p class="mt-4 text-sm text-(--text-secondary)">
+          Supported interval: 1950-01-01 through 2100-12-31. Where the library
+          is going next is written down in the <a
+            href={ROADMAP}
+            class="text-(--accent) hover:underline">roadmap</a
+          >.
+        </p>
+      </div>
+
+      <!-- Open Source -->
+      <Card
+        class="from-ocean-600 to-ocean-700 border-0 bg-linear-to-r text-white"
+      >
+        <div class="text-center">
+          <h2 class="mb-4 text-3xl font-semibold text-white">
+            Free &amp; Open Source
+          </h2>
+          <p class="text-ocean-50 mb-6 text-xl text-balance">
+            Almanac is MIT licensed, with its astronomy translated from Don
+            Cross's Astronomy Engine. Use it, contribute to it, or fork it.
+          </p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <a
+              href={REPO}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn text-ocean-700 hover:bg-ocean-50 bg-white"
+            >
+              <Icon name="mdi:github" class="size-6" />
+              View on GitHub
+            </a>
+            <a href={ROADMAP} class="btn btn-outline border-white text-white">
+              Roadmap
+            </a>
+          </div>
+        </div>
+      </Card>
+    </div>
+  </Container>
+</MainLayout>

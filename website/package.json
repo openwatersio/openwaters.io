@@ -9,7 +9,8 @@
     "format": "prettier --write .",
     "preview": "astro preview",
     "astro": "astro",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "node --test src/**/*.test.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
@@ -19,6 +20,7 @@
     "@neaps/api": "*",
     "@neaps/react": "*",
     "@neaps/tide-predictor": "*",
+    "@openwaters/almanac": "^0.1.0",
     "@openwaters/seascape": "^0.2.1",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
