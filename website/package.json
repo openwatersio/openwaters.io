@@ -21,7 +21,7 @@
     "@neaps/react": "*",
     "@neaps/tide-predictor": "*",
     "@openwaters/almanac": "^0.1.0",
-    "@openwaters/seascape": "^0.2.1",
+    "@openwaters/seascape": "^0.3.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-query": "^5.101.4",
