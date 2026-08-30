@@ -2,12 +2,15 @@ import { Fragment } from "react";
 import type { LunarEclipse, LunarEclipseVisibility } from "@openwaters/almanac";
 
 import { DateTime } from "../DateTime";
+import { KIND_LABEL } from "./eclipseShade";
 
 export interface EclipseCardProps {
   heading: string;
   eclipse: LunarEclipse;
   visibility: LunarEclipseVisibility;
   tz: string;
+  /** Move the scrubber to an instant of this eclipse. */
+  onGoTo: (t: Date) => void;
 }
 
 const CONTACTS = [
@@ -19,17 +22,12 @@ const CONTACTS = [
   ["p4", "Penumbra ends"],
 ] as const;
 
-const KIND_LABEL: Record<LunarEclipse["kind"], string> = {
-  total: "Total",
-  partial: "Partial",
-  penumbral: "Penumbral",
-};
-
 export function EclipseCard({
   heading,
   eclipse,
   visibility,
   tz,
+  onGoTo,
 }: EclipseCardProps) {
   const alt = Math.round(visibility.moonGeometricAltAtPeakDeg);
 
@@ -62,6 +60,13 @@ export function EclipseCard({
             timeZoneName="short"
           />
         </div>
+        <button
+          type="button"
+          onClick={() => onGoTo(eclipse.peak)}
+          className="btn btn-outline mt-3 px-3 py-1 text-sm"
+        >
+          View at greatest eclipse
+        </button>
       </div>
 
       <div
@@ -91,13 +96,20 @@ export function EclipseCard({
               <dt className={dim} title={title}>
                 {label}
               </dt>
-              <dd className={`text-right tabular-nums ${dim}`} title={title}>
-                <DateTime
-                  datetime={time}
-                  timeZone={tz}
-                  hour="2-digit"
-                  minute="2-digit"
-                />
+              <dd className={`text-right tabular-nums ${dim}`}>
+                <button
+                  type="button"
+                  onClick={() => onGoTo(time)}
+                  title={title ?? `Show the sky at ${label.toLowerCase()}`}
+                  className="text-(--accent) underline-offset-4 hover:underline"
+                >
+                  <DateTime
+                    datetime={time}
+                    timeZone={tz}
+                    hour="2-digit"
+                    minute="2-digit"
+                  />
+                </button>
               </dd>
             </Fragment>
           );

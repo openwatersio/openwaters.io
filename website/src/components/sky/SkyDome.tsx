@@ -25,7 +25,8 @@ import {
   centerAzimuthDeg,
   project,
 } from "./projection";
-import { skyColor } from "./skyColor";
+import { mixHex, skyColor } from "./skyColor";
+import { KIND_LABEL, eclipseAt, eclipseShade } from "./eclipseShade";
 import { DAY_MS, MINUTE_MS, startOfZonedDay, zonedDayKey } from "./time";
 
 interface Place {
@@ -33,6 +34,8 @@ interface Place {
   lon: number;
   tz: string;
   label: string;
+  /** Where the coordinates came from, which decides what the link offers. */
+  source: "default" | "geolocation";
 }
 
 const DEFAULT_PLACE: Place = {
@@ -40,6 +43,7 @@ const DEFAULT_PLACE: Place = {
   lon: -123.0,
   tz: "America/Vancouver",
   label: "Salish Sea",
+  source: "default",
 };
 
 const COORDS = new CoordinateFormat();
@@ -143,6 +147,7 @@ export default function SkyDome() {
   // --- autoplay ------------------------------------------------------------
   // Runs once, on mount. A ref rather than effect cleanup because the sweep is
   // cancelled by user input, not by a dependency change.
+  const domeRef = useRef<HTMLDivElement>(null);
   const cancelled = useRef(false);
   const stopPlayback = useCallback(() => {
     cancelled.current = true;
@@ -196,9 +201,13 @@ export default function SkyDome() {
     if (offset <= MAX_DAY_OFFSET) setInstant(target);
   };
 
-  const useMyLocation = () => {
+  const toggleLocation = () => {
     stopPlayback();
     setGeoError(null);
+    if (place.source === "geolocation") {
+      setPlace(DEFAULT_PLACE); // not a one-way door
+      return;
+    }
     if (!navigator.geolocation) {
       setGeoError("This browser has no location support.");
       return;
@@ -211,6 +220,7 @@ export default function SkyDome() {
           lat,
           lon,
           tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          source: "geolocation",
           // Per-axis, not COORDS.format(lat, lon) — that overload returns the
           // pair in the other order and mislabels the hemispheres.
           label: `${COORDS.latitude(lat)} ${COORDS.longitude(lon)}`,
@@ -224,6 +234,17 @@ export default function SkyDome() {
         ),
       { timeout: 10000 },
     );
+  };
+
+  const goTo = (t: Date) => {
+    stopPlayback();
+    setInstant(t);
+    domeRef.current?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+      block: "center",
+    });
   };
 
   // --- render --------------------------------------------------------------
@@ -244,10 +265,20 @@ export default function SkyDome() {
 
   const hm = { hour: "2-digit", minute: "2-digit" } as const;
 
+  // An eclipse covering this instant, and how dark it makes the Moon.
+  const inEclipse = eclipseAt(instant, [eclipses.last, eclipses.next]);
+  const shade = inEclipse ? eclipseShade(instant, inEclipse) : 0;
+  // Mix the lit disc toward copper: what a Moon inside the umbra actually
+  // looks like, lit only by sunlight refracted through Earth's atmosphere.
+  const moonFill = mixHex("#f4f4ef", "#8a3b22", shade);
+
   return (
     <div className="space-y-6">
       {/* Sky dome */}
-      <div className="overflow-hidden rounded-xl border border-(--border)">
+      <div
+        ref={domeRef}
+        className="overflow-hidden rounded-xl border border-(--border)"
+      >
         <svg
           viewBox={`0 0 ${DOME_WIDTH} ${DOME_HEIGHT}`}
           className="block w-full"
@@ -302,7 +333,7 @@ export default function SkyDome() {
               sky.illum.fraction,
               sky.illum.waxing,
             )}
-            fill="#f4f4ef"
+            fill={moonFill}
           />
 
           {/* Ground last, so a body below the horizon is genuinely occluded */}
@@ -335,6 +366,19 @@ export default function SkyDome() {
           </g>
         </svg>
       </div>
+
+      {inEclipse && (
+        <div className="flex flex-wrap items-baseline gap-x-2 rounded-lg bg-(--accent-bg) px-4 py-3 text-(--accent)">
+          <span className="font-semibold">
+            {KIND_LABEL[inEclipse.kind]} lunar eclipse in progress
+          </span>
+          <span className="text-sm text-(--text-secondary)">
+            greatest at{" "}
+            <DateTime datetime={inEclipse.peak} timeZone={place.tz} {...hm} />
+            {sky.moon.altDeg < 0 && " · below the horizon here"}
+          </span>
+        </div>
+      )}
 
       {/* Scrubber */}
       <div className="space-y-3">
@@ -398,10 +442,13 @@ export default function SkyDome() {
         <div>
           <button
             type="button"
-            onClick={useMyLocation}
+            onClick={toggleLocation}
             className="font-medium text-(--accent) underline-offset-4 hover:underline"
           >
-            {place.label} — use my location
+            {place.label}
+            {place.source === "geolocation"
+              ? " — back to the Salish Sea"
+              : " — use my location"}
           </button>
           {geoError && (
             <span className="ml-2 text-sm text-(--text-secondary)">
@@ -479,6 +526,7 @@ export default function SkyDome() {
               eclipse={eclipses.last}
               visibility={eclipseVisibility.last}
               tz={place.tz}
+              onGoTo={goTo}
             />
           )}
           <EclipseCard
@@ -486,6 +534,7 @@ export default function SkyDome() {
             eclipse={eclipses.next}
             visibility={eclipseVisibility.next}
             tz={place.tz}
+            onGoTo={goTo}
           />
         </div>
         <p className="mt-4 text-sm text-(--text-secondary)">

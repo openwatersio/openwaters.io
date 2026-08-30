@@ -3,6 +3,7 @@ import { test } from "node:test";
 
 import { moonPath, phaseName } from "./moonPath.ts";
 import { skyColor } from "./skyColor.ts";
+import { eclipseAt, eclipseShade } from "./eclipseShade.ts";
 import { altitudeToY, azimuthToX, centerAzimuthDeg } from "./projection.ts";
 
 const sweeps = (d: string) =>
@@ -115,4 +116,87 @@ test("projection: altitude maps horizon, zenith and the bottom of twilight", () 
   assert.equal(altitudeToY(-18), 400);
   // Below the twilight floor a body keeps sinking rather than pinning.
   assert.ok(altitudeToY(-40) > 400);
+});
+
+// --- eclipse shading -------------------------------------------------------
+
+const min = (n: number) => n * 60_000;
+const PEAK = Date.UTC(2026, 7, 27, 21, 12);
+
+/** A total eclipse with symmetric contacts around PEAK. */
+const total = {
+  kind: "total" as const,
+  peak: new Date(PEAK),
+  magUmbral: 1.4,
+  magPenumbral: 2.4,
+  p1: new Date(PEAK - min(180)),
+  u1: new Date(PEAK - min(100)),
+  u2: new Date(PEAK - min(40)),
+  u3: new Date(PEAK + min(40)),
+  u4: new Date(PEAK + min(100)),
+  p4: new Date(PEAK + min(180)),
+};
+const partial = {
+  ...total,
+  kind: "partial" as const,
+  magUmbral: 0.6,
+  u2: null,
+  u3: null,
+};
+const penumbral = {
+  ...total,
+  kind: "penumbral" as const,
+  magUmbral: -0.2,
+  magPenumbral: 0.5,
+  u1: null,
+  u2: null,
+  u3: null,
+  u4: null,
+};
+
+test("eclipseShade: zero outside the penumbral contacts", () => {
+  for (const e of [total, partial, penumbral]) {
+    assert.equal(eclipseShade(new Date(PEAK - min(181)), e), 0);
+    assert.equal(eclipseShade(new Date(PEAK + min(181)), e), 0);
+    assert.equal(eclipseShade(e.p1, e), 0);
+    assert.equal(eclipseShade(e.p4, e), 0);
+  }
+});
+
+test("eclipseShade: peaks at the magnitude the library reports", () => {
+  assert.equal(eclipseShade(new Date(PEAK), total), 1);
+  // partial: 0.25 + 0.75 * 0.6
+  assert.ok(Math.abs(eclipseShade(new Date(PEAK), partial) - 0.7) < 1e-9);
+  // penumbral: 0.25 * 0.5, and never near a total's darkness
+  assert.ok(Math.abs(eclipseShade(new Date(PEAK), penumbral) - 0.125) < 1e-9);
+});
+
+test("eclipseShade: reaches the penumbral shade at first umbral contact", () => {
+  assert.ok(Math.abs(eclipseShade(total.u1, total) - 0.25) < 1e-9);
+  assert.ok(Math.abs(eclipseShade(total.u4, total) - 0.25) < 1e-9);
+});
+
+test("eclipseShade: symmetric about the peak", () => {
+  for (const e of [total, partial, penumbral]) {
+    for (const d of [10, 50, 90, 130, 170]) {
+      const before = eclipseShade(new Date(PEAK - min(d)), e);
+      const after = eclipseShade(new Date(PEAK + min(d)), e);
+      assert.ok(Math.abs(before - after) < 1e-9, `${e.kind} at ±${d}m`);
+    }
+  }
+});
+
+test("eclipseShade: rises monotonically into the peak", () => {
+  let prev = -1;
+  for (let d = 180; d >= 0; d -= 5) {
+    const s = eclipseShade(new Date(PEAK - min(d)), total);
+    assert.ok(s >= prev, `dropped at -${d}m`);
+    prev = s;
+  }
+});
+
+test("eclipseAt: finds the covering eclipse, ignores nulls", () => {
+  assert.equal(eclipseAt(new Date(PEAK), [null, total]), total);
+  assert.equal(eclipseAt(new Date(PEAK + min(400)), [null, total]), null);
+  assert.equal(eclipseAt(new Date(PEAK), [null, null]), null);
 });

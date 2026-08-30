@@ -31,7 +31,8 @@ function toHex([r, g, b]: [number, number, number]): string {
   return `#${part(r)}${part(g)}${part(b)}`;
 }
 
-function mix(a: string, b: string, t: number): string {
+/** Interpolate between two hex colours. Shared with the eclipse shading. */
+export function mixHex(a: string, b: string, t: number): string {
   const [ar, ag, ab] = parseHex(a);
   const [br, bg, bb] = parseHex(b);
   return toHex([ar + (br - ar) * t, ag + (bg - ag) * t, ab + (bb - ab) * t]);
@@ -60,8 +61,8 @@ export function skyColor(sunAltDeg: number): SkyPaint {
       const lo = ANCHORS[i + 1]!;
       if (sunAltDeg <= hi.altDeg && sunAltDeg > lo.altDeg) {
         const t = (hi.altDeg - sunAltDeg) / (hi.altDeg - lo.altDeg);
-        top = mix(hi.top, lo.top, t);
-        bottom = mix(hi.bottom, lo.bottom, t);
+        top = mixHex(hi.top, lo.top, t);
+        bottom = mixHex(hi.bottom, lo.bottom, t);
         break;
       }
     }
