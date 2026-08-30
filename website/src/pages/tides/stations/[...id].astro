@@ -73,7 +73,7 @@ const dehydratedState = dehydrate(queryClient);
       <div class="min-w-0 space-y-4 lg:col-span-2">
         <div>
           <a
-            href="/tides/stations"
+            href="/tides/stations/"
             class="text-ocean-600 hover:text-ocean-700 inline-block"
           >
             ← Back to stations
@@ -111,7 +111,7 @@ const dehydratedState = dehydrate(queryClient);
                 <h3 class="text-xl">Station Data</h3>
                 <p class="text-sm">
                   Data for this station comes from the
-                  <a href="/tides/database">Tide Database</a>.
+                  <a href="/tides/database/">Tide Database</a>.
                 </p>
               </div>
               <a
@@ -177,7 +177,7 @@ const dehydratedState = dehydrate(queryClient);
                   <>
                     <dt>Reference Station</dt>
                     <dd>
-                      <a href={`/tides/stations/${referenceStation.id}`}>
+                      <a href={`/tides/stations/${referenceStation.id}/`}>
                         {referenceStation.name}
                       </a>
                     </dd>
@@ -233,10 +233,10 @@ const dehydratedState = dehydrate(queryClient);
                 <h3 class="text-xl">API</h3>
                 <p class="text-sm">
                   Access tide predictions for this station via the
-                  <a href="/api">API</a>.
+                  <a href="/api/">API</a>.
                 </p>
               </div>
-              <a href="/api" class="btn inline-flex items-center gap-2">
+              <a href="/api/" class="btn inline-flex items-center gap-2">
                 API Docs
                 <Icon name="mdi:chevron-right" class="h-4 w-4" />
               </a>
@@ -283,11 +283,14 @@ const dehydratedState = dehydrate(queryClient);
               <div>
                 <h3 class="text-xl">JavaScript</h3>
                 <p class="text-sm">
-                  Use the <a href="/tides/neaps">neaps</a>
+                  Use the <a href="/tides/neaps/">neaps</a>
                   npm library to compute tide predictions locally.
                 </p>
               </div>
-              <a href="/tides/neaps" class="btn inline-flex items-center gap-2">
+              <a
+                href="/tides/neaps/"
+                class="btn inline-flex items-center gap-2"
+              >
                 Neaps Docs
                 <Icon name="mdi:chevron-right" class="h-4 w-4" />
               </a>

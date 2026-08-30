@@ -50,7 +50,7 @@ const charts = [
         charts.map((chart) => (
           <section class="grid items-center gap-8 md:grid-cols-3">
             <a
-              href={`/charts/${chart.id}`}
+              href={`/charts/${chart.id}/`}
               class="block overflow-hidden rounded-lg border border-(--border) shadow-sm transition-shadow hover:shadow-md"
               aria-label={`${chart.name} preview`}
             >
@@ -65,13 +65,13 @@ const charts = [
             </a>
             <div class="md:col-span-2">
               <h2 class="mb-3 text-3xl font-semibold">
-                <a href={`/charts/${chart.id}`} class="hover:text-(--accent)">
+                <a href={`/charts/${chart.id}/`} class="hover:text-(--accent)">
                   {chart.name}
                 </a>
               </h2>
               <p class="mb-4 text-(--text-secondary)">{chart.description}</p>
               <a
-                href={`/charts/${chart.id}`}
+                href={`/charts/${chart.id}/`}
                 class="inline-flex items-center gap-1 font-medium text-(--accent) hover:text-(--accent-hover)"
               >
                 Explore {chart.name}

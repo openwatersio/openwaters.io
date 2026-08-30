@@ -28,7 +28,7 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
       <!-- Features Grid -->
       <div class="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2">
         <FeatureCard
-          href="/tides/stations"
+          href="/tides/stations/"
           title="Tide Predictions"
           description="Explore tide predictions from stations near you or search by location."
           action="View station map"
@@ -36,7 +36,7 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
         />
 
         <FeatureCard
-          href="/api"
+          href="/api/"
           title="Developer API"
           description="Access tide predictions programmatically through a REST API."
           action="View API docs"
@@ -44,7 +44,7 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
         />
 
         <FeatureCard
-          href="/tides/neaps"
+          href="/tides/neaps/"
           title="Neaps Engine"
           description="Learn about the open source tide prediction engine that powers our predictions."
           action="About Neaps"
@@ -52,7 +52,7 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
         />
 
         <FeatureCard
-          href="/tides/database"
+          href="/tides/database/"
           title="Tide Database"
           description="Access our comprehensive database of harmonic constituents and station metadata."
           action="Explore database"
@@ -71,14 +71,14 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
               Tide predictions are calculated using harmonic analysis, a method
               that breaks down the complex tidal signal into a series of simple
               wave components called
-              <a href="/tides/harmonics">harmonic constituents</a>. Each
+              <a href="/tides/harmonics/">harmonic constituents</a>. Each
               constituent represents the effect of a specific astronomical or
               oceanographic force on the tides.
             </p>
 
             <p class="mt-4">
               <a
-                href="/tides/harmonics"
+                href="/tides/harmonics/"
                 class="inline-flex items-center gap-1 text-sm font-medium"
               >
                 Learn more about harmonic constituents
@@ -113,12 +113,15 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
         </p>
         <div class="flex flex-wrap justify-center gap-4">
           <a
-            href="/tides/stations"
+            href="/tides/stations/"
             class="btn text-ocean-700 hover:bg-ocean-50 bg-white"
           >
             Browse Stations
           </a>
-          <a href="/api" class="btn bg-ocean-800 hover:bg-ocean-900 text-white">
+          <a
+            href="/api/"
+            class="btn bg-ocean-800 hover:bg-ocean-900 text-white"
+          >
             View API Docs
           </a>
         </div>

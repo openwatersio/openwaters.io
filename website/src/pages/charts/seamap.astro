@@ -11,7 +11,7 @@ const viewerHref = ({
 }: {
   center: [number, number];
   zoom: number;
-}) => `/charts/seamap/viewer#${zoom}/${center[1]}/${center[0]}`;
+}) => `/charts/seamap/viewer/#${zoom}/${center[1]}/${center[0]}`;
 
 // Salish Sea: island channels, a dense ferry network, and marinas
 const hero = { center: [-122.9, 48.55] as [number, number], zoom: 9.5 };
@@ -69,7 +69,7 @@ const sources = [
   },
   {
     name: "Seascape",
-    href: "/charts/seascape",
+    href: "/charts/seascape/",
     contributes: "depth shading, contours, and soundings",
   },
   {
@@ -115,7 +115,7 @@ const sources = [
   <Container class="py-16">
     <div class="mx-auto max-w-4xl">
       <a
-        href="/charts"
+        href="/charts/"
         class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
       >
         <Icon name="mdi:arrow-left" class="size-4" />
@@ -134,7 +134,7 @@ const sources = [
             <Icon name="mdi:github" class="size-6" />
             <span class="hidden sm:inline">Code</span>
           </a>
-          <a href="/charts/seamap/viewer" class="btn btn-primary">
+          <a href="/charts/seamap/viewer/" class="btn btn-primary">
             <Icon name="mdi:eye" class="size-6" />
             <span class="hidden sm:inline">Preview</span>
           </a>
