@@ -3,16 +3,32 @@ import { getEntry, render } from "astro:content";
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
 import Icon from "../../components/Icon.astro";
+import { SITE, publisher } from "../../utils/schema";
 
 const entry = await getEntry("ais", "api");
 if (!entry) throw new Error("AIS API reference not loaded");
 const { Content, headings } = await render(entry);
 const sections = headings.filter((h) => h.depth === 2);
+
+const article = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  headline: "AIS API",
+  description:
+    "Reference for the AIS API: live vessel traffic by bounding box over WebSocket, GeoJSON snapshots, access tokens, and an aisstream.io-compatible stream.",
+  url: `${SITE}/api/ais/`,
+  author: publisher,
+  publisher,
+  isAccessibleForFree: true,
+  proficiencyLevel: "Expert",
+  articleSection: sections.map((section) => section.text),
+};
 ---
 
 <MainLayout
   title="AIS API"
   description="Reference for the AIS API: live vessel traffic by bounding box over WebSocket, GeoJSON snapshots, access tokens, and an aisstream.io-compatible stream."
+  schema={article}
 >
   <Container class="py-16">
     <div class="mx-auto max-w-4xl">

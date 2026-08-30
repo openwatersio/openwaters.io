@@ -7,6 +7,7 @@ import { TideStationIsland } from "../../../components/tides/TideStationIsland";
 import { NearbyStationsIsland } from "../../../components/tides/NearbyStations";
 import Icon from "../../../components/Icon.astro";
 import { API_HOST } from "../../../utils/constants";
+import { place } from "../../../utils/schema";
 import {
   createQueryClient,
   prefetchTideStation,
@@ -25,39 +26,47 @@ if (!Astro.url.pathname.endsWith("/")) {
   return Astro.redirect(`${Astro.url.pathname}/${Astro.url.search}`, 301);
 }
 
-const response = await fetch(`${API_HOST}/tides/stations/${Astro.params.id}`);
+// Station metadata — name, position, constituents — does not change between deploys,
+// so it is served from the edge cache rather than re-fetched per request. The tide
+// predictions below are time-dependent and deliberately not cached here.
+const fetchStation = (id: string) =>
+  fetch(`${API_HOST}/tides/stations/${id}`, {
+    cf: { cacheTtl: 3600, cacheEverything: true },
+  } as RequestInit);
+
+const response = await fetchStation(String(Astro.params.id));
 if (!response.ok) {
   return new Response(null, { status: 404 });
 }
 const station: Station = await response.json();
 
-let referenceStation: Station | null = null;
-if (station.offsets?.reference) {
-  const refResponse = await fetch(
-    `${API_HOST}/tides/stations/${station.offsets.reference}`,
-  );
-  if (refResponse.ok) {
-    referenceStation = await refResponse.json();
-  }
-}
-
 // Determine locale from Accept-Language header
 const acceptLang = Astro.request.headers.get("accept-language") ?? "";
 const locale = acceptLang.split(",")[0]?.split(";")[0]?.trim() || "en-US";
 
-// Prefetch tide data so React islands render with data immediately
+// The reference station is independent of the prefetches, so all three run together
+// rather than the reference fetch blocking them.
 const queryClient = createQueryClient();
-await Promise.all([
+const [referenceResponse] = await Promise.all([
+  station.offsets?.reference ? fetchStation(station.offsets.reference) : null,
   prefetchTideStation(queryClient, API_HOST, station.id, { locale }),
   prefetchNearbyStations(queryClient, API_HOST, {
     latitude: station.latitude,
     longitude: station.longitude,
   }),
 ]);
+const referenceStation: Station | null =
+  referenceResponse && referenceResponse.ok
+    ? await referenceResponse.json()
+    : null;
 const dehydratedState = dehydrate(queryClient);
 ---
 
-<MainLayout title={station.name} description={`Tide station: ${station.name}`}>
+<MainLayout
+  title={station.name}
+  description={`Tide station: ${station.name}`}
+  schema={place(station)}
+>
   <Container>
     <div class="mx-auto grid max-w-5xl gap-8 lg:grid-cols-3">
       {/* Main content */}

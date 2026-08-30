@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
+import { softwareSourceCode } from "../../utils/schema";
 import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
 import CodeBlock from "../../components/ui/CodeBlock.astro";
@@ -67,6 +68,14 @@ print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)`;
 <MainLayout
   title="Sky"
   description="Almanac — an offline sun and moon engine for Swift and TypeScript. Positions, rise and set, twilight, moon phase, and lunar eclipses, computed from pure geometry with no network."
+  schema={softwareSourceCode({
+    name: "Almanac",
+    description:
+      "An offline sun and moon engine for Swift and TypeScript: positions, rise and set, twilight, transit, moon phase, and lunar eclipses, computed from pure geometry with no network.",
+    path: "/sky/",
+    codeRepository: "https://github.com/openwatersio/almanac",
+    programmingLanguage: ["Swift", "TypeScript"],
+  })}
 >
   <Container class="py-16">
     <div class="mx-auto max-w-4xl">
