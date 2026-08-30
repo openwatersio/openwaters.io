@@ -17,6 +17,14 @@ import {
 // Enable server-side rendering for this route
 export const prerender = false;
 
+// Static routes get the trailing slash added at the edge, but this one is served by the
+// worker, so it has to redirect itself — otherwise every station answers 200 at both
+// /noaa/1612340 and /noaa/1612340/, each self-canonicalizing to whichever was requested.
+// Before the fetches, so a redirect costs no API round-trip.
+if (!Astro.url.pathname.endsWith("/")) {
+  return Astro.redirect(`${Astro.url.pathname}/${Astro.url.search}`, 301);
+}
+
 const response = await fetch(`${API_HOST}/tides/stations/${Astro.params.id}`);
 if (!response.ok) {
   return new Response(null, { status: 404 });
