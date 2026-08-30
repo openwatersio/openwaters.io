@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
+import { softwareSourceCode } from "../../utils/schema";
 import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
 import Icon from "../../components/Icon.astro";
@@ -8,6 +9,14 @@ import Icon from "../../components/Icon.astro";
 <MainLayout
   title="Crowd Depth - Bathymetry"
   description="Collect and share depth data from your marine vessel to contribute to crowd-sourced bathymetry programs."
+  schema={softwareSourceCode({
+    name: "Crowd Depth",
+    description:
+      "A Signal K plugin that records depth soundings with position and time from a vessel and contributes them to crowd-sourced bathymetry programs.",
+    path: "/bathymetry/crowd-depth/",
+    codeRepository: "https://github.com/openwatersio/crowd-depth",
+    programmingLanguage: ["JavaScript"],
+  })}
 >
   <!-- Hero -->
   <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-16">

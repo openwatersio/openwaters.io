@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
+import { softwareSourceCode } from "../../utils/schema";
 import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
 import Icon from "../../components/Icon.astro";
@@ -8,6 +9,14 @@ import Icon from "../../components/Icon.astro";
 <MainLayout
   title="Neaps"
   description="Learn about Neaps, the open source tide prediction engine that powers Open Waters."
+  schema={softwareSourceCode({
+    name: "Neaps",
+    description:
+      "An open source tide prediction engine that computes tide heights from harmonic constituents, offline and anywhere.",
+    path: "/tides/neaps/",
+    codeRepository: "https://github.com/openwatersio/neaps",
+    programmingLanguage: ["TypeScript", "JavaScript"],
+  })}
 >
   <Container class="py-16">
     <div class="mx-auto max-w-4xl">

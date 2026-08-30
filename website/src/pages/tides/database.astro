@@ -4,11 +4,45 @@ import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
 import { stations } from "@neaps/tide-database";
 import Icon from "../../components/Icon.astro";
+import { SITE, publisher } from "../../utils/schema";
+
+// Sources and counts mirror what the page itself renders below, so the structured data
+// cannot drift from the visible content.
+const dataset = {
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  name: "Open Waters Tide Database",
+  description:
+    "Tidal harmonic constituents and station metadata for tide prediction, covering thousands of stations worldwide from NOAA and TICON (GESLA-4) sources.",
+  url: `${SITE}/tides/database/`,
+  license: `${SITE}/license/`,
+  isAccessibleForFree: true,
+  creator: publisher,
+  measurementTechnique:
+    "Harmonic analysis of continuous water level observations",
+  keywords: [
+    "tides",
+    "harmonic constituents",
+    "tide prediction",
+    "tide gauge",
+    "bathymetry",
+  ],
+  distribution: {
+    "@type": "DataDownload",
+    encodingFormat: "application/json",
+    contentUrl: "https://github.com/neaps/tide-database",
+  },
+  spatialCoverage: {
+    "@type": "Place",
+    name: `${new Set(stations.map((s) => s.country)).size} countries`,
+  },
+};
 ---
 
 <MainLayout
   title="Tide Database"
   description="Comprehensive database of tidal harmonic constituents and station metadata for thousands of locations worldwide."
+  schema={dataset}
 >
   <Container class="py-16">
     <div class="mx-auto max-w-4xl">
