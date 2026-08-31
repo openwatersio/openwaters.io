@@ -49,6 +49,19 @@ const pre =
         <label
           class="mb-5 flex items-start gap-3 text-sm text-(--text-secondary)"
         >
+          <input type="checkbox" data-agree class="mt-1" />
+          <span>
+            I accept the <a
+              href="https://github.com/openwatersio/aiscast/blob/main/docs/contributor-agreement.md"
+              >contributor agreement</a
+            >: the data I send is my station's own reception, my receptions are
+            dedicated to the public domain (CC0), and the aggregate is published
+            under ODbL.
+          </span>
+        </label>
+        <label
+          class="mb-5 flex items-start gap-3 text-sm text-(--text-secondary)"
+        >
           <input type="checkbox" data-bind class="mt-1" />
           <span>
             Also bind this network address, so a UDP receiver sending from here
@@ -57,7 +70,12 @@ const pre =
           </span>
         </label>
         <div class="flex flex-wrap items-center gap-3">
-          <button type="button" data-go class="btn btn-primary">
+          <button
+            type="button"
+            data-go
+            disabled
+            class="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <Icon name="mdi:key-variant" class="size-5" />
             <span data-go-label>Generate token</span>
           </button>
@@ -181,6 +199,10 @@ const pre =
   }
 
   const status = $("[data-status]");
+  $("[data-agree]").addEventListener("change", () => {
+    $<HTMLButtonElement>("[data-go]").disabled =
+      !$<HTMLInputElement>("[data-agree]").checked;
+  });
   $("[data-go]").addEventListener("click", async () => {
     status.textContent = "…";
     try {
