@@ -198,11 +198,12 @@ const pre =
     $("[data-out]").hidden = false;
   }
 
-  const status = $("[data-status]");
-  $("[data-agree]").addEventListener("change", () => {
-    $<HTMLButtonElement>("[data-go]").disabled =
-      !$<HTMLInputElement>("[data-agree]").checked;
-  });
+const status = $("[data-status]");
+const agree = $<HTMLInputElement>("[data-agree]");
+const go = $<HTMLButtonElement>("[data-go]");
+const syncGoDisabled = () => (go.disabled = !agree.checked);
+agree.addEventListener("change", syncGoDisabled);
+syncGoDisabled();
   $("[data-go]").addEventListener("click", async () => {
     status.textContent = "…";
     try {
