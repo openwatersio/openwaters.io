@@ -571,121 +571,122 @@ const licenses = [
         <p class="mb-4 text-(--text-secondary)">
           Every event says which source it came from. Vessels are distinct MMSIs
           heard in the last 30 minutes; <em>unique</em> counts the ones no other source
-          heard. >aisstream.io
-        </p>.
-      </div>
-      <div class="mb-12 overflow-x-auto">
-        <table id="ais-sources" class="w-full min-w-lg text-sm">
-          <thead class="bg-(--surface-subtle)">
-            <tr>
-              <th scope="col" class="px-3 py-2 text-left">Source</th>
-              <th scope="col" class="px-3 py-2 text-right">Vessels</th>
-              <th scope="col" class="px-3 py-2 text-right">Unique</th>
-              <th scope="col" class="px-3 py-2 text-right">Events / 24h</th>
-              <th scope="col" class="px-3 py-2 text-right">Last heard</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-(--border-subtle)">
-            {
-              sources.map((row) => (
-                <tr data-ids={row.ids.join(",")}>
-                  <td class="px-3 py-2">
-                    <span class="font-medium">{row.name}</span>
-                    <span class="block text-xs text-(--text-muted)">
-                      {row.where}
-                    </span>
-                  </td>
-                  <td
-                    class="px-3 py-2 text-right tabular-nums"
-                    data-stat="vessels"
-                  >
-                    –
-                  </td>
-                  <td
-                    class="px-3 py-2 text-right tabular-nums"
-                    data-stat="exclusive"
-                  >
-                    –
-                  </td>
-                  <td
-                    class="px-3 py-2 text-right tabular-nums"
-                    data-stat="events"
-                  >
-                    –
-                  </td>
-                  <td
-                    class="px-3 py-2 text-right text-(--text-secondary) tabular-nums"
-                    data-stat="age"
-                  >
-                    –
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-      </div>
+          heard.
+        </p>
+        <div class="mb-12 overflow-x-auto">
+          <table id="ais-sources" class="w-full min-w-lg text-sm">
+            <thead class="bg-(--surface-subtle)">
+              <tr>
+                <th scope="col" class="px-3 py-2 text-left">Source</th>
+                <th scope="col" class="px-3 py-2 text-right">Vessels</th>
+                <th scope="col" class="px-3 py-2 text-right">Unique</th>
+                <th scope="col" class="px-3 py-2 text-right">Events / 24h</th>
+                <th scope="col" class="px-3 py-2 text-right">Last heard</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-(--border-subtle)">
+              {
+                sources.map((row) => (
+                  <tr data-ids={row.ids.join(",")}>
+                    <td class="px-3 py-2">
+                      <span class="font-medium">{row.name}</span>
+                      <span class="block text-xs text-(--text-muted)">
+                        {row.where}
+                      </span>
+                    </td>
+                    <td
+                      class="px-3 py-2 text-right tabular-nums"
+                      data-stat="vessels"
+                    >
+                      –
+                    </td>
+                    <td
+                      class="px-3 py-2 text-right tabular-nums"
+                      data-stat="exclusive"
+                    >
+                      –
+                    </td>
+                    <td
+                      class="px-3 py-2 text-right tabular-nums"
+                      data-stat="events"
+                    >
+                      –
+                    </td>
+                    <td
+                      class="px-3 py-2 text-right text-(--text-secondary) tabular-nums"
+                      data-stat="age"
+                    >
+                      –
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
 
-      <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
-        License
-      </h2>
-      <p class="mb-4 text-(--text-secondary)">
-        Licensing is per source, and the aggregate is not relicensed: each event
-        is re-served under the terms of the source it came from, which is why <code
-          class="rounded bg-(--surface-subtle) px-1">source</code
-        > is on every event and every vessel. If you display or redistribute the data,
-        carry the source's attribution through.
-      </p>
-      <div class="mb-6 overflow-x-auto">
-        <table class="w-full min-w-lg text-sm">
-          <thead class="bg-(--surface-subtle)">
-            <tr>
-              <th scope="col" class="px-3 py-2 text-left">Source</th>
-              <th scope="col" class="px-3 py-2 text-left">License</th>
-              <th scope="col" class="px-3 py-2 text-left">What you must do</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-(--border-subtle)">
-            {
-              licenses.map((row) => (
-                <tr>
-                  <td class="px-3 py-2 font-medium">{row.source}</td>
-                  <td class="px-3 py-2 whitespace-nowrap">
-                    {row.href ? (
-                      <a
-                        href={row.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {row.license}
-                      </a>
-                    ) : (
-                      row.license
-                    )}
-                  </td>
-                  <td class="px-3 py-2 text-(--text-secondary)">
-                    {row.obligation}
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
+        <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          License
+        </h2>
+        <p class="mb-4 text-(--text-secondary)">
+          Licensing is per source, and the aggregate is not relicensed: each
+          event is re-served under the terms of the source it came from, which
+          is why <code class="rounded bg-(--surface-subtle) px-1">source</code> is
+          on every event and every vessel. If you display or redistribute the data,
+          carry the source's attribution through.
+        </p>
+        <div class="mb-6 overflow-x-auto">
+          <table class="w-full min-w-lg text-sm">
+            <thead class="bg-(--surface-subtle)">
+              <tr>
+                <th scope="col" class="px-3 py-2 text-left">Source</th>
+                <th scope="col" class="px-3 py-2 text-left">License</th>
+                <th scope="col" class="px-3 py-2 text-left">What you must do</th
+                >
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-(--border-subtle)">
+              {
+                licenses.map((row) => (
+                  <tr>
+                    <td class="px-3 py-2 font-medium">{row.source}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">
+                      {row.href ? (
+                        <a
+                          href={row.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {row.license}
+                        </a>
+                      ) : (
+                        row.license
+                      )}
+                    </td>
+                    <td class="px-3 py-2 text-(--text-secondary)">
+                      {row.obligation}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="text-(--text-secondary)">
+          The server, viewer, and plugin are{" "}
+          <a
+            href={`${REPO}/blob/main/LICENSE`}
+            target="_blank"
+            rel="noopener noreferrer">MIT</a
+          >. The full position on licensing, privacy, and how the project funds
+          itself without relicensing data is in the repo's{" "}
+          <a
+            href={`${REPO}/blob/main/PLAN.md`}
+            target="_blank"
+            rel="noopener noreferrer">PLAN.md</a
+          >.
+        </p>
       </div>
-      <p class="text-(--text-secondary)">
-        The server, viewer, and plugin are{" "}
-        <a
-          href={`${REPO}/blob/main/LICENSE`}
-          target="_blank"
-          rel="noopener noreferrer">MIT</a
-        >. The full position on licensing, privacy, and how the project funds
-        itself without relicensing data is in the repo's{" "}
-        <a
-          href={`${REPO}/blob/main/PLAN.md`}
-          target="_blank"
-          rel="noopener noreferrer">PLAN.md</a
-        >.
-      </p>
     </Container>
   </section>
 </MainLayout>
@@ -713,7 +714,7 @@ const licenses = [
   });
 
   // Sources table: each row sums the /v1/stats sources whose prefix (before ":") is in its data-ids.
-  // ponytail: summing vessels across a row's stations can double count a vessel two volunteers both heard.
+  // Summed vessels can double count one heard by two of a row's stations; close enough for a summary.
   const ago = (s: number) =>
     s < 60
       ? `${s}s ago`

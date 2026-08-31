@@ -19,7 +19,7 @@ const pre =
     <Container>
       <div class="mx-auto max-w-2xl">
         <a
-          href="/ais"
+          href="/ais/"
           class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
         >
           <Icon name="mdi:arrow-left" class="size-4" />
@@ -147,6 +147,9 @@ const pre =
       .replace(/\//g, "_")
       .replace(/=+$/, "");
 
+  // The keypair is the device identity: returning with the same public key
+  // yields the same station id, and the private key is what will prove
+  // possession once the server requires signing, so both halves are kept.
   async function deviceKey(): Promise<{ pub: string; priv: JsonWebKey }> {
     const saved = localStorage.getItem("aiscast.device");
     if (saved) return JSON.parse(saved);
