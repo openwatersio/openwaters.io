@@ -10,7 +10,7 @@ import { highlight, SNIPPET_LANGS } from "../../utils/shiki";
 
 const SERVER = "ais.openwaters.io";
 const REPO = "https://github.com/openwatersio/aiscast";
-const TOKEN_PAGE = "https://openwatersio.github.io/aiscast/token.html";
+const TOKEN_PAGE = "/ais/token/";
 
 const bbox = "59,10,60,11";
 const snippets: {
@@ -203,31 +203,32 @@ const contribute = [
   },
 ];
 
-const coverage = [
+// Live numbers come from /v1/stats; `ids` are the `source` prefixes each row sums.
+const sources = [
   {
-    source: "Kystverket",
+    name: "Kystverket",
+    ids: ["kystverket"],
     where: "Norwegian coast, 40–60 nm out",
-    freshness: "live",
   },
   {
-    source: "Fintraffic Digitraffic",
+    name: "Fintraffic Digitraffic",
+    ids: ["digitraffic"],
     where: "Finnish waters",
-    freshness: "live",
   },
   {
-    source: "Volunteer receivers",
-    where: "wherever they are",
-    freshness: "live",
+    name: "Volunteer receivers",
+    ids: ["udp", "http", "v1", "mmsi"],
+    where: "Global, wherever they are",
   },
   {
-    source: "AISHub aggregate",
-    where: "worldwide terrestrial, ~50k vessels",
-    freshness: "1–6 min (their snapshot refreshes every ~5 min)",
+    name: "AISHub",
+    ids: ["aishub"],
+    where: "worldwide terrestrial; ~5 min snapshots",
   },
   {
-    source: "aisstream.io",
-    where: "worldwide, when it is up",
-    freshness: "live; frequently down",
+    name: "aisstream.io",
+    ids: ["aisstream"],
+    where: "worldwide (when it is up)",
   },
 ];
 
@@ -253,15 +254,16 @@ const licenses = [
       "Contributed for re-serving by this server; a written feeder agreement with an open license on the aggregate is the next stage. Credit “aiscast volunteer receivers” for now.",
   },
   {
-    source: "AISHub aggregate",
+    source: "AISHub",
     license: "AISHub membership",
+    href: "https://www.aishub.net/join-us",
     obligation:
-      "Their published terms grant “use” only. Treat as view-only: fine to display, do not build a product on these events alone. May be withdrawn; every event carries source: aishub.",
+      "AISHub has confirmed in writing that there are no restrictions on use, including commercial use and redistribution. Credit “AISHub” and carry it through if you redistribute; every event carries source: aishub.",
   },
   {
     source: "aisstream.io",
     license: "no published terms",
-    obligation: "Best effort, may disappear. source: aisstream.",
+    obligation: "Best effort, frequently offline. source: aisstream.",
   },
 ];
 ---
@@ -559,105 +561,131 @@ const licenses = [
     </Container>
   </section>
 
-  <!-- Coverage & license -->
+  <!-- Sources & license -->
   <section class="bg-(--surface-subtle) py-16">
     <Container>
       <div class="mx-auto max-w-4xl">
-        <h2 id="coverage" class="mb-4 scroll-mt-24 text-3xl font-semibold">
-          Coverage
+        <h2 id="sources" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          Sources
         </h2>
         <p class="mb-4 text-(--text-secondary)">
-          Every event says which of these it came from.
-        </p>
-        <div class="mb-12 overflow-x-auto">
-          <table class="w-full min-w-lg text-sm">
-            <thead class="bg-(--surface-subtle)">
-              <tr>
-                <th scope="col" class="px-3 py-2 text-left">Source</th>
-                <th scope="col" class="px-3 py-2 text-left">Where</th>
-                <th scope="col" class="px-3 py-2 text-left">Freshness</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-(--border-subtle)">
-              {
-                coverage.map((row) => (
-                  <tr>
-                    <td class="px-3 py-2 font-medium">{row.source}</td>
-                    <td class="px-3 py-2 text-(--text-secondary)">
-                      {row.where}
-                    </td>
-                    <td class="px-3 py-2 text-(--text-secondary)">
-                      {row.freshness}
-                    </td>
-                  </tr>
-                ))
-              }
-            </tbody>
-          </table>
-        </div>
-
-        <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
-          License
-        </h2>
-        <p class="mb-4 text-(--text-secondary)">
-          Licensing is per source, and the aggregate is not relicensed: each
-          event is re-served under the terms of the source it came from, which
-          is why <code class="rounded bg-(--surface-subtle) px-1">source</code> is
-          on every event and every vessel. If you display or redistribute the data,
-          carry the source's attribution through.
-        </p>
-        <div class="mb-6 overflow-x-auto">
-          <table class="w-full min-w-lg text-sm">
-            <thead class="bg-(--surface-subtle)">
-              <tr>
-                <th scope="col" class="px-3 py-2 text-left">Source</th>
-                <th scope="col" class="px-3 py-2 text-left">License</th>
-                <th scope="col" class="px-3 py-2 text-left">What you must do</th
-                >
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-(--border-subtle)">
-              {
-                licenses.map((row) => (
-                  <tr>
-                    <td class="px-3 py-2 font-medium">{row.source}</td>
-                    <td class="px-3 py-2 whitespace-nowrap">
-                      {row.href ? (
-                        <a
-                          href={row.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {row.license}
-                        </a>
-                      ) : (
-                        row.license
-                      )}
-                    </td>
-                    <td class="px-3 py-2 text-(--text-secondary)">
-                      {row.obligation}
-                    </td>
-                  </tr>
-                ))
-              }
-            </tbody>
-          </table>
-        </div>
-        <p class="text-(--text-secondary)">
-          The server, viewer, and plugin are{" "}
-          <a
-            href={`${REPO}/blob/main/LICENSE`}
-            target="_blank"
-            rel="noopener noreferrer">MIT</a
-          >. The full position on licensing, privacy, and how the project funds
-          itself without relicensing data is in the repo's{" "}
-          <a
-            href={`${REPO}/blob/main/PLAN.md`}
-            target="_blank"
-            rel="noopener noreferrer">PLAN.md</a
-          >.
-        </p>
+          Every event says which source it came from. Vessels are distinct MMSIs
+          heard in the last 30 minutes; <em>unique</em> counts the ones no other source
+          heard. >aisstream.io
+        </p>.
       </div>
+      <div class="mb-12 overflow-x-auto">
+        <table id="ais-sources" class="w-full min-w-lg text-sm">
+          <thead class="bg-(--surface-subtle)">
+            <tr>
+              <th scope="col" class="px-3 py-2 text-left">Source</th>
+              <th scope="col" class="px-3 py-2 text-right">Vessels</th>
+              <th scope="col" class="px-3 py-2 text-right">Unique</th>
+              <th scope="col" class="px-3 py-2 text-right">Events / 24h</th>
+              <th scope="col" class="px-3 py-2 text-right">Last heard</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-(--border-subtle)">
+            {
+              sources.map((row) => (
+                <tr data-ids={row.ids.join(",")}>
+                  <td class="px-3 py-2">
+                    <span class="font-medium">{row.name}</span>
+                    <span class="block text-xs text-(--text-muted)">
+                      {row.where}
+                    </span>
+                  </td>
+                  <td
+                    class="px-3 py-2 text-right tabular-nums"
+                    data-stat="vessels"
+                  >
+                    –
+                  </td>
+                  <td
+                    class="px-3 py-2 text-right tabular-nums"
+                    data-stat="exclusive"
+                  >
+                    –
+                  </td>
+                  <td
+                    class="px-3 py-2 text-right tabular-nums"
+                    data-stat="events"
+                  >
+                    –
+                  </td>
+                  <td
+                    class="px-3 py-2 text-right text-(--text-secondary) tabular-nums"
+                    data-stat="age"
+                  >
+                    –
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        License
+      </h2>
+      <p class="mb-4 text-(--text-secondary)">
+        Licensing is per source, and the aggregate is not relicensed: each event
+        is re-served under the terms of the source it came from, which is why <code
+          class="rounded bg-(--surface-subtle) px-1">source</code
+        > is on every event and every vessel. If you display or redistribute the data,
+        carry the source's attribution through.
+      </p>
+      <div class="mb-6 overflow-x-auto">
+        <table class="w-full min-w-lg text-sm">
+          <thead class="bg-(--surface-subtle)">
+            <tr>
+              <th scope="col" class="px-3 py-2 text-left">Source</th>
+              <th scope="col" class="px-3 py-2 text-left">License</th>
+              <th scope="col" class="px-3 py-2 text-left">What you must do</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-(--border-subtle)">
+            {
+              licenses.map((row) => (
+                <tr>
+                  <td class="px-3 py-2 font-medium">{row.source}</td>
+                  <td class="px-3 py-2 whitespace-nowrap">
+                    {row.href ? (
+                      <a
+                        href={row.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {row.license}
+                      </a>
+                    ) : (
+                      row.license
+                    )}
+                  </td>
+                  <td class="px-3 py-2 text-(--text-secondary)">
+                    {row.obligation}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="text-(--text-secondary)">
+        The server, viewer, and plugin are{" "}
+        <a
+          href={`${REPO}/blob/main/LICENSE`}
+          target="_blank"
+          rel="noopener noreferrer">MIT</a
+        >. The full position on licensing, privacy, and how the project funds
+        itself without relicensing data is in the repo's{" "}
+        <a
+          href={`${REPO}/blob/main/PLAN.md`}
+          target="_blank"
+          rel="noopener noreferrer">PLAN.md</a
+        >.
+      </p>
     </Container>
   </section>
 </MainLayout>
@@ -684,6 +712,44 @@ const licenses = [
     });
   });
 
+  // Sources table: each row sums the /v1/stats sources whose prefix (before ":") is in its data-ids.
+  // ponytail: summing vessels across a row's stations can double count a vessel two volunteers both heard.
+  const ago = (s: number) =>
+    s < 60
+      ? `${s}s ago`
+      : s < 3600
+        ? `${Math.round(s / 60)}m ago`
+        : `${Math.round(s / 3600)}h ago`;
+  const fillSources = (
+    sources: Record<
+      string,
+      {
+        events: { last_24h: number };
+        last_age_s: number;
+        vessels: number;
+        vessels_exclusive: number;
+      }
+    >,
+  ) => {
+    document
+      .querySelectorAll<HTMLElement>("#ais-sources tr[data-ids]")
+      .forEach((tr) => {
+        const ids = tr.dataset.ids!.split(",");
+        const mine = Object.entries(sources).filter(([k]) =>
+          ids.includes(k.split(":")[0]!),
+        );
+        if (!mine.length) return;
+        const sum = (f: (v: (typeof mine)[number][1]) => number) =>
+          mine.reduce((n, [, v]) => n + f(v), 0);
+        const set = (k: string, v: string) =>
+          (tr.querySelector(`[data-stat=${k}]`)!.textContent = v);
+        set("vessels", sum((v) => v.vessels).toLocaleString());
+        set("exclusive", sum((v) => v.vessels_exclusive).toLocaleString());
+        set("events", sum((v) => v.events.last_24h).toLocaleString());
+        set("age", ago(Math.min(...mine.map(([, v]) => v.last_age_s))));
+      });
+  };
+
   // Live stats: active stations, vessels in the cache, deduplicated events/sec.
   const stats = document.getElementById("ais-stats");
   if (stats) {
@@ -698,6 +764,7 @@ const licenses = [
         show("stations", s.stations.active);
         show("vessels", `${Math.round(s.vessels.total / 1000)}k`);
         show("rate", s.events.per_second);
+        fillSources(s.sources);
       } catch {
         // leave the placeholders; the hero works without numbers
       }

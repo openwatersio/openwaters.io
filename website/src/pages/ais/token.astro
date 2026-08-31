@@ -1,0 +1,229 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Card from "../../components/ui/Card.astro";
+import Icon from "../../components/Icon.astro";
+import { CONTACT_EMAIL } from "../../utils/constants";
+
+const SERVER = "https://ais.openwaters.io";
+const VIEWER = "https://openwatersio.github.io/aiscast/";
+const pre =
+  "bg-navy-900 overflow-x-auto rounded-lg p-4 text-sm break-all whitespace-pre-wrap text-white";
+---
+
+<MainLayout
+  title="Get an AIS token"
+  description="A free personal token for ais.openwaters.io: send your AIS receiver's data and read the live stream with any aisstream.io client. No account, no expiry."
+>
+  <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-12">
+    <Container>
+      <div class="mx-auto max-w-2xl">
+        <a
+          href="/ais"
+          class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+        >
+          <Icon name="mdi:arrow-left" class="size-4" />
+          AIS
+        </a>
+        <h1 class="mb-4">Get an AIS token</h1>
+        <p class="text-lead">
+          Share your AIS receiver's data and read the live stream. Free, no
+          account, never expires.
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <Container class="py-12">
+    <div
+      class="mx-auto max-w-2xl space-y-8"
+      data-token-page
+      data-server={SERVER}
+      data-viewer={VIEWER}
+    >
+      <Card>
+        <p class="mb-5 text-(--text-secondary)">
+          Your token is tied to this browser — come back any time and you'll get
+          the same station id.
+        </p>
+        <label
+          class="mb-5 flex items-start gap-3 text-sm text-(--text-secondary)"
+        >
+          <input type="checkbox" data-bind class="mt-1" />
+          <span>
+            Also bind this network address, so a UDP receiver sending from here
+            counts toward this token. The token then only works from this
+            address.
+          </span>
+        </label>
+        <div class="flex flex-wrap items-center gap-3">
+          <button type="button" data-go class="btn btn-primary">
+            <Icon name="mdi:key-variant" class="size-5" />
+            <span data-go-label>Generate token</span>
+          </button>
+          <span data-status class="text-sm text-(--text-muted)"></span>
+        </div>
+      </Card>
+
+      <div data-out hidden class="space-y-8">
+        <Card>
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <h2 class="text-xl font-semibold">Your token</h2>
+            <button type="button" data-copy class="btn btn-secondary text-sm">
+              <Icon name="mdi:content-copy" class="size-4" />
+              <span data-copy-label>Copy</span>
+            </button>
+          </div>
+          <pre data-token class={pre}></pre>
+          <p class="mt-3 text-sm text-(--text-secondary)">
+            Station id <code class="rounded bg-(--surface-subtle) px-1" data-sub
+            ></code>, expires <span data-exp></span>. Your data appears as <code
+              class="rounded bg-(--surface-subtle) px-1"
+              >source: http:&lt;station id&gt;</code
+            >; see it on <a data-stlink href={VIEWER}>the live map</a> or at <code
+              class="rounded bg-(--surface-subtle) px-1">/v1/stations</code
+            >.
+          </p>
+        </Card>
+
+        <Card>
+          <h2 class="mb-4 text-xl font-semibold">Send your receiver's data</h2>
+          <h3 class="mb-1 text-base font-semibold">AIS-catcher</h3>
+          <p class="mb-2 text-sm text-(--text-secondary)">
+            Authenticated HTTP, works behind any NAT:
+          </p>
+          <pre data-cmd-aiscatcher class={`${pre} mb-5`}></pre>
+          <h3 class="mb-1 text-base font-semibold">Signal K</h3>
+          <p class="mb-5 text-sm text-(--text-secondary)">
+            Install <code class="rounded bg-(--surface-subtle) px-1"
+              >signalk-aiscast</code
+            > from the App Store. It mints its own token; nothing to paste.
+          </p>
+          <h3 class="mb-1 text-base font-semibold">UDP</h3>
+          <p class="text-sm text-(--text-secondary)">
+            docker-shipfeeder or any forwarder: host <code
+              class="rounded bg-(--surface-subtle) px-1">ais.openwaters.io</code
+            >, port <code class="rounded bg-(--surface-subtle) px-1">10110</code
+            >, no token. The station appears as an anonymous <code
+              class="rounded bg-(--surface-subtle) px-1">udp:…</code
+            > unless you bound this address above.
+          </p>
+        </Card>
+
+        <Card>
+          <h2 class="mb-2 text-xl font-semibold">Read the stream</h2>
+          <p class="mb-3 text-sm text-(--text-secondary)">
+            Any aisstream.io client: hostname <code
+              class="rounded bg-(--surface-subtle) px-1">ais.openwaters.io</code
+            >, API key = your token. Or from a shell:
+          </p>
+          <pre data-cmd-ws class={pre}></pre>
+        </Card>
+      </div>
+
+      <p class="text-sm text-(--text-muted)">
+        Personal tokens get 2 concurrent streams, 50 messages a second each, and
+        400 square degrees of subscribed area. Feed data and the same token
+        becomes a feeder on its own: 5 streams, 200 messages a second, any area,
+        and the raw NMEA feed. <a href="/ais#limits">Tiers and limits</a>. Need
+        a named station, or more than that? <a href={`mailto:${CONTACT_EMAIL}`}
+          >{CONTACT_EMAIL}</a
+        >.
+      </p>
+    </div>
+  </Container>
+</MainLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-token-page]")!;
+  const server = root.dataset.server!;
+  const viewer = root.dataset.viewer!;
+  const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+
+  type Claims = { sub: string; exp?: number };
+  const b64url = (buf: ArrayBuffer) =>
+    btoa(String.fromCharCode(...new Uint8Array(buf)))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+
+  async function deviceKey(): Promise<{ pub: string; priv: JsonWebKey }> {
+    const saved = localStorage.getItem("aiscast.device");
+    if (saved) return JSON.parse(saved);
+    const kp = await crypto.subtle.generateKey({ name: "Ed25519" }, true, [
+      "sign",
+      "verify",
+    ]);
+    const dev = {
+      pub: b64url(await crypto.subtle.exportKey("raw", kp.publicKey)),
+      priv: await crypto.subtle.exportKey("jwk", kp.privateKey),
+    };
+    localStorage.setItem("aiscast.device", JSON.stringify(dev));
+    return dev;
+  }
+
+  function show(token: string, claims: Claims) {
+    $("[data-token]").textContent = token;
+    $("[data-sub]").textContent = claims.sub;
+    $("[data-exp]").textContent = claims.exp
+      ? new Date(claims.exp * 1000).toISOString().slice(0, 10)
+      : "never";
+    $<HTMLAnchorElement>("[data-stlink]").href =
+      `${viewer}?station=${encodeURIComponent("http:" + claims.sub)}`;
+    $("[data-cmd-aiscatcher]").textContent =
+      `AIS-catcher -d:0 -H ${server}/v1/receive USERPWD x:${token} GZIP on INTERVAL 15`;
+    $("[data-cmd-ws]").textContent =
+      `websocat ${server.replace(/^http/, "ws")}/v0/stream\n{"APIKey":"${token}","BoundingBoxes":[[[41,-71.5],[42.5,-69.5]]]}`;
+    $("[data-out]").hidden = false;
+  }
+
+  const status = $("[data-status]");
+  $("[data-go]").addEventListener("click", async () => {
+    status.textContent = "…";
+    try {
+      if (!crypto?.subtle) throw new Error("this browser has no WebCrypto");
+      const dev = await deviceKey();
+      const res = await fetch(`${server}/v1/keys`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pubkey: dev.pub,
+          bind_ip: $<HTMLInputElement>("[data-bind]").checked,
+        }),
+      });
+      if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+      const { token, claims } = await res.json();
+      localStorage.setItem("aiscast.token", JSON.stringify({ token, claims }));
+      show(token, claims);
+      $("[data-go-label]").textContent = "Regenerate token";
+      status.textContent = "";
+    } catch (e) {
+      const msg = String((e as Error).message || e);
+      status.textContent =
+        msg +
+        (msg.includes("Ed25519")
+          ? " (Ed25519 WebCrypto needs a current Chrome, Firefox, or Safari)"
+          : "");
+    }
+  });
+
+  $("[data-copy]").addEventListener("click", async () => {
+    await navigator.clipboard.writeText($("[data-token]").textContent ?? "");
+    const label = $("[data-copy-label]");
+    label.textContent = "Copied";
+    setTimeout(() => (label.textContent = "Copy"), 1500);
+  });
+
+  const prev = localStorage.getItem("aiscast.token");
+  if (prev) {
+    const { token, claims } = JSON.parse(prev) as {
+      token: string;
+      claims: Claims;
+    };
+    if (!claims.exp || claims.exp * 1000 > Date.now()) {
+      show(token, claims);
+      $("[data-go-label]").textContent = "Regenerate token";
+      status.textContent = `existing token for station ${claims.sub}`;
+    }
+  }
+</script>
