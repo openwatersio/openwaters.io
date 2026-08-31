@@ -10,7 +10,7 @@ import { highlight, SNIPPET_LANGS } from "../../utils/shiki";
 
 const SERVER = "ais.openwaters.io";
 const REPO = "https://github.com/openwatersio/aiscast";
-const TOKEN_PAGE = "https://openwatersio.github.io/aiscast/token.html";
+const TOKEN_PAGE = "/ais/token/";
 
 const bbox = "59,10,60,11";
 const snippets: {
@@ -203,31 +203,32 @@ const contribute = [
   },
 ];
 
-const coverage = [
+// Live numbers come from /v1/stats; `ids` are the `source` prefixes each row sums.
+const sources = [
   {
-    source: "Kystverket",
+    name: "Kystverket",
+    ids: ["kystverket"],
     where: "Norwegian coast, 40–60 nm out",
-    freshness: "live",
   },
   {
-    source: "Fintraffic Digitraffic",
+    name: "Fintraffic Digitraffic",
+    ids: ["digitraffic"],
     where: "Finnish waters",
-    freshness: "live",
   },
   {
-    source: "Volunteer receivers",
-    where: "wherever they are",
-    freshness: "live",
+    name: "Volunteer receivers",
+    ids: ["udp", "http", "v1", "mmsi"],
+    where: "Global, wherever they are",
   },
   {
-    source: "AISHub aggregate",
-    where: "worldwide terrestrial, ~50k vessels",
-    freshness: "1–6 min (their snapshot refreshes every ~5 min)",
+    name: "AISHub",
+    ids: ["aishub"],
+    where: "worldwide terrestrial; ~5 min snapshots",
   },
   {
-    source: "aisstream.io",
-    where: "worldwide, when it is up",
-    freshness: "live; frequently down",
+    name: "aisstream.io",
+    ids: ["aisstream"],
+    where: "worldwide (when it is up)",
   },
 ];
 
@@ -253,22 +254,24 @@ const licenses = [
       "Contributed for re-serving by this server; a written feeder agreement with an open license on the aggregate is the next stage. Credit “aiscast volunteer receivers” for now.",
   },
   {
-    source: "AISHub aggregate",
+    source: "AISHub",
     license: "AISHub membership",
+    href: "https://www.aishub.net/join-us",
     obligation:
-      "Their published terms grant “use” only. Treat as view-only: fine to display, do not build a product on these events alone. May be withdrawn; every event carries source: aishub.",
+      "AISHub has confirmed in writing that there are no restrictions on use, including commercial use and redistribution. Credit “AISHub” and carry it through if you redistribute; every event carries source: aishub.",
   },
   {
     source: "aisstream.io",
     license: "no published terms",
-    obligation: "Best effort, may disappear. source: aisstream.",
+    obligation: "Best effort, frequently offline. source: aisstream.",
   },
 ];
 ---
 
 <MainLayout
-  title="AIS"
-  description="Live AIS vessel traffic from open government feeds and volunteer receivers, streamed by bounding box over WebSocket. Open data, open source, aisstream.io compatible."
+  title="AIS: an open AIS network, streamed in real time"
+  image="/og/ais.png"
+  description="Live ship positions from coastal authorities and volunteer receivers, streamed live. Open source and free for personal use."
 >
   <!-- Hero -->
   <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-12">
@@ -558,35 +561,62 @@ const licenses = [
     </Container>
   </section>
 
-  <!-- Coverage & license -->
+  <!-- Sources & license -->
   <section class="bg-(--surface-subtle) py-16">
     <Container>
       <div class="mx-auto max-w-4xl">
-        <h2 id="coverage" class="mb-4 scroll-mt-24 text-3xl font-semibold">
-          Coverage
+        <h2 id="sources" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          Sources
         </h2>
         <p class="mb-4 text-(--text-secondary)">
-          Every event says which of these it came from.
+          Every event says which source it came from. Vessels are distinct MMSIs
+          heard in the last 30 minutes; <em>unique</em> counts the ones no other source
+          heard.
         </p>
         <div class="mb-12 overflow-x-auto">
-          <table class="w-full min-w-lg text-sm">
+          <table id="ais-sources" class="w-full min-w-lg text-sm">
             <thead class="bg-(--surface-subtle)">
               <tr>
                 <th scope="col" class="px-3 py-2 text-left">Source</th>
-                <th scope="col" class="px-3 py-2 text-left">Where</th>
-                <th scope="col" class="px-3 py-2 text-left">Freshness</th>
+                <th scope="col" class="px-3 py-2 text-right">Vessels</th>
+                <th scope="col" class="px-3 py-2 text-right">Unique</th>
+                <th scope="col" class="px-3 py-2 text-right">Events / 24h</th>
+                <th scope="col" class="px-3 py-2 text-right">Last heard</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-(--border-subtle)">
               {
-                coverage.map((row) => (
-                  <tr>
-                    <td class="px-3 py-2 font-medium">{row.source}</td>
-                    <td class="px-3 py-2 text-(--text-secondary)">
-                      {row.where}
+                sources.map((row) => (
+                  <tr data-ids={row.ids.join(",")}>
+                    <td class="px-3 py-2">
+                      <span class="font-medium">{row.name}</span>
+                      <span class="block text-xs text-(--text-muted)">
+                        {row.where}
+                      </span>
                     </td>
-                    <td class="px-3 py-2 text-(--text-secondary)">
-                      {row.freshness}
+                    <td
+                      class="px-3 py-2 text-right tabular-nums"
+                      data-stat="vessels"
+                    >
+                      –
+                    </td>
+                    <td
+                      class="px-3 py-2 text-right tabular-nums"
+                      data-stat="exclusive"
+                    >
+                      –
+                    </td>
+                    <td
+                      class="px-3 py-2 text-right tabular-nums"
+                      data-stat="events"
+                    >
+                      –
+                    </td>
+                    <td
+                      class="px-3 py-2 text-right text-(--text-secondary) tabular-nums"
+                      data-stat="age"
+                    >
+                      –
                     </td>
                   </tr>
                 ))
@@ -683,6 +713,44 @@ const licenses = [
     });
   });
 
+  // Sources table: each row sums the /v1/stats sources whose prefix (before ":") is in its data-ids.
+  // Summed vessels can double count one heard by two of a row's stations; close enough for a summary.
+  const ago = (s: number) =>
+    s < 60
+      ? `${s}s ago`
+      : s < 3600
+        ? `${Math.round(s / 60)}m ago`
+        : `${Math.round(s / 3600)}h ago`;
+  const fillSources = (
+    sources: Record<
+      string,
+      {
+        events: { last_24h: number };
+        last_age_s: number;
+        vessels: number;
+        vessels_exclusive: number;
+      }
+    >,
+  ) => {
+    document
+      .querySelectorAll<HTMLElement>("#ais-sources tr[data-ids]")
+      .forEach((tr) => {
+        const ids = tr.dataset.ids!.split(",");
+        const mine = Object.entries(sources).filter(([k]) =>
+          ids.includes(k.split(":")[0]!),
+        );
+        if (!mine.length) return;
+        const sum = (f: (v: (typeof mine)[number][1]) => number) =>
+          mine.reduce((n, [, v]) => n + f(v), 0);
+        const set = (k: string, v: string) =>
+          (tr.querySelector(`[data-stat=${k}]`)!.textContent = v);
+        set("vessels", sum((v) => v.vessels).toLocaleString());
+        set("exclusive", sum((v) => v.vessels_exclusive).toLocaleString());
+        set("events", sum((v) => v.events.last_24h).toLocaleString());
+        set("age", ago(Math.min(...mine.map(([, v]) => v.last_age_s))));
+      });
+  };
+
   // Live stats: active stations, vessels in the cache, deduplicated events/sec.
   const stats = document.getElementById("ais-stats");
   if (stats) {
@@ -697,6 +765,7 @@ const licenses = [
         show("stations", s.stations.active);
         show("vessels", `${Math.round(s.vessels.total / 1000)}k`);
         show("rate", s.events.per_second);
+        fillSources(s.sources);
       } catch {
         // leave the placeholders; the hero works without numbers
       }
