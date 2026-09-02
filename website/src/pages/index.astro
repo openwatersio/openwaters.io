@@ -43,6 +43,7 @@ const charts = [
   <!-- Features Section -->
   <section class="py-16">
     <Container>
+      <h2 class="sr-only">Tools and data</h2>
       <div class="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
         <!-- Charts -->
         {
@@ -57,7 +58,7 @@ const charts = [
                   interactive={false}
                 />
               </div>
-              <h2>{chart.name}</h2>
+              <h3 class="text-3xl md:text-4xl lg:text-5xl">{chart.name}</h3>
               <p class="text-pretty text-(--text-secondary)">
                 {chart.description}
               </p>
@@ -98,7 +99,7 @@ const charts = [
               ></path>
             </svg>
           </div>
-          <h2>Tides</h2>
+          <h3 class="text-3xl md:text-4xl lg:text-5xl">Tides</h3>
           <p class="text-(--text-secondary)">
             Tide predictions powered by the Neaps engine, with data from
             thousands of stations worldwide.
@@ -127,7 +128,7 @@ const charts = [
           <div class="text-(--accent)">
             <Icon name="mdi:radar" class="size-12" />
           </div>
-          <h2>AIS</h2>
+          <h3 class="text-3xl md:text-4xl lg:text-5xl">AIS</h3>
           <p class="text-(--text-secondary)">
             Live vessel traffic from open government feeds and volunteer
             receivers, streamed by bounding box.
@@ -156,7 +157,7 @@ const charts = [
           <div class="text-(--accent)">
             <Icon name="mdi:weather-sunset-up" class="size-12" />
           </div>
-          <h2>Sky</h2>
+          <h3 class="text-3xl md:text-4xl lg:text-5xl">Sky</h3>
           <p class="text-(--text-secondary)">
             Sunrise, moon phase, and lunar eclipses for any position, computed
             offline by the Almanac engine.
@@ -197,7 +198,7 @@ const charts = [
               ></path>
             </svg>
           </div>
-          <h2>Bathymetry</h2>
+          <h3 class="text-3xl md:text-4xl lg:text-5xl">Bathymetry</h3>
           <p class="text-(--text-secondary)">
             Collect and share depth data from your vessel to contribute to
             crowd-sourced bathymetry programs.

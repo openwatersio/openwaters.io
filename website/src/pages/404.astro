@@ -1,0 +1,39 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import Container from "../components/ui/Container.astro";
+
+// Short and link-dense on purpose: agents that land here need somewhere to go next.
+const next = [
+  ["/", "Home"],
+  ["/sitemap.xml", "Sitemap (every page)"],
+  ["/llms.txt", "llms.txt (site overview for agents)"],
+  ["/api/", "API documentation"],
+  ["/openapi.json", "OpenAPI specification"],
+  ["https://github.com/openwatersio", "Source code on GitHub"],
+];
+---
+
+<MainLayout title="404: Page not found" description="This page does not exist.">
+  <Container class="py-16">
+    <div class="mx-auto max-w-2xl space-y-6">
+      <h1>Page not found</h1>
+      <p class="text-lead">
+        There is no page at this address. Where to look next:
+      </p>
+      <ul class="list-inside list-disc space-y-1">
+        {
+          next.map(([href, label]) => (
+            <li>
+              <a
+                href={href}
+                class="font-medium text-(--accent) hover:text-(--accent-hover)"
+              >
+                {label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Container>
+</MainLayout>

@@ -80,8 +80,7 @@ export function extractEndpoints(spec: OpenAPISpec): EndpointInfo[] {
 
       // Resolve parameter references
       const rawParams = op.parameters as
-        | readonly (ParameterObject | { readonly $ref: string })[]
-        | undefined;
+        readonly (ParameterObject | { readonly $ref: string })[] | undefined;
 
       const parameters = rawParams
         ?.map((param) => {
@@ -136,4 +135,20 @@ export function groupEndpointsByTag(
   }
 
   return grouped;
+}
+
+/**
+ * The document served at /openapi.json: the mounted neaps spec, addressed at the
+ * public API host so agents can call it without reading the docs page first.
+ */
+export async function openApiDocument(host: string) {
+  const spec = await getOpenAPISpec();
+  return {
+    ...spec,
+    info: { ...spec.info, title: "Open Waters API" },
+    servers: [{ url: host }],
+    // The API is open: an explicit empty requirement says so in-spec.
+    security: [],
+    externalDocs: { url: "https://openwaters.io/api/" },
+  };
 }
