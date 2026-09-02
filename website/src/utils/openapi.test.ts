@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { openApiDocument } from "./openapi.ts";
+import { AIS_OPENAPI_URL, openApiDocument } from "./openapi.ts";
 
 test("openApiDocument: a valid-shaped OpenAPI 3 document addressed at the API host", async () => {
   const doc = await openApiDocument("https://api.openwaters.io");
@@ -10,6 +10,7 @@ test("openApiDocument: a valid-shaped OpenAPI 3 document addressed at the API ho
   assert.ok(doc.info.version);
   assert.deepEqual(doc.servers, [{ url: "https://api.openwaters.io" }]);
   assert.deepEqual(doc.security, []);
+  assert.ok(doc.info.description.includes(AIS_OPENAPI_URL));
 });
 
 test("openApiDocument: every path is mounted under /tides", async () => {

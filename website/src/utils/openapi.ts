@@ -12,6 +12,8 @@ type ParameterObject = Parameters[keyof Parameters];
  */
 const NEAPS_PREFIX = "/tides";
 
+export const AIS_OPENAPI_URL = "https://ais.openwaters.io/openapi.json";
+
 /**
  * Fetch OpenAPI spec from @neaps/api at build time, prefixing paths with the
  * mount point used by the Open Waters API.
@@ -161,7 +163,12 @@ export async function openApiDocument(host: string) {
   return {
     ...spec,
     paths,
-    info: { ...spec.info, title: "Open Waters API" },
+    info: {
+      ...spec.info,
+      title: "Open Waters API",
+      // The AIS API lives on its own host with its own spec; point agents at it.
+      description: `${spec.info.description.replace(/\.?$/, ".")} The AIS API is described separately at ${AIS_OPENAPI_URL}.`,
+    },
     servers: [{ url: host }],
     // The API is open: an explicit empty requirement says so in-spec.
     security: [],

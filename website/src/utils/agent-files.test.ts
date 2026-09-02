@@ -52,6 +52,11 @@ test(
         line.includes("(https://openwaters.io/openapi.json)"),
       ),
     );
+    assert.ok(
+      rest.some((line) =>
+        line.includes("https://ais.openwaters.io/openapi.json"),
+      ),
+    );
   },
 );
 
