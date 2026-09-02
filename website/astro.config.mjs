@@ -28,10 +28,37 @@ const optimizeSsrDeps = {
 const cacheDir =
   process.argv[2] === "dev" ? "node_modules/.vite-dev" : undefined;
 
+// Every prerendered page gets a Markdown sibling (index.md) that src/worker.ts serves
+// for `Accept: text/markdown`. Written after the build so it sees the final HTML.
+const markdownPages = {
+  name: "openwaters:markdown-pages",
+  hooks: {
+    "astro:build:done": async ({ dir, pages, logger }) => {
+      const { pageToMarkdown } = await import("./src/utils/markdown.ts");
+      const { readFile, writeFile } = await import("node:fs/promises");
+      let count = 0;
+      for (const { pathname } of pages) {
+        if (pathname === "404/") continue;
+        const html = await readFile(
+          new URL(`${pathname}index.html`, dir),
+          "utf8",
+        );
+        const canonical = new URL(pathname, "https://openwaters.io").href;
+        await writeFile(
+          new URL(`${pathname}index.md`, dir),
+          pageToMarkdown(html, canonical),
+        );
+        count++;
+      }
+      logger.info(`wrote ${count} Markdown pages`);
+    },
+  },
+};
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://openwaters.io",
-  integrations: [react(), icon()],
+  integrations: [react(), icon(), markdownPages],
   vite: {
     cacheDir,
     plugins: [tailwindcss(), optimizeSsrDeps],

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, globSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 
 // Checks the built site, so it only runs after `npm run build`.
@@ -68,3 +68,71 @@ test("homepage nests headings instead of a flat run of h2s", { skip }, () => {
     );
   }
 });
+
+test(
+  "every prerendered page has a Markdown sibling with its h1",
+  { skip },
+  () => {
+    const pages = globSync("**/index.html", { cwd: dist }).filter(
+      (f) => f !== "404/index.html",
+    );
+    assert.ok(pages.length > 10, `only ${pages.length} pages`);
+    for (const page of pages) {
+      const md = read(page.replace(/index\.html$/, "index.md"));
+      assert.match(md, /^# \S/m, `${page}: markdown has no h1`);
+      assert.ok(!md.includes("[]("), `${page}: empty link`);
+      // Angle brackets in prose are fine (<token>, <https://…>); page chrome is not.
+      assert.ok(
+        !/<(div|span|section|nav|a|svg|script|h[1-6])[\s>]/.test(md),
+        `${page}: HTML leaked into markdown`,
+      );
+      assert.match(md, /\nCanonical: https:\/\/openwaters\.io\//);
+    }
+    assert.ok(!existsSync(new URL("404/index.md", dist)));
+  },
+);
+
+test(
+  "homepage metadata: og:image points at a real 1200x630 image",
+  { skip },
+  () => {
+    const html = read("index.html");
+    const src = html.match(/property="og:image" content="([^"]+)"/)?.[1];
+    assert.equal(src, "https://openwaters.io/og/openwaters.png");
+    assert.ok(existsSync(new URL("og/openwaters.png", dist)));
+    assert.match(html, /property="og:type" content="website"/);
+    assert.match(html, /<html lang="en">/);
+    assert.match(
+      html,
+      /<link rel="canonical" href="https:\/\/openwaters\.io\/">/,
+    );
+  },
+);
+
+test("homepage Organization schema has a contactPoint", { skip }, () => {
+  const html = read("index.html");
+  const blocks = [
+    ...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g),
+  ].map((m) => JSON.parse(m[1]));
+  const org = blocks.find((b) => b["@type"] === "Organization");
+  assert.ok(org, "no Organization JSON-LD");
+  assert.equal(org.contactPoint["@type"], "ContactPoint");
+  assert.ok(org.contactPoint.email);
+  assert.ok(org.contactPoint.contactType);
+});
+
+test(
+  "openapi.json operations all carry an operationId and description",
+  { skip },
+  () => {
+    const doc = JSON.parse(read("openapi.json"));
+    for (const [path, item] of Object.entries<
+      Record<string, { operationId?: string; description?: string }>
+    >(doc.paths)) {
+      for (const [method, op] of Object.entries(item)) {
+        assert.ok(op.operationId, `${method} ${path}`);
+        assert.ok(op.description, `${method} ${path}`);
+      }
+    }
+  },
+);
