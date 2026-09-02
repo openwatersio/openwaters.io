@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { jsonLd, place } from "./schema.ts";
+import { jsonLd, organization, place } from "./schema.ts";
 
 test("jsonLd: a station name cannot close the script tag", () => {
   const html = jsonLd(
@@ -39,5 +39,16 @@ test("place: address carries whichever of region and country exist", () => {
     "@type": "PostalAddress",
     addressRegion: "MA",
     addressCountry: "United States",
+  });
+});
+
+test("organization: contactPoint carries the support email", () => {
+  const schema = organization("hello@openwaters.io");
+  assert.equal(schema.email, "hello@openwaters.io");
+  assert.deepEqual(schema.contactPoint, {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: "hello@openwaters.io",
+    availableLanguage: "English",
   });
 });

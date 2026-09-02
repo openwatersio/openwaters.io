@@ -1,9 +1,14 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "openwaters-io",
-  // Virtual entrypoint resolved by @astrojs/cloudflare v14's vite plugin;
-  // assets config is generated automatically at build.
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  // Wraps @astrojs/cloudflare's handler; the adapter fills in the assets directory.
+  "main": "./src/worker.ts",
+  "assets": {
+    "binding": "ASSETS",
+    // Pages are negotiated (HTML or Markdown) in src/worker.ts, so their requests must
+    // reach the Worker; everything with an extension is served straight from assets.
+    "run_worker_first": ["/*", "!/*.*", "!/_astro/*", "!/og/*"],
+  },
   "compatibility_date": "2026-06-01",
   "compatibility_flags": ["nodejs_compat"],
   "routes": [

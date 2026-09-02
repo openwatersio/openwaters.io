@@ -21,3 +21,25 @@ test("openApiDocument: every path is mounted under /tides", async () => {
     keys.every((path) => path === "/tides" || path.startsWith("/tides/")),
   );
 });
+
+test("openApiDocument: every operation has a unique operationId and a description", async () => {
+  const { paths } = await openApiDocument("https://api.openwaters.io");
+  const ids: string[] = [];
+  for (const [path, item] of Object.entries(paths)) {
+    for (const [method, op] of Object.entries(item)) {
+      assert.match(op.operationId, /^[a-z][A-Za-z]+$/, `${method} ${path}`);
+      assert.ok(op.description, `${method} ${path} has no description`);
+      ids.push(op.operationId);
+    }
+  }
+  assert.equal(new Set(ids).size, ids.length, `duplicate ids: ${ids}`);
+  assert.equal(
+    paths["/tides/stations/{source}/{id}/extremes"].get.operationId,
+    "getTidesStationsBySourceAndIdExtremes",
+  );
+  assert.equal(
+    paths["/tides/openapi"]?.get.operationId ??
+      paths["/tides/openapi.json"].get.operationId,
+    "getTidesOpenapi",
+  );
+});

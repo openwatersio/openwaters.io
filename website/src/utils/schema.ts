@@ -18,6 +18,12 @@ export const organization = (email: string) => ({
   "@context": "https://schema.org",
   ...publisher,
   email,
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email,
+    availableLanguage: "English",
+  },
   description:
     "Open source tools and data for understanding and navigating the sea.",
   sameAs: ["https://github.com/openwatersio"],

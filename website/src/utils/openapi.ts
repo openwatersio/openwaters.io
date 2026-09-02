@@ -143,8 +143,24 @@ export function groupEndpointsByTag(
  */
 export async function openApiDocument(host: string) {
   const spec = await getOpenAPISpec();
+  const paths = Object.fromEntries(
+    Object.entries(spec.paths).map(([path, item]) => [
+      path,
+      Object.fromEntries(
+        Object.entries(item).map(([method, op]) => [
+          method,
+          {
+            operationId: operationId(method, path),
+            description: op.summary,
+            ...op,
+          },
+        ]),
+      ),
+    ]),
+  );
   return {
     ...spec,
+    paths,
     info: { ...spec.info, title: "Open Waters API" },
     servers: [{ url: host }],
     // The API is open: an explicit empty requirement says so in-spec.
@@ -152,3 +168,17 @@ export async function openApiDocument(host: string) {
     externalDocs: { url: "https://openwaters.io/api/" },
   };
 }
+
+// Upstream neaps ships no operationIds (yet), so derive stable ones from the route:
+// GET /tides/stations/{source}/{id}/extremes -> getTidesStationsBySourceAndIdExtremes.
+const operationId = (method: string, path: string) => {
+  let id = method.toLowerCase();
+  let params = 0;
+  for (const segment of path.split("/").filter(Boolean)) {
+    const param = segment.match(/^\{(.+)\}$/)?.[1];
+    const word = (param ?? segment).replace(/\.json$/, "");
+    if (param) id += params++ ? "And" : "By";
+    id += word[0].toUpperCase() + word.slice(1);
+  }
+  return id;
+};
