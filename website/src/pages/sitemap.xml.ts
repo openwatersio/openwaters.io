@@ -12,7 +12,7 @@ import { sitemapXml, toUrlPath } from "../utils/sitemap";
 // carried by a handful of strong ones. See docs/superpowers/specs in slackwater.xyz for
 // the station page design.
 const staticPaths = Object.keys(import.meta.glob("./**/*.astro"))
-  .filter((key) => !key.includes("["))
+  .filter((key) => !key.includes("[") && key !== "./404.astro")
   .map(toUrlPath)
   .sort();
 
