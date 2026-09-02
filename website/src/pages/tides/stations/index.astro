@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../../../layouts/MainLayout.astro";
+import Container from "../../../components/ui/Container.astro";
 import { StationsMapIsland } from "../../../components/tides/StationsMapIsland";
 ---
 
@@ -9,5 +10,30 @@ import { StationsMapIsland } from "../../../components/tides/StationsMapIsland";
   fullscreen
 >
   <h1 class="sr-only">Tide Stations Worldwide</h1>
+  <noscript>
+    <Container class="py-8">
+      <p>
+        This page is an interactive map of the tide stations in the Open Waters
+        database, which needs JavaScript. Without it:
+      </p>
+      <ul class="list-inside list-disc">
+        <li>
+          Browse per-station tide pages, organised by region, at{" "}
+          <a href="https://slackwater.xyz/stations/tides/">slackwater.xyz</a>.
+        </li>
+        <li>
+          Search the database directly: <code
+            >GET https://api.openwaters.io/tides/stations?query=seattle</code
+          >, or by <code>latitude</code>, <code>longitude</code> and{" "}
+          <code>maxDistance</code>. See the <a href="/api/">API documentation</a
+          >.
+        </li>
+        <li>
+          Read about <a href="/tides/database/">the database</a> and the{" "}
+          <a href="/tides/harmonics/">harmonic constituents</a> behind it.
+        </li>
+      </ul>
+    </Container>
+  </noscript>
   <StationsMapIsland client:only="react" />
 </MainLayout>

@@ -14,6 +14,8 @@ const page = `<!doctype html><html><head><title>t</title><style>x{}</style></hea
   <ul><li>one</li><li>two</li></ul>
   <pre><code>curl https://api.openwaters.io/tides</code></pre>
   <script>alert(1)</script>
+  <dl data-nosnippet><dt>Vessels</dt><dd>–</dd></dl>
+  <noscript><p>Needs JavaScript; see <a href="/api/">the API</a>.</p></noscript>
 </main>
 <footer><h3>Open Waters</h3></footer></body></html>`;
 
@@ -28,6 +30,12 @@ test("pageToMarkdown: converts only <main>, dropping chrome and scripts", () => 
   assert.ok(!md.includes("alert("));
   assert.ok(!md.includes("<svg"));
   assert.ok(!md.includes("[](/viewer"), "empty link leaked");
+  assert.ok(!md.includes("Vessels"), "data-nosnippet widget leaked");
+  assert.match(
+    md,
+    /Needs JavaScript; see \[the API\]\(\/api\/\)\./,
+    "noscript content dropped",
+  );
   assert.ok(!md.includes("x{}"));
   assert.ok(!md.includes("Open Waters\n"), "footer leaked");
   assert.ok(!md.includes("[Tides](/tides/)\n\n#"), "nav leaked");

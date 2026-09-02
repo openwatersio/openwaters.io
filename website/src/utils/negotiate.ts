@@ -10,14 +10,14 @@ export const isPage = (pathname: string) =>
 
 type Fetch = (request: Request) => Promise<Response>;
 
-const withHeaders = (response: Response, set: Record<string, string>) => {
+const withHeaders = (
+  response: Response,
+  set: Record<string, string>,
+  status = response.status,
+) => {
   const headers = new Headers(response.headers);
   for (const [name, value] of Object.entries(set)) headers.set(name, value);
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
+  return new Response(response.body, { status, headers });
 };
 
 const vary = (headers: Headers) => {
@@ -65,6 +65,18 @@ export async function serve(
     }
     // No Markdown for this page: it is an on-demand route, or it does not exist.
     const html = await page(request);
+    if (html.status === 404) {
+      const notFound = await asset(
+        new Request(new URL("/404.md", url), sibling),
+      );
+      if (notFound.ok) {
+        return withHeaders(
+          notFound,
+          { "content-type": "text/markdown; charset=utf-8", vary: "Accept" },
+          404,
+        );
+      }
+    }
     if (
       html.ok &&
       quality(request.headers.get("accept"), "text/html").q === 0
