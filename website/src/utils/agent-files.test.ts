@@ -97,8 +97,8 @@ test(
     for (const page of pages) {
       const md = read(page.replace(/index\.html$/, "index.md"));
       assert.ok(
-        !/[a-z,]\[[^\]]+\]\(/.test(md),
-        `${page}: text runs into a link without a space`,
+        !/[a-z,.:](\[[^\]]+\]\(|\*\*[A-Za-z]|`[A-Za-z])/.test(md),
+        `${page}: text runs into a link, bold or code span without a space`,
       );
     }
     const stations = read("tides/stations/index.md");
