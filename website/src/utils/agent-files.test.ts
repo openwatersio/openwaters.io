@@ -87,7 +87,18 @@ test(
         `${page}: HTML leaked into markdown`,
       );
     }
-    assert.ok(!existsSync(new URL("404/index.md", dist)));
+    assert.match(read("404.md"), /^# Page not found/m);
+    // Astro's HTML compression can glue trailing text to an inline link; catch regressions.
+    for (const page of pages) {
+      const md = read(page.replace(/index\.html$/, "index.md"));
+      assert.ok(
+        !/[a-z,]\[[^\]]+\]\(/.test(md),
+        `${page}: text runs into a link without a space`,
+      );
+    }
+    const stations = read("tides/stations/index.md");
+    assert.match(stations, /slackwater\.xyz\/stations\/tides\//);
+    assert.match(stations, /api\.openwaters\.io\/tides\/stations\?query=/);
   },
 );
 

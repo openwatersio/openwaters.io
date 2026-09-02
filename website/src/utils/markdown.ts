@@ -6,8 +6,12 @@ const turndown = new TurndownService({
   bulletListMarker: "-",
 });
 // Decoration and behaviour, not content.
-turndown.remove(["script", "style", "noscript", "template", "button"]);
-turndown.remove((node) => node.nodeName === "SVG");
+// <noscript> stays: it is, by definition, the content for readers without JavaScript.
+turndown.remove(["script", "style", "template", "button"]);
+// data-nosnippet marks live widgets whose server-rendered placeholders are noise.
+turndown.remove(
+  (node) => node.nodeName === "SVG" || node.hasAttribute("data-nosnippet"),
+);
 // A link with nothing to say (a map preview, an icon-only button) is noise.
 turndown.addRule("emptyLink", {
   filter: (node) => node.nodeName === "A" && !node.textContent?.trim(),

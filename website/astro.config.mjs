@@ -38,15 +38,10 @@ const markdownPages = {
       const { readFile, writeFile } = await import("node:fs/promises");
       let count = 0;
       for (const { pathname } of pages) {
-        if (pathname === "404/") continue;
-        const html = await readFile(
-          new URL(`${pathname}index.html`, dir),
-          "utf8",
-        );
-        await writeFile(
-          new URL(`${pathname}index.md`, dir),
-          pageToMarkdown(html),
-        );
+        // Astro writes the error page as 404.html, not 404/index.html.
+        const file = pathname === "404/" ? "404" : `${pathname}index`;
+        const html = await readFile(new URL(`${file}.html`, dir), "utf8");
+        await writeFile(new URL(`${file}.md`, dir), pageToMarkdown(html));
         count++;
       }
       logger.info(`wrote ${count} Markdown pages`);

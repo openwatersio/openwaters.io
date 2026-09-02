@@ -10,12 +10,18 @@ const html = (status = 200) =>
   });
 
 // A fake ASSETS binding: knows one Markdown file.
-const assets = async (request: Request) =>
-  new URL(request.url).pathname === "/about/index.md"
-    ? new Response("# Hi", {
+const files: Record<string, string> = {
+  "/about/index.md": "# Hi",
+  "/404.md": "# Page not found",
+};
+const assets = async (request: Request) => {
+  const body = files[new URL(request.url).pathname];
+  return body
+    ? new Response(body, {
         headers: { "content-type": "text/markdown", etag: '"abc"' },
       })
     : new Response("Not found", { status: 404 });
+};
 
 const get = (path: string, accept?: string, method = "GET") =>
   new Request(`https://openwaters.io${path}`, {
@@ -100,16 +106,28 @@ test("serve: 406 when nothing we have is acceptable", async () => {
   assert.equal(res.status, 406);
 });
 
-test("serve: error pages get Vary, whatever was asked for", async () => {
-  for (const accept of ["text/html", "text/markdown"]) {
-    const res = await serve(
-      get("/nope/", accept),
-      async () => html(404),
-      assets,
-    );
-    assert.equal(res.status, 404, accept);
-    assert.equal(res.headers.get("vary"), "Accept");
-  }
+test("serve: a missing page is a 404 in whichever representation was asked for", async () => {
+  const asHtml = await serve(
+    get("/nope/", "text/html"),
+    async () => html(404),
+    assets,
+  );
+  assert.equal(asHtml.status, 404);
+  assert.equal(asHtml.headers.get("content-type"), "text/html; charset=utf-8");
+  assert.equal(asHtml.headers.get("vary"), "Accept");
+
+  const asMarkdown = await serve(
+    get("/nope/", "text/markdown"),
+    async () => html(404),
+    assets,
+  );
+  assert.equal(asMarkdown.status, 404);
+  assert.equal(
+    asMarkdown.headers.get("content-type"),
+    "text/markdown; charset=utf-8",
+  );
+  assert.equal(asMarkdown.headers.get("vary"), "Accept");
+  assert.equal(await asMarkdown.text(), "# Page not found");
 });
 
 test("serve: non-page URLs and non-GET methods are passed through untouched", async () => {
