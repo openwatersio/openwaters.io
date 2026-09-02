@@ -31,8 +31,8 @@ const vary = (headers: Headers) => {
 /**
  * Serves a page in the representation the client asked for.
  *
- * - `page` renders the HTML (the Astro handler);
- * - `asset` fetches a static file (the ASSETS binding), used for the Markdown sibling.
+ * `page` renders the HTML (the Astro handler); `asset` fetches a static file (the
+ * ASSETS binding), used for the Markdown sibling the build writes next to each page.
  *
  * Only GET/HEAD requests for page URLs are negotiated; everything else goes to `page`
  * untouched.
@@ -65,21 +65,17 @@ export async function serve(
     }
     // No Markdown for this page: it is an on-demand route, or it does not exist.
     const html = await page(request);
-    if (html.ok && quality(request.headers.get("accept"), "text/html") === 0) {
+    if (
+      html.ok &&
+      quality(request.headers.get("accept"), "text/html").q === 0
+    ) {
       return notAcceptable(request);
     }
     return withHeaders(html, { vary: vary(html.headers) });
   }
 
   const html = await page(request);
-  const headers: Record<string, string> = { vary: vary(html.headers) };
-  if (html.ok) {
-    const probe = await asset(new Request(sibling, { method: "HEAD" }));
-    if (probe.ok) {
-      headers.link = `<${markdownPath(url.pathname)}>; rel="alternate"; type="text/markdown"`;
-    }
-  }
-  return withHeaders(html, headers);
+  return withHeaders(html, { vary: vary(html.headers) });
 }
 
 const notAcceptable = (request: Request) =>

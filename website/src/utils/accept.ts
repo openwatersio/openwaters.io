@@ -4,77 +4,63 @@
 export const REPRESENTATIONS = ["text/html", "text/markdown"] as const;
 export type Representation = (typeof REPRESENTATIONS)[number];
 
-type Entry = { type: string; q: number; order: number };
+const parse = (accept: string) =>
+  accept.split(",").flatMap((part, order) => {
+    const [type, ...params] = part.trim().split(";");
+    const raw = params
+      .map((p) => p.trim().split("="))
+      .find(([k]) => k?.toLowerCase() === "q")?.[1];
+    const q = raw === undefined ? 1 : Number(raw);
+    return type.trim()
+      ? [
+          {
+            type: type.trim().toLowerCase(),
+            q: Number.isFinite(q) ? Math.min(1, Math.max(0, q)) : 0,
+            order,
+          },
+        ]
+      : [];
+  });
 
-const parse = (accept: string): Entry[] =>
-  accept
-    .split(",")
-    .map((part, order) => {
-      const [type, ...params] = part.trim().split(";");
-      const q = params
-        .map((p) => p.trim().split("="))
-        .find(([k]) => k?.toLowerCase() === "q")?.[1];
-      const parsed = q === undefined ? 1 : Number(q);
-      return {
-        type: type.trim().toLowerCase(),
-        q: Number.isFinite(parsed) ? Math.min(1, Math.max(0, parsed)) : 0,
-        order,
-      };
-    })
-    .filter((e) => e.type);
+// Exact match beats text/*, which beats */*.
+const specificity = (pattern: string, type: string) =>
+  pattern === type
+    ? 3
+    : pattern === type.split("/")[0] + "/*"
+      ? 2
+      : pattern === "*/*"
+        ? 1
+        : 0;
 
-// Exact match beats text/*, which beats */*; among equal specificity, the first
-// listed wins so a duplicated type is stable.
-const specificity = (pattern: string, type: string) => {
-  if (pattern === type) return 3;
-  if (pattern === type.split("/")[0] + "/*") return 2;
-  if (pattern === "*/*") return 1;
-  return 0;
-};
-
-/** The q-value the client assigned to a type: 0 when unmatched or explicitly rejected. */
-export function quality(accept: string | null, type: string): number {
-  if (!accept?.trim()) return 1;
-  let match: Entry | undefined;
-  let matchSpecificity = 0;
+/** The q-value the client gave a type and where it listed it; q is 0 when unmatched or rejected. */
+export function quality(
+  accept: string | null,
+  type: string,
+): { q: number; order: number } {
+  if (!accept?.trim()) return { q: 1, order: 0 };
+  let best = { q: 0, order: 0, specificity: 0 };
   for (const entry of parse(accept)) {
     const s = specificity(entry.type, type);
-    if (s > matchSpecificity) {
-      match = entry;
-      matchSpecificity = s;
-    }
+    if (s > best.specificity)
+      best = { q: entry.q, order: entry.order, specificity: s };
   }
-  return match?.q ?? 0;
+  return best;
 }
 
 /**
  * Picks the representation to serve for an Accept header, or null when the client
- * accepts none of them (406). A missing or empty header means "no constraint".
+ * accepts none of them (406). Highest q wins; ties go to whichever the client listed
+ * first, then to HTML.
  */
 export function negotiate(accept: string | null): Representation | null {
-  if (!accept?.trim()) return "text/html";
-  const entries = parse(accept);
-
   let best: { type: Representation; q: number; order: number } | null = null;
   for (const type of REPRESENTATIONS) {
-    let match: Entry | undefined;
-    let matchSpecificity = 0;
-    for (const entry of entries) {
-      const s = specificity(entry.type, type);
-      if (s > matchSpecificity) {
-        match = entry;
-        matchSpecificity = s;
-      }
-    }
-    if (!match || match.q === 0) continue;
-    // Ties go to whichever the client listed first; HTML wins when both come from
-    // the same entry (e.g. */*) because REPRESENTATIONS lists it first.
+    const { q, order } = quality(accept, type);
     if (
-      !best ||
-      match.q > best.q ||
-      (match.q === best.q && match.order < best.order)
+      q > 0 &&
+      (!best || q > best.q || (q === best.q && order < best.order))
     ) {
-      best = { type, q: match.q, order: match.order };
+      best = { type, q, order };
     }
   }
   return best?.type ?? null;

@@ -18,7 +18,7 @@ const page = `<!doctype html><html><head><title>t</title><style>x{}</style></hea
 <footer><h3>Open Waters</h3></footer></body></html>`;
 
 test("pageToMarkdown: converts only <main>, dropping chrome and scripts", () => {
-  const md = pageToMarkdown(page, "https://openwaters.io/");
+  const md = pageToMarkdown(page);
   assert.ok(md.startsWith("# Open Source Marine Software"));
   assert.match(md, /Understand and _navigate_ the sea\./);
   assert.match(md, /^## Tools$/m);
@@ -31,12 +31,8 @@ test("pageToMarkdown: converts only <main>, dropping chrome and scripts", () => 
   assert.ok(!md.includes("x{}"));
   assert.ok(!md.includes("Open Waters\n"), "footer leaked");
   assert.ok(!md.includes("[Tides](/tides/)\n\n#"), "nav leaked");
-  assert.ok(md.endsWith("\n---\n\nCanonical: https://openwaters.io/\n"));
 });
 
 test("pageToMarkdown: a document without <main> converts whole", () => {
-  assert.match(
-    pageToMarkdown("<h1>x</h1>", "https://openwaters.io/x/"),
-    /^# x/,
-  );
+  assert.match(pageToMarkdown("<h1>x</h1>"), /^# x/);
 });

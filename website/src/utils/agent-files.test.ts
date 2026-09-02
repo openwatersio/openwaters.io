@@ -86,7 +86,6 @@ test(
         !/<(div|span|section|nav|a|svg|script|h[1-6])[\s>]/.test(md),
         `${page}: HTML leaked into markdown`,
       );
-      assert.match(md, /\nCanonical: https:\/\/openwaters\.io\//);
     }
     assert.ok(!existsSync(new URL("404/index.md", dist)));
   },

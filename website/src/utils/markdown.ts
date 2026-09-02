@@ -31,15 +31,13 @@ turndown.addRule("blockLink", {
   },
 });
 
-/**
- * The Markdown representation of a built page: its <main> content, with a trailing
- * pointer back to the canonical URL so the document stands alone.
- */
-export function pageToMarkdown(html: string, canonical: string): string {
+/** The Markdown representation of a built page: its <main> content. */
+export function pageToMarkdown(html: string): string {
   const main = html.match(/<main[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? html;
-  const body = turndown
-    .turndown(main)
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-  return `${body}\n\n---\n\nCanonical: ${canonical}\n`;
+  return (
+    turndown
+      .turndown(main)
+      .replace(/\n{3,}/g, "\n\n")
+      .trim() + "\n"
+  );
 }

@@ -44,20 +44,6 @@ test("serve: Accept: text/markdown gets the sibling with the required headers", 
   assert.equal(await res.text(), "# Hi");
 });
 
-test("serve: HTML responses carry Vary and advertise the Markdown alternate", async () => {
-  const res = await serve(
-    get("/about/", "text/html"),
-    async () => html(),
-    assets,
-  );
-  assert.equal(res.headers.get("content-type"), "text/html; charset=utf-8");
-  assert.equal(res.headers.get("vary"), "Accept");
-  assert.equal(
-    res.headers.get("link"),
-    '</about/index.md>; rel="alternate"; type="text/markdown"',
-  );
-});
-
 test("serve: no Accept header is the default representation", async () => {
   const res = await serve(get("/about/"), async () => html(), assets);
   assert.equal(res.headers.get("content-type"), "text/html; charset=utf-8");
@@ -83,7 +69,7 @@ test("serve: Vary is appended to an existing value, once", async () => {
   );
 });
 
-test("serve: a page without Markdown falls back to HTML when acceptable, without a Link", async () => {
+test("serve: a page without Markdown falls back to HTML when acceptable", async () => {
   const res = await serve(
     get("/tides/stations/noaa/1/", "text/markdown, */*;q=0.5"),
     async () => html(),
@@ -92,7 +78,6 @@ test("serve: a page without Markdown falls back to HTML when acceptable, without
   assert.equal(res.status, 200);
   assert.equal(res.headers.get("content-type"), "text/html; charset=utf-8");
   assert.equal(res.headers.get("vary"), "Accept");
-  assert.equal(res.headers.get("link"), null);
 });
 
 test("serve: 406 when nothing we have is acceptable", async () => {
@@ -115,7 +100,7 @@ test("serve: 406 when nothing we have is acceptable", async () => {
   assert.equal(res.status, 406);
 });
 
-test("serve: error pages get Vary but no alternate link, whatever was asked for", async () => {
+test("serve: error pages get Vary, whatever was asked for", async () => {
   for (const accept of ["text/html", "text/markdown"]) {
     const res = await serve(
       get("/nope/", accept),
@@ -124,7 +109,6 @@ test("serve: error pages get Vary but no alternate link, whatever was asked for"
     );
     assert.equal(res.status, 404, accept);
     assert.equal(res.headers.get("vary"), "Accept");
-    assert.equal(res.headers.get("link"), null);
   }
 });
 

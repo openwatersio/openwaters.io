@@ -57,9 +57,9 @@ test("negotiate: malformed q-values are tolerated", () => {
 });
 
 test("quality: the q the client gave a type, by most specific match", () => {
-  assert.equal(quality(null, "text/html"), 1);
-  assert.equal(quality("text/markdown, */*;q=0.5", "text/html"), 0.5);
-  assert.equal(quality("text/markdown", "text/html"), 0);
-  assert.equal(quality("text/*;q=0.3, text/html;q=0", "text/html"), 0);
-  assert.equal(quality("text/*;q=0.3, text/html;q=0", "text/markdown"), 0.3);
+  assert.equal(quality(null, "text/html").q, 1);
+  assert.equal(quality("text/markdown, */*;q=0.5", "text/html").q, 0.5);
+  assert.equal(quality("text/markdown", "text/html").q, 0);
+  assert.equal(quality("text/*;q=0.3, text/html;q=0", "text/html").q, 0);
+  assert.equal(quality("text/*;q=0.3, text/html;q=0", "text/markdown").q, 0.3);
 });

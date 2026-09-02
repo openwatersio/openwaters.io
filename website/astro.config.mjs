@@ -43,10 +43,9 @@ const markdownPages = {
           new URL(`${pathname}index.html`, dir),
           "utf8",
         );
-        const canonical = new URL(pathname, "https://openwaters.io").href;
         await writeFile(
           new URL(`${pathname}index.md`, dir),
-          pageToMarkdown(html, canonical),
+          pageToMarkdown(html),
         );
         count++;
       }
