@@ -10,6 +10,27 @@ Every page also serves Markdown for `Accept: text/markdown`. The station map and
 - [OpenAPI specification](https://openwaters.io/openapi.json): machine-readable spec for the tides API at https://api.openwaters.io
 - [AIS API](https://openwaters.io/api/ais/): live vessel traffic by bounding box over WebSocket, plus GeoJSON snapshots. Its HTTP endpoints have their own OpenAPI specification at https://ais.openwaters.io/openapi.json
 
+## Pricing
+
+Everything here is free to use. There are no plans, accounts or keys, and nothing is metered; the only token is an optional, free one for the AIS stream.
+
+- Code: MIT for every project unless the project says otherwise (Seamap's pipeline and style are GPL-3.0; Seascape's build pipeline is BSD-3-Clause). MIT permits commercial use. Details at https://openwaters.io/license/
+- Tides API (https://api.openwaters.io/tides): no authentication. 100 requests per minute and 10,000 per day per IP address. Higher limits for a production application: email hello@openwaters.io.
+- Tide data: each station page shows the licence of its source, and some stations are marked non-commercial. NOAA stations are public domain. The whole database can be downloaded as JSON or CSV.
+- AIS (https://ais.openwaters.io): free to read without a token (anonymous tier: 2 connections, 20 messages a second). A free personal token raises that and never expires; feeding data from your own receiver earns the feeder tier automatically. A paid Commercial tier (10 or more connections, unlimited rate and area, support) is arranged by email; no price list is published. Data is re-served under each source's own terms, and the source is named on every event.
+- Chart tiles (https://tiles.openwaters.io/seamap and /seascape): CC BY 4.0, free for any use with the attribution line given on each chart's page. Not for navigation.
+- Sky (Almanac) and Crowd Depth are MIT libraries and plugins you run yourself. There is no hosted service behind them.
+
+## How Open Waters compares
+
+Factual contrasts with the usual alternatives, checked September 2026. Their terms change; read their pages before relying on this.
+
+- Tides: WorldTides and Storm Glass are hosted, credit- or plan-based services (WorldTides from $4.99 a month for 20,000 credits; Storm Glass's free tier is 10 requests a day and not for commercial use, with paid plans from €19 a month). NOAA CO-OPS is free and public domain but covers US stations and publishes only its predictions, not an engine. XTide is GPL software whose US data is public domain and whose other data is mostly non-commercial. Open Waters publishes the engine (Neaps, MIT), the constituent database, and a keyless API. It predicts heights only; XTide and the UKHO Admiralty API also predict currents.
+- AIS: aisstream.io is free but needs a GitHub-issued key, allows 3 connections, publishes no data licence, and has no way to contribute a receiver. AISHub gives access only to people who share their own feed first. VesselFinder sells credits (10,000 for €330) and forbids redistribution. MarineTraffic and Spire Maritime now sell through Kpler with no published pricing. Open Waters AIS is readable without a key, is aisstream.io-compatible, names the source and licence on every event, and takes receiver contributions. Coverage comes from national open feeds, AISHub, and volunteer receivers.
+- Charts: OpenSeaMap serves seamarks as raster PNG tiles under CC BY-SA. NOAA's chart display services are raster and US-only. Garmin Navionics needs a developer key and charges an annual fee once you draw your own overlays. MapTiler Ocean has a free non-commercial tier and no seamarks. Seamap is a MapLibre vector style with seamarks, hazards and depth shading under CC BY 4.0, built from OpenStreetMap and open bathymetry. None of these, Seamap included, is for navigation.
+- Bathymetry: the IHO Data Centre for Digital Bathymetry releases contributed soundings as CC0 public domain. Garmin Quickdraw needs a Garmin plotter and account, and Navionics SonarChart contributions stay inside Navionics and Garmin products. Crowd Depth is an MIT Signal K plugin that collects depth from your own instruments and shares it with open programs.
+- Sky: Astronomy Engine (MIT, several languages) and SunCalc (BSD, JavaScript, no eclipses) are the usual libraries; sunrise-sunset.org and the USNO are hosted APIs. Almanac is MIT, runs offline, and was translated from Astronomy Engine.
+
 ## Tools and data
 
 - [Tides](https://openwaters.io/tides/): predictions from the Neaps engine for thousands of stations worldwide

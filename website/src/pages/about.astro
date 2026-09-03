@@ -54,6 +54,41 @@ import { CONTACT_EMAIL } from "../utils/constants";
           >
         </p>
 
+        <h2 class="mt-12 mb-6">Is it free?</h2>
+        <p class="mb-4">
+          Yes. Everything on this site is free to use: the tide predictions and
+          the API behind them, the live AIS stream, the chart tiles, and the
+          code for all of it. There are no plans or accounts to set up. The
+          tides API has a per-address limit that keeps it healthy, and the AIS
+          stream has a free personal token that raises yours and never expires.
+          If you are building a product on it and need more,{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`}>email me</a> and we'll work something
+          out.
+        </p>
+        <p class="mb-4">
+          The code is MIT unless a project says otherwise, so you can use it
+          commercially. Data is passed on under each source's own terms, and the <a
+            href="/license/">license page</a
+          > has the details.
+        </p>
+
+        <h2 class="mt-12 mb-6">How does it compare?</h2>
+        <p class="mb-4">
+          Most marine data comes one of two ways: from a government service that
+          is free but limited to its own waters and its own formats, or from a
+          company that sells access and keeps the engine and the data to itself.
+          Open Waters is a third way. The prediction engine, the harmonic
+          database, the chart pipeline, and the AIS server are all published, so
+          you can run them yourself, check the numbers, and improve them. Where
+          I rely on other people's data, I pass on their terms and their credit
+          rather than relicensing it.
+        </p>
+        <p class="mb-4">
+          What you will not find here is anything fit for navigation. These are
+          tools for understanding the sea; official charts and tables remain the
+          reference on the water.
+        </p>
+
         <h2 class="mt-12 mb-6">Our Projects</h2>
 
         <div class="space-y-6">

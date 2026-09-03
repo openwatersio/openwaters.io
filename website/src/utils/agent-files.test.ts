@@ -151,3 +151,18 @@ test(
     }
   },
 );
+
+test(
+  "pricing and positioning are stated, not left to inference",
+  { skip },
+  () => {
+    const llms = read("llms.txt");
+    assert.match(llms, /^## Pricing$/m);
+    assert.match(llms, /free to use/);
+    assert.match(llms, /100 requests per minute/);
+    assert.match(llms, /^## How Open Waters compares$/m);
+    const about = read("about/index.md");
+    assert.match(about, /^## Is it free\?$/m);
+    assert.match(about, /^## How does it compare\?$/m);
+  },
+);
