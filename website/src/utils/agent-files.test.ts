@@ -132,7 +132,10 @@ test("sky metadata uses its own 1200x630 social image", { skip }, () => {
 
   assert.equal(src, "https://openwaters.io/og/sky.png");
   assert.equal(image.toString("ascii", 1, 4), "PNG");
-  assert.deepEqual([image.readUInt32BE(16), image.readUInt32BE(20)], [1200, 630]);
+  assert.deepEqual(
+    [image.readUInt32BE(16), image.readUInt32BE(20)],
+    [1200, 630],
+  );
 });
 
 test("AIS metadata uses its own 1200x630 social image", { skip }, () => {
@@ -142,8 +145,29 @@ test("AIS metadata uses its own 1200x630 social image", { skip }, () => {
 
   assert.equal(src, "https://openwaters.io/og/ais.png");
   assert.equal(image.toString("ascii", 1, 4), "PNG");
-  assert.deepEqual([image.readUInt32BE(16), image.readUInt32BE(20)], [1200, 630]);
+  assert.deepEqual(
+    [image.readUInt32BE(16), image.readUInt32BE(20)],
+    [1200, 630],
+  );
 });
+
+for (const [page, image] of [
+  ["ais/vs/aisstream/index.html", "og/ais-vs-aisstream.png"],
+  [
+    "ais/alternatives/aisstream/index.html",
+    "og/ais-alternatives-aisstream.png",
+  ],
+]) {
+  test(`${page} uses its own 1200x630 social image`, { skip }, () => {
+    const html = read(page!);
+    const src = html.match(/property="og:image" content="([^"]+)"/)?.[1];
+    const buf = readBuffer(image!);
+
+    assert.equal(src, `https://openwaters.io/${image}`);
+    assert.equal(buf.toString("ascii", 1, 4), "PNG");
+    assert.deepEqual([buf.readUInt32BE(16), buf.readUInt32BE(20)], [1200, 630]);
+  });
+}
 
 test("homepage Organization schema has a contactPoint", { skip }, () => {
   const html = read("index.html");

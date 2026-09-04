@@ -292,6 +292,7 @@ const faqSchema = {
 
 <MainLayout
   title="aisstream.io alternatives"
+  image="/og/ais-alternatives-aisstream.png"
   description={DESCRIPTION}
   schema={faqSchema}
 >
@@ -418,14 +419,14 @@ const faqSchema = {
                 {i + 1}. {a.name}
               </h3>
               {a.intro && <p class="mb-3 text-(--text-secondary)">{a.intro}</p>}
-              <dl class="mb-3 space-y-2 text-(--text-secondary)">
+              <ul class="mb-3 space-y-2 text-(--text-secondary)">
                 {a.bullets.map((b) => (
-                  <div>
-                    <dt class="inline font-semibold">{b.label}:</dt>{" "}
-                    <dd class="inline" set:html={b.html} />
-                  </div>
+                  <li>
+                    <span class="font-semibold">{b.label}:</span>{" "}
+                    <span set:html={b.html} />
+                  </li>
                 ))}
-              </dl>
+              </ul>
               <p class="text-(--text-secondary)">
                 <span class="font-semibold">Best for:</span> {a.best}
               </p>
@@ -566,16 +567,16 @@ const faqSchema = {
       </div>
 
       <h2 id="faq" class="mb-4 scroll-mt-24 text-3xl font-semibold">FAQ</h2>
-      <dl class="space-y-6">
+      <div class="space-y-6">
         {
           faq.map((item) => (
             <div>
-              <dt class="mb-1 font-semibold">{item.q}</dt>
-              <dd class="text-(--text-secondary)">{item.a}</dd>
+              <h3 class="mb-1 font-semibold">{item.q}</h3>
+              <p class="text-(--text-secondary)">{item.a}</p>
             </div>
           ))
         }
-      </dl>
+      </div>
       <p class="mt-8 text-sm text-(--text-secondary)">
         Questions, or a source we missed? <a href={`mailto:${CONTACT_EMAIL}`}
           >{CONTACT_EMAIL}</a
