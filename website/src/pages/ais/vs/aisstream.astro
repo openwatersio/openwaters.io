@@ -5,11 +5,13 @@ import Icon from "../../../components/Icon.astro";
 import { CONTACT_EMAIL } from "../../../utils/constants";
 import { SITE, publisher } from "../../../utils/schema";
 
+const SERVER = "ais.openwaters.io";
 const REPO = "https://github.com/openwatersio/aiscast";
 const STATUS = "https://status.openwaters.io";
 const ALTERNATIVES = "/ais/alternatives/aisstream/";
 
 const sections = [
+  { id: "now", title: "Right now" },
   { id: "glance", title: "At a glance" },
   { id: "protocol", title: "Protocol and compatibility" },
   { id: "coverage", title: "Coverage" },
@@ -27,6 +29,16 @@ const glance: [string, string, string][] = [
     "/v0/stream",
   ],
   ["Token", "one click, no account, never expires", "GitHub/Google OAuth key"],
+  [
+    "Read without an account",
+    "yes: /v1/stream and /v1/vessels need nothing",
+    "no: login and API key",
+  ],
+  [
+    "Browser clients",
+    "yes, CORS open",
+    "banned; proxy through your own server",
+  ],
   ["Snapshot API", "GET /v1/vessels?bbox= GeoJSON", "none"],
   [
     "Limits",
@@ -44,17 +56,37 @@ const glance: [string, string, string][] = [
     "global terrestrial when up",
   ],
   ["Source on each event", "yes, with station", "no"],
+  ["Live coverage map", "yes, per station and source", "no"],
   ["Data license", "per source, published, attribution strings given", "none"],
   ["Contribute a receiver", "yes: HTTP, UDP, Signal K", "no"],
   ["Raw NMEA", "feeders and commercial", "no"],
   ["History", "not yet (archive exists)", "no"],
-  ["Code", "MIT, public", "closed; repo empty"],
+  [
+    "Code",
+    "MIT, public: run your own, or fork it if we disappear",
+    "closed; public repo empty, nothing to fork",
+  ],
   [
     "Uptime",
     "beta, no SLA; monitored publicly",
     "down ~14 of 20 days in Aug 2026",
   ],
   ["Cost", "free; commercial by arrangement", "free; no way to pay"],
+  [
+    "A human to email",
+    "hello@openwaters.io answers",
+    "GitHub issues, unanswered",
+  ],
+];
+
+// Live rows: the aiscast column sums every source; the aisstream column is what
+// aisstream.io delivers to this server's own world-wide subscription, since it is
+// one of our upstreams. Both are measured by the same process.
+const live = [
+  { label: "Vessels, last 30 min", ours: "vessels", theirs: "as_vessels" },
+  { label: "Events, last 24 h", ours: "events", theirs: "as_events" },
+  { label: "Last message", ours: "age", theirs: "as_age" },
+  { label: "Stations on the map", ours: "stations", theirs: "" },
 ];
 
 const description =
@@ -131,6 +163,66 @@ const article = {
       </nav>
 
       <article>
+        <h2 id="now" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          Right now
+        </h2>
+        <p class="mb-4 text-(--text-secondary)">
+          aisstream.io is one of aiscast's upstreams, so the same server
+          measures both columns: everything aiscast hears, and what aisstream.io
+          delivers to a world-wide subscription on one key. When aisstream is
+          healthy this table says so.
+        </p>
+        <div
+          id="vs-live"
+          data-nosnippet
+          data-src={`https://${SERVER}/v1/stats`}
+          class="mb-4 overflow-x-auto"
+        >
+          <table class="w-full min-w-lg text-sm">
+            <thead class="bg-(--surface-subtle)">
+              <tr>
+                <th scope="col" class="px-3 py-2 text-left"></th>
+                <th scope="col" class="px-3 py-2 text-right">aiscast</th>
+                <th scope="col" class="px-3 py-2 text-right">aisstream.io</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-(--border-subtle)">
+              {
+                live.map((r) => (
+                  <tr>
+                    <th scope="row" class="px-3 py-2 text-left font-medium">
+                      {r.label}
+                    </th>
+                    <td
+                      class="px-3 py-2 text-right text-lg font-semibold tabular-nums"
+                      data-stat={r.ours}
+                    >
+                      –
+                    </td>
+                    <td
+                      class="px-3 py-2 text-right text-lg font-semibold tabular-nums"
+                      data-stat={r.theirs || undefined}
+                    >
+                      {r.theirs ? (
+                        "–"
+                      ) : (
+                        <span class="text-(--text-muted)">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="mb-12 text-sm text-(--text-muted)">
+          Vessels are distinct MMSIs heard in the last 30 minutes; events are
+          deduplicated across sources. Updated every 5 seconds from{" "}
+          <a href={`https://${SERVER}/v1/stats`}>/v1/stats</a>. A dash in the
+          aisstream column means it has delivered nothing since this server last
+          restarted.
+        </p>
+
         <h2 id="glance" class="mb-4 scroll-mt-24 text-3xl font-semibold">
           At a glance
         </h2>
@@ -158,6 +250,17 @@ const article = {
             </tbody>
           </table>
         </div>
+        <p class="mb-12 text-sm text-(--text-muted)">
+          aisstream.io claims come from its{" "}
+          <a
+            href="https://aisstream.io/documentation"
+            target="_blank"
+            rel="noopener noreferrer">documentation</a
+          >{" "}
+          and its public issue tracker, checked 4 September 2026. Spotted something
+          out of date?{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`}>Tell us</a>.
+        </p>
 
         <h2 id="protocol" class="mb-4 scroll-mt-24 text-3xl font-semibold">
           Protocol and compatibility
@@ -304,3 +407,41 @@ const article = {
     </div>
   </Container>
 </MainLayout>
+
+<script>
+  const root = document.getElementById("vs-live");
+  if (root) {
+    const src = root.dataset.src!;
+    const ago = (s: number) =>
+      s < 60
+        ? `${s}s ago`
+        : s < 3600
+          ? `${Math.round(s / 60)}m ago`
+          : `${Math.round(s / 3600)}h ago`;
+    const show = (key: string, value: string) => {
+      const el = root.querySelector(`[data-stat=${key}]`);
+      if (el) el.textContent = value;
+    };
+    const poll = async () => {
+      try {
+        const s = await (await fetch(src)).json();
+        show("vessels", s.vessels.total.toLocaleString());
+        show("events", s.events.last_24h.toLocaleString());
+        show("stations", s.stations.active.toLocaleString());
+        const ages = Object.values(s.sources).map(
+          (v: any) => v.last_age_s as number,
+        );
+        show("age", ago(Math.min(...ages)));
+        const a = s.sources.aisstream;
+        if (!a) return;
+        show("as_vessels", a.vessels.toLocaleString());
+        show("as_events", a.events.last_24h.toLocaleString());
+        show("as_age", ago(a.last_age_s));
+      } catch {
+        // leave the placeholders
+      }
+    };
+    poll();
+    setInterval(poll, 5000);
+  }
+</script>
