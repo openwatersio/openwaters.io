@@ -6,6 +6,7 @@ import { test } from "node:test";
 const dist = new URL("../../dist/client/", import.meta.url);
 const skip = !existsSync(dist) && "no dist/ (run npm run build first)";
 const read = (file: string) => readFileSync(new URL(file, dist), "utf8");
+const readBuffer = (file: string) => readFileSync(new URL(file, dist));
 
 test(
   "404 page points agents at the sitemap, llms.txt and API docs",
@@ -123,6 +124,16 @@ test(
     );
   },
 );
+
+test("sky metadata uses its own 1200x630 social image", { skip }, () => {
+  const html = read("sky/index.html");
+  const src = html.match(/property="og:image" content="([^"]+)"/)?.[1];
+  const image = readBuffer("og/sky.png");
+
+  assert.equal(src, "https://openwaters.io/og/sky.png");
+  assert.equal(image.toString("ascii", 1, 4), "PNG");
+  assert.deepEqual([image.readUInt32BE(16), image.readUInt32BE(20)], [1200, 630]);
+});
 
 test("homepage Organization schema has a contactPoint", { skip }, () => {
   const html = read("index.html");
