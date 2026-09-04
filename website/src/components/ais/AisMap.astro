@@ -49,9 +49,10 @@ const { class: className, center, zoom } = Astro.props;
 
 <script>
   // Adapted from the aiscast viewer (github.com/openwatersio/aiscast/viewer).
-  import maplibregl, {
-    type ExpressionSpecification,
-    type LngLatLike,
+  import * as maplibregl from "maplibre-gl";
+  import type {
+    ExpressionSpecification,
+    LngLatLike,
   } from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 
