@@ -12,7 +12,7 @@ const pre =
 ---
 
 <MainLayout
-  title="Get an AIS token"
+  title="Get an aiscast token"
   description="A free personal token for ais.openwaters.io: send your AIS receiver's data and read the live stream with any aisstream.io client. No account, no expiry."
 >
   <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-12">
@@ -25,7 +25,7 @@ const pre =
           <Icon name="mdi:arrow-left" class="size-4" />
           AIS
         </a>
-        <h1 class="mb-4">Get an AIS token</h1>
+        <h1 class="mb-4">Get an aiscast token</h1>
         <p class="text-lead">
           Share your AIS receiver's data and read the live stream. Free, no
           account, never expires.
@@ -198,12 +198,12 @@ const pre =
     $("[data-out]").hidden = false;
   }
 
-const status = $("[data-status]");
-const agree = $<HTMLInputElement>("[data-agree]");
-const go = $<HTMLButtonElement>("[data-go]");
-const syncGoDisabled = () => (go.disabled = !agree.checked);
-agree.addEventListener("change", syncGoDisabled);
-syncGoDisabled();
+  const status = $("[data-status]");
+  const agree = $<HTMLInputElement>("[data-agree]");
+  const go = $<HTMLButtonElement>("[data-go]");
+  const syncGoDisabled = () => (go.disabled = !agree.checked);
+  agree.addEventListener("change", syncGoDisabled);
+  syncGoDisabled();
   $("[data-go]").addEventListener("click", async () => {
     status.textContent = "…";
     try {

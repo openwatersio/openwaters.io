@@ -1,0 +1,447 @@
+---
+import MainLayout from "../../../layouts/MainLayout.astro";
+import Container from "../../../components/ui/Container.astro";
+import Icon from "../../../components/Icon.astro";
+import { CONTACT_EMAIL } from "../../../utils/constants";
+import { SITE, publisher } from "../../../utils/schema";
+
+const SERVER = "ais.openwaters.io";
+const REPO = "https://github.com/openwatersio/aiscast";
+const STATUS = "https://status.openwaters.io";
+const ALTERNATIVES = "/ais/alternatives/aisstream/";
+
+const sections = [
+  { id: "now", title: "Right now" },
+  { id: "glance", title: "At a glance" },
+  { id: "protocol", title: "Protocol and compatibility" },
+  { id: "coverage", title: "Coverage" },
+  { id: "limits", title: "Limits and connection model" },
+  { id: "license", title: "License and terms" },
+  { id: "who", title: "Who each one is for" },
+  { id: "migration", title: "Migration" },
+];
+
+// [label, aiscast, aisstream.io]
+const glance: [string, string, string][] = [
+  [
+    "Protocol",
+    "aisstream-compatible /v0/stream plus native /v1/stream",
+    "/v0/stream",
+  ],
+  ["Token", "one click, no account, never expires", "GitHub/Google OAuth key"],
+  [
+    "Read without an account",
+    "yes: /v1/stream and /v1/vessels need nothing",
+    "no: login and API key",
+  ],
+  [
+    "Browser clients",
+    "yes, CORS open",
+    "banned; proxy through your own server",
+  ],
+  ["Snapshot API", "GET /v1/vessels?bbox= GeoJSON", "none"],
+  [
+    "Limits",
+    "documented, per token: 2 streams, 50 msg/s, ~20°×20° personal; more for feeders",
+    "1 connection per IP, undocumented 429s, browsers banned",
+  ],
+  [
+    "Failure signalling",
+    "ack, heartbeat, close reason, /health, public status page",
+    "none",
+  ],
+  [
+    "Coverage",
+    "Norway and Finland live, volunteers live, world via AISHub 1–6 min, aisstream.io when up",
+    "global terrestrial when up",
+  ],
+  ["Source on each event", "yes, with station", "no"],
+  ["Live coverage map", "yes, per station and source", "no"],
+  ["Data license", "per source, published, attribution strings given", "none"],
+  ["Contribute a receiver", "yes: HTTP, UDP, Signal K", "no"],
+  ["Raw NMEA", "feeders and commercial", "no"],
+  ["History", "not yet (archive exists)", "no"],
+  [
+    "Code",
+    "MIT, public: run your own, or fork it if we disappear",
+    "closed; public repo empty, nothing to fork",
+  ],
+  [
+    "Uptime",
+    "beta, no SLA; monitored publicly",
+    "down ~14 of 20 days in Aug 2026",
+  ],
+  ["Cost", "free; commercial by arrangement", "free; no way to pay"],
+  [
+    "A human to email",
+    "hello@openwaters.io answers",
+    "GitHub issues, unanswered",
+  ],
+];
+
+// Live rows: the aiscast column sums every source; the aisstream column is what
+// aisstream.io delivers to this server's own world-wide subscription, since it is
+// one of our upstreams. Both are measured by the same process.
+const live = [
+  { label: "Vessels, last 30 min", ours: "vessels", theirs: "as_vessels" },
+  { label: "Events, last 24 h", ours: "events", theirs: "as_events" },
+  { label: "Last message", ours: "age", theirs: "as_age" },
+  { label: "Stations on the map", ours: "stations", theirs: "" },
+];
+
+const description =
+  "Same WebSocket protocol, different everything else. A field-by-field comparison of aiscast and aisstream.io: uptime, coverage, limits, license, and what changes when you switch.";
+
+const article = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  headline: "aiscast vs aisstream.io",
+  description,
+  url: `${SITE}/ais/vs/aisstream/`,
+  author: publisher,
+  publisher,
+  isAccessibleForFree: true,
+  proficiencyLevel: "Expert",
+  articleSection: sections.map((s) => s.title),
+};
+---
+
+<MainLayout
+  title="aiscast vs aisstream.io"
+  image="/og/ais-vs-aisstream.png"
+  description={description}
+  schema={article}
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-4xl">
+      <a
+        href="/ais/"
+        class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+      >
+        <Icon name="mdi:arrow-left" class="size-4" />
+        AIS
+      </a>
+
+      <h1 class="mb-2">aiscast vs aisstream.io</h1>
+      <p class="mb-4 text-sm text-(--text-muted)">
+        Last checked 4 September 2026
+      </p>
+
+      <p class="text-lead mb-4">
+        aiscast, the Open Waters AIS network, speaks aisstream.io's protocol, so
+        the choice is not about rewriting code. It is about whether you want a
+        feed that tells you when it fails, names its sources and licenses, and
+        answers email, in exchange for a beta whose live coverage outside the
+        Nordics still leans on minutes-old snapshots. aisstream's own upstream
+        is one of aiscast's inputs, so switching costs you no coverage.
+      </p>
+      <p class="mb-8 text-(--text-secondary)">
+        Comparing more than these two? <a href={ALTERNATIVES}
+          >All aisstream.io alternatives</a
+        >.
+      </p>
+
+      <nav
+        data-nosnippet
+        aria-label="On this page"
+        class="mb-12 rounded-lg border border-(--border) bg-(--surface-subtle) px-5 py-4 text-sm"
+      >
+        <span class="mr-2 font-semibold">On this page:</span>
+        {
+          sections.map((s, i) => (
+            <>
+              {i > 0 && <span class="mx-2 text-(--text-muted)">·</span>}
+              <a
+                href={`#${s.id}`}
+                class="text-(--accent) hover:text-(--accent-hover)"
+              >
+                {s.title}
+              </a>
+            </>
+          ))
+        }
+      </nav>
+
+      <article>
+        <h2 id="now" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          Right now
+        </h2>
+        <p class="mb-4 text-(--text-secondary)">
+          aisstream.io is one of aiscast's upstreams, so the same server
+          measures both columns: everything aiscast hears, and what aisstream.io
+          delivers to a world-wide subscription on one key. When aisstream is
+          healthy this table says so.
+        </p>
+        <div
+          id="vs-live"
+          data-nosnippet
+          data-src={`https://${SERVER}/v1/stats`}
+          class="mb-4 overflow-x-auto"
+        >
+          <table class="w-full min-w-lg text-sm">
+            <thead class="bg-(--surface-subtle)">
+              <tr>
+                <th scope="col" class="px-3 py-2 text-left"></th>
+                <th scope="col" class="px-3 py-2 text-right">aiscast</th>
+                <th scope="col" class="px-3 py-2 text-right">aisstream.io</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-(--border-subtle)">
+              {
+                live.map((r) => (
+                  <tr>
+                    <th scope="row" class="px-3 py-2 text-left font-medium">
+                      {r.label}
+                    </th>
+                    <td
+                      class="px-3 py-2 text-right text-lg font-semibold tabular-nums"
+                      data-stat={r.ours}
+                    >
+                      –
+                    </td>
+                    <td
+                      class="px-3 py-2 text-right text-lg font-semibold tabular-nums"
+                      data-stat={r.theirs || undefined}
+                    >
+                      {r.theirs ? (
+                        "–"
+                      ) : (
+                        <span class="text-(--text-muted)">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="mb-12 text-sm text-(--text-muted)">
+          Vessels are distinct MMSIs heard in the last 30 minutes; events are
+          deduplicated across sources. Updated every 5 seconds from{" "}
+          <a href={`https://${SERVER}/v1/stats`}>/v1/stats</a>. A dash in the
+          aisstream column means it has delivered nothing since this server last
+          restarted.
+        </p>
+
+        <h2 id="glance" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          At a glance
+        </h2>
+        <div class="mb-12 overflow-x-auto">
+          <table class="w-full min-w-lg text-sm">
+            <thead class="bg-(--surface-subtle)">
+              <tr>
+                <th scope="col" class="px-3 py-2 text-left"></th>
+                <th scope="col" class="px-3 py-2 text-left">aiscast</th>
+                <th scope="col" class="px-3 py-2 text-left">aisstream.io</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-(--border-subtle)">
+              {
+                glance.map(([label, ours, theirs]) => (
+                  <tr>
+                    <th scope="row" class="px-3 py-2 text-left font-medium">
+                      {label}
+                    </th>
+                    <td class="px-3 py-2 text-(--text-secondary)">{ours}</td>
+                    <td class="px-3 py-2 text-(--text-secondary)">{theirs}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="mb-12 text-sm text-(--text-muted)">
+          aisstream.io claims come from its{" "}
+          <a
+            href="https://aisstream.io/documentation"
+            target="_blank"
+            rel="noopener noreferrer">documentation</a
+          >{" "}
+          and its public issue tracker, checked 4 September 2026. Spotted something
+          out of date?{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`}>Tell us</a>.
+        </p>
+
+        <h2 id="protocol" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          Protocol and compatibility
+        </h2>
+        <p class="mb-4 text-(--text-secondary)">
+          aisstream's JSON is Go's <code
+            class="rounded bg-(--surface-subtle) px-1">encoding/json</code
+          > over the go-ais structs, typo and all (<code
+            class="rounded bg-(--surface-subtle) px-1">VenderIDModel</code
+          >). aiscast uses the same decoder, so <code
+            class="rounded bg-(--surface-subtle) px-1">/v0/stream</code
+          > frames are structurally identical; golden tests pin the envelope, rounding,
+          time format, error messages, and resubscribe behaviour against captured
+          aisstream output. Verified clients: <code
+            class="rounded bg-(--surface-subtle) px-1">aisstream-ts</code
+          >, the official Go, Python and JavaScript examples, and <code
+            class="rounded bg-(--surface-subtle) px-1">signalk-aisstream</code
+          >. Where aisstream's decoder is known wrong, <code
+            class="rounded bg-(--surface-subtle) px-1">/v0</code
+          > reproduces the quirk deliberately and <code
+            class="rounded bg-(--surface-subtle) px-1">/v1</code
+          > fixes it; the <a href="/api/ais/">API reference</a> lists each one.
+        </p>
+        <p class="mb-12 text-(--text-secondary)">
+          Bottom line: the migration is a hostname and a token.
+        </p>
+
+        <h2 id="coverage" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          Coverage
+        </h2>
+        <p class="mb-4 text-(--text-secondary)">
+          aisstream claims a global network of stations about 200 km off
+          coastlines and publishes no map, no station list, and no per-region
+          health. Its coverage issues (45 open) are people comparing against
+          MarineTraffic and debugging their own code for hours before learning
+          there is simply no receiver.
+        </p>
+        <p class="mb-4 text-(--text-secondary)">
+          aiscast publishes every source: Kystverket and BarentsWatch for
+          Norway, Digitraffic for Finland, volunteer receivers wherever they
+          are, the AISHub aggregate for the rest of the world, and aisstream.io
+          itself when it is delivering. <code
+            class="rounded bg-(--surface-subtle) px-1">/v1/stations</code
+          > gives each source's message count and age, and the live map draws the
+          same data. Where aisstream is honest by accident (no data means no data),
+          aiscast is honest on purpose (no data means this source has been silent
+          for this long).
+        </p>
+        <p class="mb-12 text-(--text-secondary)">
+          The gap: outside the Nordics and the volunteer footprint, aiscast's
+          positions are AISHub's, regenerated every five minutes. That is fine
+          for "what is out there" and wrong for close quarters. It closes as
+          receivers join.
+        </p>
+
+        <h2 id="limits" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          Limits and connection model
+        </h2>
+        <p class="mb-4 text-(--text-secondary)">
+          aisstream caps one connection per IP, counts a resubscribe as a new
+          connection, returns undocumented 429s, and forbids browsers, which
+          pushes NATed users into reconnect storms and whole-world
+          subscriptions. Its maintainer blames "applications created by LLMs"
+          for the 2026 instability.
+        </p>
+        <p class="mb-12 text-(--text-secondary)">
+          aiscast limits per token, publishes the numbers, thins a stream that
+          exceeds its rate rather than dropping the connection, refuses an
+          oversize area with a message that says so, and allows in-band
+          resubscribe for free. CORS is open on <code
+            class="rounded bg-(--surface-subtle) px-1">/v1/vessels</code
+          >.
+        </p>
+
+        <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          License and terms
+        </h2>
+        <p class="mb-12 text-(--text-secondary)">
+          aisstream has none. aiscast does not relicense the aggregate: each
+          event is re-served under its source's terms, and the <a
+            href="/ais/#license">terms</a
+          > give you the attribution string to carry. If you are one of the twenty
+          people who asked aisstream for a license and heard nothing, this is the
+          answer.
+        </p>
+
+        <h2 id="who" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          Who each one is for
+        </h2>
+        <h3 class="mb-2 text-xl font-semibold">Who aiscast is for</h3>
+        <p class="mb-6 text-(--text-secondary)">
+          aisstream clients that need to keep running; Signal K boats;
+          dashboards and hobby projects; research that needs provenance;
+          products that need a license and a contact; receiver operators who
+          want the network's data back.
+        </p>
+        <h3 class="mb-2 text-xl font-semibold">Who aisstream.io is for</h3>
+        <p class="mb-12 text-(--text-secondary)">
+          Honestly: a free key to try the category, and nothing that runs
+          unattended. When it is up it is fine, and aiscast consumes it too.
+        </p>
+
+        <h2 id="migration" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          Migration
+        </h2>
+        <ol
+          class="mb-4 list-decimal space-y-2 pl-6 text-(--text-secondary) marker:text-(--text-muted)"
+        >
+          <li>
+            Get a token at <a href="/ais/token/">openwaters.io/ais/token</a>:
+            one click, stays in your browser, never expires.
+          </li>
+          <li>
+            Replace <code class="rounded bg-(--surface-subtle) px-1"
+              >wss://stream.aisstream.io/v0/stream</code
+            > with <code class="rounded bg-(--surface-subtle) px-1"
+              >wss://ais.openwaters.io/v0/stream</code
+            >.
+          </li>
+          <li>
+            Put the token in <code class="rounded bg-(--surface-subtle) px-1"
+              >APIKey</code
+            >. Everything else stays the same.
+          </li>
+        </ol>
+        <p class="mb-4 text-(--text-secondary)">
+          The full version, including what changes once you are across, is on <a
+            href={`${ALTERNATIVES}#switch`}>All aisstream.io alternatives</a
+          >.
+        </p>
+        <p class="text-(--text-secondary)">
+          Support: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, or
+          an issue on the <a
+            href={REPO}
+            target="_blank"
+            rel="noopener noreferrer">aiscast repository</a
+          >. Current uptime is at <a
+            href={STATUS}
+            target="_blank"
+            rel="noopener noreferrer">status.openwaters.io</a
+          >.
+        </p>
+      </article>
+    </div>
+  </Container>
+</MainLayout>
+
+<script>
+  const root = document.getElementById("vs-live");
+  if (root) {
+    const src = root.dataset.src!;
+    const ago = (s: number) =>
+      s < 60
+        ? `${s}s ago`
+        : s < 3600
+          ? `${Math.round(s / 60)}m ago`
+          : `${Math.round(s / 3600)}h ago`;
+    const show = (key: string, value: string) => {
+      const el = root.querySelector(`[data-stat=${key}]`);
+      if (el) el.textContent = value;
+    };
+    const poll = async () => {
+      try {
+        const s = await (await fetch(src)).json();
+        show("vessels", s.vessels.total.toLocaleString());
+        show("events", s.events.last_24h.toLocaleString());
+        show("stations", s.stations.active.toLocaleString());
+        const ages = Object.values(s.sources).map(
+          (v: any) => v.last_age_s as number,
+        );
+        show("age", ago(Math.min(...ages)));
+        const a = s.sources.aisstream;
+        if (!a) return;
+        show("as_vessels", a.vessels.toLocaleString());
+        show("as_events", a.events.last_24h.toLocaleString());
+        show("as_age", ago(a.last_age_s));
+      } catch {
+        // leave the placeholders
+      }
+    };
+    poll();
+    setInterval(poll, 5000);
+  }
+</script>

@@ -1,0 +1,588 @@
+---
+import MainLayout from "../../../layouts/MainLayout.astro";
+import Container from "../../../components/ui/Container.astro";
+import Card from "../../../components/ui/Card.astro";
+import CodeBlock from "../../../components/ui/CodeBlock.astro";
+import Icon from "../../../components/Icon.astro";
+import { CONTACT_EMAIL } from "../../../utils/constants";
+import { SITE, publisher } from "../../../utils/schema";
+
+const DESCRIPTION =
+  "aisstream.io down again? Six real alternatives compared on protocol, coverage, price, and license, including one that speaks aisstream's protocol so your code keeps working.";
+
+const sections = [
+  { id: "why", label: "Why people look for an alternative" },
+  { id: "criteria", label: "What to look for" },
+  { id: "alternatives", label: "The alternatives" },
+  { id: "glance", label: "At a glance" },
+  { id: "which", label: "Which one" },
+  { id: "switch", label: "Switching to aiscast" },
+  { id: "faq", label: "FAQ" },
+];
+
+// Bullet bodies carry inline markup (code spans, links), so they are authored as HTML
+// here and rendered with set:html rather than repeating the list markup six times.
+const alternatives: {
+  name: string;
+  intro?: string;
+  bullets: { label: string; html: string }[];
+  best: string;
+}[] = [
+  {
+    name: "aiscast, the Open Waters AIS network",
+    intro:
+      "An open AIS network that speaks aisstream's protocol. We built it because we had the same problem: our chart app streamed from aisstream and went dark with it.",
+    bullets: [
+      {
+        label: "Protocol",
+        html: "WebSocket push, bounding box or MMSI list. <code>/v0/stream</code> is aisstream-compatible: change the hostname, use your aiscast token as <code>APIKey</code>, and <code>aisstream-ts</code>, the official Go/Python/JS examples, and <code>signalk-aisstream</code> run unmodified. <code>/v1/stream</code> is the native API and needs no token to subscribe. <code>GET /v1/vessels?bbox=</code> returns a GeoJSON snapshot so a view fills instantly instead of waiting for the next position report.",
+      },
+      {
+        label: "Coverage",
+        html: "live from the Norwegian and Finnish coastal authorities and from volunteer receivers; worldwide terrestrial via the AISHub snapshot, which is 1 to 6 minutes old; aisstream.io itself as an upstream when it is up. Every event names its source and station, and <code>/v1/stations</code> shows each source's message rate and age, so you can tell a gap from a fault.",
+      },
+      {
+        label: "Price",
+        html: "free without a token (2 streams, 20 msg/s, about 10°×10°); free personal token in one click, never expires (2 streams, 50 msg/s, about 20°×20°, or 50 vessels by MMSI anywhere); feeder tier is earned by feeding a receiver; commercial by arrangement.",
+      },
+      {
+        label: "License",
+        html: "per source, published, with the attribution string you must carry. Norway NLOD, Finland CC BY 4.0, volunteer receptions CC0 with the aggregate under ODbL, AISHub with attribution. Code is MIT.",
+      },
+      {
+        label: "Operations",
+        html: 'subscription ack, heartbeat, close reasons, documented limits per token rather than per IP, a public status page at <a href="https://status.openwaters.io" target="_blank" rel="noopener noreferrer">status.openwaters.io</a>, and hello@openwaters.io answers.',
+      },
+      {
+        label: "Honest limits",
+        html: "it is a beta with no SLA, launched in 2026. Live sub-minute coverage outside Norway, Finland, and volunteer stations depends on the AISHub snapshot. No history or bulk export yet. No satellite coverage outside the Norwegian EEZ.",
+      },
+    ],
+    best: "anyone with an aisstream client that needs to keep running today, Signal K boats, dashboards, hobby and research projects, and anyone who needs to know where a message came from and under what license.",
+  },
+  {
+    name: "AISHub",
+    intro:
+      "The reciprocal exchange: run a receiver, feed it, get the aggregate.",
+    bullets: [
+      {
+        label: "Protocol",
+        html: "REST snapshot (JSON, XML, CSV) polled at most once a minute. No push. The worldwide snapshot regenerates about every 5 minutes, so positions are 1 to 6 minutes old.",
+      },
+      {
+        label: "Coverage",
+        html: "the largest volunteer network with published numbers: 1,600+ stations in 83 countries, ~98,000 vessels a day.",
+      },
+      {
+        label: "Price",
+        html: "free, but only if your receiver meets the bar (10+ vessels average, 90% uptime, 60 s max downsampling, 10 s max delay). No receiver, no API.",
+      },
+      {
+        label: "License",
+        html: "no written terms document. AISHub confirmed to us in writing (22 August 2026) that use, commercial use, and redistribution are unrestricted. The key is revocable at will.",
+      },
+      {
+        label: "Honest limits",
+        html: "polling only, minutes old, and the gate is a working station.",
+      },
+    ],
+    best: "station operators who want a global “who is out there” view. Not for close-quarters use or anyone without a receiver.",
+  },
+  {
+    name: "Open government feeds directly (Digitraffic, Kystverket, BarentsWatch, EuRIS)",
+    intro: "The sources aiscast is built on, available to anyone.",
+    bullets: [
+      {
+        label: "Protocol",
+        html: "Finland pushes over MQTT/WSS; Norway is a raw TCP socket of tagged NMEA; BarentsWatch is JSON and Kafka behind a free OAuth client; EuRIS is a REST bounding-box endpoint for EU inland waterways.",
+      },
+      {
+        label: "Coverage",
+        html: "Finnish waters, the Norwegian coast to about 60 nm plus the EEZ and Svalbard, and 13 countries of European rivers and canals (anonymised: no MMSI or name).",
+      },
+      {
+        label: "Price",
+        html: "free, no registration except BarentsWatch.",
+      },
+      {
+        label: "License",
+        html: "CC BY 4.0, NLOD 2.0, and an attribution string for EuRIS. Redistribution explicitly allowed.",
+      },
+      {
+        label: "Honest limits",
+        html: "three protocols, three reconnect loops, your own dedupe, and nothing outside those waters.",
+      },
+    ],
+    best: "Nordic-only projects and anyone who wants to own the whole pipeline.",
+  },
+  {
+    name: "VesselFinder API",
+    bullets: [
+      {
+        label: "Protocol",
+        html: "REST, credit-based, built for per-vessel lookups. A raw TCP/UDP feed exists on quote, priced by area and traffic density.",
+      },
+      { label: "Coverage", html: "global terrestrial plus satellite." },
+      {
+        label: "Price",
+        html: "€330 for 10,000 credits, €625 for 20,000, €1,470 for 50,000. A terrestrial position is one credit, satellite ten.",
+      },
+      {
+        label: "License",
+        html: "the terms ban competing vessel-tracking services and AI training; external display is allowed only where your order says so.",
+      },
+      {
+        label: "Honest limits",
+        html: "polling a bounding box through credits gets expensive fast.",
+      },
+    ],
+    best: "looking up a handful of known vessels, or satellite positions on demand.",
+  },
+  {
+    name: "Datalastic",
+    bullets: [
+      {
+        label: "Protocol",
+        html: "REST with credits; historical data included.",
+      },
+      {
+        label: "Price",
+        html: "Starter €199/month for 20,000 credits, Growth €569 for 80,000, Developer Pro €679 unlimited. Two-week money-back trial.",
+      },
+      {
+        label: "License",
+        html: "the terms ban exposing the data in a public-facing application.",
+      },
+      { label: "Honest limits", html: "no WebSocket, no public maps." },
+    ],
+    best: "a backend that needs history and is willing to pay for it.",
+  },
+  {
+    name: "Kpler AIS (MarineTraffic, Spire Maritime, exactEarth, FleetMon)",
+    intro:
+      "The commercial layer consolidated into one company between 2021 and 2025.",
+    bullets: [
+      { label: "Protocol", html: "GraphQL, raw NMEA streams, Snowflake." },
+      {
+        label: "Coverage",
+        html: "the best on earth: 13,000+ receivers plus a satellite constellation with sub-minute latency.",
+      },
+      {
+        label: "Price",
+        html: "not published. The wholesale figure in Kpler's own SEC filing is $437,500 a month for a global feed; regional live satellite has gone for about $10,000 a year in public procurement.",
+      },
+      {
+        label: "License",
+        html: "no redistribution, no access through any third-party software or aggregator.",
+      },
+    ],
+    best: "fleets and analysts with procurement. Not for individuals or anything open.",
+  },
+];
+
+const glanceColumns = [
+  "Push stream",
+  "Snapshot API",
+  "Coverage",
+  "Free tier",
+  "Redistribution",
+  "Status page",
+];
+const glanceRows: [string, ...string[]][] = [
+  [
+    "aiscast",
+    "yes, aisstream-compatible",
+    "yes",
+    "Nordic live, world via AISHub (1–6 min), volunteers",
+    "yes, no account",
+    "yes, per-source license published",
+    "yes",
+  ],
+  [
+    "aisstream.io",
+    "yes",
+    "no",
+    "global terrestrial, when up",
+    "only tier",
+    "no terms",
+    "no",
+  ],
+  [
+    "AISHub",
+    "no (≤1/min)",
+    "yes",
+    "global, 1,600+ stations, 1–6 min",
+    "feeders only",
+    "yes, confirmed by email",
+    "no",
+  ],
+  [
+    "Government feeds",
+    "MQTT/TCP",
+    "some",
+    "Finland, Norway, EU inland",
+    "yes",
+    "yes",
+    "per agency",
+  ],
+  ["VesselFinder", "quote", "credits", "global + satellite", "no", "no", "no"],
+  ["Datalastic", "no", "credits", "global", "trial", "no public display", "no"],
+  [
+    "Kpler",
+    "raw NMEA",
+    "GraphQL",
+    "global + satellite",
+    "no",
+    "no",
+    "enterprise",
+  ],
+];
+
+const which: { when: string; then: string }[] = [
+  {
+    when: "Your aisstream client stopped and you want it back this afternoon:",
+    then: "aiscast /v0/stream. One hostname.",
+  },
+  {
+    when: "You run a receiver and want the world:",
+    then: "AISHub for the snapshot, aiscast for the live stream, and feed both. aiscast already feeds AISHub for you.",
+  },
+  {
+    when: "Finland or Norway only:",
+    then: "go direct to Digitraffic or Kystverket, or use aiscast for one protocol and the license carried through.",
+  },
+  {
+    when: "A few known ships, occasionally:",
+    then: "VesselFinder credits.",
+  },
+  { when: "History and a budget:", then: "Datalastic." },
+  { when: "A fleet and a procurement department:", then: "Kpler." },
+];
+
+const faq = [
+  {
+    q: "Is aisstream.io down?",
+    a: "Check the aisstream issue tracker; there is no status page. As of early September 2026 the newest issues report 429 lockouts and instant connection closes.",
+  },
+  {
+    q: "Is there a free alternative to aisstream.io?",
+    a: "aiscast is free without an account and speaks the same protocol. AISHub is free if you run a receiver. The Finnish and Norwegian government feeds are free and open.",
+  },
+  {
+    q: "Can I use aisstream.io data commercially?",
+    a: "aisstream publishes no terms, and its licensing issues have gone unanswered since 2023. aiscast publishes the license of every source it re-serves and carries it on every event.",
+  },
+  {
+    q: "Does aiscast have the same coverage as aisstream.io?",
+    a: "Not yet in the same way. aiscast is live in Norway, Finland, and wherever volunteer receivers are, and carries worldwide terrestrial positions from AISHub that are one to six minutes old. It also uses aisstream.io as an upstream when aisstream is up, so you lose nothing by switching.",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  url: `${SITE}/ais/alternatives/aisstream/`,
+  publisher,
+  mainEntity: faq.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
+---
+
+<MainLayout
+  title="aisstream.io alternatives"
+  image="/og/ais-alternatives-aisstream.png"
+  description={DESCRIPTION}
+  schema={faqSchema}
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-4xl">
+      <a
+        href="/ais/"
+        class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+      >
+        <Icon name="mdi:arrow-left" class="size-4" />
+        AIS
+      </a>
+
+      <h1 class="mb-2">aisstream.io alternatives</h1>
+      <p class="mb-4 text-sm text-(--text-muted)">
+        Last checked 4 September 2026
+      </p>
+
+      <p class="text-lead mb-8">
+        If your aisstream.io client is sitting on a connection that delivers
+        nothing, point it at <code class="rounded bg-(--surface-subtle) px-1"
+          >wss://ais.openwaters.io/v0/stream</code
+        > with an aiscast token as the <code
+          class="rounded bg-(--surface-subtle) px-1">APIKey</code
+        > and it starts receiving again. Same subscribe message, same frames. If you
+        need global coverage with an SLA, that is a paid product (Kpler, VesselFinder,
+        Datalastic) and none of them stream. If you run a receiver, AISHub's snapshot
+        is free and unrestricted. The rest of this page is the honest version of those
+        three sentences.
+      </p>
+
+      <nav
+        data-nosnippet
+        aria-label="On this page"
+        class="mb-12 rounded-lg border border-(--border) bg-(--surface-subtle) px-5 py-4 text-sm"
+      >
+        <span class="mr-2 font-semibold">On this page:</span>
+        {
+          sections.map((s, i) => (
+            <>
+              {i > 0 && <span class="mx-2 text-(--text-muted)">·</span>}
+              <a
+                href={`#${s.id}`}
+                class="text-(--accent) hover:text-(--accent-hover)"
+              >
+                {s.label}
+              </a>
+            </>
+          ))
+        }
+      </nav>
+
+      <h2 id="why" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Why people look for an alternative
+      </h2>
+      <div class="mb-12 space-y-4 text-(--text-secondary)">
+        <p>
+          aisstream.io is the only free service that pushes global AIS over a
+          WebSocket, and it is a one-person project that has been failing the
+          way one-person projects fail. Its issue tracker had 190 open issues on
+          4 September 2026. The most recent, from the first two days of
+          September, describe connections stuck for days blocking new ones with
+          429s, and every connection attempt closing instantly with code 1006.
+          In August the service was down roughly 14 days out of 20. Earlier
+          outage cycles were expired TLS certificates, four times since 2024.
+        </p>
+        <p>
+          The failures are silent. aisstream sends no subscription
+          acknowledgement, no heartbeat, and no close reason, so a dead backend
+          looks exactly like an empty ocean or a flipped bounding box. Every
+          outage produces a dozen “is it me?” issues.
+        </p>
+        <p>
+          There are also no terms. Twenty issues ask for a data license,
+          attribution wording, or a commercial contact, the latest two on 29 and
+          30 August 2026, and none have been answered. The server is closed
+          source and the public repository has been empty since December 2022,
+          so nobody can fork it.
+        </p>
+        <p>
+          None of that makes aisstream a bad idea. It proved that free,
+          push-based, bounding-box AIS is what developers want. It is just not
+          something you can build on.
+        </p>
+      </div>
+
+      <h2 id="criteria" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        What to look for in a replacement
+      </h2>
+      <ul class="mb-12 space-y-3 text-(--text-secondary)">
+        <li>
+          <span class="font-semibold">Push or pull.</span> aisstream is push: subscribe
+          once, receive forever. Almost everything else is a REST API you poll, which
+          changes your architecture and your bill.
+        </li>
+        <li>
+          <span class="font-semibold">Coverage you can see.</span> Terrestrial AIS
+          reaches roughly 40 nautical miles from a receiver. Ask where the receivers
+          are, and whether the service shows you per-station health so a gap is distinguishable
+          from an outage.
+        </li>
+        <li>
+          <span class="font-semibold">A license.</span> If you display, store, or
+          redistribute the data, you need written terms. Most commercial APIs forbid
+          public display or redistribution outright.
+        </li>
+        <li>
+          <span class="font-semibold">Failure that announces itself.</span> An ack,
+          a heartbeat, a close code, a status page.
+        </li>
+        <li>
+          <span class="font-semibold">Someone to email.</span>
+        </li>
+      </ul>
+
+      <h2 id="alternatives" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        The alternatives
+      </h2>
+      <div class="mb-6 space-y-6">
+        {
+          alternatives.map((a, i) => (
+            <Card>
+              <h3 class="mb-2 text-xl font-semibold">
+                {i + 1}. {a.name}
+              </h3>
+              {a.intro && <p class="mb-4 text-(--text-secondary)">{a.intro}</p>}
+              {/* The global dl style is a label | text grid: one scannable row per point. */}
+              <dl class="gap-y-3">
+                {a.bullets.map((b) => (
+                  <>
+                    <dt class="pt-px">{b.label}</dt>
+                    <dd class="text-(--text-secondary)" set:html={b.html} />
+                  </>
+                ))}
+                <dt class="pt-px text-(--accent)">Best for</dt>
+                <dd>{a.best}</dd>
+              </dl>
+              {i === 0 && (
+                <p class="mt-4 text-sm">
+                  <a href="/ais/vs/aisstream/">Field-by-field comparison</a> of
+                  aiscast and aisstream.io, or read the{" "}
+                  <a href="/api/ais/">API reference</a>.
+                </p>
+              )}
+            </Card>
+          ))
+        }
+      </div>
+      <p class="mb-12 text-(--text-secondary)">
+        Also seen: MyShipTracking (REST from €90/month, public or third-party
+        use of the data prohibited) and Marinesia (the cheapest paid API found,
+        about €14 a quarter as of August 2026, REST polling only, and the one
+        service an aisstream user reported actually migrating to).
+      </p>
+
+      <h2 id="glance" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        At a glance
+      </h2>
+      <div class="mb-12 overflow-x-auto">
+        <table class="w-full min-w-lg text-sm">
+          <thead class="bg-(--surface-subtle)">
+            <tr>
+              <th scope="col" class="px-3 py-2 text-left"></th>
+              {
+                glanceColumns.map((c) => (
+                  <th scope="col" class="px-3 py-2 text-left">
+                    {c}
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-(--border-subtle)">
+            {
+              glanceRows.map(([name, ...cells]) => (
+                <tr>
+                  <th scope="row" class="px-3 py-2 text-left font-medium">
+                    {name}
+                  </th>
+                  {cells.map((c) => (
+                    <td class="px-3 py-2 text-(--text-secondary)">{c}</td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="which" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Which one
+      </h2>
+      <ul class="mb-12 space-y-3 text-(--text-secondary)">
+        {
+          which.map((w) => (
+            <li>
+              <span class="font-semibold">{w.when}</span> {w.then}
+            </li>
+          ))
+        }
+      </ul>
+
+      <h2 id="switch" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Switching from aisstream.io to aiscast
+      </h2>
+      <ol
+        class="mb-6 list-decimal space-y-2 pl-5 text-(--text-secondary) marker:text-(--text-muted)"
+      >
+        <li>Get a token (one click, stays in your browser, never expires).</li>
+        <li>
+          Replace <code class="rounded bg-(--surface-subtle) px-1"
+            >wss://stream.aisstream.io/v0/stream</code
+          > with <code class="rounded bg-(--surface-subtle) px-1"
+            >wss://ais.openwaters.io/v0/stream</code
+          >.
+        </li>
+        <li>
+          Put the token in <code class="rounded bg-(--surface-subtle) px-1"
+            >APIKey</code
+          >. Everything else stays: <code
+            class="rounded bg-(--surface-subtle) px-1">BoundingBoxes</code
+          >, <code class="rounded bg-(--surface-subtle) px-1"
+            >FiltersShipMMSI</code
+          >, <code class="rounded bg-(--surface-subtle) px-1"
+            >FilterMessageTypes</code
+          >, and the <code class="rounded bg-(--surface-subtle) px-1"
+            >MessageType</code
+          > / <code class="rounded bg-(--surface-subtle) px-1">MetaData</code> /
+          <code class="rounded bg-(--surface-subtle) px-1">Message</code> frame shape.
+        </li>
+      </ol>
+
+      <div class="mb-6 grid gap-4 sm:grid-cols-2">
+        <div>
+          <p class="mb-2 text-sm font-semibold text-(--text-muted)">Before</p>
+          <CodeBlock code="wss://stream.aisstream.io/v0/stream" />
+        </div>
+        <div>
+          <p class="mb-2 text-sm font-semibold text-(--text-muted)">After</p>
+          <CodeBlock code="wss://ais.openwaters.io/v0/stream" />
+        </div>
+      </div>
+
+      <p class="mb-6">
+        <a href="/ais/token/" class="btn btn-primary">Get a token</a>
+      </p>
+
+      <div class="mb-12 space-y-4 text-(--text-secondary)">
+        <p>
+          What changes: the limits are per token rather than per IP (2
+          concurrent streams, 50 messages a second, about 20°×20°), so a
+          world-sized bounding box is refused with a message that says so
+          instead of silently throttled. Where aisstream's decoder was wrong (<code
+            class="rounded bg-(--surface-subtle) px-1">Valid: true</code
+          > on out-of-range values, message 27 labelled 23), <code
+            class="rounded bg-(--surface-subtle) px-1">/v0</code
+          > reproduces it on purpose so nothing breaks; <code
+            class="rounded bg-(--surface-subtle) px-1">/v1</code
+          > gets it right. The full list is in the <a href="/api/ais/"
+            >API reference</a
+          >.
+        </p>
+        <p>
+          When you have a minute, move to <code
+            class="rounded bg-(--surface-subtle) px-1">/v1/stream</code
+          >: no token for subscribing, one JSON event per message with <code
+            class="rounded bg-(--surface-subtle) px-1">source</code
+          >, <code class="rounded bg-(--surface-subtle) px-1">station</code>,
+          the raw sentence and the decoded fields, an ack when your subscription
+          is live, a heartbeat, and a close reason when we close.
+        </p>
+      </div>
+
+      <h2 id="faq" class="mb-4 scroll-mt-24 text-3xl font-semibold">FAQ</h2>
+      <div class="space-y-6">
+        {
+          faq.map((item) => (
+            <div>
+              <h3 class="mb-1 font-semibold">{item.q}</h3>
+              <p class="text-(--text-secondary)">{item.a}</p>
+            </div>
+          ))
+        }
+      </div>
+      <p class="mt-8 text-sm text-(--text-secondary)">
+        Questions, or a source we missed? <a href={`mailto:${CONTACT_EMAIL}`}
+          >{CONTACT_EMAIL}</a
+        >.
+      </p>
+    </div>
+  </Container>
+</MainLayout>

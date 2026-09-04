@@ -282,9 +282,9 @@ const licenses = [
 ---
 
 <MainLayout
-  title="AIS: an open AIS network, streamed in real time"
+  title="aiscast: an open AIS network, streamed in real time"
   image="/og/ais.png"
-  description="Live ship positions from coastal authorities and volunteer receivers, streamed live. Open source and free for personal use."
+  description="aiscast is the Open Waters AIS network: live ship positions from coastal authorities and volunteer receivers, streamed in real time. Open source and free for personal use."
 >
   <!-- Hero -->
   <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-12">
@@ -293,7 +293,8 @@ const licenses = [
         <div class="text-center lg:text-left">
           <h1 class="mb-3">All the ships at sea,<br />instantaneously.</h1>
           <p class="text-lead mb-6">
-            An open AIS network streamed in real-time over WebSockets.
+            aiscast, the Open Waters AIS network, streamed in real time over
+            WebSockets.
           </p>
           <dl
             id="ais-stats"
@@ -427,6 +428,20 @@ const licenses = [
             </div>
           ))
         }
+        <p class="mt-4 text-sm text-(--text-secondary)">
+          Coming from aisstream.io? Point your client at{" "}
+          <code class="rounded bg-(--surface-subtle) px-1"
+            >wss://{SERVER}/v0/stream</code
+          >{" "}
+          with a token as <code class="rounded bg-(--surface-subtle) px-1"
+            >APIKey</code
+          >{" "}
+          and it keeps working. See{" "}
+          <a href="/ais/vs/aisstream/">aiscast vs aisstream.io</a> and{" "}
+          <a href="/ais/alternatives/aisstream/"
+            >every aisstream.io alternative</a
+          >.
+        </p>
       </div>
     </Container>
   </section>
