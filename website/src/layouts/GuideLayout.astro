@@ -1,0 +1,51 @@
+---
+import MainLayout from "./MainLayout.astro";
+import Container from "../components/ui/Container.astro";
+import Icon from "../components/Icon.astro";
+
+// Layout for markdown how-to pages under /ais/. Markdown pages pass their
+// frontmatter as a prop; `title` and `description` are required there.
+interface Props {
+  frontmatter: {
+    title: string;
+    description: string;
+    /** Page to link back to. Defaults to the AIS overview. */
+    back?: { href: string; label: string };
+  };
+}
+
+const {
+  title,
+  description,
+  back = { href: "/ais/", label: "AIS" },
+} = Astro.props.frontmatter;
+---
+
+<MainLayout title={title} description={description}>
+  <Container class="py-16">
+    <div class="mx-auto max-w-3xl">
+      <a
+        href={back.href}
+        class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+      >
+        <Icon name="mdi:arrow-left" class="size-4" />
+        {back.label}
+      </a>
+      <h1 class="mb-3">{title}</h1>
+      <p class="text-lead mb-10">{description}</p>
+      <article class="prose max-w-none">
+        <slot />
+      </article>
+    </div>
+  </Container>
+</MainLayout>
+
+<style>
+  article :global(table) {
+    display: block;
+    overflow-x: auto;
+  }
+  article :global(h2) {
+    scroll-margin-top: 6rem;
+  }
+</style>
