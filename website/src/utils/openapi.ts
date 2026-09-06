@@ -55,7 +55,10 @@ const AIS_OPENAPI_URLS = [
 export async function getAisOpenAPISpec(): Promise<SpecDocument> {
   for (const url of AIS_OPENAPI_URLS) {
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: { accept: "application/json" },
+        signal: AbortSignal.timeout(10_000),
+      });
       if (res.ok) return (await res.json()) as SpecDocument;
       console.warn(`[ais] ${url}: ${res.status}`);
     } catch (err) {
