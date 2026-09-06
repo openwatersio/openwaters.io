@@ -1,21 +1,154 @@
 ---
-import { getEntry, render } from "astro:content";
-import MainLayout from "../../layouts/MainLayout.astro";
-import Container from "../../components/ui/Container.astro";
+import ApiLayout from "../../layouts/ApiLayout.astro";
+import ApiEndpoint from "../../components/api/ApiEndpoint.astro";
+import StreamEndpoint from "../../components/api/StreamEndpoint.astro";
 import Icon from "../../components/Icon.astro";
 import { SITE, publisher } from "../../utils/schema";
+import { md } from "../../utils/render-markdown";
+import {
+  getAisOpenAPISpec,
+  extractEndpoints,
+  groupEndpointsByTag,
+  endpointId,
+} from "../../utils/openapi";
 
-const entry = await getEntry("ais", "api");
-if (!entry) throw new Error("AIS API reference not loaded");
-const { Content, headings } = await render(entry);
-const sections = headings.filter((h) => h.depth === 2);
+import { Content as Tokens } from "./_ais/tokens.md";
+import { Content as V0Stream } from "./_ais/v0-stream.md";
+import { Content as V1Stream } from "./_ais/v1-stream.md";
+import { Content as V1StreamSSE } from "./_ais/v1-stream-sse.md";
+import { Content as V1Nmea } from "./_ais/v1-nmea.md";
+import { Content as Udp } from "./_ais/udp.md";
+import { Content as Limits } from "./_ais/limits.md";
+
+const SERVER = "https://ais.openwaters.io";
+const WSS = "wss://ais.openwaters.io";
+
+// The request/response endpoints come from the server's own OpenAPI document;
+// the streams, tokens, and UDP feed are documented in prose alongside it.
+const spec = await getAisOpenAPISpec();
+// Covered by the prose stream entry.
+const HIDDEN = new Set(["/v1/nmea"]);
+const byTag = groupEndpointsByTag(
+  extractEndpoints(spec).filter((e) => !HIDDEN.has(e.path)),
+);
+const tagDescriptions = new Map(
+  (spec.tags ?? []).map((t) => [t.name, t.description]),
+);
+
+interface Stream {
+  id: string;
+  protocol: "WS" | "SSE" | "UDP";
+  path: string;
+  text: string;
+  summary: string;
+  Content: typeof V1Stream;
+}
+
+// Groups in the order a visitor needs them. Spec endpoints join the group whose
+// name matches their tag; streams and intros are prose.
+const groups: {
+  slug: string;
+  text: string;
+  /** Spec tag whose endpoints belong here; defaults to the heading. */
+  tag?: string;
+  /** Markdown shown under the spec's tag description. */
+  note?: string;
+  Intro?: typeof Tokens;
+  streams?: Stream[];
+}[] = [
+  { slug: "authentication", text: "Authentication", Intro: Tokens },
+  {
+    slug: "live-traffic",
+    text: "Live vessel traffic",
+    note: "Get real-time vessel traffic as it happens. The [WebSocket](#stream-v1) carries the full event format and works in both directions. [Server-Sent Events](#stream-v1-sse) carries the same events over plain HTTP for `curl` or a browser. The [aisstream.io-compatible](#stream-v0) endpoint is a drop-in for existing aisstream clients. [NMEA](#stream-nmea) delivers raw sentences for a chartplotter or your own decoder.",
+    streams: [
+      {
+        id: "stream-v1",
+        protocol: "WS",
+        path: `${WSS}/v1/stream`,
+        text: "WebSocket",
+        summary: "Real-time events over WebSocket",
+        Content: V1Stream,
+      },
+      {
+        id: "stream-v1-sse",
+        protocol: "SSE",
+        path: `${SERVER}/v1/stream`,
+        text: "Server-Sent Events",
+        summary: "Real-time Server-Sent Events",
+        Content: V1StreamSSE,
+      },
+      {
+        id: "stream-v0",
+        protocol: "WS",
+        path: `${WSS}/v0/stream`,
+        text: "aisstream.io-compatible",
+        summary: "Drop-in replacement for the aisstream.io stream",
+        Content: V0Stream,
+      },
+      {
+        id: "stream-nmea",
+        protocol: "WS",
+        path: `${WSS}/v1/nmea`,
+        text: "NMEA",
+        summary: "Deduplicated raw NMEA back to feeders",
+        Content: V1Nmea,
+      },
+    ],
+  },
+  { slug: "vessels-and-stations", text: "Vessels and stations" },
+  {
+    slug: "contributing",
+    text: "Contributing data",
+    tag: "Contributing",
+    note: "Already on the [WebSocket stream](#stream-v1)? It works in both directions: send `publish` frames with any token, on the same connection you subscribe with.",
+    streams: [
+      {
+        id: "stream-udp",
+        protocol: "UDP",
+        path: "ais.openwaters.io:10110",
+        text: "Contributing over UDP",
+        summary: "Raw NMEA ingest",
+        Content: Udp,
+      },
+    ],
+  },
+  { slug: "status", text: "Status" },
+  { slug: "limits", text: "Limits", Intro: Limits },
+];
+
+const unclaimed = [...byTag.keys()].filter(
+  (tag) => !groups.some((group) => (group.tag ?? group.text) === tag),
+);
+if (unclaimed.length) {
+  throw new Error(
+    `AIS spec has endpoints in groups this page does not render: ${unclaimed.join(", ")}`,
+  );
+}
+
+const sections = groups.map((group) => ({
+  slug: group.slug,
+  text: group.text,
+  children: [
+    ...(byTag.get(group.tag ?? group.text) ?? []).map((endpoint) => ({
+      slug: endpointId(endpoint),
+      text: endpoint.summary ?? `${endpoint.method} ${endpoint.path}`,
+    })),
+    ...(group.streams ?? []).map((stream) => ({
+      slug: stream.id,
+      text: stream.text,
+    })),
+  ],
+}));
+
+const description =
+  "Reference for the AIS API: live vessel traffic over WebSocket, Server-Sent Events, and raw NMEA, a GeoJSON snapshot of current positions, tokens, and how to feed in your own receiver.";
 
 const article = {
   "@context": "https://schema.org",
   "@type": "TechArticle",
   headline: "AIS API",
-  description:
-    "Reference for the AIS API: live vessel traffic by bounding box over WebSocket, GeoJSON snapshots, access tokens, and an aisstream.io-compatible stream.",
+  description,
   url: `${SITE}/api/ais/`,
   author: publisher,
   publisher,
@@ -25,86 +158,84 @@ const article = {
 };
 ---
 
-<MainLayout
+<ApiLayout
   title="AIS API"
-  description="Reference for the AIS API: live vessel traffic by bounding box over WebSocket, GeoJSON snapshots, access tokens, and an aisstream.io-compatible stream."
+  description={description}
   schema={article}
+  sections={sections}
 >
-  <Container class="py-16">
-    <div class="mx-auto max-w-4xl">
-      <a
-        href="/api/"
-        class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
-      >
-        <Icon name="mdi:arrow-left" class="size-4" />
-        All APIs
-      </a>
-
-      <div class="flex items-center justify-between">
-        <h1 class="mb-3">AIS API</h1>
-        <div class="flex gap-3">
-          <a
-            href="https://github.com/openwatersio/aiscast/blob/main/docs/API.md"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-secondary"
-          >
-            <Icon name="mdi:github" class="size-6" />
-            <span class="hidden sm:inline">Source</span>
-          </a>
-          <a href="/ais/" class="btn btn-primary">
-            <Icon name="mdi:radar" class="size-6" />
-            <span class="hidden sm:inline">About</span>
-          </a>
-        </div>
+  <div class="ais-ref">
+    <div class="flex items-center justify-between">
+      <h1 class="mb-3">AIS API</h1>
+      <div class="flex gap-3">
+        <a
+          href="https://github.com/openwatersio/aiscast"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-secondary"
+        >
+          <Icon name="mdi:github" class="size-6" />
+          <span class="hidden sm:inline">Source</span>
+        </a>
+        <a href="/ais/" class="btn btn-primary">
+          <Icon name="mdi:radar" class="size-6" />
+          <span class="hidden sm:inline">About</span>
+        </a>
       </div>
-      <p class="text-lead mb-4">
-        aiscast, the Open Waters AIS network: live vessel traffic streamed by
-        bounding box, with a snapshot of current positions and an
-        aisstream.io-compatible stream.
-      </p>
-      <p class="mb-8 text-sm text-(--text-secondary)">
-        Coming from aisstream.io? Change the hostname and keep your code: see{
-          " "
-        }
-        <a href="/ais/vs/aisstream/">aiscast vs aisstream.io</a>.
-      </p>
-
-      <nav
-        data-nosnippet
-        aria-label="On this page"
-        class="mb-12 rounded-lg border border-(--border) bg-(--surface-subtle) px-5 py-4 text-sm"
-      >
-        <span class="mr-2 font-semibold">On this page:</span>
-        {
-          sections.map((h, i) => (
-            <>
-              {i > 0 && <span class="mx-2 text-(--text-muted)">·</span>}
-              <a
-                href={`#${h.slug}`}
-                class="text-(--accent) hover:text-(--accent-hover)"
-              >
-                {h.text}
-              </a>
-            </>
-          ))
-        }
-      </nav>
-
-      <article class="prose max-w-none">
-        <Content />
-      </article>
     </div>
-  </Container>
-</MainLayout>
+    <p class="text-lead mb-4">
+      aiscast, the Open Waters AIS network: every AIS message heard by receivers
+      around the world, pushed to you as it happens, plus a snapshot of where
+      everything is right now.
+    </p>
+    <p class="mb-12 text-sm text-(--text-secondary)">
+      Coming from aisstream.io? Change the hostname and keep your code: see{" "}
+      <a href="/ais/vs/aisstream/">aiscast vs aisstream.io</a>.
+    </p>
+
+    {
+      groups.map(({ slug, text, tag = text, note, Intro, streams }) => (
+        <section id={slug} class="mb-16 scroll-mt-24">
+          <h2 class="mb-6 text-3xl font-semibold">{text}</h2>
+          {Intro && (
+            <article class="prose max-w-none">
+              <Intro />
+            </article>
+          )}
+          {tagDescriptions.get(tag) && (
+            <div
+              class="prose mb-6 max-w-none text-(--text-secondary)"
+              set:html={md(tagDescriptions.get(tag)!)}
+            />
+          )}
+          {note && (
+            <div
+              class="prose mb-6 max-w-none text-(--text-secondary)"
+              set:html={md(note)}
+            />
+          )}
+          {(byTag.get(tag) ?? []).map((endpoint) => (
+            <ApiEndpoint
+              endpoint={endpoint}
+              host={SERVER}
+              id={endpointId(endpoint)}
+            />
+          ))}
+          {(streams ?? []).map(({ Content, text, ...stream }) => (
+            <StreamEndpoint {...stream}>
+              <Content />
+            </StreamEndpoint>
+          ))}
+        </section>
+      ))
+    }
+  </div>
+</ApiLayout>
 
 <style>
   /* Reference tables are wide; scroll them rather than the page. */
-  article :global(table) {
+  .ais-ref :global(.prose table) {
     display: block;
     overflow-x: auto;
-  }
-  article :global(h2) {
-    scroll-margin-top: 6rem;
   }
 </style>
