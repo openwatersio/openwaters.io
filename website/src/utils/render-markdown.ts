@@ -8,11 +8,11 @@ const escape = (text: string) =>
     .replace(/"/g, "&quot;");
 
 const safeUrl = (href: string) =>
-  /^(https?:|mailto:|\/(?!\/)|#)/i.test(href.trim()) ? href.trim() : null;
+  /^(https?:|mailto:|\/(?![\/\\])|#)/i.test(href.trim()) ? href.trim() : null;
 
 // The AIS spec is fetched over the network, so its markdown is data, not
 // trusted HTML: raw tags are shown as text and links keep to http(s), mailto,
-// and same-site paths.
+// and same-site paths. Browsers read "/\host" as "//host", hence the backslash.
 marked.use({
   renderer: {
     html({ text }: Tokens.HTML | Tokens.Tag) {

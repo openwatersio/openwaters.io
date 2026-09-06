@@ -17,6 +17,7 @@ test("links keep to http(s), mailto, and same-site paths", () => {
   assert.match(mdInline("[a](/api/#limits)"), /href="\/api\/#limits"/);
   assert.equal(mdInline("[click](javascript:alert(1))"), "click");
   assert.equal(mdInline("[click](//evil.example/x)"), "click");
+  assert.equal(mdInline("[click](/\\evil.example/x)"), "click");
   assert.equal(mdInline("![x](javascript:alert(1))"), "x");
 });
 
