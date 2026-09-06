@@ -1,0 +1,155 @@
+---
+import MainLayout from "./MainLayout.astro";
+import Container from "../components/ui/Container.astro";
+
+interface Section {
+  slug: string;
+  text: string;
+  /** Anchors nested under this section, e.g. the endpoints it contains. */
+  children?: { slug: string; text: string }[];
+}
+
+interface Props {
+  title: string;
+  description: string;
+  schema?: unknown;
+  /** Anchors on the current page, shown under its sidebar entry. */
+  sections?: Section[];
+}
+
+const { title, description, schema, sections = [] } = Astro.props;
+
+const pages = [
+  { href: "/api/", label: "Overview" },
+  { href: "/api/tides/", label: "Tides" },
+  { href: "/api/ais/", label: "AIS" },
+];
+const current = Astro.url.pathname.replace(/\/?$/, "/");
+---
+
+<MainLayout title={title} description={description} schema={schema}>
+  <Container class="py-16">
+    <div class="flex gap-12">
+      <aside class="hidden w-56 shrink-0 lg:block">
+        <nav
+          data-nosnippet
+          aria-label="API reference"
+          class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto text-sm"
+        >
+          <p
+            class="mb-3 font-semibold tracking-wide text-(--text-muted) uppercase"
+          >
+            API Reference
+          </p>
+          <ul class="space-y-1">
+            {
+              pages.map((page) => (
+                <li>
+                  <a
+                    href={page.href}
+                    aria-current={current === page.href ? "page" : undefined}
+                    class={
+                      current === page.href
+                        ? "block rounded px-3 py-1.5 font-medium text-(--accent)"
+                        : "block rounded px-3 py-1.5 text-(--text-secondary) hover:text-(--accent)"
+                    }
+                  >
+                    {page.label}
+                  </a>
+                  {current === page.href && sections.length > 0 && (
+                    <ul class="mt-1 space-y-1 border-l border-(--border) pl-3">
+                      {sections.map((section) => (
+                        <li>
+                          <a
+                            href={`#${section.slug}`}
+                            class="block rounded px-2 py-1 text-(--text-secondary) hover:text-(--accent)"
+                          >
+                            {section.text}
+                          </a>
+                          {section.children && section.children.length > 0 && (
+                            <ul class="mb-1 space-y-0.5">
+                              {section.children.map((child) => (
+                                <li>
+                                  <a
+                                    href={`#${child.slug}`}
+                                    class="block rounded py-0.5 pl-5 text-xs text-(--text-muted) hover:text-(--accent)"
+                                  >
+                                    {child.text}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </aside>
+
+      <div class="max-w-4xl min-w-0 flex-1">
+        <nav
+          data-nosnippet
+          aria-label="API reference"
+          class="mb-8 flex gap-4 border-b border-(--border) pb-3 text-sm lg:hidden"
+        >
+          {
+            pages.map((page) => (
+              <a
+                href={page.href}
+                aria-current={current === page.href ? "page" : undefined}
+                class={
+                  current === page.href
+                    ? "font-medium text-(--accent)"
+                    : "text-(--text-secondary) hover:text-(--accent)"
+                }
+              >
+                {page.label}
+              </a>
+            ))
+          }
+        </nav>
+        {
+          sections.length > 0 && (
+            <details data-nosnippet class="mb-8 text-sm lg:hidden">
+              <summary class="cursor-pointer font-medium text-(--text-secondary)">
+                On this page
+              </summary>
+              <ul class="mt-3 space-y-1 border-l border-(--border) pl-3">
+                {sections.map((section) => (
+                  <li>
+                    <a
+                      href={`#${section.slug}`}
+                      class="block py-1 text-(--text-secondary) hover:text-(--accent)"
+                    >
+                      {section.text}
+                    </a>
+                    {section.children && section.children.length > 0 && (
+                      <ul class="mb-1 space-y-0.5">
+                        {section.children.map((child) => (
+                          <li>
+                            <a
+                              href={`#${child.slug}`}
+                              class="block py-0.5 pl-4 text-xs text-(--text-muted) hover:text-(--accent)"
+                            >
+                              {child.text}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )
+        }
+        <slot />
+      </div>
+    </div>
+  </Container>
+</MainLayout>

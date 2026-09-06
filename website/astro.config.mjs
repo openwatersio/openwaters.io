@@ -1,4 +1,6 @@
+import { readFileSync } from "node:fs";
 import { defineConfig } from "astro/config";
+import { loadEnv } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@astrojs/react";
 import cloudflare from "@astrojs/cloudflare";
@@ -16,6 +18,25 @@ const optimizeSsrDeps = {
   configEnvironment(name) {
     if (name === "client") return;
     return { optimizeDeps: { include: ["@iconify/utils", "@iconify/tools"] } };
+  },
+};
+
+// The AIS page renders in workerd, which cannot read the host filesystem, so a
+// local spec named by AIS_OPENAPI_FILE is inlined here as a virtual module and
+// watched, so edits to it reload the page.
+const aisOpenApiFile = loadEnv(
+  process.env.NODE_ENV ?? "development",
+  process.cwd(),
+  "AIS_",
+).AIS_OPENAPI_FILE;
+const aisOpenApi = {
+  name: "openwaters:ais-openapi",
+  resolveId: (id) => (id === "virtual:ais-openapi" ? "\0" + id : undefined),
+  load(id) {
+    if (id !== "\0virtual:ais-openapi") return;
+    if (!aisOpenApiFile) return "export default null;";
+    this.addWatchFile(aisOpenApiFile);
+    return `export default ${readFileSync(aisOpenApiFile, "utf8")};`;
   },
 };
 
@@ -55,7 +76,7 @@ export default defineConfig({
   integrations: [react(), icon(), markdownPages],
   vite: {
     cacheDir,
-    plugins: [tailwindcss(), optimizeSsrDeps],
+    plugins: [tailwindcss(), optimizeSsrDeps, aisOpenApi],
     optimizeDeps: {
       include: ["maplibre-gl"],
       esbuildOptions: {

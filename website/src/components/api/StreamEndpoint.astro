@@ -1,0 +1,39 @@
+---
+import Card from "../ui/Card.astro";
+
+interface Props {
+  /** Transport chip: WS, SSE, or UDP. */
+  protocol: "WS" | "SSE" | "UDP";
+  /** Address as connected to, e.g. wss://ais.openwaters.io/v1/stream. */
+  path: string;
+  summary?: string;
+  id?: string;
+}
+
+const { protocol, path, summary, id } = Astro.props;
+
+const protocolColors: Record<string, string> = {
+  WS: "bg-(--status-purple-bg) text-(--status-purple-text)",
+  SSE: "bg-(--status-blue-bg) text-(--status-blue-text)",
+  UDP: "bg-(--status-orange-bg) text-(--status-orange-text)",
+};
+---
+
+<Card class="mb-6 scroll-mt-24" id={id}>
+  <div class="space-y-4">
+    <div class="flex items-center gap-3">
+      <span
+        class={`rounded px-2 py-1 text-xs font-bold ${protocolColors[protocol]}`}
+      >
+        {protocol}
+      </span>
+      <span class="font-mono text-sm">{path}</span>
+    </div>
+
+    {summary && <p class="font-medium">{summary}</p>}
+
+    <div class="prose max-w-none text-(--text-secondary)">
+      <slot />
+    </div>
+  </div>
+</Card>

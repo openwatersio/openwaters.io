@@ -1,10 +1,24 @@
 import { type openapi } from "@neaps/api";
+import localAisSpec from "virtual:ais-openapi";
 
 // Infer types from the imported openapi spec
 type OpenAPISpec = typeof openapi;
 type Components = NonNullable<OpenAPISpec["components"]>;
 type Parameters = NonNullable<Components["parameters"]>;
 type ParameterObject = Parameters[keyof Parameters];
+
+/**
+ * Structural shape of an OpenAPI document as this site renders it: satisfied by
+ * both the typed @neaps/api export and a spec fetched as JSON (the AIS
+ * server's).
+ */
+export interface SpecDocument {
+  openapi: string;
+  info: { title: string; version: string; description?: string };
+  tags?: readonly { name: string; description?: string }[];
+  paths: Record<string, unknown>;
+  components?: { parameters?: Record<string, ParameterObject> };
+}
 
 /**
  * Path prefix where the neaps API is mounted in the Open Waters API.
@@ -27,6 +41,31 @@ export async function getOpenAPISpec(): Promise<OpenAPISpec> {
     ]),
   );
   return { ...openapi, paths } as OpenAPISpec;
+}
+
+/**
+ * The AIS API publishes its own spec. A local copy named by AIS_OPENAPI_FILE
+ * wins, for previewing spec changes before they ship. Otherwise production is
+ * fetched first (the deployed server is the source of truth), with the repo
+ * copy as a fallback so a server outage cannot fail a site build.
+ */
+const AIS_OPENAPI_URLS = [
+  AIS_OPENAPI_URL,
+  "https://raw.githubusercontent.com/openwatersio/aiscast/main/server/openapi.json",
+];
+
+export async function getAisOpenAPISpec(): Promise<SpecDocument> {
+  if (localAisSpec) return localAisSpec;
+  for (const url of AIS_OPENAPI_URLS) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return (await res.json()) as SpecDocument;
+      console.warn(`[ais] ${url}: ${res.status}`);
+    } catch (err) {
+      console.warn(`[ais] ${url}: ${err}`);
+    }
+  }
+  throw new Error("AIS OpenAPI spec unavailable from every source");
 }
 
 /**
@@ -56,7 +95,7 @@ export interface EndpointInfo {
   tags?: readonly string[];
 }
 
-export function extractEndpoints(spec: OpenAPISpec): EndpointInfo[] {
+export function extractEndpoints(spec: SpecDocument): EndpointInfo[] {
   const endpoints: EndpointInfo[] = [];
 
   for (const [path, pathItem] of Object.entries(spec.paths)) {
@@ -117,6 +156,14 @@ export function extractEndpoints(spec: OpenAPISpec): EndpointInfo[] {
   }
 
   return endpoints;
+}
+
+/** Stable anchor id for an endpoint, e.g. GET /v1/stations/{id} → get-v1-stations-id. */
+export function endpointId(endpoint: EndpointInfo): string {
+  return `${endpoint.method}-${endpoint.path}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 /**

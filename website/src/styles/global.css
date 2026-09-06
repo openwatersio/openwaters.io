@@ -76,6 +76,8 @@
   --status-blue-text: #1e40af;
   --status-orange-bg: #fff7ed;
   --status-orange-text: #9a3412;
+  --status-purple-bg: #f3e8ff;
+  --status-purple-text: #6b21a8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -109,6 +111,8 @@
     --status-blue-text: #93c5fd;
     --status-orange-bg: rgba(154, 52, 18, 0.2);
     --status-orange-text: #fdba74;
+    --status-purple-bg: rgba(107, 33, 168, 0.2);
+    --status-purple-text: #d8b4fe;
   }
 }
 
@@ -260,6 +264,12 @@
   dd {
     @apply m-0;
   }
+}
+
+/* @tailwindcss/typography wraps inline code in literal backticks; the markdown already conveys that. */
+.prose code::before,
+.prose code::after {
+  content: none;
 }
 
 /* Prose dark mode overrides */
