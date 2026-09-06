@@ -1,5 +1,4 @@
 import { type openapi } from "@neaps/api";
-import localAisSpec from "virtual:ais-openapi";
 
 // Infer types from the imported openapi spec
 type OpenAPISpec = typeof openapi;
@@ -44,10 +43,9 @@ export async function getOpenAPISpec(): Promise<OpenAPISpec> {
 }
 
 /**
- * The AIS API publishes its own spec. A local copy named by AIS_OPENAPI_FILE
- * wins, for previewing spec changes before they ship. Otherwise production is
- * fetched first (the deployed server is the source of truth), with the repo
- * copy as a fallback so a server outage cannot fail a site build.
+ * The AIS API publishes its own spec. Fetched from production first (the
+ * deployed server is the source of truth), with the repo copy as a fallback so
+ * a server outage cannot fail a site build.
  */
 const AIS_OPENAPI_URLS = [
   AIS_OPENAPI_URL,
@@ -55,7 +53,6 @@ const AIS_OPENAPI_URLS = [
 ];
 
 export async function getAisOpenAPISpec(): Promise<SpecDocument> {
-  if (localAisSpec) return localAisSpec;
   for (const url of AIS_OPENAPI_URLS) {
     try {
       const res = await fetch(url);
