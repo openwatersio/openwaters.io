@@ -30,6 +30,7 @@
     "clsx": "^2.1.1",
     "coordinate-format": "^1.0.0",
     "maplibre-gl": "^6.6.0",
+    "marked": "^18.0.11",
     "neaps": "*",
     "react": "^19.0.0",
     "react-dom": "^19.2.8",

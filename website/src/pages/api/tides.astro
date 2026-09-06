@@ -1,0 +1,110 @@
+---
+import ApiLayout from "../../layouts/ApiLayout.astro";
+import ApiEndpoint from "../../components/api/ApiEndpoint.astro";
+import Card from "../../components/ui/Card.astro";
+import {
+  getOpenAPISpec,
+  extractEndpoints,
+  groupEndpointsByTag,
+  endpointId,
+} from "../../utils/openapi";
+
+// Fetch and process OpenAPI spec at build time
+const spec = await getOpenAPISpec();
+const endpoints = extractEndpoints(spec);
+const groupedEndpoints = groupEndpointsByTag(endpoints, "Tides");
+const tagId = (tag: string) => `${tag.toLowerCase().replaceAll(" ", "-")}`;
+
+// With a single tag the group heading would just repeat the page title.
+const showGroups = groupedEndpoints.size > 1;
+const sections = [
+  { slug: "getting-started", text: "Getting Started" },
+  ...Array.from(groupedEndpoints.entries()).map(([tag, tagEndpoints]) => ({
+    slug: tagId(tag),
+    text: showGroups ? tag : "Endpoints",
+    children: tagEndpoints.map((endpoint) => ({
+      slug: endpointId(endpoint),
+      text: endpoint.summary ?? `${endpoint.method} ${endpoint.path}`,
+    })),
+  })),
+];
+---
+
+<ApiLayout
+  title="Tides API"
+  description="Reference for the tides API: tide predictions from harmonic constituents for thousands of stations worldwide."
+  sections={sections}
+>
+  <h1 class="mb-6">Tides API</h1>
+  <p class="mb-12 text-xl text-(--text-secondary)">
+    Tide predictions from harmonic constituents, powered by the open source{" "}
+    <a
+      href="https://github.com/neaps"
+      class="font-medium text-(--accent) hover:text-(--accent-hover)">Neaps</a
+    > engine. Open and free, no authentication required, and described by an <a
+      href="/openapi.json"
+      class="font-medium text-(--accent) hover:text-(--accent-hover)"
+      >OpenAPI specification</a
+    >.
+  </p>
+
+  <div id="getting-started" class="mb-16 scroll-mt-24">
+    <h2 class="mb-6 text-3xl font-semibold">Getting Started</h2>
+    <Card>
+      <div class="space-y-6">
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Authentication</h3>
+          <p class="text-(--text-secondary)">
+            The tides API is open and does not require authentication.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Rate Limits</h3>
+          <ul
+            class="ml-4 list-inside list-disc space-y-1 text-(--text-secondary)"
+          >
+            <li>100 requests per minute per IP address</li>
+            <li>10,000 requests per day per IP address</li>
+          </ul>
+          <p class="mt-2 text-sm text-(--text-muted)">
+            If you need higher limits for a production application, please
+            contact us.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Error Handling</h3>
+          <p class="mb-2 text-(--text-secondary)">
+            Errors are returned with appropriate HTTP status codes and a JSON
+            body:
+          </p>
+          <div class="bg-navy-900 overflow-x-auto rounded-lg p-4 text-white">
+            <pre
+              class="text-sm"><code>{`{
+  "message": "Invalid parameters",
+  "errors": [
+    {
+      "path": "/latitude",
+      "message": "must be between -90 and 90",
+      "errorCode": "INVALID_NUMBER"
+    }
+  ]
+}`}</code></pre>
+          </div>
+        </div>
+      </div>
+    </Card>
+  </div>
+
+  {
+    Array.from(groupedEndpoints.entries()).map(([tag, tagEndpoints]) => (
+      <div id={tagId(tag)} class="mb-16 scroll-mt-24">
+        {showGroups && <h2 class="mb-6 text-3xl font-semibold">{tag}</h2>}
+        {tagEndpoints.map((endpoint) => (
+          <ApiEndpoint endpoint={endpoint} id={endpointId(endpoint)} />
+        ))}
+      </div>
+    ))
+  }
+</ApiLayout>

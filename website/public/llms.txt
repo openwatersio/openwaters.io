@@ -6,7 +6,8 @@ Every page also serves Markdown for `Accept: text/markdown`. The station map and
 
 ## API
 
-- [API documentation](https://openwaters.io/api/): tides API reference, rate limits, and error format. No authentication required.
+- [API documentation](https://openwaters.io/api/): overview of the APIs available
+- [Tides API](https://openwaters.io/api/tides/): tide prediction endpoints reference, rate limits, and error format. No authentication required.
 - [OpenAPI specification](https://openwaters.io/openapi.json): machine-readable spec for the tides API at https://api.openwaters.io
 - [AIS API](https://openwaters.io/api/ais/): live vessel traffic by bounding box over WebSocket, plus GeoJSON snapshots. Its HTTP endpoints have their own OpenAPI specification at https://ais.openwaters.io/openapi.json
 
