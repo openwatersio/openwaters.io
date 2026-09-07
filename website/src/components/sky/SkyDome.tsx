@@ -1,21 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  lunarEclipseVisibility,
   moonAltAz,
   moonEvents,
   moonIllumination,
-  nextLunarEclipse,
   sunAltAz,
   sunEvents,
-  type LunarEclipse,
-  type Observer,
   type SunEventKind,
 } from "@openwaters/almanac";
 
-import { CoordinateFormat } from "coordinate-format";
-
 import { DateTime } from "../DateTime";
-import { EclipseCard } from "./EclipsePanel";
 import { moonPath, phaseName } from "./moonPath";
 import {
   DOME_HEIGHT,
@@ -25,36 +18,17 @@ import {
   centerAzimuthDeg,
   project,
 } from "./projection";
-import { mixHex, skyColor } from "./skyColor";
-import { KIND_LABEL, eclipseAt, eclipseShade } from "./eclipseShade";
+import { skyColor } from "./skyColor";
 import { DAY_MS, MINUTE_MS, startOfZonedDay, zonedDayKey } from "./time";
 
-interface Place {
-  lat: number;
-  lon: number;
-  tz: string;
-  label: string;
-  /** Where the coordinates came from, which decides what the link offers. */
-  source: "default" | "geolocation";
-}
-
-const DEFAULT_PLACE: Place = {
-  lat: 48.5,
-  lon: -123.0,
-  tz: "America/Vancouver",
-  label: "Salish Sea",
-  source: "default",
-};
-
-const COORDS = new CoordinateFormat();
-
-/** Keeps AlmanacOutOfRangeError unreachable from the date stepper. */
 const MAX_DAY_OFFSET = 366;
-
-const toObserver = (p: Place): Observer => ({
-  latitudeDeg: p.lat,
-  longitudeDeg: p.lon,
-});
+import {
+  LocationPicker,
+  useLocation,
+  toObserver,
+  PLACES,
+} from "./LocationPicker";
+const DEFAULT_PLACE = PLACES[0]!;
 
 // Fixed field so the sky does not reshuffle on every render.
 const STARS = (() => {
@@ -80,12 +54,11 @@ const SUN_LABELS: Partial<Record<SunEventKind, string>> = {
 };
 
 export default function SkyDome() {
-  // `now` is captured once: the eclipse search and the ±366-day clamp must not
+  // `now` is captured once: the ±366-day clamp must not
   // drift under a long-lived tab.
   const [now] = useState(() => new Date());
-  const [place, setPlace] = useState<Place>(DEFAULT_PLACE);
+  const [place, setPlace] = useLocation();
   const [instant, setInstant] = useState(now);
-  const [geoError, setGeoError] = useState<string | null>(null);
 
   const observer = useMemo(() => toObserver(place), [place]);
   const dayKey = zonedDayKey(place.tz, instant);
@@ -118,36 +91,9 @@ export default function SkyDome() {
     return { sun, moon, illum, paint: skyColor(sun.altDeg) };
   }, [instant, observer]);
 
-  const eclipses = useMemo(() => {
-    const next = nextLunarEclipse(now);
-    // No backward search in the library. The catalog's longest gap between
-    // consecutive lunar eclipses over 1950-2100 is 178 days, so walking
-    // forward from a year back always brackets `now` — in about three calls.
-    let cursor = new Date(now.getTime() - 366 * DAY_MS);
-    let last: LunarEclipse | null = null;
-    for (;;) {
-      const e = nextLunarEclipse(cursor);
-      if (e.peak >= now) break;
-      last = e;
-      cursor = e.peak;
-    }
-    return { last, next };
-  }, [now]);
-
-  const eclipseVisibility = useMemo(
-    () => ({
-      last: eclipses.last
-        ? lunarEclipseVisibility(eclipses.last, observer)
-        : null,
-      next: lunarEclipseVisibility(eclipses.next, observer),
-    }),
-    [eclipses, observer],
-  );
-
   // --- autoplay ------------------------------------------------------------
   // Runs once, on mount. A ref rather than effect cleanup because the sweep is
   // cancelled by user input, not by a dependency change.
-  const domeRef = useRef<HTMLDivElement>(null);
   const cancelled = useRef(false);
   const stopPlayback = useCallback(() => {
     cancelled.current = true;
@@ -201,52 +147,6 @@ export default function SkyDome() {
     if (offset <= MAX_DAY_OFFSET) setInstant(target);
   };
 
-  const toggleLocation = () => {
-    stopPlayback();
-    setGeoError(null);
-    if (place.source === "geolocation") {
-      setPlace(DEFAULT_PLACE); // not a one-way door
-      return;
-    }
-    if (!navigator.geolocation) {
-      setGeoError("This browser has no location support.");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        const lat = coords.latitude;
-        const lon = coords.longitude;
-        setPlace({
-          lat,
-          lon,
-          tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          source: "geolocation",
-          // Per-axis, not COORDS.format(lat, lon) — that overload returns the
-          // pair in the other order and mislabels the hemispheres.
-          label: `${COORDS.latitude(lat)} ${COORDS.longitude(lon)}`,
-        });
-      },
-      (err) =>
-        setGeoError(
-          err.code === err.PERMISSION_DENIED
-            ? "Location permission denied — still showing the Salish Sea."
-            : "Couldn't get your location — still showing the Salish Sea.",
-        ),
-      { timeout: 10000 },
-    );
-  };
-
-  const goTo = (t: Date) => {
-    stopPlayback();
-    setInstant(t);
-    domeRef.current?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "auto"
-        : "smooth",
-      block: "center",
-    });
-  };
-
   // --- render --------------------------------------------------------------
   const sunPoint = project(sky.sun, place.lat);
   const moonPoint = project(sky.moon, place.lat);
@@ -265,20 +165,17 @@ export default function SkyDome() {
 
   const hm = { hour: "2-digit", minute: "2-digit" } as const;
 
-  // An eclipse covering this instant, and how dark it makes the Moon.
-  const inEclipse = eclipseAt(instant, [eclipses.last, eclipses.next]);
-  const shade = inEclipse ? eclipseShade(instant, inEclipse) : 0;
-  // Mix the lit disc toward copper: what a Moon inside the umbra actually
-  // looks like, lit only by sunlight refracted through Earth's atmosphere.
-  const moonFill = mixHex("#f4f4ef", "#8a3b22", shade);
-
   return (
     <div className="space-y-6">
+      <LocationPicker
+        place={place}
+        onChange={(next) => {
+          stopPlayback();
+          setPlace(next);
+        }}
+      />
       {/* Sky dome */}
-      <div
-        ref={domeRef}
-        className="overflow-hidden rounded-xl border border-(--border)"
-      >
+      <div className="overflow-hidden rounded-xl border border-(--border)">
         <svg
           viewBox={`0 0 ${DOME_WIDTH} ${DOME_HEIGHT}`}
           className="block w-full"
@@ -333,7 +230,7 @@ export default function SkyDome() {
               sky.illum.fraction,
               sky.illum.waxing,
             )}
-            fill={moonFill}
+            fill="#f4f4ef"
           />
 
           {/* Ground last, so a body below the horizon is genuinely occluded */}
@@ -366,19 +263,6 @@ export default function SkyDome() {
           </g>
         </svg>
       </div>
-
-      {inEclipse && (
-        <div className="flex flex-wrap items-baseline gap-x-2 rounded-lg bg-(--accent-bg) px-4 py-3 text-(--accent)">
-          <span className="font-semibold">
-            {KIND_LABEL[inEclipse.kind]} lunar eclipse in progress
-          </span>
-          <span className="text-sm text-(--text-secondary)">
-            greatest at{" "}
-            <DateTime datetime={inEclipse.peak} timeZone={place.tz} {...hm} />
-            {sky.moon.altDeg < 0 && " · below the horizon here"}
-          </span>
-        </div>
-      )}
 
       {/* Scrubber */}
       <div className="space-y-3">
@@ -438,24 +322,6 @@ export default function SkyDome() {
           className="w-full accent-(--accent)"
           aria-label="Time of day"
         />
-
-        <div>
-          <button
-            type="button"
-            onClick={toggleLocation}
-            className="font-medium text-(--accent) underline-offset-4 hover:underline"
-          >
-            {place.label}
-            {place.source === "geolocation"
-              ? " — back to the Salish Sea"
-              : " — use my location"}
-          </button>
-          {geoError && (
-            <span className="ml-2 text-sm text-(--text-secondary)">
-              {geoError}
-            </span>
-          )}
-        </div>
       </div>
 
       {/* Readouts */}
@@ -515,33 +381,6 @@ export default function SkyDome() {
           </div>
         </dl>
       )}
-
-      {/* Eclipses */}
-      <div className="pt-4">
-        <h2 className="mb-4 text-2xl font-semibold">Lunar eclipses</h2>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {eclipses.last && eclipseVisibility.last && (
-            <EclipseCard
-              heading="Most recent"
-              eclipse={eclipses.last}
-              visibility={eclipseVisibility.last}
-              tz={place.tz}
-              onGoTo={goTo}
-            />
-          )}
-          <EclipseCard
-            heading="Next"
-            eclipse={eclipses.next}
-            visibility={eclipseVisibility.next}
-            tz={place.tz}
-            onGoTo={goTo}
-          />
-        </div>
-        <p className="mt-4 text-sm text-(--text-secondary)">
-          Visibility is geometric: whether the Moon is above your horizon at
-          each contact. It accounts for neither weather nor terrain.
-        </p>
-      </div>
     </div>
   );
 }

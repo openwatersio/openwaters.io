@@ -79,3 +79,16 @@ export const KIND_LABEL: Record<LunarEclipse["kind"], string> = {
   partial: "Partial",
   penumbral: "Penumbral",
 };
+
+/** Schematic umbral coverage: interpolate between contacts, holding totality.
+ * This is a teaching illustration, not the engine's continuous shadow geometry. */
+export function eclipseCoverage(at: Date, eclipse: LunarEclipse): number {
+  if (!eclipse.u1 || !eclipse.u4) return 0;
+  const t = at.getTime();
+  const entered = (eclipse.u2 ?? eclipse.peak).getTime();
+  const leaving = (eclipse.u3 ?? eclipse.peak).getTime();
+  const max = clamp01(eclipse.magUmbral);
+  return t <= entered
+    ? ramp(t, eclipse.u1.getTime(), entered, 0, max)
+    : ramp(t, leaving, eclipse.u4.getTime(), max, 0);
+}

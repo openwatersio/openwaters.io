@@ -3,7 +3,7 @@ import { test } from "node:test";
 
 import { moonPath, phaseName } from "./moonPath.ts";
 import { skyColor } from "./skyColor.ts";
-import { eclipseAt, eclipseShade } from "./eclipseShade.ts";
+import { eclipseAt, eclipseShade, eclipseCoverage } from "./eclipseShade.ts";
 import { altitudeToY, azimuthToX, centerAzimuthDeg } from "./projection.ts";
 
 const sweeps = (d: string) =>
@@ -153,6 +153,16 @@ const penumbral = {
   u3: null,
   u4: null,
 };
+
+test("eclipse illustration holds full coverage throughout totality", () => {
+  assert.equal(eclipseCoverage(total.u1, total), 0);
+  assert.equal(eclipseCoverage(total.u2, total), 1);
+  assert.equal(eclipseCoverage(total.peak, total), 1);
+  assert.equal(eclipseCoverage(total.u3, total), 1);
+  assert.equal(eclipseCoverage(total.u4, total), 0);
+  assert.equal(eclipseCoverage(partial.peak, partial), 0.6);
+  assert.equal(eclipseCoverage(penumbral.peak, penumbral), 0);
+});
 
 test("eclipseShade: zero outside the penumbral contacts", () => {
   for (const e of [total, partial, penumbral]) {
