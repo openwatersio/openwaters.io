@@ -6,9 +6,40 @@ import Card from "../../components/ui/Card.astro";
 import CodeBlock from "../../components/ui/CodeBlock.astro";
 import Icon from "../../components/Icon.astro";
 import SkyDome from "../../components/sky/SkyDome";
+import { MoonFilmstrip, TwilightRibbon } from "../../components/sky/SkyDemos";
+
+import SunYear from "../../components/sky/SunYear";
+import LunarEclipseDemo from "../../components/sky/LunarEclipseDemo";
 
 const REPO = "https://github.com/openwatersio/almanac";
 const ROADMAP = `${REPO}/blob/main/docs/ROADMAP.md`;
+const VERSION = "0.2.1";
+const initialMonth = new Date().toISOString().slice(0, 7);
+const moonCode = `import { moonIllumination, searchMoonPhases } from '@openwaters/almanac';
+
+const start = new Date('2026-09-01T00:00:00Z');
+const end = new Date('2026-10-01T00:00:00Z');
+const days = Array.from({ length: 30 }, (_, day) => {
+  const time = new Date(start.getTime() + (day + 0.5) * 86_400_000);
+  return { time, ...moonIllumination(time) };
+});
+
+// Each disc uses fraction (0–1) and waxing (bright side).
+// These are the exact instants for the four phase buttons.
+const quarters = searchMoonPhases(start, end);
+console.log(days, quarters);`;
+const twilightCode = `import { sunEvents, sunAltAz } from '@openwaters/almanac';
+
+const observer = { latitudeDeg: 70, longitudeDeg: 0 };
+const start = new Date('2026-06-21T00:00:00Z');
+const end = new Date('2026-06-22T00:00:00Z');
+const crossings = sunEvents(start, end, observer)
+  .filter(event => event.kind !== 'transit');
+
+// Use each crossing time as a color boundary in the 24-hour ribbon.
+// Dawn enters a lighter band; dusk enters a darker one.
+// No crossings? Check altitude: midnight Sun is not a missing result.
+console.log(crossings, sunAltAz(start, observer).altDeg);`;
 
 const features = [
   {
@@ -67,7 +98,7 @@ print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)`;
 
 <MainLayout
   title="Sky"
-  description="Almanac — an offline sun and moon engine for Swift and TypeScript. Positions, rise and set, twilight, moon phase, and lunar eclipses, computed from pure geometry with no network."
+  description="Explore an interactive sky, Moon phase filmstrip and daylight/twilight ribbon. Almanac computes Sun, Moon and lunar eclipses offline in Swift and TypeScript, with code examples."
   image="/og/sky.png"
   schema={softwareSourceCode({
     name: "Almanac",
@@ -123,6 +154,126 @@ print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)`;
         </div>
       </SkyDome>
 
+      <section
+        id="moon-filmstrip"
+        aria-labelledby="moon-filmstrip-title"
+        class="mt-16 scroll-mt-24 space-y-6"
+      >
+        <div>
+          <h2 id="moon-filmstrip-title" class="mb-3 text-3xl font-semibold">
+            A month of Moon
+          </h2>
+          <p class="text-(--text-secondary)">
+            Watch a crescent grow into a full Moon and fade again. Choose a
+            month, tap a disc or scrub through the days to explore the Moon's
+            phase and illumination.
+          </p>
+        </div>
+        <MoonFilmstrip initialMonth={initialMonth} client:load />
+        <details>
+          <summary class="cursor-pointer font-medium text-(--accent)"
+            >Show the TypeScript</summary
+          >
+          <CodeBlock code={moonCode} class="mt-4" />
+        </details>
+      </section>
+
+      <section
+        id="twilight-ribbon"
+        aria-labelledby="twilight-ribbon-title"
+        class="mt-16 scroll-mt-24 space-y-6"
+      >
+        <div>
+          <h2 id="twilight-ribbon-title" class="mb-3 text-3xl font-semibold">
+            Where night disappears
+          </h2>
+          <p class="text-(--text-secondary)">
+            A full day, from sunlight through civil, nautical and astronomical
+            twilight into night. Change latitude and season to find the midnight
+            Sun—or a day when the Sun never rises.
+          </p>
+        </div>
+        <TwilightRibbon client:load />
+        <details>
+          <summary class="cursor-pointer font-medium text-(--accent)"
+            >Show the TypeScript</summary
+          >
+          <CodeBlock code={twilightCode} class="mt-4" />
+        </details>
+      </section>
+
+      <p class="mt-8 text-(--text-secondary)">
+        The same astronomy engine powers <a
+          href="https://slackwater.xyz/"
+          class="font-medium text-(--accent) underline-offset-4 hover:underline"
+          >Slackwater's Sun and Moon views</a
+        >, with Moon illumination and sunrise/sunset alongside the tide
+        timeline.
+      </p>
+
+      <section
+        id="sun-year"
+        aria-labelledby="sun-year-title"
+        class="mt-16 scroll-mt-24 space-y-6"
+      >
+        <h2 id="sun-year-title" class="text-3xl font-semibold">
+          A year of the Sun
+        </h2>
+        <SunYear client:load />
+        <details>
+          <summary class="cursor-pointer font-medium text-(--accent)"
+            >Show the TypeScript</summary
+          >
+          <CodeBlock
+            class="mt-4"
+            code={`import { sunAltAz } from '@openwaters/almanac';
+
+const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
+const points = Array.from({ length: 365 }, (_, day) => {
+  // A fixed UTC time near local mean noon, independent of daylight saving.
+  const time = new Date(Date.UTC(2026, 0, day + 1, 12)
+    - observer.longitudeDeg / 360 * 86_400_000);
+  return { time, ...sunAltAz(time, observer) };
+});
+console.log(points);`}
+          />
+        </details>
+      </section>
+      <section
+        id="lunar-eclipses"
+        aria-labelledby="lunar-eclipses-title"
+        class="mt-16 scroll-mt-24 space-y-6"
+      >
+        <h2 id="lunar-eclipses-title" class="text-3xl font-semibold">
+          The Moon in Earth's shadow
+        </h2>
+        <p class="text-(--text-secondary)">
+          Explore penumbral, partial and total lunar eclipses with real examples
+          from 2026–2027. Scrub across each event to see what changes on the
+          Moon itself.
+        </p>
+        <LunarEclipseDemo client:load />
+        <details>
+          <summary class="cursor-pointer font-medium text-(--accent)"
+            >Show the TypeScript</summary
+          >
+          <CodeBlock
+            class="mt-4"
+            code={`import { lunarEclipses, lunarEclipseVisibility } from '@openwaters/almanac';
+
+const eclipses = lunarEclipses(
+  new Date('2026-01-01T00:00:00Z'),
+  new Date('2028-01-01T00:00:00Z'),
+);
+const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
+for (const eclipse of eclipses) {
+  console.log(eclipse.kind, eclipse.peak,
+    lunarEclipseVisibility(eclipse, observer));
+}`}
+          />
+        </details>
+      </section>
+
       <!-- Key Features -->
       <div class="mt-16 mb-16">
         <h2 class="mb-6 text-3xl font-semibold">Key Features</h2>
@@ -154,14 +305,17 @@ print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)`;
           <div class="space-y-6">
             <div>
               <h3 class="mb-3 text-xl font-semibold">TypeScript</h3>
-              <CodeBlock code="npm install @openwaters/almanac" class="mb-3" />
+              <CodeBlock
+                code={`npm install @openwaters/almanac@${VERSION}`}
+                class="mb-3"
+              />
               <CodeBlock code={tsCode} />
             </div>
 
             <div>
               <h3 class="mb-3 text-xl font-semibold">Swift</h3>
               <CodeBlock
-                code={`.package(url: "https://github.com/openwatersio/almanac.git", from: "0.1.0")`}
+                code={`.package(url: "${REPO}.git", exact: "${VERSION}")`}
                 class="mb-3"
               />
               <CodeBlock code={swiftCode} />

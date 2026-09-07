@@ -100,7 +100,7 @@ export function EclipseCard({
                 <button
                   type="button"
                   onClick={() => onGoTo(time)}
-                  title={title ?? `Show the sky at ${label.toLowerCase()}`}
+                  title={title ?? `Show the Moon at ${label.toLowerCase()}`}
                   className="text-(--accent) underline-offset-4 hover:underline"
                 >
                   <DateTime
