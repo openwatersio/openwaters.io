@@ -31,6 +31,7 @@ ws.onopen = () =>
   }));
 ws.onmessage = ({ data }) => {
   const ev = JSON.parse(data);
+  if (ev.type !== "event") return; // welcome, ack, error
   console.log(ev.mmsi, ev.msg_type, ev.lat, ev.lon);
 };`,
   },
@@ -48,6 +49,8 @@ async def main():
         await ws.send(json.dumps(SUB))
         async for frame in ws:
             ev = json.loads(frame)
+            if ev["type"] != "event":  # welcome, ack, error
+                continue
             print(ev["mmsi"], ev["msg_type"],
                   ev.get("lat"), ev.get("lon"))
 
@@ -68,6 +71,7 @@ c.WriteJSON(map[string]any{
 })
 for {
 	var ev struct {
+		Type    string  \`json:"type"\`
 		MMSI    int     \`json:"mmsi"\`
 		MsgType string  \`json:"msg_type"\`
 		Lat     float64 \`json:"lat"\`
@@ -75,6 +79,9 @@ for {
 	}
 	if err := c.ReadJSON(&ev); err != nil {
 		log.Fatal(err)
+	}
+	if ev.Type != "event" { // welcome, ack, error
+		continue
 	}
 	fmt.Println(ev.MMSI, ev.MsgType, ev.Lat, ev.Lon)
 }`,
@@ -96,6 +103,7 @@ async fn main() {
         let Message::Text(frame) = msg else { continue };
         let ev: serde_json::Value =
             serde_json::from_str(&frame).unwrap();
+        if ev["type"] != "event" { continue } // welcome, ack, error
         println!("{} {} {} {}",
             ev["mmsi"], ev["msg_type"], ev["lat"], ev["lon"]);
     }
