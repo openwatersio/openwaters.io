@@ -26,6 +26,7 @@ export function LocationPicker({
 }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deviceLocation, setDeviceLocation] = useState<Place>();
   const request = useRef(0);
   const selected = PLACES.findIndex((preset) => preset === place);
   const locate = () => {
@@ -51,12 +52,14 @@ export function LocationPicker({
           setError("Couldn't read your location. Choose a place instead.");
           return;
         }
-        onChange({
+        const location = {
           label: "Your location",
           lat: coords.latitude,
           lon: coords.longitude,
           tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        });
+        };
+        setDeviceLocation(location);
+        onChange(location);
       },
       () => {
         if (current !== request.current) return;
@@ -80,7 +83,10 @@ export function LocationPicker({
               ++request.current;
               setLoading(false);
               setError("");
-              const next = PLACES[Number(e.target.value)];
+              const next =
+                e.target.value === "device"
+                  ? deviceLocation
+                  : PLACES[Number(e.target.value)];
               if (next) onChange(next);
             }}
           >
@@ -89,7 +95,7 @@ export function LocationPicker({
                 {preset.label}
               </option>
             ))}
-            {selected < 0 && <option value="device">Your location</option>}
+            {deviceLocation && <option value="device">Your location</option>}
           </select>
         </label>
         <button
