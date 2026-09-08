@@ -10,7 +10,15 @@ import {
 
 import { DateTime } from "../DateTime";
 import { moonPath, phaseName } from "./moonPath";
-import { CENTER, DOME_SIZE, HORIZON_R, project } from "./projection";
+import {
+  DOME_HEIGHT,
+  DOME_WIDTH,
+  HORIZON_Y,
+  SPAN_DEG,
+  azimuthToX,
+  project,
+  signedBearingDeg,
+} from "./projection";
 import { skyColor } from "./skyColor";
 import { domeStars } from "./stars";
 import { DAY_MS, MINUTE_MS, startOfZonedDay, zonedDayKey } from "./time";
@@ -24,9 +32,8 @@ import {
 } from "./LocationPicker";
 const DEFAULT_PLACE = PLACES[0]!;
 
-const HOUR_MS = 60 * MINUTE_MS;
-/** How long the opening sweep takes to cross the night. */
-const SWEEP_MS = 14_000;
+/** How long the opening sweep takes to run from darkness into daylight. */
+const SWEEP_MS = 9_000;
 
 // `|| 0` because Math.round(-0.4) is -0, which a screen reader says as "minus zero".
 const roundDeg = (deg: number) => Math.round(deg) || 0;
@@ -44,24 +51,29 @@ const stillPreferred = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
- * The stretch of darkness the page opens on: sunset, then ten hours.
+ * The stretch the page opens on: an hour and three quarters before sunrise,
+ * through to well after it.
  *
- * The demo is a star field, so it should open on a sky that has stars in it
- * rather than on whatever the visitor's clock says. Ten hours is longer than
- * most nights, which is the point — the sweep runs past dawn in summer and the
- * sky brightens on its own, which is a better demonstration than stopping.
+ * It starts in the dark on purpose. The subject is the star field, so the
+ * first frame has to have stars in it, and standing still is where a visitor
+ * who prefers less motion stays. Running it forward then does the thing a
+ * still frame cannot: the field fades out as twilight comes up and the Sun
+ * climbs out of the horizon behind it.
  *
- * Null under a polar day, where there is no sunset to start from.
+ * Null under a polar day, where there is no sunrise to sweep through.
  */
-function nightWindow(now: Date, place: typeof DEFAULT_PLACE) {
+function dawnWindow(now: Date, place: typeof DEFAULT_PLACE) {
   const start = startOfZonedDay(place.tz, now);
-  const sunset = sunEvents(
+  const sunrise = sunEvents(
     start,
     new Date(start.getTime() + DAY_MS),
     toObserver(place),
-  ).find((e) => e.kind === "set")?.time;
-  if (!sunset) return null;
-  return { from: sunset, to: new Date(sunset.getTime() + 10 * HOUR_MS) };
+  ).find((e) => e.kind === "rise")?.time;
+  if (!sunrise) return null;
+  return {
+    from: new Date(sunrise.getTime() - 105 * MINUTE_MS),
+    to: new Date(sunrise.getTime() + 40 * MINUTE_MS),
+  };
 }
 
 export default function SkyDome() {
@@ -69,16 +81,10 @@ export default function SkyDome() {
   // drift under a long-lived tab.
   const [now] = useState(() => new Date());
   const [place, setPlace] = useLocation();
-  const night = useMemo(() => nightWindow(now, DEFAULT_PLACE), [now]);
-  // Sunset, so the sweep opens in daylight and the stars come out as it runs.
-  // Standing still, that first frame would be a starless sky on a page whose
-  // whole subject is the star field, so a still visitor gets the middle of the
-  // night instead.
-  const [instant, setInstant] = useState(() => {
-    if (!night) return now;
-    if (!stillPreferred()) return night.from;
-    return new Date((night.from.getTime() + night.to.getTime()) / 2);
-  });
+  const dawn = useMemo(() => dawnWindow(now, DEFAULT_PLACE), [now]);
+  // The sweep's own first frame, so standing still is a starry sky rather than
+  // whatever the visitor's clock happens to say.
+  const [instant, setInstant] = useState(() => dawn?.from ?? now);
 
   const observer = useMemo(() => toObserver(place), [place]);
   const dayKey = zonedDayKey(place.tz, instant);
@@ -127,22 +133,21 @@ export default function SkyDome() {
   }, []);
 
   useEffect(() => {
-    if (!night || stillPreferred()) return;
+    if (!dawn || stillPreferred()) return;
 
-    const [from, to] = [night.from.getTime(), night.to.getTime()];
+    const [from, to] = [dawn.from.getTime(), dawn.to.getTime()];
     const t0 = performance.now();
     let frame = 0;
-    // Linear: the sky turns at one rate, and easing the night would read as the
-    // Earth slowing down.
     const step = (ts: number) => {
       if (cancelled.current) return;
       const p = Math.min(1, (ts - t0) / SWEEP_MS);
-      setInstant(new Date(from + (to - from) * p));
+      const eased = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
+      setInstant(new Date(from + (to - from) * eased));
       if (p < 1) frame = requestAnimationFrame(step);
     };
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [night]);
+  }, [dawn]);
 
   // --- controls ------------------------------------------------------------
   const minutesIntoDay = Math.round(
@@ -165,22 +170,18 @@ export default function SkyDome() {
   };
 
   // --- render --------------------------------------------------------------
-  const sunPoint = project(sky.sun);
-  const moonPoint = project(sky.moon);
-  // Just outside the rim, on the same bearings the dome uses.
+  const sunPoint = project(sky.sun, place.lat);
+  const moonPoint = project(sky.moon, place.lat);
+  // Bearings outside the frame have no label to draw; at 300° that is north in
+  // the northern hemisphere, which is the sky the fixed view leaves behind.
   const compass = [
     { az: 0, label: "N" },
     { az: 90, label: "E" },
     { az: 180, label: "S" },
     { az: 270, label: "W" },
-  ].map(({ az, label }) => {
-    const rad = (az * Math.PI) / 180;
-    return {
-      label,
-      x: CENTER - (HORIZON_R + 15) * Math.sin(rad),
-      y: CENTER - (HORIZON_R + 15) * Math.cos(rad),
-    };
-  });
+  ].filter(
+    ({ az }) => Math.abs(signedBearingDeg(az, place.lat)) <= SPAN_DEG / 2 - 4,
+  );
 
   const firstOf = (kind: SunEventKind) =>
     day.sun.find((e) => e.kind === kind)?.time;
@@ -198,56 +199,51 @@ export default function SkyDome() {
           setPlace(next);
         }}
       />
-      {/* Sky dome: the whole visible hemisphere, zenith at the centre */}
-      <svg
-        viewBox={`0 0 ${DOME_SIZE} ${DOME_SIZE}`}
-        className="mx-auto block w-full max-w-[34rem]"
-        role="img"
-        aria-label={`Sky over ${place.label}, looking up: north at the top, east on the left. Sun ${roundDeg(sky.sun.altDeg)} degrees altitude, Moon ${roundDeg(sky.moon.altDeg)} degrees altitude, ${phaseName(sky.illum.phase).toLowerCase()}, ${sky.stars.length} stars above the horizon.`}
-      >
-        <defs>
-          {/* Radial, not linear: on a dome the zenith is the centre. */}
-          <radialGradient id="sky-gradient">
-            <stop offset="0%" stopColor={sky.paint.top} />
-            <stop offset="100%" stopColor={sky.paint.bottom} />
-          </radialGradient>
-          <radialGradient id="sun-glow">
-            <stop offset="0%" stopColor="#fff6d5" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#fff6d5" stopOpacity="0" />
-          </radialGradient>
-          {/* The horizon does the occluding a ground rectangle used to. */}
-          <clipPath id="horizon">
-            <circle cx={CENTER} cy={CENTER} r={HORIZON_R} />
-          </clipPath>
-        </defs>
+      {/* Sky: a horizon panorama, 300° of compass across the frame */}
+      <div className="overflow-hidden rounded-xl border border-(--border)">
+        <svg
+          viewBox={`0 0 ${DOME_WIDTH} ${DOME_HEIGHT}`}
+          className="block w-full"
+          role="img"
+          aria-label={`Sky over ${place.label}. Sun ${roundDeg(sky.sun.altDeg)} degrees altitude, Moon ${roundDeg(sky.moon.altDeg)} degrees altitude, ${phaseName(sky.illum.phase).toLowerCase()}, ${sky.stars.length} stars above the horizon.`}
+        >
+          <defs>
+            <linearGradient id="sky-gradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={sky.paint.top} />
+              <stop offset="100%" stopColor={sky.paint.bottom} />
+            </linearGradient>
+            <radialGradient id="sun-glow">
+              <stop offset="0%" stopColor="#fff6d5" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#fff6d5" stopOpacity="0" />
+            </radialGradient>
+          </defs>
 
-        <circle
-          cx={CENTER}
-          cy={CENTER}
-          r={HORIZON_R}
-          fill="url(#sky-gradient)"
-        />
+          <rect
+            width={DOME_WIDTH}
+            height={DOME_HEIGHT}
+            fill="url(#sky-gradient)"
+          />
 
-        <g clipPath="url(#horizon)">
           <g fill="#ffffff" opacity={sky.paint.starOpacity}>
             {sky.stars.map((s, i) => (
               <circle key={i} cx={s.x} cy={s.y} r={s.r} />
             ))}
           </g>
 
+          {/* Sun */}
           <circle
             cx={sunPoint.x}
             cy={sunPoint.y}
-            r={46}
+            r={64}
             fill="url(#sun-glow)"
           />
-          <circle cx={sunPoint.x} cy={sunPoint.y} r={12} fill="#ffd873" />
+          <circle cx={sunPoint.x} cy={sunPoint.y} r={17} fill="#ffd873" />
 
           {/* Moon: faint full disc, then the lit region */}
           <circle
             cx={moonPoint.x}
             cy={moonPoint.y}
-            r={10}
+            r={13}
             fill="#ffffff"
             opacity={0.12}
           />
@@ -255,36 +251,43 @@ export default function SkyDome() {
             d={moonPath(
               moonPoint.x,
               moonPoint.y,
-              10,
+              13,
               sky.illum.fraction,
               sky.illum.waxing,
             )}
             fill="#f4f4ef"
           />
-        </g>
 
-        <circle
-          cx={CENTER}
-          cy={CENTER}
-          r={HORIZON_R}
-          fill="none"
-          stroke="#ffffff"
-          strokeOpacity="0.25"
-        />
+          {/* Ground last, so a body below the horizon is genuinely occluded */}
+          <rect
+            y={HORIZON_Y}
+            width={DOME_WIDTH}
+            height={DOME_HEIGHT - HORIZON_Y}
+            fill="#0b1d2c"
+          />
+          <line
+            x1="0"
+            y1={HORIZON_Y}
+            x2={DOME_WIDTH}
+            y2={HORIZON_Y}
+            stroke="#ffffff"
+            strokeOpacity="0.25"
+          />
 
-        <g
-          fill="var(--text-secondary)"
-          fontSize="13"
-          textAnchor="middle"
-          dominantBaseline="middle"
-        >
-          {compass.map(({ label, x, y }) => (
-            <text key={label} x={x} y={y}>
-              {label}
-            </text>
-          ))}
-        </g>
-      </svg>
+          <g fill="#ffffff" fillOpacity="0.55" fontSize="13">
+            {compass.map(({ az, label }) => (
+              <text
+                key={label}
+                x={azimuthToX(az, place.lat)}
+                y={HORIZON_Y + 22}
+                textAnchor="middle"
+              >
+                {label}
+              </text>
+            ))}
+          </g>
+        </svg>
+      </div>
 
       {/* Scrubber */}
       <div className="space-y-3">

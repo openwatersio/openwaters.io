@@ -7,30 +7,32 @@
  */
 import { starAltAz } from "@openwaters/almanac";
 
-import { project, type DomePoint } from "./projection.ts";
+import {
+  SPAN_DEG,
+  project,
+  signedBearingDeg,
+  type DomePoint,
+} from "./projection.ts";
 import catalog from "./stars.json" with { type: "json" };
 
 /** Faintest magnitude in the catalog; the scale below is anchored to it. */
 const FAINTEST = 3.5;
 
-/**
- * Brighter stars draw bigger: the faintest land near 0.55 and Sirius near 2.
- * Sized for the dome's 440-unit viewBox, where a unit is roughly a screen
- * pixel, so the dimmest stars stay visible without the brightest going blobby.
- */
+/** Brighter stars draw bigger. Vega (0.03) lands near 1.4, Sirius near 1.7. */
 export const starRadius = (magnitude: number) =>
-  0.55 + (FAINTEST - magnitude) * 0.28;
+  0.5 + (FAINTEST - magnitude) * 0.25;
 
 export interface DomeStar extends DomePoint {
   r: number;
 }
 
 /**
- * Every catalog star above the horizon, projected onto the dome.
+ * Every catalog star inside the frame, projected onto the panorama.
  *
- * Stars below the horizon are dropped rather than drawn and occluded: the
- * ground would hide them anyway, and the cull is what keeps a full recompute
- * cheap enough to run on every frame of the time scrubber.
+ * Stars below the horizon or behind the observer are dropped rather than drawn
+ * and hidden: the ground and the frame edge would cover them anyway, and the
+ * cull is what keeps a full recompute cheap enough to run on every frame of
+ * the time scrubber.
  */
 export function domeStars(
   instant: Date,
@@ -40,8 +42,13 @@ export function domeStars(
   for (const [raDeg, decDeg, magnitude] of catalog) {
     const altAz = starAltAz(raDeg, decDeg, instant, observer);
     if (altAz.altDeg < 0) continue;
+    if (
+      Math.abs(signedBearingDeg(altAz.azDeg, observer.latitudeDeg)) >
+      SPAN_DEG / 2
+    )
+      continue;
     stars.push({
-      ...project(altAz),
+      ...project(altAz, observer.latitudeDeg),
       r: starRadius(magnitude),
     });
   }

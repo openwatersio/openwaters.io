@@ -1,44 +1,100 @@
 /**
- * Maps an alt/az pair onto the sky dome.
+ * Maps an alt/az pair onto the sky panorama.
  *
- * Stereographic, centred on the zenith: the whole visible hemisphere on one
- * disc, with the horizon as its rim. Stereographic is conformal, so a
- * constellation keeps its shape wherever it sits — the reason paper
- * planispheres have used it for centuries.
+ * A conformal cylindrical projection — Mercator's, with altitude standing in
+ * for latitude — at one scale on both axes. Conformal means angles survive, so
+ * a constellation keeps its shape wherever it sits in the frame. The Sun and
+ * Moon still enter at one edge, arc over, and leave at the other, because the
+ * frame is still a horizon and not a disc.
  *
- * The projection this replaced mapped azimuth to x and altitude to y on a
- * rectangle. That is fine for a lone body tracing an arc, which is all the Sun
- * and Moon ever did here, but it fails on a star field two ways. Horizontal
- * scale runs as 1/cos(altitude), so the zenith — a single point of sky —
- * smears across the full width. And a rectangle has to wrap somewhere: centred
- * on the transit azimuth, the seam lands on the celestial pole, tearing the
- * circumpolar constellations across both edges. A disc has no seam to place.
+ * What this replaced mapped altitude to y linearly. That is fine for a lone
+ * body tracing an arc, which is all the Sun and Moon ever did here, but a star
+ * field has shape and it destroyed it two ways. Horizontal scale ran as
+ * 1/cos(altitude), so the zenith — one point of sky — smeared across the full
+ * width. And the frame wrapped at 360°, which put the seam on the celestial
+ * pole and tore the circumpolar constellations across both edges.
+ *
+ * Both are fixed here by the same two choices: the Mercator term ties the
+ * vertical scale to the horizontal one at every altitude, and the window is
+ * narrower than a full turn, so there is no seam to place.
+ *
+ * Mercator's own price is magnification: a figure is drawn sec(altitude)
+ * larger overhead than the same figure at the horizon, which is why Greenland
+ * looks vast on a world map. That is size, not shape — a constellation high in
+ * the sky is drawn big but still looks like itself — and it is the distortion
+ * worth taking, because the alternative on a rectangle is shear, which is what
+ * made the old frame unreadable.
  */
 
-/** Square viewBox: the dome is a circle, not a band. */
-export const DOME_SIZE = 440;
-export const CENTER = DOME_SIZE / 2;
-/** Radius of the horizon circle. */
-export const HORIZON_R = 200;
+export const DOME_WIDTH = 800;
+export const DOME_HEIGHT = 480;
+/** Baseline the horizon is drawn on. */
+export const HORIZON_Y = 400;
+
 /**
- * Altitudes below this are pushed outside the viewBox rather than drawn.
- * Matches the bottom of astronomical twilight, so the Sun stays placed
- * through the darkening it causes.
+ * How much of the compass the frame holds, centred on the transit azimuth.
+ *
+ * Under a full turn on purpose: a window that wraps has to put its seam
+ * somewhere, and every candidate is somewhere a constellation lives. At 300°
+ * the 60° behind the observer is simply absent — no seam, no tear — and the
+ * Sun clears the edges at every latitude these demos offer, solstices included.
  */
-export const MIN_ALT_DEG = -18;
+export const SPAN_DEG = 300;
 
 const DEG = Math.PI / 180;
+/**
+ * Pixels per radian, shared by both axes. Sharing it is what makes the
+ * projection conformal: change one axis alone and shapes shear.
+ */
+const SCALE = DOME_WIDTH / (SPAN_DEG * DEG);
 
 /**
- * Distance from the centre of the disc.
+ * Altitudes are cut off here, where the frame runs out of height.
  *
- * `tan(zenithDistance / 2)` is the stereographic radius, scaled so the horizon
- * lands exactly on `HORIZON_R` — at the horizon the zenith distance is 90°,
- * and tan(45°) is 1.
+ * Mercator puts the zenith at infinity, so some ceiling is unavoidable; the
+ * frame is sized so this one clears the noon Sun at every latitude in the
+ * picker. ponytail: the Moon reaches 85° in the subtropics and would ride
+ * above the top for an hour or so. Raise DOME_HEIGHT if anyone notices.
  */
-export function zenithRadius(altDeg: number): number {
+export const MAX_ALT_DEG =
+  (Math.atan(Math.exp(HORIZON_Y / SCALE)) / DEG - 45) * 2;
+/** Below this a body is far enough under the horizon to stop tracking it. */
+export const MIN_ALT_DEG = -40;
+
+/**
+ * The azimuth placed at the centre of the frame: due south in the northern
+ * hemisphere, due north in the southern — the direction the Sun transits.
+ *
+ * The left/right sense reverses with the hemisphere, which is correct: an
+ * observer facing north sees the Sun rise on their right.
+ */
+export function centerAzimuthDeg(latitudeDeg: number): number {
+  return latitudeDeg >= 0 ? 180 : 0;
+}
+
+/** Signed bearing away from the centre of the frame, in (-180, 180]. */
+export function signedBearingDeg(azDeg: number, latitudeDeg: number): number {
+  const offset = azDeg - centerAzimuthDeg(latitudeDeg);
+  return ((((offset + 180) % 360) + 360) % 360) - 180;
+}
+
+/**
+ * Horizontal position. Linear in bearing and deliberately unwrapped: sky
+ * behind the observer lands outside the viewBox rather than reappearing at the
+ * far edge, which is what makes the frame seamless.
+ */
+export function azimuthToX(azDeg: number, latitudeDeg: number): number {
+  return DOME_WIDTH / 2 + signedBearingDeg(azDeg, latitudeDeg) * DEG * SCALE;
+}
+
+/**
+ * Vertical position, through the Mercator term. Not clamped at the top, so a
+ * body above `MAX_ALT_DEG` returns a negative y and is genuinely off the frame
+ * rather than pinned to its edge.
+ */
+export function altitudeToY(altDeg: number): number {
   const alt = Math.max(MIN_ALT_DEG, altDeg);
-  return HORIZON_R * Math.tan(((90 - alt) / 2) * DEG);
+  return HORIZON_Y - SCALE * Math.log(Math.tan(Math.PI / 4 + (alt * DEG) / 2));
 }
 
 export interface DomePoint {
@@ -48,20 +104,13 @@ export interface DomePoint {
   up: boolean;
 }
 
-/**
- * North at the top, east on the left: the planisphere convention, and what you
- * get holding a chart overhead to compare it with the sky. It reads mirrored
- * against a map for the same reason — you are looking up, not down.
- *
- * Both hemispheres use it unchanged. The old panorama had to swing its centre
- * and its left/right sense with latitude to keep the Sun's arc unbroken; a
- * dome shows every azimuth at once and needs neither.
- */
-export function project(altAz: { altDeg: number; azDeg: number }): DomePoint {
-  const r = zenithRadius(altAz.altDeg);
+export function project(
+  altAz: { altDeg: number; azDeg: number },
+  latitudeDeg: number,
+): DomePoint {
   return {
-    x: CENTER - r * Math.sin(altAz.azDeg * DEG),
-    y: CENTER - r * Math.cos(altAz.azDeg * DEG),
+    x: azimuthToX(altAz.azDeg, latitudeDeg),
+    y: altitudeToY(altAz.altDeg),
     up: altAz.altDeg >= 0,
   };
 }
