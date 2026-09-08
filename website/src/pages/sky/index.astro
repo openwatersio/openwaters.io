@@ -54,8 +54,8 @@ const features = [
   },
   {
     icon: "mdi:weather-night",
-    title: "Sun, Moon and eclipses",
-    body: "Positions, rise and set, all three twilights, transit, moon phase and illumination, and lunar eclipses with contact times and local visibility.",
+    title: "Sun, Moon, stars and eclipses",
+    body: "Positions, rise and set, all three twilights, transit, moon phase and illumination, lunar eclipses with contact times and local visibility, and alt/az for any star you give a catalog position.",
   },
   {
     icon: "mdi:target",
@@ -64,7 +64,7 @@ const features = [
   },
 ];
 
-const tsCode = `import { sunEvents, nextLunarEclipse, lunarEclipseVisibility } from '@openwaters/almanac';
+const tsCode = `import { sunEvents, starAltAz, nextLunarEclipse, lunarEclipseVisibility } from '@openwaters/almanac';
 
 const observer = { latitudeDeg: 48.5, longitudeDeg: -123.0 };
 
@@ -78,7 +78,10 @@ for (const { kind, time } of sunEvents(now, tomorrow, observer)) {
 // The next lunar eclipse, and whether you'll see it
 const eclipse = nextLunarEclipse(now);
 const visibility = lunarEclipseVisibility(eclipse, observer);
-console.log(eclipse.kind, eclipse.peak, visibility.visibleAtPeak);`;
+console.log(eclipse.kind, eclipse.peak, visibility.visibleAtPeak);
+
+// Where Sirius is right now, from its J2000 catalog position
+console.log(starAltAz(101.287, -16.716, now, observer));`;
 
 const swiftCode = `import Almanac
 import Foundation
@@ -93,17 +96,20 @@ for event in try sunEvents(from: now, to: tomorrow, observer: observer) {
 
 let eclipse = try nextLunarEclipse(after: now)
 let visibility = try lunarEclipseVisibility(eclipse, observer: observer)
-print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)`;
+print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)
+
+let sirius = try starAltAz(raDeg: 101.287, decDeg: -16.716, at: now, observer: observer)
+print(sirius.altDeg, sirius.azDeg)`;
 ---
 
 <MainLayout
   title="Sky"
-  description="Explore an interactive sky, Moon phase filmstrip and daylight/twilight ribbon. Almanac computes Sun, Moon and lunar eclipses offline in Swift and TypeScript, with code examples."
+  description="Explore a live star field, Moon phase filmstrip and daylight/twilight ribbon for your own location. Almanac computes the Sun, Moon, stars and lunar eclipses offline in Swift and TypeScript, with code examples."
   image="/og/sky.png"
   schema={softwareSourceCode({
     name: "Almanac",
     description:
-      "An offline sun and moon engine for Swift and TypeScript: positions, rise and set, twilight, transit, moon phase, and lunar eclipses, computed from pure geometry with no network.",
+      "An offline celestial engine for Swift and TypeScript: Sun and Moon positions, rise and set, twilight, transit, moon phase, lunar eclipses, and alt/az for any catalog star, computed from pure geometry with no network.",
     path: "/sky/",
     codeRepository: "https://github.com/openwatersio/almanac",
     programmingLanguage: ["Swift", "TypeScript"],
@@ -130,16 +136,16 @@ print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)`;
       </div>
 
       <div class="text-lead mt-2 mb-4">
-        An offline sun &amp; moon engine for Swift and TypeScript
+        An offline sky engine for Swift and TypeScript
       </div>
 
       <div class="prose prose-xl mb-10 max-w-none">
         <p>
-          Where the Sun and Moon are, when they rise and set, how the Moon is
-          lit, and when the Earth's shadow crosses it. No network, no data files
-          to ship, no API key — just geometry, in your app or on your boat. The
-          sky below is live: it is this library running in your browser right
-          now.
+          Where the Sun, Moon and stars are, when they rise and set, how the
+          Moon is lit, and when the Earth's shadow crosses it. No network, no
+          data files to ship, no API key — just geometry, in your app or on your
+          boat. The sky below is live: every star in it is this library running
+          in your browser, placed for your location and the moment you choose.
         </p>
       </div>
 
