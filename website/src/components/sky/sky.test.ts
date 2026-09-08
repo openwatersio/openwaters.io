@@ -6,13 +6,18 @@ import { skyColor } from "./skyColor.ts";
 import { eclipseAt, eclipseShade, eclipseCoverage } from "./eclipseShade.ts";
 import {
   DOME_WIDTH,
+  HORIZON_Y,
+  MAX_ALT_DEG,
+  SPAN_DEG,
   altitudeToY,
   azimuthToX,
   centerAzimuthDeg,
   project,
+  signedBearingDeg,
 } from "./projection.ts";
 import { starAltAz } from "@openwaters/almanac";
-import { domeStars, starRadius } from "./stars.ts";
+import { domeStars, driftOpacity, starRadius } from "./stars.ts";
+import catalog from "./stars.json" with { type: "json" };
 
 const sweeps = (d: string) =>
   [...d.matchAll(/A [\d.]+ [\d.]+ 0 0 (\d)/g)].map((m) => m[1]);
@@ -92,38 +97,68 @@ test("skyColor: stars rise between nautical and astronomical twilight", () => {
   assert.equal(skyColor(-30).starOpacity, 1);
 });
 
-test("projection: the panorama centres on the transit azimuth", () => {
+test("projection: the frame centres on the transit azimuth", () => {
   assert.equal(centerAzimuthDeg(48.5), 180);
   assert.equal(centerAzimuthDeg(-41.3), 0);
-  assert.equal(azimuthToX(180, 48.5), 400);
-  assert.equal(azimuthToX(0, -41.3), 400);
+  assert.equal(azimuthToX(180, 48.5), DOME_WIDTH / 2);
+  assert.equal(azimuthToX(0, -41.3), DOME_WIDTH / 2);
 });
 
 test("projection: east and west swap sides with the hemisphere", () => {
   // Northern observer faces south: east is to the left, west to the right.
-  assert.ok(azimuthToX(90, 48.5) < 400);
-  assert.ok(azimuthToX(270, 48.5) > 400);
+  assert.ok(azimuthToX(90, 48.5) < DOME_WIDTH / 2);
+  assert.ok(azimuthToX(270, 48.5) > DOME_WIDTH / 2);
   // Southern observer faces north, so the Sun rises on their right.
-  assert.ok(azimuthToX(90, -41.3) > 400);
-  assert.ok(azimuthToX(270, -41.3) < 400);
+  assert.ok(azimuthToX(90, -41.3) > DOME_WIDTH / 2);
+  assert.ok(azimuthToX(270, -41.3) < DOME_WIDTH / 2);
 });
 
-test("projection: azimuth wraps without leaving the viewBox", () => {
-  for (let az = 0; az < 360; az += 7) {
-    const x = azimuthToX(az, 48.5);
-    assert.ok(x >= 0 && x <= 800, `az ${az} → ${x}`);
+test("projection: the frame does not wrap, so it has no seam", () => {
+  // The old panorama put 360° across the width, which landed its seam on the
+  // celestial pole. Here the sky behind the observer leaves the viewBox and
+  // stays gone rather than reappearing at the far edge.
+  // The span's own edge lands exactly on the frame's edge.
+  assert.ok(Math.abs(azimuthToX(180 + SPAN_DEG / 2, 48.5) - DOME_WIDTH) < 1e-9);
+  // Due north is behind a northern observer: off one edge or the other, and
+  // outside the frame either way. That is the sky the fixed view gives up.
+  const offFrame = (x: number) => x < 0 || x > DOME_WIDTH;
+  assert.ok(offFrame(azimuthToX(0, 48.5)));
+  assert.ok(offFrame(azimuthToX(359.9, 48.5)));
+  assert.ok(offFrame(azimuthToX(20, 48.5)));
+  // Everything inside the span is inside the frame.
+  for (let d = -SPAN_DEG / 2; d <= SPAN_DEG / 2; d += 7) {
+    const x = azimuthToX(180 + d, 48.5);
+    assert.ok(x >= 0 && x <= DOME_WIDTH, `bearing ${d} → ${x}`);
   }
-  // The seam sits behind a northern observer, at due north.
-  assert.equal(azimuthToX(0, 48.5), 0);
-  assert.ok(azimuthToX(359.9, 48.5) > 799);
 });
 
-test("projection: altitude maps horizon, zenith and the bottom of twilight", () => {
-  assert.equal(altitudeToY(0), 320);
-  assert.equal(altitudeToY(90), 0);
-  assert.equal(altitudeToY(-18), 400);
-  // Below the twilight floor a body keeps sinking rather than pinning.
-  assert.ok(altitudeToY(-40) > 400);
+test("projection: altitude maps the horizon and runs off the top", () => {
+  assert.equal(altitudeToY(0), HORIZON_Y);
+  assert.ok(altitudeToY(-18) > HORIZON_Y);
+  assert.ok(altitudeToY(30) < HORIZON_Y);
+  // The ceiling clears the noon Sun at every latitude the picker offers:
+  // Sydney's solstice Sun is the highest of them, at 79.6°.
+  assert.ok(MAX_ALT_DEG > 79.6, `ceiling ${MAX_ALT_DEG}`);
+  assert.ok(altitudeToY(MAX_ALT_DEG + 1) < 0);
+});
+
+test("projection: the scale is the same on both axes, at every altitude", () => {
+  // The property the whole projection exists for. Conformal means a degree of
+  // sky measures the same across as it does up, wherever you stand — so shapes
+  // survive. The projection this replaced failed exactly here, running 0.63x
+  // at the horizon and 35.8x near the zenith.
+  for (const alt of [0, 15, 30, 45, 60, 75]) {
+    const d = 0.01;
+    // A degree of azimuth subtends cos(altitude) degrees of true sky.
+    const across =
+      (azimuthToX(180 + d, 48.5) - azimuthToX(180, 48.5)) /
+      (d * Math.cos((alt * Math.PI) / 180));
+    const up = (altitudeToY(alt) - altitudeToY(alt + d)) / d;
+    assert.ok(
+      Math.abs(across / up - 1) < 0.01,
+      `altitude ${alt}°: ${(across / up).toFixed(3)}x`,
+    );
+  }
 });
 
 // --- eclipse shading -------------------------------------------------------
@@ -219,36 +254,155 @@ test("eclipseAt: finds the covering eclipse, ignores nulls", () => {
   assert.equal(eclipseAt(new Date(PEAK), [null, null]), null);
 });
 
+// The Big Dipper: seven stars everyone can draw from memory, circumpolar at
+// 48.5°N so a single day walks the whole asterism from the horizon to high
+// overhead and right around the pole. If a projection mangles shape or tears
+// at a seam, it shows up here.
+const DIPPER: [number, number][] = [
+  [165.932, 61.751],
+  [165.46, 56.382],
+  [178.458, 53.695],
+  [183.857, 57.033],
+  [193.507, 55.96],
+  [200.981, 54.925],
+  [206.885, 49.313],
+];
+const SALISH = { latitudeDeg: 48.5, longitudeDeg: -123 };
+
+const DEG = Math.PI / 180;
+const unit = (p: { altDeg: number; azDeg: number }) => [
+  Math.cos(p.altDeg * DEG) * Math.cos(p.azDeg * DEG),
+  Math.cos(p.altDeg * DEG) * Math.sin(p.azDeg * DEG),
+  Math.sin(p.altDeg * DEG),
+];
+const trueSeparation = (
+  a: { altDeg: number; azDeg: number },
+  b: { altDeg: number; azDeg: number },
+) => {
+  const [u, v] = [unit(a), unit(b)];
+  return (
+    Math.acos(Math.min(1, u[0]! * v[0]! + u[1]! * v[1]! + u[2]! * v[2]!)) / DEG
+  );
+};
+
 test("stars: the field is the real sky, not decoration", () => {
-  // Salish Sea, a clear October midnight. Polaris sits at the observer's
-  // latitude, due north, whatever else the sky is doing.
-  const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
+  const observer = SALISH;
   const midnight = new Date("2026-10-15T08:00:00Z");
   const stars = domeStars(midnight, observer);
 
   assert.ok(stars.length > 50, `only ${stars.length} stars above the horizon`);
-  // Polaris anchors the field: it sits due north, at the observer's latitude,
-  // so it must land dead centre of the northern edge of a south-facing panorama.
-  const polaris = project(
-    starAltAz(37.955, 89.264, midnight, observer),
-    observer.latitudeDeg,
-  );
-  assert.ok(Math.abs(polaris.y - altitudeToY(48.5)) < 6);
-  assert.ok(polaris.x < 20 || polaris.x > DOME_WIDTH - 20);
   assert.ok(stars.every((s) => s.up));
-  // Half the sky, give or take: a field that ignored the horizon would be all 288.
+  // Half the sky, give or take: a field ignoring the horizon would be all 288.
   assert.ok(stars.length < 288);
 
-  // Twelve hours on, the sky has turned: the field must not be static.
-  const noon = domeStars(new Date("2026-10-15T20:00:00Z"), observer);
-  assert.notDeepEqual(stars, noon);
+  // Polaris sits a degree off the pole, so it holds the observer's own
+  // latitude as an altitude, all night.
+  const polaris = starAltAz(37.955, 89.264, midnight, observer);
+  assert.ok(Math.abs(polaris.altDeg - 48.5) < 1.5, `Polaris ${polaris.altDeg}`);
 
-  // Sydney sees a different sky entirely, not a mirrored one.
-  const sydney = domeStars(midnight, {
-    latitudeDeg: -33.87,
-    longitudeDeg: 151.21,
-  });
-  assert.notDeepEqual(stars, sydney);
+  // Twelve hours on the sky has turned, and Sydney is a different sky entirely.
+  assert.notDeepEqual(
+    stars,
+    domeStars(new Date("2026-10-15T20:00:00Z"), observer),
+  );
+  assert.notDeepEqual(
+    stars,
+    domeStars(midnight, { latitudeDeg: -33.87, longitudeDeg: 151.21 }),
+  );
+});
+
+test("stars: the Dipper is drawn with no distortion but the documented one", () => {
+  // The regression this projection exists for. The old panorama scored 73x on
+  // the spread below against a prediction of about 1.4x, and tore the asterism
+  // across both edges six hours in every 24.
+  //
+  // Mercator magnifies with altitude, by exactly sec(altitude) — the reason
+  // Greenland looks large on a world map. So the spread of drawn scale across
+  // the asterism is not 1.00x, and should not be: it should be precisely the
+  // secant ratio between its lowest and highest star, and nothing more. Any
+  // shear or tear would push it off that prediction immediately.
+  let hoursChecked = 0;
+  for (let hour = 0; hour < 24; hour++) {
+    const t = new Date(Date.UTC(2026, 9, 15, hour));
+    const sky = DIPPER.map(([ra, dec]) => starAltAz(ra, dec, t, SALISH));
+    if (sky.some((p) => p.altDeg < 5)) continue;
+    // Only what the frame actually draws. At this latitude the Dipper spends
+    // part of the day in the 60° behind the observer, which the fixed south
+    // view leaves out, and part above the frame's ceiling.
+    if (
+      sky.some((p) => Math.abs(signedBearingDeg(p.azDeg, 48.5)) > SPAN_DEG / 2)
+    )
+      continue;
+    if (sky.some((p) => p.altDeg > MAX_ALT_DEG)) continue;
+    hoursChecked++;
+
+    const scales: number[] = [];
+    for (let i = 0; i < sky.length - 1; i++) {
+      const [a, b] = [project(sky[i]!, 48.5), project(sky[i + 1]!, 48.5)];
+      scales.push(
+        Math.hypot(a.x - b.x, a.y - b.y) / trueSeparation(sky[i]!, sky[i + 1]!),
+      );
+    }
+    const spread = Math.max(...scales) / Math.min(...scales);
+    const alts = sky.map((p) => p.altDeg);
+    const rad = (d: number) => (d * Math.PI) / 180;
+    const predicted =
+      Math.cos(rad(Math.min(...alts))) / Math.cos(rad(Math.max(...alts)));
+    assert.ok(
+      spread <= predicted * 1.02,
+      `hour ${hour}: drawn ${spread.toFixed(2)}x against ${predicted.toFixed(2)}x predicted`,
+    );
+  }
+  assert.ok(hoursChecked >= 4, `only ${hoursChecked} hours in frame`);
+});
+
+test("stars: nothing visible travels against the Sun", () => {
+  // The whole point of the drift fade. Across a day, at three latitudes, every
+  // star still drawn must track the same way the Sun and Moon do. Stars beyond
+  // the celestial pole run the other way, and on a panorama that reads as a
+  // patch of sky sliding backwards.
+  for (const [lat, lon] of [
+    [48.5, -123],
+    [-33.87, 151.21],
+    [10, 0],
+  ] as const) {
+    const observer = { latitudeDeg: lat, longitudeDeg: lon };
+    let checked = 0;
+    for (let minute = 0; minute < 1440; minute += 20) {
+      const t0 = new Date(Date.UTC(2026, 9, 15, 0, minute));
+      const t1 = new Date(t0.getTime() + 120_000);
+      for (const [ra, dec] of catalog as [number, number, number][]) {
+        const a0 = starAltAz(ra, dec, t0, observer);
+        if (a0.altDeg < 0) continue;
+        if (driftOpacity(a0.altDeg, a0.azDeg, lat) < 0.5) continue;
+        if (Math.abs(signedBearingDeg(a0.azDeg, lat)) > SPAN_DEG / 2) continue;
+        const a1 = starAltAz(ra, dec, t1, observer);
+        const dx = azimuthToX(a1.azDeg, lat) - azimuthToX(a0.azDeg, lat);
+        if (Math.abs(dx) > 50) continue; // stepped out of the frame
+        checked++;
+        // North of the equator the Sun tracks right; south of it, left.
+        assert.ok(
+          lat >= 0 ? dx >= -0.01 : dx <= 0.01,
+          `latitude ${lat}: a visible star drifted ${dx.toFixed(3)}px the wrong way from altitude ${a0.altDeg.toFixed(1)}°, azimuth ${a0.azDeg.toFixed(1)}°`,
+        );
+      }
+    }
+    assert.ok(checked > 5000, `latitude ${lat}: only ${checked} stars checked`);
+  }
+});
+
+test("driftOpacity: fades only beyond the pole, and only above it", () => {
+  // Below the pole's own altitude nothing reverses, whatever the bearing.
+  assert.equal(driftOpacity(40, 0, 48.5), 1);
+  assert.equal(driftOpacity(48, 10, 48.5), 1);
+  // Above it, the sky within the elongation boundary of the pole is cut.
+  assert.equal(driftOpacity(70, 0, 48.5), 0);
+  // Dubhe's greatest elongation: 45.9° from north at altitude 58.4°.
+  assert.equal(driftOpacity(58.4, 30, 48.5), 0);
+  assert.ok(driftOpacity(58.4, 60, 48.5) > 0.9);
+  // The southern hemisphere reverses about its own pole, due south.
+  assert.equal(driftOpacity(70, 180, -33.87), 0);
+  assert.equal(driftOpacity(70, 0, -33.87), 1);
 });
 
 test("starRadius: brighter stars draw bigger", () => {

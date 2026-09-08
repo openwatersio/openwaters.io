@@ -1,25 +1,69 @@
 /**
- * Maps an alt/az pair onto the sky-dome viewBox.
+ * Maps an alt/az pair onto the sky panorama.
  *
- * The dome is a full 360° panorama, not a half-sky arc, so a body's horizontal
- * position is its real azimuth rather than a fraction of the day.
+ * A conformal cylindrical projection — Mercator's, with altitude standing in
+ * for latitude — at one scale on both axes. Conformal means angles survive, so
+ * a constellation keeps its shape wherever it sits in the frame. The Sun and
+ * Moon still enter at one edge, arc over, and leave at the other, because the
+ * frame is still a horizon and not a disc.
+ *
+ * What this replaced mapped altitude to y linearly. That is fine for a lone
+ * body tracing an arc, which is all the Sun and Moon ever did here, but a star
+ * field has shape and it destroyed it two ways. Horizontal scale ran as
+ * 1/cos(altitude), so the zenith — one point of sky — smeared across the full
+ * width. And the frame wrapped at 360°, which put the seam on the celestial
+ * pole and tore the circumpolar constellations across both edges.
+ *
+ * Both are fixed here by the same two choices: the Mercator term ties the
+ * vertical scale to the horizontal one at every altitude, and the window is
+ * narrower than a full turn, so there is no seam to place.
+ *
+ * Mercator's own price is magnification: a figure is drawn sec(altitude)
+ * larger overhead than the same figure at the horizon, which is why Greenland
+ * looks vast on a world map. That is size, not shape — a constellation high in
+ * the sky is drawn big but still looks like itself — and it is the distortion
+ * worth taking, because the alternative on a rectangle is shear, which is what
+ * made the old frame unreadable.
  */
 
 export const DOME_WIDTH = 800;
-export const DOME_HEIGHT = 400;
+export const DOME_HEIGHT = 480;
 /** Baseline the horizon is drawn on. */
-export const HORIZON_Y = 320;
-/** Altitudes below this are off the bottom of the viewBox. */
-export const MIN_ALT_DEG = -18;
-export const MAX_ALT_DEG = 90;
+export const HORIZON_Y = 400;
 
 /**
- * The azimuth placed at the centre of the panorama: due south in the northern
+ * How much of the compass the frame holds, centred on the transit azimuth.
+ *
+ * Under a full turn on purpose: a window that wraps has to put its seam
+ * somewhere, and every candidate is somewhere a constellation lives. At 300°
+ * the 60° behind the observer is simply absent — no seam, no tear — and the
+ * Sun clears the edges at every latitude these demos offer, solstices included.
+ */
+export const SPAN_DEG = 300;
+
+const DEG = Math.PI / 180;
+/**
+ * Pixels per radian, shared by both axes. Sharing it is what makes the
+ * projection conformal: change one axis alone and shapes shear.
+ */
+const SCALE = DOME_WIDTH / (SPAN_DEG * DEG);
+
+/**
+ * Altitudes are cut off here, where the frame runs out of height.
+ *
+ * Mercator puts the zenith at infinity, so some ceiling is unavoidable; the
+ * frame is sized so this one clears the noon Sun at every latitude in the
+ * picker. ponytail: the Moon reaches 85° in the subtropics and would ride
+ * above the top for an hour or so. Raise DOME_HEIGHT if anyone notices.
+ */
+export const MAX_ALT_DEG =
+  (Math.atan(Math.exp(HORIZON_Y / SCALE)) / DEG - 45) * 2;
+/** Below this a body is far enough under the horizon to stop tracking it. */
+export const MIN_ALT_DEG = -40;
+
+/**
+ * The azimuth placed at the centre of the frame: due south in the northern
  * hemisphere, due north in the southern — the direction the Sun transits.
- * Centring there keeps the whole daily arc in one unbroken sweep with the seam
- * behind the observer. Centring on 180° unconditionally would park a southern
- * observer's noon Sun at the panorama's edge and split its arc across both
- * ends.
  *
  * The left/right sense reverses with the hemisphere, which is correct: an
  * observer facing north sees the Sun rise on their right.
@@ -28,28 +72,29 @@ export function centerAzimuthDeg(latitudeDeg: number): number {
   return latitudeDeg >= 0 ? 180 : 0;
 }
 
-/**
- * Horizontal position, wrapped so that the centre azimuth lands mid-viewBox
- * and the seam falls behind the observer.
- */
-export function azimuthToX(azDeg: number, latitudeDeg: number): number {
+/** Signed bearing away from the centre of the frame, in (-180, 180]. */
+export function signedBearingDeg(azDeg: number, latitudeDeg: number): number {
   const offset = azDeg - centerAzimuthDeg(latitudeDeg);
-  // Into (-180, 180]: the signed bearing away from the centre.
-  const signed = ((((offset + 180) % 360) + 360) % 360) - 180;
-  return DOME_WIDTH / 2 + (signed / 360) * DOME_WIDTH;
+  return ((((offset + 180) % 360) + 360) % 360) - 180;
 }
 
 /**
- * Vertical position. Not clamped — a body well below MIN_ALT_DEG returns a y
- * past the bottom of the viewBox, which is what keeps it correctly hidden
- * instead of pinned to the horizon.
+ * Horizontal position. Linear in bearing and deliberately unwrapped: sky
+ * behind the observer lands outside the viewBox rather than reappearing at the
+ * far edge, which is what makes the frame seamless.
+ */
+export function azimuthToX(azDeg: number, latitudeDeg: number): number {
+  return DOME_WIDTH / 2 + signedBearingDeg(azDeg, latitudeDeg) * DEG * SCALE;
+}
+
+/**
+ * Vertical position, through the Mercator term. Not clamped at the top, so a
+ * body above `MAX_ALT_DEG` returns a negative y and is genuinely off the frame
+ * rather than pinned to its edge.
  */
 export function altitudeToY(altDeg: number): number {
-  if (altDeg >= 0) {
-    return HORIZON_Y - (altDeg / MAX_ALT_DEG) * HORIZON_Y;
-  }
-  const belowRange = DOME_HEIGHT - HORIZON_Y;
-  return HORIZON_Y + (-altDeg / -MIN_ALT_DEG) * belowRange;
+  const alt = Math.max(MIN_ALT_DEG, altDeg);
+  return HORIZON_Y - SCALE * Math.log(Math.tan(Math.PI / 4 + (alt * DEG) / 2));
 }
 
 export interface DomePoint {

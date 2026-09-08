@@ -14,9 +14,10 @@ import {
   DOME_HEIGHT,
   DOME_WIDTH,
   HORIZON_Y,
+  SPAN_DEG,
   azimuthToX,
-  centerAzimuthDeg,
   project,
+  signedBearingDeg,
 } from "./projection";
 import { skyColor } from "./skyColor";
 import { domeStars } from "./stars";
@@ -31,6 +32,9 @@ import {
 } from "./LocationPicker";
 const DEFAULT_PLACE = PLACES[0]!;
 
+/** How long the opening sweep takes to run from darkness into daylight. */
+const SWEEP_MS = 9_000;
+
 // `|| 0` because Math.round(-0.4) is -0, which a screen reader says as "minus zero".
 const roundDeg = (deg: number) => Math.round(deg) || 0;
 
@@ -42,12 +46,45 @@ const SUN_LABELS: Partial<Record<SunEventKind, string>> = {
   transit: "Solar noon",
 };
 
+/** True when the visitor has asked for less motion. */
+const stillPreferred = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/**
+ * The stretch the page opens on: an hour and three quarters before sunrise,
+ * through to well after it.
+ *
+ * It starts in the dark on purpose. The subject is the star field, so the
+ * first frame has to have stars in it, and standing still is where a visitor
+ * who prefers less motion stays. Running it forward then does the thing a
+ * still frame cannot: the field fades out as twilight comes up and the Sun
+ * climbs out of the horizon behind it.
+ *
+ * Null under a polar day, where there is no sunrise to sweep through.
+ */
+function dawnWindow(now: Date, place: typeof DEFAULT_PLACE) {
+  const start = startOfZonedDay(place.tz, now);
+  const sunrise = sunEvents(
+    start,
+    new Date(start.getTime() + DAY_MS),
+    toObserver(place),
+  ).find((e) => e.kind === "rise")?.time;
+  if (!sunrise) return null;
+  return {
+    from: new Date(sunrise.getTime() - 105 * MINUTE_MS),
+    to: new Date(sunrise.getTime() + 40 * MINUTE_MS),
+  };
+}
+
 export default function SkyDome() {
   // `now` is captured once: the ±366-day clamp must not
   // drift under a long-lived tab.
   const [now] = useState(() => new Date());
   const [place, setPlace] = useLocation();
-  const [instant, setInstant] = useState(now);
+  const dawn = useMemo(() => dawnWindow(now, DEFAULT_PLACE), [now]);
+  // The sweep's own first frame, so standing still is a starry sky rather than
+  // whatever the visitor's clock happens to say.
+  const [instant, setInstant] = useState(() => dawn?.from ?? now);
 
   const observer = useMemo(() => toObserver(place), [place]);
   const dayKey = zonedDayKey(place.tz, instant);
@@ -96,32 +133,21 @@ export default function SkyDome() {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!dawn || stillPreferred()) return;
 
-    const start = startOfZonedDay(DEFAULT_PLACE.tz, now);
-    const sunrise = sunEvents(
-      start,
-      new Date(start.getTime() + DAY_MS),
-      toObserver(DEFAULT_PLACE),
-    ).find((e) => e.kind === "rise")?.time;
-    if (!sunrise) return; // polar day or night: nothing to sweep through
-
-    const from = sunrise.getTime() - 30 * MINUTE_MS;
-    const to = sunrise.getTime() + 60 * MINUTE_MS;
+    const [from, to] = [dawn.from.getTime(), dawn.to.getTime()];
     const t0 = performance.now();
-    const DURATION = 6000;
     let frame = 0;
-
     const step = (ts: number) => {
       if (cancelled.current) return;
-      const p = Math.min(1, (ts - t0) / DURATION);
+      const p = Math.min(1, (ts - t0) / SWEEP_MS);
       const eased = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
       setInstant(new Date(from + (to - from) * eased));
       if (p < 1) frame = requestAnimationFrame(step);
     };
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [now]);
+  }, [dawn]);
 
   // --- controls ------------------------------------------------------------
   const minutesIntoDay = Math.round(
@@ -146,13 +172,16 @@ export default function SkyDome() {
   // --- render --------------------------------------------------------------
   const sunPoint = project(sky.sun, place.lat);
   const moonPoint = project(sky.moon, place.lat);
-  const center = centerAzimuthDeg(place.lat);
+  // Bearings outside the frame have no label to draw; at 300° that is north in
+  // the northern hemisphere, which is the sky the fixed view leaves behind.
   const compass = [
     { az: 0, label: "N" },
     { az: 90, label: "E" },
     { az: 180, label: "S" },
     { az: 270, label: "W" },
-  ];
+  ].filter(
+    ({ az }) => Math.abs(signedBearingDeg(az, place.lat)) <= SPAN_DEG / 2 - 4,
+  );
 
   const firstOf = (kind: SunEventKind) =>
     day.sun.find((e) => e.kind === kind)?.time;
@@ -170,7 +199,7 @@ export default function SkyDome() {
           setPlace(next);
         }}
       />
-      {/* Sky dome */}
+      {/* Sky: a horizon panorama, 300° of compass across the frame */}
       <div className="overflow-hidden rounded-xl border border-(--border)">
         <svg
           viewBox={`0 0 ${DOME_WIDTH} ${DOME_HEIGHT}`}
@@ -197,7 +226,7 @@ export default function SkyDome() {
 
           <g fill="#ffffff" opacity={sky.paint.starOpacity}>
             {sky.stars.map((s, i) => (
-              <circle key={i} cx={s.x} cy={s.y} r={s.r} />
+              <circle key={i} cx={s.x} cy={s.y} r={s.r} opacity={s.opacity} />
             ))}
           </g>
 
@@ -246,16 +275,16 @@ export default function SkyDome() {
           />
 
           <g fill="#ffffff" fillOpacity="0.55" fontSize="13">
-            {compass.map(({ az, label }) => {
-              const x = azimuthToX(az, place.lat);
-              // The seam duplicates the centre's opposite bearing at both edges.
-              if (az === (center + 180) % 360) return null;
-              return (
-                <text key={label} x={x} y={HORIZON_Y + 22} textAnchor="middle">
-                  {label}
-                </text>
-              );
-            })}
+            {compass.map(({ az, label }) => (
+              <text
+                key={label}
+                x={azimuthToX(az, place.lat)}
+                y={HORIZON_Y + 22}
+                textAnchor="middle"
+              >
+                {label}
+              </text>
+            ))}
           </g>
         </svg>
       </div>
