@@ -176,7 +176,7 @@ export default function SkyDome() {
           viewBox={`0 0 ${DOME_WIDTH} ${DOME_HEIGHT}`}
           className="block w-full"
           role="img"
-          aria-label={`Sky over ${place.label}. Sun ${roundDeg(sky.sun.altDeg)} degrees altitude, Moon ${roundDeg(sky.moon.altDeg)} degrees altitude, ${phaseName(sky.illum.phase).toLowerCase()}.`}
+          aria-label={`Sky over ${place.label}. Sun ${roundDeg(sky.sun.altDeg)} degrees altitude, Moon ${roundDeg(sky.moon.altDeg)} degrees altitude, ${phaseName(sky.illum.phase).toLowerCase()}, ${sky.stars.length} stars above the horizon.`}
         >
           <defs>
             <linearGradient id="sky-gradient" x1="0" y1="0" x2="0" y2="1">
