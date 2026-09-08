@@ -4,13 +4,7 @@ import { test } from "node:test";
 import { moonPath, phaseName } from "./moonPath.ts";
 import { skyColor } from "./skyColor.ts";
 import { eclipseAt, eclipseShade, eclipseCoverage } from "./eclipseShade.ts";
-import {
-  DOME_WIDTH,
-  altitudeToY,
-  azimuthToX,
-  centerAzimuthDeg,
-  project,
-} from "./projection.ts";
+import { CENTER, HORIZON_R, project, zenithRadius } from "./projection.ts";
 import { starAltAz } from "@openwaters/almanac";
 import { domeStars, starRadius } from "./stars.ts";
 
@@ -92,38 +86,29 @@ test("skyColor: stars rise between nautical and astronomical twilight", () => {
   assert.equal(skyColor(-30).starOpacity, 1);
 });
 
-test("projection: the panorama centres on the transit azimuth", () => {
-  assert.equal(centerAzimuthDeg(48.5), 180);
-  assert.equal(centerAzimuthDeg(-41.3), 0);
-  assert.equal(azimuthToX(180, 48.5), 400);
-  assert.equal(azimuthToX(0, -41.3), 400);
+test("projection: the zenith is the centre and the horizon is the rim", () => {
+  assert.equal(zenithRadius(90), 0);
+  assert.equal(Math.round(zenithRadius(0)), HORIZON_R);
+  // Below the horizon is outside the disc, so the clip hides it.
+  assert.ok(zenithRadius(-1) > HORIZON_R);
 });
 
-test("projection: east and west swap sides with the hemisphere", () => {
-  // Northern observer faces south: east is to the left, west to the right.
-  assert.ok(azimuthToX(90, 48.5) < 400);
-  assert.ok(azimuthToX(270, 48.5) > 400);
-  // Southern observer faces north, so the Sun rises on their right.
-  assert.ok(azimuthToX(90, -41.3) > 400);
-  assert.ok(azimuthToX(270, -41.3) < 400);
+test("projection: north is up and east is on the left", () => {
+  const at = (azDeg: number) => project({ altDeg: 0, azDeg });
+  assert.ok(at(0).y < CENTER - HORIZON_R + 1);
+  assert.ok(at(180).y > CENTER + HORIZON_R - 1);
+  // East on the left: a planisphere is read looking up, not down.
+  assert.ok(at(90).x < CENTER);
+  assert.ok(at(270).x > CENTER);
 });
 
-test("projection: azimuth wraps without leaving the viewBox", () => {
-  for (let az = 0; az < 360; az += 7) {
-    const x = azimuthToX(az, 48.5);
-    assert.ok(x >= 0 && x <= 800, `az ${az} → ${x}`);
-  }
-  // The seam sits behind a northern observer, at due north.
-  assert.equal(azimuthToX(0, 48.5), 0);
-  assert.ok(azimuthToX(359.9, 48.5) > 799);
-});
-
-test("projection: altitude maps horizon, zenith and the bottom of twilight", () => {
-  assert.equal(altitudeToY(0), 320);
-  assert.equal(altitudeToY(90), 0);
-  assert.equal(altitudeToY(-18), 400);
-  // Below the twilight floor a body keeps sinking rather than pinning.
-  assert.ok(altitudeToY(-40) > 400);
+test("projection: altitude alone fixes distance from the centre", () => {
+  const r = (azDeg: number) => {
+    const p = project({ altDeg: 30, azDeg });
+    return Math.hypot(p.x - CENTER, p.y - CENTER);
+  };
+  assert.ok(Math.abs(r(0) - r(137)) < 1e-9);
+  assert.ok(Math.abs(r(0) - r(300)) < 1e-9);
 });
 
 // --- eclipse shading -------------------------------------------------------
@@ -219,36 +204,91 @@ test("eclipseAt: finds the covering eclipse, ignores nulls", () => {
   assert.equal(eclipseAt(new Date(PEAK), [null, null]), null);
 });
 
+// The Big Dipper: seven stars everyone can draw from memory, circumpolar at
+// 48.5°N so a single day walks the whole asterism from the horizon to high
+// overhead and right around the pole. If a projection mangles shape or tears
+// at a seam, it shows up here.
+const DIPPER: [number, number][] = [
+  [165.932, 61.751],
+  [165.46, 56.382],
+  [178.458, 53.695],
+  [183.857, 57.033],
+  [193.507, 55.96],
+  [200.981, 54.925],
+  [206.885, 49.313],
+];
+const SALISH = { latitudeDeg: 48.5, longitudeDeg: -123 };
+
+const DEG = Math.PI / 180;
+const unit = (p: { altDeg: number; azDeg: number }) => [
+  Math.cos(p.altDeg * DEG) * Math.cos(p.azDeg * DEG),
+  Math.cos(p.altDeg * DEG) * Math.sin(p.azDeg * DEG),
+  Math.sin(p.altDeg * DEG),
+];
+const trueSeparation = (
+  a: { altDeg: number; azDeg: number },
+  b: { altDeg: number; azDeg: number },
+) => {
+  const [u, v] = [unit(a), unit(b)];
+  return (
+    Math.acos(Math.min(1, u[0]! * v[0]! + u[1]! * v[1]! + u[2]! * v[2]!)) / DEG
+  );
+};
+
 test("stars: the field is the real sky, not decoration", () => {
-  // Salish Sea, a clear October midnight. Polaris sits at the observer's
-  // latitude, due north, whatever else the sky is doing.
-  const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
+  const observer = SALISH;
   const midnight = new Date("2026-10-15T08:00:00Z");
   const stars = domeStars(midnight, observer);
 
   assert.ok(stars.length > 50, `only ${stars.length} stars above the horizon`);
-  // Polaris anchors the field: it sits due north, at the observer's latitude,
-  // so it must land dead centre of the northern edge of a south-facing panorama.
-  const polaris = project(
-    starAltAz(37.955, 89.264, midnight, observer),
-    observer.latitudeDeg,
-  );
-  assert.ok(Math.abs(polaris.y - altitudeToY(48.5)) < 6);
-  assert.ok(polaris.x < 20 || polaris.x > DOME_WIDTH - 20);
   assert.ok(stars.every((s) => s.up));
-  // Half the sky, give or take: a field that ignored the horizon would be all 288.
+  // Half the sky, give or take: a field ignoring the horizon would be all 288.
   assert.ok(stars.length < 288);
 
-  // Twelve hours on, the sky has turned: the field must not be static.
-  const noon = domeStars(new Date("2026-10-15T20:00:00Z"), observer);
-  assert.notDeepEqual(stars, noon);
+  // Polaris sits a degree off the pole, so its distance from the centre of the
+  // disc is the observer's own latitude read as an altitude.
+  const polaris = project(starAltAz(37.955, 89.264, midnight, observer));
+  const r = Math.hypot(polaris.x - CENTER, polaris.y - CENTER);
+  assert.ok(Math.abs(r - zenithRadius(48.5)) < 6, `Polaris at r=${r}`);
 
-  // Sydney sees a different sky entirely, not a mirrored one.
-  const sydney = domeStars(midnight, {
-    latitudeDeg: -33.87,
-    longitudeDeg: 151.21,
-  });
-  assert.notDeepEqual(stars, sydney);
+  // Twelve hours on the sky has turned, and Sydney is a different sky entirely.
+  assert.notDeepEqual(
+    stars,
+    domeStars(new Date("2026-10-15T20:00:00Z"), observer),
+  );
+  assert.notDeepEqual(
+    stars,
+    domeStars(midnight, { latitudeDeg: -33.87, longitudeDeg: 151.21 }),
+  );
+});
+
+test("stars: the Dipper keeps its shape all the way round the pole", () => {
+  // The regression this projection exists for. The old panorama scored 73x
+  // here, and tore the asterism across both edges six hours in every 24.
+  let worstShape = 1;
+  let worstGap = 0;
+  for (let hour = 0; hour < 24; hour++) {
+    const t = new Date(Date.UTC(2026, 9, 15, hour));
+    const sky = DIPPER.map(([ra, dec]) => starAltAz(ra, dec, t, SALISH));
+    if (sky.some((p) => p.altDeg < 5)) continue;
+    const scales: number[] = [];
+    for (let i = 0; i < sky.length - 1; i++) {
+      const [a, b] = [project(sky[i]!), project(sky[i + 1]!)];
+      const px = Math.hypot(a.x - b.x, a.y - b.y);
+      scales.push(px / trueSeparation(sky[i]!, sky[i + 1]!));
+      worstGap = Math.max(worstGap, px);
+    }
+    worstShape = Math.max(
+      worstShape,
+      Math.max(...scales) / Math.min(...scales),
+    );
+  }
+  assert.ok(worstShape < 1.5, `shape distorted ${worstShape.toFixed(2)}x`);
+  // A 10° gap between neighbours; a seam tear would throw this across the disc.
+  assert.ok(
+    worstGap < HORIZON_R / 2,
+    `neighbours ${worstGap.toFixed(0)}px apart`,
+  );
 });
 
 test("starRadius: brighter stars draw bigger", () => {
