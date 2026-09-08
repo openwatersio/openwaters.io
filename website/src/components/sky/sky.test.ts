@@ -4,7 +4,15 @@ import { test } from "node:test";
 import { moonPath, phaseName } from "./moonPath.ts";
 import { skyColor } from "./skyColor.ts";
 import { eclipseAt, eclipseShade, eclipseCoverage } from "./eclipseShade.ts";
-import { altitudeToY, azimuthToX, centerAzimuthDeg } from "./projection.ts";
+import {
+  DOME_WIDTH,
+  altitudeToY,
+  azimuthToX,
+  centerAzimuthDeg,
+  project,
+} from "./projection.ts";
+import { starAltAz } from "@openwaters/almanac";
+import { domeStars, starRadius } from "./stars.ts";
 
 const sweeps = (d: string) =>
   [...d.matchAll(/A [\d.]+ [\d.]+ 0 0 (\d)/g)].map((m) => m[1]);
@@ -209,4 +217,42 @@ test("eclipseAt: finds the covering eclipse, ignores nulls", () => {
   assert.equal(eclipseAt(new Date(PEAK), [null, total]), total);
   assert.equal(eclipseAt(new Date(PEAK + min(400)), [null, total]), null);
   assert.equal(eclipseAt(new Date(PEAK), [null, null]), null);
+});
+
+test("stars: the field is the real sky, not decoration", () => {
+  // Salish Sea, a clear October midnight. Polaris sits at the observer's
+  // latitude, due north, whatever else the sky is doing.
+  const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
+  const midnight = new Date("2026-10-15T08:00:00Z");
+  const stars = domeStars(midnight, observer);
+
+  assert.ok(stars.length > 50, `only ${stars.length} stars above the horizon`);
+  // Polaris anchors the field: it sits due north, at the observer's latitude,
+  // so it must land dead centre of the northern edge of a south-facing panorama.
+  const polaris = project(
+    starAltAz(37.955, 89.264, midnight, observer),
+    observer.latitudeDeg,
+  );
+  assert.ok(Math.abs(polaris.y - altitudeToY(48.5)) < 6);
+  assert.ok(polaris.x < 20 || polaris.x > DOME_WIDTH - 20);
+  assert.ok(stars.every((s) => s.up));
+  // Half the sky, give or take: a field that ignored the horizon would be all 288.
+  assert.ok(stars.length < 288);
+
+  // Twelve hours on, the sky has turned: the field must not be static.
+  const noon = domeStars(new Date("2026-10-15T20:00:00Z"), observer);
+  assert.notDeepEqual(stars, noon);
+
+  // Sydney sees a different sky entirely, not a mirrored one.
+  const sydney = domeStars(midnight, {
+    latitudeDeg: -33.87,
+    longitudeDeg: 151.21,
+  });
+  assert.notDeepEqual(stars, sydney);
+});
+
+test("starRadius: brighter stars draw bigger", () => {
+  assert.ok(starRadius(-1.44) > starRadius(0.03));
+  assert.ok(starRadius(0.03) > starRadius(3.5));
+  assert.ok(starRadius(3.5) > 0);
 });

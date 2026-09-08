@@ -19,6 +19,7 @@ import {
   project,
 } from "./projection";
 import { skyColor } from "./skyColor";
+import { domeStars } from "./stars";
 import { DAY_MS, MINUTE_MS, startOfZonedDay, zonedDayKey } from "./time";
 
 const MAX_DAY_OFFSET = 366;
@@ -29,18 +30,6 @@ import {
   PLACES,
 } from "./LocationPicker";
 const DEFAULT_PLACE = PLACES[0]!;
-
-// Fixed field so the sky does not reshuffle on every render.
-const STARS = (() => {
-  let seed = 0x5eed;
-  const rand = () =>
-    (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
-  return Array.from({ length: 40 }, () => ({
-    x: rand() * DOME_WIDTH,
-    y: rand() * (HORIZON_Y - 20),
-    r: 0.6 + rand() * 1.1,
-  }));
-})();
 
 // `|| 0` because Math.round(-0.4) is -0, which a screen reader says as "minus zero".
 const roundDeg = (deg: number) => Math.round(deg) || 0;
@@ -88,7 +77,14 @@ export default function SkyDome() {
     const sun = sunAltAz(instant, observer);
     const moon = moonAltAz(instant, observer);
     const illum = moonIllumination(instant);
-    return { sun, moon, illum, paint: skyColor(sun.altDeg) };
+    return {
+      sun,
+      moon,
+      illum,
+      paint: skyColor(sun.altDeg),
+      // Recomputed with the rest: 288 stars is well under a millisecond.
+      stars: domeStars(instant, observer),
+    };
   }, [instant, observer]);
 
   // --- autoplay ------------------------------------------------------------
@@ -200,7 +196,7 @@ export default function SkyDome() {
           />
 
           <g fill="#ffffff" opacity={sky.paint.starOpacity}>
-            {STARS.map((s, i) => (
+            {sky.stars.map((s, i) => (
               <circle key={i} cx={s.x} cy={s.y} r={s.r} />
             ))}
           </g>

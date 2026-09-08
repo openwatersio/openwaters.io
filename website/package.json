@@ -10,7 +10,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "prepare": "husky",
-    "test": "node --test src/**/*.test.ts"
+    "test": "node --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
@@ -20,7 +20,7 @@
     "@neaps/api": "*",
     "@neaps/react": "*",
     "@neaps/tide-predictor": "*",
-    "@openwaters/almanac": "^0.2.1",
+    "@openwaters/almanac": "^0.3.0",
     "@openwaters/seascape": "^0.3.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
