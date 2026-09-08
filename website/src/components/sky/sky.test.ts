@@ -16,7 +16,8 @@ import {
   signedBearingDeg,
 } from "./projection.ts";
 import { starAltAz } from "@openwaters/almanac";
-import { domeStars, starRadius } from "./stars.ts";
+import { domeStars, driftOpacity, starRadius } from "./stars.ts";
+import catalog from "./stars.json" with { type: "json" };
 
 const sweeps = (d: string) =>
   [...d.matchAll(/A [\d.]+ [\d.]+ 0 0 (\d)/g)].map((m) => m[1]);
@@ -353,6 +354,55 @@ test("stars: the Dipper is drawn with no distortion but the documented one", () 
     );
   }
   assert.ok(hoursChecked >= 4, `only ${hoursChecked} hours in frame`);
+});
+
+test("stars: nothing visible travels against the Sun", () => {
+  // The whole point of the drift fade. Across a day, at three latitudes, every
+  // star still drawn must track the same way the Sun and Moon do. Stars beyond
+  // the celestial pole run the other way, and on a panorama that reads as a
+  // patch of sky sliding backwards.
+  for (const [lat, lon] of [
+    [48.5, -123],
+    [-33.87, 151.21],
+    [10, 0],
+  ] as const) {
+    const observer = { latitudeDeg: lat, longitudeDeg: lon };
+    let checked = 0;
+    for (let minute = 0; minute < 1440; minute += 20) {
+      const t0 = new Date(Date.UTC(2026, 9, 15, 0, minute));
+      const t1 = new Date(t0.getTime() + 120_000);
+      for (const [ra, dec] of catalog as [number, number, number][]) {
+        const a0 = starAltAz(ra, dec, t0, observer);
+        if (a0.altDeg < 0) continue;
+        if (driftOpacity(a0.altDeg, a0.azDeg, lat) < 0.5) continue;
+        if (Math.abs(signedBearingDeg(a0.azDeg, lat)) > SPAN_DEG / 2) continue;
+        const a1 = starAltAz(ra, dec, t1, observer);
+        const dx = azimuthToX(a1.azDeg, lat) - azimuthToX(a0.azDeg, lat);
+        if (Math.abs(dx) > 50) continue; // stepped out of the frame
+        checked++;
+        // North of the equator the Sun tracks right; south of it, left.
+        assert.ok(
+          lat >= 0 ? dx >= -0.01 : dx <= 0.01,
+          `latitude ${lat}: a visible star drifted ${dx.toFixed(3)}px the wrong way from altitude ${a0.altDeg.toFixed(1)}°, azimuth ${a0.azDeg.toFixed(1)}°`,
+        );
+      }
+    }
+    assert.ok(checked > 5000, `latitude ${lat}: only ${checked} stars checked`);
+  }
+});
+
+test("driftOpacity: fades only beyond the pole, and only above it", () => {
+  // Below the pole's own altitude nothing reverses, whatever the bearing.
+  assert.equal(driftOpacity(40, 0, 48.5), 1);
+  assert.equal(driftOpacity(48, 10, 48.5), 1);
+  // Above it, the sky within the elongation boundary of the pole is cut.
+  assert.equal(driftOpacity(70, 0, 48.5), 0);
+  // Dubhe's greatest elongation: 45.9° from north at altitude 58.4°.
+  assert.equal(driftOpacity(58.4, 30, 48.5), 0);
+  assert.ok(driftOpacity(58.4, 60, 48.5) > 0.9);
+  // The southern hemisphere reverses about its own pole, due south.
+  assert.equal(driftOpacity(70, 180, -33.87), 0);
+  assert.equal(driftOpacity(70, 0, -33.87), 1);
 });
 
 test("starRadius: brighter stars draw bigger", () => {
