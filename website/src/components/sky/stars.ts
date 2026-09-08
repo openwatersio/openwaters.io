@@ -13,9 +13,13 @@ import catalog from "./stars.json" with { type: "json" };
 /** Faintest magnitude in the catalog; the scale below is anchored to it. */
 const FAINTEST = 3.5;
 
-/** Brighter stars draw bigger. Vega (0.03) lands near 1.25, Sirius near 1.6. */
+/**
+ * Brighter stars draw bigger: the faintest land near 0.55 and Sirius near 2.
+ * Sized for the dome's 440-unit viewBox, where a unit is roughly a screen
+ * pixel, so the dimmest stars stay visible without the brightest going blobby.
+ */
 export const starRadius = (magnitude: number) =>
-  0.45 + (FAINTEST - magnitude) * 0.23;
+  0.55 + (FAINTEST - magnitude) * 0.28;
 
 export interface DomeStar extends DomePoint {
   r: number;
@@ -37,7 +41,7 @@ export function domeStars(
     const altAz = starAltAz(raDeg, decDeg, instant, observer);
     if (altAz.altDeg < 0) continue;
     stars.push({
-      ...project(altAz, observer.latitudeDeg),
+      ...project(altAz),
       r: starRadius(magnitude),
     });
   }

@@ -1,55 +1,44 @@
 /**
- * Maps an alt/az pair onto the sky-dome viewBox.
+ * Maps an alt/az pair onto the sky dome.
  *
- * The dome is a full 360° panorama, not a half-sky arc, so a body's horizontal
- * position is its real azimuth rather than a fraction of the day.
+ * Stereographic, centred on the zenith: the whole visible hemisphere on one
+ * disc, with the horizon as its rim. Stereographic is conformal, so a
+ * constellation keeps its shape wherever it sits — the reason paper
+ * planispheres have used it for centuries.
+ *
+ * The projection this replaced mapped azimuth to x and altitude to y on a
+ * rectangle. That is fine for a lone body tracing an arc, which is all the Sun
+ * and Moon ever did here, but it fails on a star field two ways. Horizontal
+ * scale runs as 1/cos(altitude), so the zenith — a single point of sky —
+ * smears across the full width. And a rectangle has to wrap somewhere: centred
+ * on the transit azimuth, the seam lands on the celestial pole, tearing the
+ * circumpolar constellations across both edges. A disc has no seam to place.
  */
 
-export const DOME_WIDTH = 800;
-export const DOME_HEIGHT = 400;
-/** Baseline the horizon is drawn on. */
-export const HORIZON_Y = 320;
-/** Altitudes below this are off the bottom of the viewBox. */
+/** Square viewBox: the dome is a circle, not a band. */
+export const DOME_SIZE = 440;
+export const CENTER = DOME_SIZE / 2;
+/** Radius of the horizon circle. */
+export const HORIZON_R = 200;
+/**
+ * Altitudes below this are pushed outside the viewBox rather than drawn.
+ * Matches the bottom of astronomical twilight, so the Sun stays placed
+ * through the darkening it causes.
+ */
 export const MIN_ALT_DEG = -18;
-export const MAX_ALT_DEG = 90;
+
+const DEG = Math.PI / 180;
 
 /**
- * The azimuth placed at the centre of the panorama: due south in the northern
- * hemisphere, due north in the southern — the direction the Sun transits.
- * Centring there keeps the whole daily arc in one unbroken sweep with the seam
- * behind the observer. Centring on 180° unconditionally would park a southern
- * observer's noon Sun at the panorama's edge and split its arc across both
- * ends.
+ * Distance from the centre of the disc.
  *
- * The left/right sense reverses with the hemisphere, which is correct: an
- * observer facing north sees the Sun rise on their right.
+ * `tan(zenithDistance / 2)` is the stereographic radius, scaled so the horizon
+ * lands exactly on `HORIZON_R` — at the horizon the zenith distance is 90°,
+ * and tan(45°) is 1.
  */
-export function centerAzimuthDeg(latitudeDeg: number): number {
-  return latitudeDeg >= 0 ? 180 : 0;
-}
-
-/**
- * Horizontal position, wrapped so that the centre azimuth lands mid-viewBox
- * and the seam falls behind the observer.
- */
-export function azimuthToX(azDeg: number, latitudeDeg: number): number {
-  const offset = azDeg - centerAzimuthDeg(latitudeDeg);
-  // Into (-180, 180]: the signed bearing away from the centre.
-  const signed = ((((offset + 180) % 360) + 360) % 360) - 180;
-  return DOME_WIDTH / 2 + (signed / 360) * DOME_WIDTH;
-}
-
-/**
- * Vertical position. Not clamped — a body well below MIN_ALT_DEG returns a y
- * past the bottom of the viewBox, which is what keeps it correctly hidden
- * instead of pinned to the horizon.
- */
-export function altitudeToY(altDeg: number): number {
-  if (altDeg >= 0) {
-    return HORIZON_Y - (altDeg / MAX_ALT_DEG) * HORIZON_Y;
-  }
-  const belowRange = DOME_HEIGHT - HORIZON_Y;
-  return HORIZON_Y + (-altDeg / -MIN_ALT_DEG) * belowRange;
+export function zenithRadius(altDeg: number): number {
+  const alt = Math.max(MIN_ALT_DEG, altDeg);
+  return HORIZON_R * Math.tan(((90 - alt) / 2) * DEG);
 }
 
 export interface DomePoint {
@@ -59,13 +48,20 @@ export interface DomePoint {
   up: boolean;
 }
 
-export function project(
-  altAz: { altDeg: number; azDeg: number },
-  latitudeDeg: number,
-): DomePoint {
+/**
+ * North at the top, east on the left: the planisphere convention, and what you
+ * get holding a chart overhead to compare it with the sky. It reads mirrored
+ * against a map for the same reason — you are looking up, not down.
+ *
+ * Both hemispheres use it unchanged. The old panorama had to swing its centre
+ * and its left/right sense with latitude to keep the Sun's arc unbroken; a
+ * dome shows every azimuth at once and needs neither.
+ */
+export function project(altAz: { altDeg: number; azDeg: number }): DomePoint {
+  const r = zenithRadius(altAz.altDeg);
   return {
-    x: azimuthToX(altAz.azDeg, latitudeDeg),
-    y: altitudeToY(altAz.altDeg),
+    x: CENTER - r * Math.sin(altAz.azDeg * DEG),
+    y: CENTER - r * Math.cos(altAz.azDeg * DEG),
     up: altAz.altDeg >= 0,
   };
 }
