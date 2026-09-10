@@ -96,7 +96,7 @@ interface Props {
 }
 
 export function MyComponent({ title }: Props) {
-  return <div className="text-navy-900">{title}</div>;
+  return <div className="text-fg-strong">{title}</div>;
 }
 ```
 
@@ -104,14 +104,17 @@ export function MyComponent({ title }: Props) {
 
 - **Always use Tailwind classes** - avoid inline styles
 - **Use the `cn()` utility** for conditional/merged classes
-- **Custom color palette**:
-  - `ocean-*` - Primary blues (0-950)
-  - `navy-*` - Dark text/backgrounds (0-950)
-  - `coral-*` - Accent reds (0-900)
+- **The site is always dark.** There is no light mode and no `dark:` variant; `color-scheme: dark` is set on `:root`.
+- **Semantic color tokens** (defined in `@theme` in `global.css`, used as normal Tailwind utilities such as `bg-surface`, `text-fg-muted`, `border-line`):
+  - Ground: `canvas` (page), `well` (code blocks, footer), `surface` / `surface-raised` (cards, hover)
+  - Ink: `fg`, `fg-strong` (headings), `fg-muted`, `fg-faint`; rules: `line`, `line-strong`
+  - Accents, each with one job: `accent` (sky: links, eyebrows, icons, active nav), `cta` (teal: the primary button only), `highlight` (amber: one highlighted phrase per region, live indicators), `alert` (coral: warnings and errors)
+  - `tide-high` / `tide-low` match the Neaps chart colors; `badge-*` colors the API method badges
+- **Type**: Geist and Geist Mono, self-hosted via `@fontsource-variable`; `font-sans` and `font-mono` map to them
 - **Component classes** defined in `global.css`:
-  - `.btn-primary`, `.btn-secondary`, `.btn-outline`
-  - `.card`, `.card-hover`
-  - `.container-custom`
+  - `.btn` with `.btn-primary`, `.btn-secondary`, `.btn-sm`
+  - `.card`, `.card-hover`, `.card-glass`, `.callout`
+  - `.eyebrow`, `.text-lead`, `.container-custom`
 
 ### Page Structure
 
@@ -152,7 +155,7 @@ Always use the `cn()` utility when combining classes:
 import { cn } from "../utils/cn";
 
 // Merges classes and handles conflicts
-cn("p-4 bg-ocean-500", hover && "bg-ocean-600", className);
+cn("p-4 bg-surface", hover && "bg-surface-raised", className);
 ```
 
 ### Avoid Stack Overflow on Large Arrays

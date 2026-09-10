@@ -73,7 +73,6 @@ openwaters-io/
 │   ├── styles/          # Global styles
 │   └── utils/           # Utility functions
 ├── astro.config.mjs     # Astro configuration
-├── tailwind.config.mjs  # Tailwind configuration
 └── tsconfig.json        # TypeScript configuration
 ```
 

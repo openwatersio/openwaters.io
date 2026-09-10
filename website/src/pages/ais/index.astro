@@ -295,7 +295,7 @@ const licenses = [
   description="aiscast is the Open Waters AIS network: live ship positions from coastal authorities and volunteer receivers, streamed in real time. Open source and free for personal use."
 >
   <!-- Hero -->
-  <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-12">
+  <section class="py-12">
     <Container>
       <div class="grid items-center gap-10 lg:grid-cols-2">
         <div class="text-center lg:text-left">
@@ -308,22 +308,22 @@ const licenses = [
             id="ais-stats"
             data-nosnippet
             data-src={`https://${SERVER}/v1/stats`}
-            class="grid grid-cols-3 gap-4 border-t border-(--border) pt-6 text-center lg:text-left"
+            class="border-line grid grid-cols-3 gap-4 border-t pt-6 text-center lg:text-left"
           >
             <div class="flex flex-col-reverse">
-              <dt class="text-sm text-(--text-muted) uppercase">stations</dt>
+              <dt class="text-fg-faint text-sm uppercase">stations</dt>
               <dd class="text-4xl font-bold tabular-nums" data-stat="stations">
                 –
               </dd>
             </div>
             <div class="flex flex-col-reverse">
-              <dt class="text-sm text-(--text-muted) uppercase">vessels</dt>
+              <dt class="text-fg-faint text-sm uppercase">vessels</dt>
               <dd class="text-4xl font-bold tabular-nums" data-stat="vessels">
                 –
               </dd>
             </div>
             <div class="flex flex-col-reverse">
-              <dt class="text-sm text-(--text-muted) uppercase">Per Sec</dt>
+              <dt class="text-fg-faint text-sm uppercase">Per Sec</dt>
               <dd class="text-4xl font-bold tabular-nums" data-stat="rate">
                 –
               </dd>
@@ -333,14 +333,14 @@ const licenses = [
         <AisMap
           center={[22, 59.75]}
           zoom={6}
-          class="aspect-4/3 w-full overflow-hidden rounded-lg border border-(--border) shadow-xl lg:aspect-3/2"
+          class="border-line aspect-4/3 w-full overflow-hidden rounded-lg border shadow-xl lg:aspect-3/2"
         />
       </div>
     </Container>
   </section>
 
   <!-- Usage -->
-  <section class="bg-(--surface-subtle) py-16">
+  <section class="bg-surface py-16">
     <Container>
       <div class="mx-auto max-w-4xl">
         <ul class="grid gap-6 md:grid-cols-3">
@@ -368,11 +368,11 @@ const licenses = [
               <li class="flex items-start gap-3">
                 <Icon
                   name={w.icon}
-                  class="mt-0.5 size-6 shrink-0 text-(--accent)"
+                  class="text-accent mt-0.5 size-6 shrink-0"
                 />
                 <div>
                   <p class="font-semibold">{w.title}</p>
-                  <p class="text-sm text-(--text-secondary)">
+                  <p class="text-fg-muted text-sm">
                     {w.text}{" "}
                     {w.link && <a href={w.link.href}>{w.link.label}</a>}
                   </p>
@@ -411,14 +411,14 @@ const licenses = [
                 aria-selected={i === 0}
                 tabindex={i === 0 ? 0 : -1}
                 aria-controls={`snippet-${s.id}`}
-                class="rounded-md px-3 py-1.5 text-sm font-medium text-(--text-secondary) hover:bg-(--surface-subtle) aria-selected:bg-(--accent) aria-selected:text-white"
+                class="text-fg-muted hover:bg-surface aria-selected:bg-accent aria-selected:text-fg-strong rounded-md px-3 py-1.5 text-sm font-medium"
               >
                 {s.label}
               </button>
             ))
           }
 
-          <a href="/api/ais/" class="btn btn-outline ml-auto">
+          <a href="/api/ais/" class="btn btn-secondary ml-auto">
             <Icon name="mdi:code-greater-than" class="size-6" />
             API Docs
           </a>
@@ -436,14 +436,14 @@ const licenses = [
             </div>
           ))
         }
-        <p class="mt-4 text-sm text-(--text-secondary)">
+        <p class="text-fg-muted mt-4 text-sm">
           Coming from aisstream.io? Point your client at{" "}
-          <code class="rounded bg-(--surface-subtle) px-1"
-            >wss://{SERVER}/v0/stream</code
-          >{" "}
-          with a token as <code class="rounded bg-(--surface-subtle) px-1"
-            >APIKey</code
-          >{" "}
+          <code class="bg-surface rounded px-1">wss://{SERVER}/v0/stream</code>{
+            " "
+          }
+          with a token as <code class="bg-surface rounded px-1">APIKey</code>{
+            " "
+          }
           and it keeps working. See{" "}
           <a href="/ais/vs/aisstream/">aiscast vs aisstream.io</a> and{" "}
           <a href="/ais/alternatives/aisstream/"
@@ -455,7 +455,7 @@ const licenses = [
   </section>
 
   <!-- Limits -->
-  <section id="limits" class="scroll-mt-24 bg-(--surface-subtle) py-16">
+  <section id="limits" class="bg-surface scroll-mt-24 py-16">
     <Container>
       <div class="mx-auto mb-10 max-w-2xl text-center">
         <h2 class="mb-3">Limits, but only to keep the lights on</h2>
@@ -468,7 +468,7 @@ const licenses = [
       <div class="card mx-auto max-w-5xl overflow-x-auto">
         <table class="w-full min-w-2xl table-fixed text-sm">
           <thead>
-            <tr class="border-b border-(--border)">
+            <tr class="border-line border-b">
               <th></th>
               {
                 tiers.map((t) => (
@@ -477,7 +477,7 @@ const licenses = [
                     class="px-3 pb-3 text-center align-top font-semibold"
                   >
                     {t.name}
-                    <span class="mt-2 block text-xs font-normal text-(--text-secondary)">
+                    <span class="text-fg-muted mt-2 block text-xs font-normal">
                       {t.text}
                     </span>
                   </th>
@@ -485,13 +485,13 @@ const licenses = [
               }
             </tr>
           </thead>
-          <tbody class="divide-y divide-(--border-subtle)">
+          <tbody class="divide-line divide-y">
             {
               rows.map(([feature, ...cells]) => (
                 <tr>
                   <th
                     scope="row"
-                    class="py-2.5 pr-3 text-left font-normal text-(--text-secondary)"
+                    class="text-fg-muted py-2.5 pr-3 text-left font-normal"
                   >
                     {feature}
                   </th>
@@ -500,10 +500,10 @@ const licenses = [
                       {c === true ? (
                         <Icon
                           name="mdi:check"
-                          class="inline size-5 text-(--accent)"
+                          class="text-accent inline size-5"
                         />
                       ) : c === false ? (
-                        <span class="text-(--text-muted)">—</span>
+                        <span class="text-fg-faint">—</span>
                       ) : (
                         c
                       )}
@@ -537,9 +537,7 @@ const licenses = [
           </tfoot>
         </table>
       </div>
-      <p
-        class="mx-auto mt-10 max-w-3xl text-center text-sm text-(--text-muted)"
-      >
+      <p class="text-fg-faint mx-auto mt-10 max-w-3xl text-center text-sm">
         Limits apply per token and per network address: at most 8 concurrent
         streams from one address, however many tokens are behind it. Over a
         per-second rate the stream thins and stays up; over a connection, area,
@@ -568,10 +566,10 @@ const licenses = [
           contribute.map((c) => (
             <Card class="flex min-w-0 flex-col">
               <div class="mb-3 flex items-center gap-3">
-                <Icon name={c.icon} class="size-8 text-(--accent)" />
+                <Icon name={c.icon} class="text-accent size-8" />
                 <h3 class="text-lg font-semibold">{c.title}</h3>
               </div>
-              <p class="mb-3 text-sm text-(--text-secondary)">{c.text}</p>
+              <p class="text-fg-muted mb-3 text-sm">{c.text}</p>
               <CodeBlock class="mb-3" code={c.code} />
               <div class="mt-auto flex flex-wrap gap-4 text-sm">
                 {c.links.map((l) => (
@@ -584,9 +582,9 @@ const licenses = [
           ))
         }
       </div>
-      <p class="mt-8 text-center text-sm text-(--text-secondary)">
-        Watch your station arrive at <code
-          class="rounded bg-(--surface-subtle) px-1">GET /v1/stations</code
+      <p class="text-fg-muted mt-8 text-center text-sm">
+        Watch your station arrive at <code class="bg-surface rounded px-1"
+          >GET /v1/stations</code
         >. Named stations with higher limits, and anything else: <a
           href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a
         >. Developers: <a
@@ -599,20 +597,20 @@ const licenses = [
   </section>
 
   <!-- Sources & license -->
-  <section class="bg-(--surface-subtle) py-16">
+  <section class="bg-surface py-16">
     <Container>
       <div class="mx-auto max-w-4xl">
         <h2 id="sources" class="mb-4 scroll-mt-24 text-3xl font-semibold">
           Sources
         </h2>
-        <p class="mb-4 text-(--text-secondary)">
+        <p class="text-fg-muted mb-4">
           Every event says which source it came from. Vessels are distinct MMSIs
           heard in the last 30 minutes; <em>unique</em> counts the ones no other source
           heard.
         </p>
         <div class="mb-12 overflow-x-auto">
           <table id="ais-sources" class="w-full min-w-lg text-sm">
-            <thead class="bg-(--surface-subtle)">
+            <thead class="bg-surface">
               <tr>
                 <th scope="col" class="px-3 py-2 text-left">Source</th>
                 <th scope="col" class="px-3 py-2 text-right">Vessels</th>
@@ -621,13 +619,13 @@ const licenses = [
                 <th scope="col" class="px-3 py-2 text-right">Last heard</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-(--border-subtle)">
+            <tbody class="divide-line divide-y">
               {
                 sources.map((row) => (
                   <tr data-ids={row.ids.join(",")}>
                     <td class="px-3 py-2">
                       <span class="font-medium">{row.name}</span>
-                      <span class="block text-xs text-(--text-muted)">
+                      <span class="text-fg-faint block text-xs">
                         {row.where}
                       </span>
                     </td>
@@ -650,7 +648,7 @@ const licenses = [
                       –
                     </td>
                     <td
-                      class="px-3 py-2 text-right text-(--text-secondary) tabular-nums"
+                      class="text-fg-muted px-3 py-2 text-right tabular-nums"
                       data-stat="age"
                     >
                       –
@@ -665,16 +663,16 @@ const licenses = [
         <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
           License
         </h2>
-        <p class="mb-4 text-(--text-secondary)">
+        <p class="text-fg-muted mb-4">
           Licensing is per source, and the aggregate is not relicensed: each
           event is re-served under the terms of the source it came from, which
-          is why <code class="rounded bg-(--surface-subtle) px-1">source</code> is
-          on every event and every vessel. If you display or redistribute the data,
-          carry the source's attribution through.
+          is why <code class="bg-surface rounded px-1">source</code> is on every event
+          and every vessel. If you display or redistribute the data, carry the source's
+          attribution through.
         </p>
         <div class="mb-6 overflow-x-auto">
           <table class="w-full min-w-lg text-sm">
-            <thead class="bg-(--surface-subtle)">
+            <thead class="bg-surface">
               <tr>
                 <th scope="col" class="px-3 py-2 text-left">Source</th>
                 <th scope="col" class="px-3 py-2 text-left">License</th>
@@ -682,7 +680,7 @@ const licenses = [
                 >
               </tr>
             </thead>
-            <tbody class="divide-y divide-(--border-subtle)">
+            <tbody class="divide-line divide-y">
               {
                 licenses.map((row) => (
                   <tr>
@@ -700,16 +698,14 @@ const licenses = [
                         row.license
                       )}
                     </td>
-                    <td class="px-3 py-2 text-(--text-secondary)">
-                      {row.obligation}
-                    </td>
+                    <td class="text-fg-muted px-3 py-2">{row.obligation}</td>
                   </tr>
                 ))
               }
             </tbody>
           </table>
         </div>
-        <p class="text-(--text-secondary)">
+        <p class="text-fg-muted">
           The server, viewer, and plugin are{" "}
           <a
             href={`${REPO}/blob/main/LICENSE`}

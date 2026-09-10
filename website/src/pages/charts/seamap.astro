@@ -95,7 +95,7 @@ const sources = [
   description="A nautical-themed map with depths, seamarks, and hazards."
 >
   <!-- Map hero -->
-  <section class="border-b border-(--border)">
+  <section class="border-line border-b">
     {
       /* Non-interactive so scrolling past doesn't get captured by the map;
         clicking opens the viewer at this framing instead. Attribution lives
@@ -116,7 +116,7 @@ const sources = [
     <div class="mx-auto max-w-4xl">
       <a
         href="/charts/"
-        class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+        class="text-accent hover:text-accent-hover mb-4 inline-flex items-center gap-1 text-sm font-medium"
       >
         <Icon name="mdi:arrow-left" class="size-4" />
         All charts
@@ -148,35 +148,32 @@ const sources = [
       <nav
         aria-label="On this page"
         data-nosnippet
-        class="mb-12 rounded-lg border border-(--border) bg-(--surface-subtle) px-5 py-4 text-sm"
+        class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
       >
         <span class="mr-2 font-semibold">On this page:</span>
-        <a href="#features" class="text-(--accent) hover:text-(--accent-hover)"
+        <a href="#features" class="text-accent hover:text-accent-hover"
           >Features</a
         >
-        <span class="mx-2 text-(--text-muted)">·</span>
-        <a href="#sources" class="text-(--accent) hover:text-(--accent-hover)"
+        <span class="text-fg-faint mx-2">·</span>
+        <a href="#sources" class="text-accent hover:text-accent-hover"
           >Sources</a
         >
-        <span class="mx-2 text-(--text-muted)">·</span>
-        <a
-          href="#how-to-use"
-          class="text-(--accent) hover:text-(--accent-hover)">How to use</a
+        <span class="text-fg-faint mx-2">·</span>
+        <a href="#how-to-use" class="text-accent hover:text-accent-hover"
+          >How to use</a
         >
-        <span class="mx-2 text-(--text-muted)">·</span>
-        <a href="#license" class="text-(--accent) hover:text-(--accent-hover)"
+        <span class="text-fg-faint mx-2">·</span>
+        <a href="#license" class="text-accent hover:text-accent-hover"
           >License</a
         >
       </nav>
 
       <!-- Not for navigational use -->
-      <div class="mb-12 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4">
-        <h2
-          class="mb-2 flex items-center gap-2 text-lg font-semibold text-amber-900"
-        >
+      <div class="callout mb-12">
+        <h2 class="text-fg mb-2 flex items-center gap-2 text-lg font-semibold">
           <Icon name="mdi:alert" class="size-5" /> Not for navigational use
         </h2>
-        <p class="text-sm text-amber-900/90">
+        <p class="text-fg text-sm">
           This is a web map drawn in the style of a nautical chart, which makes
           it easy to mistake for one. It is not. Seamarks come from
           crowd-sourced OpenStreetMap data and may be missing, outdated, or
@@ -197,7 +194,7 @@ const sources = [
             <div>
               <a
                 href={viewerHref(feature)}
-                class="mb-3 block overflow-hidden rounded-lg border border-(--border) shadow-sm transition-shadow hover:shadow-md"
+                class="border-line mb-3 block overflow-hidden rounded-lg border shadow-sm transition-shadow hover:shadow-md"
                 aria-label={`Open ${feature.title} in the viewer`}
               >
                 {/* pointer-events-none so the whole preview acts as a link */}
@@ -210,7 +207,7 @@ const sources = [
                 />
               </a>
               <h3 class="mb-1 text-lg font-semibold">{feature.title}</h3>
-              <p class="text-sm text-(--text-secondary)">{feature.body}</p>
+              <p class="text-fg-muted text-sm">{feature.body}</p>
             </div>
           ))
         }
@@ -220,7 +217,7 @@ const sources = [
       <h2 id="sources" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         Sources
       </h2>
-      <p class="mb-4 text-(--text-secondary)">
+      <p class="text-fg-muted mb-4">
         Seamap is an assembly. Each piece comes from a separate open project:
       </p>
       <ul class="mb-12 ml-6 list-disc space-y-2 text-sm">
@@ -235,14 +232,11 @@ const sources = [
                     ? undefined
                     : "noopener noreferrer"
                 }
-                class="text-(--accent) hover:text-(--accent-hover)"
+                class="text-accent hover:text-accent-hover"
               >
                 {source.name}
               </a>
-              <span class="text-(--text-secondary)">
-                {" "}
-                — {source.contributes}
-              </span>
+              <span class="text-fg-muted"> — {source.contributes}</span>
             </li>
           ))
         }
@@ -252,28 +246,27 @@ const sources = [
       <h2 id="how-to-use" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         How to use
       </h2>
-      <p class="mb-4 text-(--text-secondary)">
+      <p class="text-fg-muted mb-4">
         Point MapLibre GL, Mapbox GL, or any library that reads a MapLibre style
         at the published style URL. It carries the base map, bathymetry, and
         chart symbology together, so nothing else needs configuring:
       </p>
-      <div class="bg-navy-900 mb-4 overflow-x-auto rounded-lg p-4 text-white">
+      <div class="bg-well text-fg-strong mb-4 overflow-x-auto rounded-lg p-4">
         <pre
           class="text-sm"><code>https://tiles.openwaters.io/seamap/style.json</code></pre>
       </div>
-      <p class="mb-12 text-(--text-secondary)">
+      <p class="text-fg-muted mb-12">
         The seamark vector tiles are also available on their own at <a
           href="https://tiles.openwaters.io/seamap/tiles.json"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)">tiles.json</a
+          class="text-accent hover:text-accent-hover">tiles.json</a
         >, for composing into a style of your own. See the{" "}
         <a
           href="https://github.com/openwatersio/seamap/blob/main/style/README.md"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)"
-          >style package README</a
+          class="text-accent hover:text-accent-hover">style package README</a
         > for the builder API and the sprite sheet.
       </p>
 
@@ -281,61 +274,58 @@ const sources = [
       <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         License
       </h2>
-      <p class="mb-4 text-(--text-secondary)">
+      <p class="text-fg-muted mb-4">
         <strong>Tiles</strong> — the tiles, styles, and sprites served at <code
-          class="rounded bg-(--surface-subtle) px-1"
-          >tiles.openwaters.io/seamap</code
+          class="bg-surface rounded px-1">tiles.openwaters.io/seamap</code
         > are licensed{" "}
         <a
           href="https://creativecommons.org/licenses/by/4.0/"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)">CC BY 4.0</a
+          class="text-accent hover:text-accent-hover">CC BY 4.0</a
         >: free for any use with the following attribution:
       </p>
-      <div class="bg-navy-900 mb-4 overflow-x-auto rounded-lg p-4 text-white">
+      <div class="bg-well text-fg-strong mb-4 overflow-x-auto rounded-lg p-4">
         <pre
           class="text-sm"><code>© Open Waters: Seamap &lt;https://openwaters.io/charts/seamap&gt;</code></pre>
       </div>
-      <p class="mb-4 text-(--text-secondary)">
+      <p class="text-fg-muted mb-4">
         They derive from OpenStreetMap data,{" "}
         <a
           href="https://www.openstreetmap.org/copyright"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)"
+          class="text-accent hover:text-accent-hover"
           >© OpenStreetMap contributors</a
         > (ODbL), and each source listed above carries its own license and attribution
         requirements. The style carries the full attribution list, which MapLibre's
         attribution control displays automatically.
       </p>
-      <p class="mb-4 text-(--text-secondary)">
+      <p class="text-fg-muted mb-4">
         <strong>Code</strong> — the pipeline and style are{" "}
         <a
           href="https://github.com/openwatersio/seamap/blob/main/LICENSE.md"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)">GPL-3.0</a
+          class="text-accent hover:text-accent-hover">GPL-3.0</a
         >, as is the{" "}
         <a
           href="https://github.com/openwatersio/seamap/blob/main/style/sprites/PROVENANCE.md"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)"
-          >chart symbol artwork</a
+          class="text-accent hover:text-accent-hover">chart symbol artwork</a
         >. The project is a fork of{" "}
         <a
           href="https://github.com/prozessor13/seamap"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)"
-          >prozessor13/seamap</a
+          class="text-accent hover:text-accent-hover">prozessor13/seamap</a
         >, and the code inherited from it remains{" "}
         <a
           href="https://github.com/openwatersio/seamap/blob/main/LICENSE-MIT.md"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)">MIT</a
+          class="text-accent hover:text-accent-hover">MIT</a
         >.
       </p>
     </div>

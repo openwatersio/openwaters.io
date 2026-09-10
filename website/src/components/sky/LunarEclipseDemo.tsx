@@ -72,7 +72,7 @@ export default function LunarEclipseDemo() {
         <div className="space-y-4">
           <svg
             viewBox="0 0 320 280"
-            className="bg-navy-950 block w-full rounded-xl"
+            className="bg-well block w-full rounded-xl"
             role="img"
             aria-label={`${KIND_LABEL[kind]} lunar eclipse: schematic Moon during the selected phase`}
           >
@@ -104,7 +104,7 @@ export default function LunarEclipseDemo() {
               aria-label="Eclipse time"
               value={progress}
               onChange={(e) => setProgress(Number(e.target.value))}
-              className="block w-full accent-(--accent)"
+              className="accent-accent block w-full"
             />
           </label>
           <p className="text-sm tabular-nums">
@@ -121,7 +121,7 @@ export default function LunarEclipseDemo() {
             · Moon {Math.abs(altitude).toFixed(1)}°{" "}
             {altitude >= 0 ? "above" : "below"} your horizon.
           </p>
-          <p className="text-xs text-(--text-secondary)">
+          <p className="text-fg-muted text-xs">
             Shadow shape and color are illustrative, not a prediction of the
             Moon's exact appearance. Contact times come from Almanac. The Moon
             stays visible in this illustration even when below your horizon.
@@ -135,7 +135,7 @@ export default function LunarEclipseDemo() {
           onGoTo={goTo}
         />
       </div>
-      <p className="text-sm text-(--text-secondary)">
+      <p className="text-fg-muted text-sm">
         A lunar eclipse happens at the same instant worldwide. Location changes
         which stages are above your horizon and their local clock times.
         Visibility excludes weather and terrain.

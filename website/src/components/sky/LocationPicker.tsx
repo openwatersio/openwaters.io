@@ -77,7 +77,7 @@ export function LocationPicker({
         <label className="flex items-center gap-2 font-medium">
           Location
           <select
-            className="max-w-full rounded-lg border bg-(--surface) px-3 py-2"
+            className="bg-canvas max-w-full rounded-lg border px-3 py-2"
             value={selected < 0 ? "device" : selected}
             onChange={(e) => {
               ++request.current;
@@ -107,12 +107,12 @@ export function LocationPicker({
           {loading ? "Locating…" : "Use my location"}
         </button>
       </div>
-      <p className="text-xs text-(--text-secondary)">
+      <p className="text-fg-muted text-xs">
         Your location stays in this browser tab. We don't send it to our servers
         or store it.
       </p>
       {error && (
-        <p role="alert" className="text-sm text-(--status-red-text)">
+        <p role="alert" className="text-alert text-sm">
           {error}
         </p>
       )}

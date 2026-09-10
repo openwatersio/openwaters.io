@@ -35,7 +35,7 @@ export function EclipseCard({
     <div className="card space-y-4">
       <div className="flex items-baseline justify-between gap-3">
         <h3 className="text-lg font-semibold">{heading}</h3>
-        <span className="rounded-full bg-(--accent-bg) px-3 py-1 text-xs font-semibold tracking-wide text-(--accent) uppercase">
+        <span className="bg-accent/10 text-accent rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase">
           {KIND_LABEL[eclipse.kind]}
         </span>
       </div>
@@ -50,7 +50,7 @@ export function EclipseCard({
             year="numeric"
           />
         </div>
-        <div className="text-(--text-secondary)">
+        <div className="text-fg-muted">
           Greatest eclipse at{" "}
           <DateTime
             datetime={eclipse.peak}
@@ -63,7 +63,7 @@ export function EclipseCard({
         <button
           type="button"
           onClick={() => onGoTo(eclipse.peak)}
-          className="btn btn-outline mt-3 px-3 py-1 text-sm"
+          className="btn btn-secondary mt-3 px-3 py-1 text-sm"
         >
           View at greatest eclipse
         </button>
@@ -72,8 +72,8 @@ export function EclipseCard({
       <div
         className={
           visibility.visibleAtPeak
-            ? "rounded-lg bg-(--status-green-bg) px-3 py-2 text-sm text-(--status-green-text)"
-            : "rounded-lg bg-(--surface-subtle) px-3 py-2 text-sm text-(--text-secondary)"
+            ? "bg-tide-high/15 text-tide-high rounded-lg px-3 py-2 text-sm"
+            : "bg-surface text-fg-muted rounded-lg px-3 py-2 text-sm"
         }
       >
         {visibility.visibleAtPeak
@@ -101,7 +101,7 @@ export function EclipseCard({
                   type="button"
                   onClick={() => onGoTo(time)}
                   title={title ?? `Show the Moon at ${label.toLowerCase()}`}
-                  className="text-(--accent) underline-offset-4 hover:underline"
+                  className="text-accent underline-offset-4 hover:underline"
                 >
                   <DateTime
                     datetime={time}
@@ -116,10 +116,8 @@ export function EclipseCard({
         })}
         {eclipse.magUmbral > 0 && (
           <>
-            <dt className="mt-1 border-t border-(--border-subtle) pt-1">
-              Umbral magnitude
-            </dt>
-            <dd className="mt-1 border-t border-(--border-subtle) pt-1 text-right tabular-nums">
+            <dt className="border-line mt-1 border-t pt-1">Umbral magnitude</dt>
+            <dd className="border-line mt-1 border-t pt-1 text-right tabular-nums">
               {eclipse.magUmbral.toFixed(3)}
             </dd>
           </>

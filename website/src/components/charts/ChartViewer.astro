@@ -40,12 +40,12 @@ const about = {
     >
       <span class="font-semibold">{about.name}</span>
       ·
-      <span class="hidden text-(--text-secondary) sm:inline">
+      <span class="text-fg-muted hidden sm:inline">
         {about.description}
       </span>{" "}
       <a
         href={about.href}
-        class="font-medium text-(--accent) hover:text-(--accent-hover)">About</a
+        class="text-accent hover:text-accent-hover font-medium">About</a
       >
     </div>
   </div>
@@ -115,12 +115,8 @@ const about = {
   const unitButtons = Array.from(
     document.querySelectorAll<HTMLButtonElement>("[data-unit]"),
   );
-  const ACTIVE = ["bg-(--accent)", "text-white"];
-  const IDLE = [
-    "cursor-pointer",
-    "text-(--text-secondary)",
-    "hover:text-(--text)",
-  ];
+  const ACTIVE = ["bg-accent", "text-fg-strong"];
+  const IDLE = ["cursor-pointer", "text-fg-muted", "hover:text-fg"];
 
   function setUnit(unit: Unit) {
     // seamap's style.json ships vector depth bands; applyState defaults
