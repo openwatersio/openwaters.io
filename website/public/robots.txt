@@ -1,0 +1,18 @@
+# Open Waters is open to search engines, AI crawlers and AI training. That is a
+# deliberate choice, not an oversight: the software and the data are open, and
+# we would rather be cited than withheld. https://slackwater.xyz/robots.txt
+# says the same thing for the same reason.
+#
+# Cloudflare's AI Crawl Control managed robots.txt must be OFF for this zone
+# for this file to be the whole of https://openwaters.io/robots.txt. If a block
+# of Content-Signal boilerplate and per-crawler Disallows appears above these
+# lines, someone has switched that feature back on in the Cloudflare dashboard.
+#
+# Content-Signal is an emerging convention rather than a settled standard.
+# Omitting it would neither grant nor restrict; saying yes states the intent.
+
+User-agent: *
+Content-Signal: search=yes,ai-input=yes,ai-train=yes
+Allow: /
+
+Sitemap: https://openwaters.io/sitemap.xml
