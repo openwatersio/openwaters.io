@@ -19,6 +19,8 @@
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
 
+  --spacing-header: 65px; /* height of the fixed header */
+
   --color-*: initial;
   --color-transparent: transparent;
   --color-current: currentColor;
@@ -173,7 +175,7 @@ body {
 
   main,
   .header-padding {
-    padding-top: 65px; /* Height of the fixed header */
+    @apply pt-header;
   }
 }
 
@@ -269,12 +271,41 @@ body {
   --tw-prose-td-borders: var(--color-line);
 }
 
+/* MapLibre controls on the site's ground. Scoped under .maplibregl-map to outrank
+   MapLibre's own stylesheet, which the map scripts load after this file. Its icons
+   are black SVGs, so they are inverted. */
+.maplibregl-map .maplibregl-ctrl-group,
+.maplibregl-map .maplibregl-ctrl-attrib.maplibregl-compact {
+  background-color: color-mix(in srgb, var(--color-well) 85%, transparent);
+  border: 1px solid var(--color-line-strong);
+  box-shadow: none;
+}
+.maplibregl-map .maplibregl-ctrl-attrib,
+.maplibregl-map .maplibregl-ctrl-attrib-inner {
+  color: var(--color-fg-muted);
+  font-family: var(--font-sans);
+}
+.maplibregl-map .maplibregl-ctrl-attrib a {
+  color: var(--color-fg);
+}
+.maplibregl-map .maplibregl-ctrl-group button + button {
+  border-top-color: var(--color-line);
+}
+.maplibregl-map .maplibregl-ctrl-group button:hover {
+  background-color: var(--color-surface-raised);
+}
+.maplibregl-map .maplibregl-ctrl button .maplibregl-ctrl-icon,
+.maplibregl-map .maplibregl-ctrl-attrib-button {
+  background-color: transparent;
+  filter: invert(1);
+}
+
 /* MapLibre controls offset for fixed header */
 .fullscreen .maplibregl-ctrl-top-right {
-  top: 81px; /* header 65px + 16px gap */
+  top: calc(--spacing(header) + 16px);
   right: 16px;
 }
 
 .fullscreen .maplibregl-ctrl-top-left {
-  top: 81px;
+  top: calc(--spacing(header) + 16px);
 }

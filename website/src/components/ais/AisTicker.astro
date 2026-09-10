@@ -1,0 +1,181 @@
+---
+// The live panel over the AIS hero: network stats up top, a scrolling feed of
+// position reports beneath. Reports come from the AisMap on the same page,
+// which dispatches an `ais:event` for every message its stream receives; one
+// is appended each second and the oldest scrolls off the top.
+interface Props {
+  class?: string;
+  /** Polled for the stats row. */
+  statsUrl: string;
+}
+const { class: className, statsUrl } = Astro.props;
+
+const stats = [
+  { key: "vessels", label: "Vessels" },
+  { key: "rate", label: "Msg / s" },
+  { key: "stations", label: "Stations" },
+];
+
+// One grid for the header and every row, so columns line up.
+const row =
+  "grid h-9 grid-cols-[minmax(0,1fr)_5.5rem_4rem] items-center gap-3 px-4 sm:grid-cols-[minmax(0,1fr)_5.5rem_7.5rem_3.5rem_3.5rem_4rem]";
+---
+
+<div
+  class:list={[
+    "border-line-strong bg-well/60 overflow-hidden rounded-2xl border font-mono text-xs backdrop-blur-lg",
+    className,
+  ]}
+  data-nosnippet
+>
+  <div
+    class="border-line flex items-center justify-between gap-4 border-b px-4 py-3"
+  >
+    <span class="text-fg-strong flex items-center gap-2.5 tracking-[0.08em]">
+      <span class="relative flex size-2">
+        <span
+          class="bg-highlight absolute inset-0 animate-ping rounded-full opacity-60 motion-reduce:animate-none"
+        ></span>
+        <span class="bg-highlight relative size-2 rounded-full"></span>
+      </span>
+      LIVE
+    </span>
+    <dl
+      id="ais-stats"
+      data-src={statsUrl}
+      class="flex gap-6 text-right sm:gap-8"
+    >
+      {
+        stats.map((s) => (
+          <div class="flex flex-col-reverse gap-0.5">
+            <dt class="text-fg-faint text-[10px] tracking-[0.12em] uppercase">
+              {s.label}
+            </dt>
+            <dd class="text-fg-strong text-base leading-none font-medium tabular-nums">
+              <span data-stat={s.key}>–</span>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+
+  <div
+    class:list={[
+      row,
+      "border-line text-fg-faint border-b text-[10px] tracking-[0.14em] uppercase",
+    ]}
+  >
+    <span>Vessel</span>
+    <span>MMSI</span>
+    <span class="hidden sm:block">Position</span>
+    <span class="hidden text-right sm:block">SOG</span>
+    <span class="hidden text-right sm:block">COG</span>
+    <span></span>
+  </div>
+
+  <div class="relative h-45 overflow-hidden">
+    <p
+      id="ais-ticker-empty"
+      class="text-fg-faint absolute inset-0 flex items-center justify-center"
+    >
+      Listening for ships…
+    </p>
+    <div id="ais-ticker" data-row={row} class="divide-line divide-y"></div>
+  </div>
+</div>
+
+<script>
+  const ROWS = 5;
+  const TICK_MS = 1000;
+  const SLIDE_MS = 400;
+
+  type Report = {
+    mmsi: number;
+    name?: string;
+    lat: number;
+    lon: number;
+    sog?: number;
+    cog?: number;
+    seen: number;
+  };
+
+  const list = document.getElementById("ais-ticker");
+  const empty = document.getElementById("ais-ticker-empty");
+  if (list && empty) {
+    const rowClass = list.dataset.row!;
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Reports heard since the last tick. The stream runs far faster than one a
+    // second, so each tick shows the freshest by transmit time and drops the
+    // rest: some sources relay minutes late, and arrival order would surface
+    // their stale positions ahead of live ones.
+    let pending: Report[] = [];
+    document.addEventListener("ais:event", (e) => {
+      const r = (e as CustomEvent<Partial<Report>>).detail;
+      if (r.mmsi == null || r.lat == null || r.lon == null) return;
+      pending.push(r as Report);
+      if (pending.length > 100) pending.shift();
+    });
+
+    const esc = (s: unknown) =>
+      String(s).replace(
+        /[&<>"]/g,
+        (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!,
+      );
+    const ago = (t: number) =>
+      `${Math.max(0, Math.round((Date.now() - t) / 1000))}s ago`;
+    const num = (v: number | undefined, digits: number, pad = 0) =>
+      v == null ? "—" : v.toFixed(digits).padStart(pad, "0");
+
+    const rowHtml = (r: Report) => `<div class="${rowClass}">
+      <span class="truncate text-fg-strong">${r.name ? esc(r.name) : '<span class="text-fg-faint">—</span>'}</span>
+      <span class="text-fg-faint">${r.mmsi}</span>
+      <span class="hidden sm:block">${num(r.lat, 3)} ${num(r.lon, 3)}</span>
+      <span class="hidden text-right sm:block">${num(r.sog, 1)}</span>
+      <span class="hidden text-right sm:block">${num(r.cog, 0, 3)}</span>
+      <span class="text-right text-fg-faint" data-seen="${r.seen}">${ago(r.seen)}</span>
+    </div>`;
+
+    // The map's first snapshot fills the list, so it never opens empty.
+    document.addEventListener("ais:snapshot", (e) => {
+      if (list.children.length) return;
+      const seed = (e as CustomEvent<Partial<Report>[]>).detail
+        .filter((r) => r.mmsi != null && r.lat != null && r.lon != null)
+        .sort((a, b) => a.seen! - b.seen!)
+        .slice(-ROWS) as Report[];
+      if (!seed.length) return;
+      empty.hidden = true;
+      list.insertAdjacentHTML("beforeend", seed.map(rowHtml).join(""));
+    });
+
+    let sliding = false;
+    const tick = () => {
+      list
+        .querySelectorAll<HTMLElement>("[data-seen]")
+        .forEach((el) => (el.textContent = ago(Number(el.dataset.seen))));
+      if (sliding || !pending.length) return;
+      const r = pending.reduce((a, b) => (b.seen > a.seen ? b : a));
+      pending = [];
+      empty.hidden = true;
+      list.insertAdjacentHTML("beforeend", rowHtml(r));
+      if (list.children.length <= ROWS) return;
+
+      // Slide the whole list up one row, then drop the row that left the top.
+      const first = list.firstElementChild as HTMLElement;
+      const height = first.getBoundingClientRect().height;
+      const settle = () => {
+        list.style.transition = "none";
+        list.style.transform = "";
+        first.remove();
+        sliding = false;
+      };
+      if (reduceMotion) return settle();
+      sliding = true;
+      list.style.transition = `transform ${SLIDE_MS}ms ease-out`;
+      list.style.transform = `translateY(-${height}px)`;
+      setTimeout(settle, SLIDE_MS);
+    };
+    setInterval(tick, TICK_MS);
+  }
+</script>

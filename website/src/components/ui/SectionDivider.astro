@@ -1,0 +1,23 @@
+---
+// A numbered rule between the sections of a long page: "01 ——— [ STREAM ] ——— / 04".
+interface Props {
+  index: number;
+  total: number;
+  label: string;
+  id?: string;
+}
+const { index, total, label, id } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<div
+  id={id}
+  class="eyebrow text-fg-faint flex scroll-mt-24 items-center gap-6"
+  aria-hidden="true"
+>
+  <span>{pad(index)}</span>
+  <span class="bg-line h-px flex-1"></span>
+  <span class="text-accent">[ {label} ]</span>
+  <span class="bg-line h-px flex-1"></span>
+  <span>/ {pad(total)}</span>
+</div>

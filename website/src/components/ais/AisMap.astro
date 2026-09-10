@@ -227,6 +227,12 @@ const { class: className, center, zoom } = Astro.props;
           noteSource(p.source);
         }
         dirty = true;
+        container.dispatchEvent(
+          new CustomEvent("ais:snapshot", {
+            bubbles: true,
+            detail: [...vessels].map(([mmsi, v]) => ({ mmsi, ...v })),
+          }),
+        );
       } catch (e) {
         console.warn("snapshot failed", e);
       }
@@ -298,6 +304,13 @@ const { class: className, center, zoom } = Astro.props;
       noteSource(ev.source);
       if (v.lat != null && !stale) pulse(v);
       dirty = true;
+      if (!stale)
+        container.dispatchEvent(
+          new CustomEvent("ais:event", {
+            bubbles: true,
+            detail: { mmsi: ev.mmsi, ...v },
+          }),
+        );
     }
 
     // ---- update pulses: expanding ring on a 2D canvas over the map; the rAF loop only runs while rings are live ----
