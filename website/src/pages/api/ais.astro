@@ -91,7 +91,7 @@ const groups: {
         protocol: "WS",
         path: `${WSS}/v1/nmea`,
         text: "NMEA",
-        summary: "Deduplicated raw NMEA back to feeders",
+        summary: "Deduplicated raw NMEA back to contributors",
         Content: V1Nmea,
       },
     ],
@@ -142,7 +142,7 @@ const sections = groups.map((group) => ({
 }));
 
 const description =
-  "Reference for the AIS API: live vessel traffic over WebSocket, Server-Sent Events, and raw NMEA, a GeoJSON snapshot of current positions, tokens, and how to feed in your own receiver.";
+  "Reference for the AIS API: live vessel traffic over WebSocket, Server-Sent Events, and raw NMEA, a GeoJSON snapshot of current positions, tokens, and how to contribute your own receiver.";
 
 const article = {
   "@context": "https://schema.org",

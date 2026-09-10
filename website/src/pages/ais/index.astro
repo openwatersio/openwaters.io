@@ -138,9 +138,9 @@ const tiers = [
     cta: { label: "Get a token", href: TOKEN_PAGE, primary: true },
   },
   {
-    name: "Feeder",
+    name: "Contributor",
     text: "Awarded to a station that contributes data.",
-    cta: { label: "Start feeding", href: "#contribute" },
+    cta: { label: "Start contributing", href: "#contribute" },
   },
   {
     name: "Commercial",
@@ -189,7 +189,7 @@ const contribute = [
   {
     icon: "mdi:docker",
     title: "docker-shipfeeder",
-    text: "Already feeding the aggregators from a container? Add one more UDP destination.",
+    text: "Already sending to the aggregators from a container? Add one more UDP destination.",
     code: `host ${SERVER}, port 10110`,
     links: [
       {
@@ -319,8 +319,8 @@ const licenses = [
             <span class="text-highlight">instantaneously.</span>
           </h1>
           <p class="text-lead mb-8 max-w-xl">
-            Open government feeds and volunteer receivers, merged and
-            deduplicated into one live stream. No token needed to start.
+            A real-time stream of marine AIS traffic. Open source, and free for
+            personal use.
           </p>
           <div class="pointer-events-auto flex flex-wrap gap-3">
             <a href="/api/ais/" class="btn btn-primary">
@@ -344,7 +344,7 @@ const licenses = [
             {
               icon: "mdi:broadcast",
               title: "Real-time API",
-              text: "Subscribe to bounding boxes or vessels over WebSocket and get every message as it is heard, or fetch a GeoJSON snapshot of what is in a box right now, plus stations and live stats.",
+              text: "Get every AIS message as it is heard over WebSocket, SSE, or NMEA. Fetch a GeoJSON snapshot of what is in a box right now, plus stations and live stats.",
               link: { label: "API reference", href: "/api/ais/" },
             },
             {
@@ -356,7 +356,7 @@ const licenses = [
             {
               icon: "mdi:hand-heart-outline",
               title: "Free for personal use",
-              text: "Read without an account; a one-click token covers a boat, a dashboard, or a side project. Feeding earns more.",
+              text: "Read without an account; a one-click token covers a boat, a dashboard, or a side project. Contributing AIS data earns more.",
               link: { label: "See tiers and limits", href: "#limits" },
             },
           ].map((w) => (
@@ -441,16 +441,16 @@ const licenses = [
     </Container>
   </section>
 
-  <!-- Limits -->
+  <!-- Tiers -->
   <section class="py-16 lg:py-24">
     <Container>
-      <SectionDivider index={2} total={4} label="Limits" id="limits" />
+      <SectionDivider index={2} total={4} label="Tiers" id="limits" />
       <div class="mt-12 max-w-2xl">
         <h2 class="mb-5">Limits, but only to keep the lights on.</h2>
         <p class="text-fg-muted text-lg">
           Everything re-served here is open data or volunteer data its
           contributor chose to share. These limits exist to keep the service
-          healthy and reward the people who feed it.
+          healthy and reward the people who contribute to it.
         </p>
       </div>
       <div class="border-line mt-10 overflow-x-auto rounded-2xl border">
@@ -539,10 +539,10 @@ const licenses = [
     </Container>
   </section>
 
-  <!-- Feed -->
+  <!-- Contribute -->
   <section class="py-16 lg:py-24">
     <Container>
-      <SectionDivider index={3} total={4} label="Feed" id="contribute" />
+      <SectionDivider index={3} total={4} label="Contribute" id="contribute" />
       <div
         class="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
       >
@@ -550,8 +550,8 @@ const licenses = [
           <h2 class="mb-5">Put your receiver on the map.</h2>
           <p class="text-fg-muted mb-6 text-lg">
             Whatever your antenna hears is re-served to everyone, and
-            deduplicated against every other station. Feed 1,000 messages a day
-            and your token moves to the Feeder tier on its own.
+            deduplicated against every other station. Contribute 1,000 messages
+            a day and your token moves to the Contributor tier on its own.
           </p>
           <p class="text-fg-faint text-sm">
             Watch your station arrive at <code class="text-fg-muted"

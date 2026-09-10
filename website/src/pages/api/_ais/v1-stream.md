@@ -75,7 +75,7 @@ The first frame on every connection, with the limits in effect, so you can size 
 }
 ```
 
-`conns` is concurrent streams, `rate` is messages a second per stream (excess events are thinned, and the stream stays up), `mmsis` is vessels followed by MMSI per subscription, and `area` is the total subscribed box area in square degrees (a 20°×20° box is 400, and MMSI-only subscriptions do not count). An absent limit is unlimited, and a `bbox` list, when present, names the boxes every subscription must fit inside. `feeder: true` means a personal token is currently earning the feeder tier. On an anonymous socket, `conns` and `connects_per_min` are shared by everyone behind your address.
+`conns` is concurrent streams, `rate` is messages a second per stream (excess events are thinned, and the stream stays up), `mmsis` is vessels followed by MMSI per subscription, and `area` is the total subscribed box area in square degrees (a 20°×20° box is 400, and MMSI-only subscriptions do not count). An absent limit is unlimited, and a `bbox` list, when present, names the boxes every subscription must fit inside. `feeder: true` means a personal token is currently earning the contributor tier. On an anonymous socket, `conns` and `connects_per_min` are shared by everyone behind your address.
 
 #### `event`
 
