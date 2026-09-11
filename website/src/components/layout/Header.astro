@@ -46,15 +46,28 @@ const isCurrent = (href: string) => currentPath.startsWith(href);
       }
     </ul>
 
-    <a
-      href="https://github.com/openwatersio"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="btn btn-secondary btn-sm hidden md:inline-flex"
-    >
-      <Icon name="mdi:github" class="size-4" />
-      GitHub
-    </a>
+    <div class="hidden items-center gap-4 md:flex">
+      <a
+        href="https://discord.gg/NeMyrYMGr"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Discord"
+        title="Join us on Discord"
+        class="text-fg-muted hover:text-fg-strong"
+      >
+        <Icon name="mdi:discord" class="size-5" />
+      </a>
+      <a
+        href="https://github.com/openwatersio"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub"
+        title="View on GitHub"
+        class="text-fg-muted hover:text-fg-strong"
+      >
+        <Icon name="mdi:github" class="size-5" />
+      </a>
+    </div>
 
     <button
       id="mobile-menu-button"
