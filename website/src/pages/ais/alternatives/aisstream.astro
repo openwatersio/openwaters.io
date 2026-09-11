@@ -43,7 +43,7 @@ const alternatives: {
       },
       {
         label: "Price",
-        html: "free without a token (2 streams, 20 msg/s, about 10°×10°); free personal token in one click, never expires (2 streams, 50 msg/s, about 20°×20°, or 50 vessels by MMSI anywhere); feeder tier is earned by feeding a receiver; commercial by arrangement.",
+        html: "free without a token (2 streams, 20 msg/s, about 10°×10°); free personal token in one click, never expires (2 streams, 50 msg/s, about 20°×20°, or 50 vessels by MMSI anywhere); contributor tier is earned by contributing a receiver; commercial by arrangement.",
       },
       {
         label: "License",
@@ -212,7 +212,7 @@ const glanceRows: [string, ...string[]][] = [
     "no (≤1/min)",
     "yes",
     "global, 1,600+ stations, 1–6 min",
-    "feeders only",
+    "contributors only",
     "yes, confirmed by email",
     "no",
   ],
@@ -301,23 +301,21 @@ const faqSchema = {
     <div class="mx-auto max-w-4xl">
       <a
         href="/ais/"
-        class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+        class="text-accent hover:text-accent-hover mb-4 inline-flex items-center gap-1 text-sm font-medium"
       >
         <Icon name="mdi:arrow-left" class="size-4" />
         AIS
       </a>
 
       <h1 class="mb-2">aisstream.io alternatives</h1>
-      <p class="mb-4 text-sm text-(--text-muted)">
-        Last checked 4 September 2026
-      </p>
+      <p class="text-fg-faint mb-4 text-sm">Last checked 4 September 2026</p>
 
       <p class="text-lead mb-8">
         If your aisstream.io client is sitting on a connection that delivers
-        nothing, point it at <code class="rounded bg-(--surface-subtle) px-1"
+        nothing, point it at <code class="bg-surface rounded px-1"
           >wss://ais.openwaters.io/v0/stream</code
-        > with an aiscast token as the <code
-          class="rounded bg-(--surface-subtle) px-1">APIKey</code
+        > with an aiscast token as the <code class="bg-surface rounded px-1"
+          >APIKey</code
         > and it starts receiving again. Same subscribe message, same frames. If you
         need global coverage with an SLA, that is a paid product (Kpler, VesselFinder,
         Datalastic) and none of them stream. If you run a receiver, AISHub's snapshot
@@ -328,17 +326,14 @@ const faqSchema = {
       <nav
         data-nosnippet
         aria-label="On this page"
-        class="mb-12 rounded-lg border border-(--border) bg-(--surface-subtle) px-5 py-4 text-sm"
+        class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
       >
         <span class="mr-2 font-semibold">On this page:</span>
         {
           sections.map((s, i) => (
             <>
-              {i > 0 && <span class="mx-2 text-(--text-muted)">·</span>}
-              <a
-                href={`#${s.id}`}
-                class="text-(--accent) hover:text-(--accent-hover)"
-              >
+              {i > 0 && <span class="text-fg-faint mx-2">·</span>}
+              <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
                 {s.label}
               </a>
             </>
@@ -349,7 +344,7 @@ const faqSchema = {
       <h2 id="why" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         Why people look for an alternative
       </h2>
-      <div class="mb-12 space-y-4 text-(--text-secondary)">
+      <div class="text-fg-muted mb-12 space-y-4">
         <p>
           aisstream.io is the only free service that pushes global AIS over a
           WebSocket, and it is a one-person project that has been failing the
@@ -383,7 +378,7 @@ const faqSchema = {
       <h2 id="criteria" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         What to look for in a replacement
       </h2>
-      <ul class="mb-12 space-y-3 text-(--text-secondary)">
+      <ul class="text-fg-muted mb-12 space-y-3">
         <li>
           <span class="font-semibold">Push or pull.</span> aisstream is push: subscribe
           once, receive forever. Almost everything else is a REST API you poll, which
@@ -419,16 +414,16 @@ const faqSchema = {
               <h3 class="mb-2 text-xl font-semibold">
                 {i + 1}. {a.name}
               </h3>
-              {a.intro && <p class="mb-4 text-(--text-secondary)">{a.intro}</p>}
+              {a.intro && <p class="text-fg-muted mb-4">{a.intro}</p>}
               {/* The global dl style is a label | text grid: one scannable row per point. */}
               <dl class="gap-y-3">
                 {a.bullets.map((b) => (
                   <>
                     <dt class="pt-px">{b.label}</dt>
-                    <dd class="text-(--text-secondary)" set:html={b.html} />
+                    <dd class="text-fg-muted" set:html={b.html} />
                   </>
                 ))}
-                <dt class="pt-px text-(--accent)">Best for</dt>
+                <dt class="text-accent pt-px">Best for</dt>
                 <dd>{a.best}</dd>
               </dl>
               {i === 0 && (
@@ -442,7 +437,7 @@ const faqSchema = {
           ))
         }
       </div>
-      <p class="mb-12 text-(--text-secondary)">
+      <p class="text-fg-muted mb-12">
         Also seen: MyShipTracking (REST from €90/month, public or third-party
         use of the data prohibited) and Marinesia (the cheapest paid API found,
         about €14 a quarter as of August 2026, REST polling only, and the one
@@ -454,7 +449,7 @@ const faqSchema = {
       </h2>
       <div class="mb-12 overflow-x-auto">
         <table class="w-full min-w-lg text-sm">
-          <thead class="bg-(--surface-subtle)">
+          <thead class="bg-surface">
             <tr>
               <th scope="col" class="px-3 py-2 text-left"></th>
               {
@@ -466,7 +461,7 @@ const faqSchema = {
               }
             </tr>
           </thead>
-          <tbody class="divide-y divide-(--border-subtle)">
+          <tbody class="divide-line divide-y">
             {
               glanceRows.map(([name, ...cells]) => (
                 <tr>
@@ -474,7 +469,7 @@ const faqSchema = {
                     {name}
                   </th>
                   {cells.map((c) => (
-                    <td class="px-3 py-2 text-(--text-secondary)">{c}</td>
+                    <td class="text-fg-muted px-3 py-2">{c}</td>
                   ))}
                 </tr>
               ))
@@ -486,7 +481,7 @@ const faqSchema = {
       <h2 id="which" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         Which one
       </h2>
-      <ul class="mb-12 space-y-3 text-(--text-secondary)">
+      <ul class="text-fg-muted mb-12 space-y-3">
         {
           which.map((w) => (
             <li>
@@ -500,39 +495,36 @@ const faqSchema = {
         Switching from aisstream.io to aiscast
       </h2>
       <ol
-        class="mb-6 list-decimal space-y-2 pl-5 text-(--text-secondary) marker:text-(--text-muted)"
+        class="text-fg-muted marker:text-fg-faint mb-6 list-decimal space-y-2 pl-5"
       >
         <li>Get a token (one click, stays in your browser, never expires).</li>
         <li>
-          Replace <code class="rounded bg-(--surface-subtle) px-1"
+          Replace <code class="bg-surface rounded px-1"
             >wss://stream.aisstream.io/v0/stream</code
-          > with <code class="rounded bg-(--surface-subtle) px-1"
+          > with <code class="bg-surface rounded px-1"
             >wss://ais.openwaters.io/v0/stream</code
           >.
         </li>
         <li>
-          Put the token in <code class="rounded bg-(--surface-subtle) px-1"
-            >APIKey</code
-          >. Everything else stays: <code
-            class="rounded bg-(--surface-subtle) px-1">BoundingBoxes</code
-          >, <code class="rounded bg-(--surface-subtle) px-1"
-            >FiltersShipMMSI</code
-          >, <code class="rounded bg-(--surface-subtle) px-1"
-            >FilterMessageTypes</code
-          >, and the <code class="rounded bg-(--surface-subtle) px-1"
-            >MessageType</code
-          > / <code class="rounded bg-(--surface-subtle) px-1">MetaData</code> /
-          <code class="rounded bg-(--surface-subtle) px-1">Message</code> frame shape.
+          Put the token in <code class="bg-surface rounded px-1">APIKey</code>.
+          Everything else stays: <code class="bg-surface rounded px-1"
+            >BoundingBoxes</code
+          >, <code class="bg-surface rounded px-1">FiltersShipMMSI</code>, <code
+            class="bg-surface rounded px-1">FilterMessageTypes</code
+          >, and the <code class="bg-surface rounded px-1">MessageType</code> / <code
+            class="bg-surface rounded px-1">MetaData</code
+          > /
+          <code class="bg-surface rounded px-1">Message</code> frame shape.
         </li>
       </ol>
 
       <div class="mb-6 grid gap-4 sm:grid-cols-2">
         <div>
-          <p class="mb-2 text-sm font-semibold text-(--text-muted)">Before</p>
+          <p class="text-fg-faint mb-2 text-sm font-semibold">Before</p>
           <CodeBlock code="wss://stream.aisstream.io/v0/stream" />
         </div>
         <div>
-          <p class="mb-2 text-sm font-semibold text-(--text-muted)">After</p>
+          <p class="text-fg-faint mb-2 text-sm font-semibold">After</p>
           <CodeBlock code="wss://ais.openwaters.io/v0/stream" />
         </div>
       </div>
@@ -541,29 +533,29 @@ const faqSchema = {
         <a href="/ais/token/" class="btn btn-primary">Get a token</a>
       </p>
 
-      <div class="mb-12 space-y-4 text-(--text-secondary)">
+      <div class="text-fg-muted mb-12 space-y-4">
         <p>
           What changes: the limits are per token rather than per IP (2
           concurrent streams, 50 messages a second, about 20°×20°), so a
           world-sized bounding box is refused with a message that says so
           instead of silently throttled. Where aisstream's decoder was wrong (<code
-            class="rounded bg-(--surface-subtle) px-1">Valid: true</code
+            class="bg-surface rounded px-1">Valid: true</code
           > on out-of-range values, message 27 labelled 23), <code
-            class="rounded bg-(--surface-subtle) px-1">/v0</code
+            class="bg-surface rounded px-1">/v0</code
           > reproduces it on purpose so nothing breaks; <code
-            class="rounded bg-(--surface-subtle) px-1">/v1</code
+            class="bg-surface rounded px-1">/v1</code
           > gets it right. The full list is in the <a href="/api/ais/"
             >API reference</a
           >.
         </p>
         <p>
-          When you have a minute, move to <code
-            class="rounded bg-(--surface-subtle) px-1">/v1/stream</code
+          When you have a minute, move to <code class="bg-surface rounded px-1"
+            >/v1/stream</code
           >: no token for subscribing, one JSON event per message with <code
-            class="rounded bg-(--surface-subtle) px-1">source</code
-          >, <code class="rounded bg-(--surface-subtle) px-1">station</code>,
-          the raw sentence and the decoded fields, an ack when your subscription
-          is live, a heartbeat, and a close reason when we close.
+            class="bg-surface rounded px-1">source</code
+          >, <code class="bg-surface rounded px-1">station</code>, the raw
+          sentence and the decoded fields, an ack when your subscription is
+          live, a heartbeat, and a close reason when we close.
         </p>
       </div>
 
@@ -573,12 +565,12 @@ const faqSchema = {
           faq.map((item) => (
             <div>
               <h3 class="mb-1 font-semibold">{item.q}</h3>
-              <p class="text-(--text-secondary)">{item.a}</p>
+              <p class="text-fg-muted">{item.a}</p>
             </div>
           ))
         }
       </div>
-      <p class="mt-8 text-sm text-(--text-secondary)">
+      <p class="text-fg-muted mt-8 text-sm">
         Questions, or a source we missed? <a href={`mailto:${CONTACT_EMAIL}`}
           >{CONTACT_EMAIL}</a
         >.

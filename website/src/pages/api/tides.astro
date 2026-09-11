@@ -36,14 +36,14 @@ const sections = [
   sections={sections}
 >
   <h1 class="mb-6">Tides API</h1>
-  <p class="mb-12 text-xl text-(--text-secondary)">
+  <p class="text-fg-muted mb-12 text-xl">
     Tide predictions from harmonic constituents, powered by the open source{" "}
     <a
       href="https://github.com/neaps"
-      class="font-medium text-(--accent) hover:text-(--accent-hover)">Neaps</a
+      class="text-accent hover:text-accent-hover font-medium">Neaps</a
     > engine. Open and free, no authentication required, and described by an <a
       href="/openapi.json"
-      class="font-medium text-(--accent) hover:text-(--accent-hover)"
+      class="text-accent hover:text-accent-hover font-medium"
       >OpenAPI specification</a
     >.
   </p>
@@ -54,20 +54,18 @@ const sections = [
       <div class="space-y-6">
         <div>
           <h3 class="mb-3 text-xl font-semibold">Authentication</h3>
-          <p class="text-(--text-secondary)">
+          <p class="text-fg-muted">
             The tides API is open and does not require authentication.
           </p>
         </div>
 
         <div>
           <h3 class="mb-3 text-xl font-semibold">Rate Limits</h3>
-          <ul
-            class="ml-4 list-inside list-disc space-y-1 text-(--text-secondary)"
-          >
+          <ul class="text-fg-muted ml-4 list-inside list-disc space-y-1">
             <li>100 requests per minute per IP address</li>
             <li>10,000 requests per day per IP address</li>
           </ul>
-          <p class="mt-2 text-sm text-(--text-muted)">
+          <p class="text-fg-faint mt-2 text-sm">
             If you need higher limits for a production application, please
             contact us.
           </p>
@@ -75,11 +73,11 @@ const sections = [
 
         <div>
           <h3 class="mb-3 text-xl font-semibold">Error Handling</h3>
-          <p class="mb-2 text-(--text-secondary)">
+          <p class="text-fg-muted mb-2">
             Errors are returned with appropriate HTTP status codes and a JSON
             body:
           </p>
-          <div class="bg-navy-900 overflow-x-auto rounded-lg p-4 text-white">
+          <div class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4">
             <pre
               class="text-sm"><code>{`{
   "message": "Invalid parameters",

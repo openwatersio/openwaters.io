@@ -200,7 +200,7 @@ export default function SkyDome() {
         }}
       />
       {/* Sky: a horizon panorama, 300° of compass across the frame */}
-      <div className="overflow-hidden rounded-xl border border-(--border)">
+      <div className="border-line overflow-hidden rounded-xl border">
         <svg
           viewBox={`0 0 ${DOME_WIDTH} ${DOME_HEIGHT}`}
           className="block w-full"
@@ -344,14 +344,14 @@ export default function SkyDome() {
           max={1439}
           value={Math.min(1439, Math.max(0, minutesIntoDay))}
           onChange={(e) => setMinutes(Number(e.target.value))}
-          className="w-full accent-(--accent)"
+          className="accent-accent w-full"
           aria-label="Time of day"
         />
       </div>
 
       {/* Readouts */}
       {day.error ? (
-        <div className="card text-(--text-secondary)">
+        <div className="card text-fg-muted">
           Couldn't compute events for this date.
         </div>
       ) : (
@@ -361,9 +361,7 @@ export default function SkyDome() {
               const t = firstOf(kind);
               return (
                 <div key={kind}>
-                  <dt className="text-sm text-(--text-secondary)">
-                    {SUN_LABELS[kind]}
-                  </dt>
+                  <dt className="text-fg-muted text-sm">{SUN_LABELS[kind]}</dt>
                   <dd className="text-lg font-semibold tabular-nums">
                     {t ? (
                       <DateTime datetime={t} timeZone={place.tz} {...hm} />
@@ -376,7 +374,7 @@ export default function SkyDome() {
             },
           )}
           <div>
-            <dt className="text-sm text-(--text-secondary)">Moonrise</dt>
+            <dt className="text-fg-muted text-sm">Moonrise</dt>
             <dd className="text-lg font-semibold tabular-nums">
               {moonRise ? (
                 <DateTime datetime={moonRise} timeZone={place.tz} {...hm} />
@@ -386,7 +384,7 @@ export default function SkyDome() {
             </dd>
           </div>
           <div>
-            <dt className="text-sm text-(--text-secondary)">Moonset</dt>
+            <dt className="text-fg-muted text-sm">Moonset</dt>
             <dd className="text-lg font-semibold tabular-nums">
               {moonSet ? (
                 <DateTime datetime={moonSet} timeZone={place.tz} {...hm} />
@@ -396,10 +394,10 @@ export default function SkyDome() {
             </dd>
           </div>
           <div>
-            <dt className="text-sm text-(--text-secondary)">Moon phase</dt>
+            <dt className="text-fg-muted text-sm">Moon phase</dt>
             <dd className="text-lg font-semibold">
               {phaseName(sky.illum.phase)}{" "}
-              <span className="text-(--text-secondary) tabular-nums">
+              <span className="text-fg-muted tabular-nums">
                 {Math.round(sky.illum.fraction * 100)}%
               </span>
             </dd>

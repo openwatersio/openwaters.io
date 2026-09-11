@@ -119,7 +119,7 @@ print(sirius.altDeg, sirius.azDeg)`;
     <div class="mx-auto max-w-4xl">
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <span class="text-(--accent)">
+          <span class="text-accent">
             <Icon name="mdi:weather-sunset-up" class="size-10" />
           </span>
           <h1 class="mb-0">Almanac</h1>
@@ -128,7 +128,7 @@ print(sirius.altDeg, sirius.azDeg)`;
           href={REPO}
           target="_blank"
           rel="noopener noreferrer"
-          class="btn btn-outline inline-flex items-center gap-2"
+          class="btn btn-secondary inline-flex items-center gap-2"
         >
           <Icon name="mdi:github" class="size-6" />
           View on GitHub
@@ -152,11 +152,10 @@ print(sirius.altDeg, sirius.azDeg)`;
       <SkyDome client:only="react">
         <div slot="fallback" class="space-y-6">
           <div
-            class="mx-auto aspect-square w-full max-w-[34rem] animate-pulse rounded-full bg-(--surface-subtle)"
+            class="bg-surface mx-auto aspect-square w-full max-w-[34rem] animate-pulse rounded-full"
           >
           </div>
-          <div class="h-6 w-full animate-pulse rounded bg-(--surface-subtle)">
-          </div>
+          <div class="bg-surface h-6 w-full animate-pulse rounded"></div>
         </div>
       </SkyDome>
 
@@ -169,7 +168,7 @@ print(sirius.altDeg, sirius.azDeg)`;
           <h2 id="moon-filmstrip-title" class="mb-3 text-3xl font-semibold">
             A month of Moon
           </h2>
-          <p class="text-(--text-secondary)">
+          <p class="text-fg-muted">
             Watch a crescent grow into a full Moon and fade again. Choose a
             month, tap a disc or scrub through the days to explore the Moon's
             phase and illumination.
@@ -177,7 +176,7 @@ print(sirius.altDeg, sirius.azDeg)`;
         </div>
         <MoonFilmstrip initialMonth={initialMonth} client:load />
         <details>
-          <summary class="cursor-pointer font-medium text-(--accent)"
+          <summary class="text-accent cursor-pointer font-medium"
             >Show the TypeScript</summary
           >
           <CodeBlock code={moonCode} class="mt-4" />
@@ -193,7 +192,7 @@ print(sirius.altDeg, sirius.azDeg)`;
           <h2 id="twilight-ribbon-title" class="mb-3 text-3xl font-semibold">
             Where night disappears
           </h2>
-          <p class="text-(--text-secondary)">
+          <p class="text-fg-muted">
             A full day, from sunlight through civil, nautical and astronomical
             twilight into night. Change latitude and season to find the midnight
             Sun—or a day when the Sun never rises.
@@ -201,17 +200,17 @@ print(sirius.altDeg, sirius.azDeg)`;
         </div>
         <TwilightRibbon client:load />
         <details>
-          <summary class="cursor-pointer font-medium text-(--accent)"
+          <summary class="text-accent cursor-pointer font-medium"
             >Show the TypeScript</summary
           >
           <CodeBlock code={twilightCode} class="mt-4" />
         </details>
       </section>
 
-      <p class="mt-8 text-(--text-secondary)">
+      <p class="text-fg-muted mt-8">
         The same astronomy engine powers <a
           href="https://slackwater.xyz/"
-          class="font-medium text-(--accent) underline-offset-4 hover:underline"
+          class="text-accent font-medium underline-offset-4 hover:underline"
           >Slackwater's Sun and Moon views</a
         >, with Moon illumination and sunrise/sunset alongside the tide
         timeline.
@@ -227,7 +226,7 @@ print(sirius.altDeg, sirius.azDeg)`;
         </h2>
         <SunYear client:load />
         <details>
-          <summary class="cursor-pointer font-medium text-(--accent)"
+          <summary class="text-accent cursor-pointer font-medium"
             >Show the TypeScript</summary
           >
           <CodeBlock
@@ -253,14 +252,14 @@ console.log(points);`}
         <h2 id="lunar-eclipses-title" class="text-3xl font-semibold">
           The Moon in Earth's shadow
         </h2>
-        <p class="text-(--text-secondary)">
+        <p class="text-fg-muted">
           Explore penumbral, partial and total lunar eclipses with real examples
           from 2026–2027. Scrub across each event to see what changes on the
           Moon itself.
         </p>
         <LunarEclipseDemo client:load />
         <details>
-          <summary class="cursor-pointer font-medium text-(--accent)"
+          <summary class="text-accent cursor-pointer font-medium"
             >Show the TypeScript</summary
           >
           <CodeBlock
@@ -288,14 +287,12 @@ for (const eclipse of eclipses) {
             features.map((feature) => (
               <Card>
                 <div class="flex items-start gap-3">
-                  <div class="text-(--accent)">
+                  <div class="text-accent">
                     <Icon name={feature.icon} class="size-8" />
                   </div>
                   <div>
                     <h3 class="mb-2 text-lg font-semibold">{feature.title}</h3>
-                    <p class="text-sm text-(--text-secondary)">
-                      {feature.body}
-                    </p>
+                    <p class="text-fg-muted text-sm">{feature.body}</p>
                   </div>
                 </div>
               </Card>
@@ -328,24 +325,22 @@ for (const eclipse of eclipses) {
             </div>
           </div>
         </Card>
-        <p class="mt-4 text-sm text-(--text-secondary)">
+        <p class="text-fg-muted mt-4 text-sm">
           Supported interval: 1950-01-01 through 2100-12-31. Where the library
           is going next is written down in the <a
             href={ROADMAP}
-            class="text-(--accent) hover:underline">roadmap</a
+            class="text-accent hover:underline">roadmap</a
           >.
         </p>
       </div>
 
       <!-- Open Source -->
-      <Card
-        class="from-ocean-600 to-ocean-700 border-0 bg-linear-to-r text-white"
-      >
+      <Card class="">
         <div class="text-center">
-          <h2 class="mb-4 text-3xl font-semibold text-white">
+          <h2 class="text-fg-strong mb-4 text-3xl font-semibold">
             Free &amp; Open Source
           </h2>
-          <p class="text-ocean-50 mb-6 text-xl text-balance">
+          <p class="text-fg-muted mb-6 text-xl text-balance">
             Almanac is MIT licensed, with its astronomy translated from Don
             Cross's Astronomy Engine. Use it, contribute to it, or fork it.
           </p>
@@ -354,14 +349,12 @@ for (const eclipse of eclipses) {
               href={REPO}
               target="_blank"
               rel="noopener noreferrer"
-              class="btn text-ocean-700 hover:bg-ocean-50 bg-white"
+              class="btn btn-primary"
             >
               <Icon name="mdi:github" class="size-6" />
               View on GitHub
             </a>
-            <a href={ROADMAP} class="btn btn-outline border-white text-white">
-              Roadmap
-            </a>
+            <a href={ROADMAP} class="btn btn-secondary"> Roadmap </a>
           </div>
         </div>
       </Card>

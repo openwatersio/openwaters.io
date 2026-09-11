@@ -16,6 +16,8 @@
     "@astrojs/check": "^0.9.10",
     "@astrojs/cloudflare": "^14.2.4",
     "@astrojs/react": "^6.0.5",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
     "@iconify-json/mdi": "^1.2.3",
     "@neaps/api": "*",
     "@neaps/react": "*",

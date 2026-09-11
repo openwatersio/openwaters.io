@@ -91,7 +91,7 @@ export function BottomDrawer({ children, onFocus }: BottomDrawerProps) {
   return (
     <div
       ref={drawerRef}
-      className="fixed right-0 bottom-0 left-0 z-10 rounded-t-3xl bg-(--surface) shadow-2xl transition-all duration-300 ease-out md:hidden"
+      className="bg-canvas fixed right-0 bottom-0 left-0 z-10 rounded-t-3xl shadow-2xl transition-all duration-300 ease-out md:hidden"
       style={{
         height: isDragging ? undefined : getDrawerHeight(),
         touchAction: "none",
@@ -105,7 +105,7 @@ export function BottomDrawer({ children, onFocus }: BottomDrawerProps) {
         className="flex cursor-pointer justify-center pt-3 pb-2"
         onClick={handleDrawerHeaderClick}
       >
-        <div className="h-1.5 w-12 rounded-full bg-(--border)" />
+        <div className="bg-line h-1.5 w-12 rounded-full" />
       </div>
 
       {/* Drawer content */}

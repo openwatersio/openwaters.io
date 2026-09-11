@@ -14,16 +14,16 @@ const { title, description, action, icon, ...props } = Astro.props;
 
 <Card {...props}>
   <div class="flex items-start gap-3">
-    <div class="text-(--accent)">
+    <div class="text-accent">
       {icon ? <Icon name={icon} class="size-8" /> : <slot name="icon" />}
     </div>
     <div>
       <h2 class="mb-2 text-lg font-semibold">{title}</h2>
-      <p class="mb-3 text-sm text-(--text-secondary)">
+      <p class="text-fg-muted mb-3 text-sm">
         {description}
       </p>
       <span
-        class="inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+        class="text-accent hover:text-accent-hover inline-flex items-center gap-1 text-sm font-medium"
       >
         {action}
         <svg

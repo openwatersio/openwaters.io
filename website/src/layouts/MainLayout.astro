@@ -37,6 +37,8 @@ const fullTitle =
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#05122a" />
     <meta name="generator" content={Astro.generator} />
 
     <!-- SEO -->
@@ -73,14 +75,6 @@ const fullTitle =
         />
       )
     }
-
-    <script is:inline>
-      const m = window.matchMedia("(prefers-color-scheme: dark)");
-      document.documentElement.classList.toggle("dark", m.matches);
-      m.addEventListener("change", (e) =>
-        document.documentElement.classList.toggle("dark", e.matches),
-      );
-    </script>
 
     <script
       is:inline

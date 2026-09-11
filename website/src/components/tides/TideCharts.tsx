@@ -255,7 +255,7 @@ export function TideChart({ type }: TideChartProps) {
           y1={chartData.zeroY}
           x2={width - padding}
           y2={chartData.zeroY}
-          stroke="var(--text-muted)"
+          stroke="var(--color-fg-faint)"
           strokeWidth="1"
           strokeDasharray="4"
         />
@@ -286,7 +286,7 @@ export function TideChart({ type }: TideChartProps) {
         </div>
       )}
       {chartData.label && (
-        <p className="mt-2 text-center text-sm text-(--text-muted)">
+        <p className="text-fg-faint mt-2 text-center text-sm">
           {chartData.label}
         </p>
       )}

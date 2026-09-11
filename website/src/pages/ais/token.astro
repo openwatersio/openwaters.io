@@ -8,19 +8,19 @@ import { CONTACT_EMAIL } from "../../utils/constants";
 const SERVER = "https://ais.openwaters.io";
 const VIEWER = "https://openwatersio.github.io/aiscast/";
 const pre =
-  "bg-navy-900 overflow-x-auto rounded-lg p-4 text-sm break-all whitespace-pre-wrap text-white";
+  "bg-well overflow-x-auto rounded-lg p-4 text-sm break-all whitespace-pre-wrap text-fg-strong";
 ---
 
 <MainLayout
   title="Get an aiscast token"
   description="A free personal token for ais.openwaters.io: send your AIS receiver's data and read the live stream with any aisstream.io client. No account, no expiry."
 >
-  <section class="bg-linear-to-b from-(--hero-from) to-(--hero-to) py-12">
+  <section class="py-12">
     <Container>
       <div class="mx-auto max-w-2xl">
         <a
           href="/ais/"
-          class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+          class="text-accent hover:text-accent-hover mb-4 inline-flex items-center gap-1 text-sm font-medium"
         >
           <Icon name="mdi:arrow-left" class="size-4" />
           AIS
@@ -42,13 +42,11 @@ const pre =
       data-viewer={VIEWER}
     >
       <Card>
-        <p class="mb-5 text-(--text-secondary)">
+        <p class="text-fg-muted mb-5">
           Your token is tied to this browser — come back any time and you'll get
           the same station id.
         </p>
-        <label
-          class="mb-5 flex items-start gap-3 text-sm text-(--text-secondary)"
-        >
+        <label class="text-fg-muted mb-5 flex items-start gap-3 text-sm">
           <input type="checkbox" data-agree class="mt-1" />
           <span>
             I accept the <a
@@ -59,9 +57,7 @@ const pre =
             under ODbL.
           </span>
         </label>
-        <label
-          class="mb-5 flex items-start gap-3 text-sm text-(--text-secondary)"
-        >
+        <label class="text-fg-muted mb-5 flex items-start gap-3 text-sm">
           <input type="checkbox" data-bind class="mt-1" />
           <span>
             Also bind this network address, so a UDP receiver sending from here
@@ -79,7 +75,7 @@ const pre =
             <Icon name="mdi:key-variant" class="size-5" />
             <span data-go-label>Generate token</span>
           </button>
-          <span data-status class="text-sm text-(--text-muted)"></span>
+          <span data-status class="text-fg-faint text-sm"></span>
         </div>
       </Card>
 
@@ -93,13 +89,13 @@ const pre =
             </button>
           </div>
           <pre data-token class={pre}></pre>
-          <p class="mt-3 text-sm text-(--text-secondary)">
-            Station id <code class="rounded bg-(--surface-subtle) px-1" data-sub
-            ></code>, expires <span data-exp></span>. Your data appears as <code
-              class="rounded bg-(--surface-subtle) px-1"
+          <p class="text-fg-muted mt-3 text-sm">
+            Station id <code class="bg-surface rounded px-1" data-sub></code>,
+            expires <span data-exp></span>. Your data appears as <code
+              class="bg-surface rounded px-1"
               >source: http:&lt;station id&gt;</code
             >; see it on <a data-stlink href={VIEWER}>the live map</a> or at <code
-              class="rounded bg-(--surface-subtle) px-1">/v1/stations</code
+              class="bg-surface rounded px-1">/v1/stations</code
             >.
           </p>
         </Card>
@@ -107,45 +103,45 @@ const pre =
         <Card>
           <h2 class="mb-4 text-xl font-semibold">Send your receiver's data</h2>
           <h3 class="mb-1 text-base font-semibold">AIS-catcher</h3>
-          <p class="mb-2 text-sm text-(--text-secondary)">
+          <p class="text-fg-muted mb-2 text-sm">
             Authenticated HTTP, works behind any NAT:
           </p>
           <pre data-cmd-aiscatcher class={`${pre} mb-5`}></pre>
           <h3 class="mb-1 text-base font-semibold">Signal K</h3>
-          <p class="mb-5 text-sm text-(--text-secondary)">
-            Install <code class="rounded bg-(--surface-subtle) px-1"
-              >signalk-aiscast</code
-            > from the App Store. It creates its own token; nothing to paste.
+          <p class="text-fg-muted mb-5 text-sm">
+            Install <code class="bg-surface rounded px-1">signalk-aiscast</code> from
+            the App Store. It creates its own token; nothing to paste.
           </p>
           <h3 class="mb-1 text-base font-semibold">UDP</h3>
-          <p class="text-sm text-(--text-secondary)">
+          <p class="text-fg-muted text-sm">
             docker-shipfeeder or any forwarder: host <code
-              class="rounded bg-(--surface-subtle) px-1">ais.openwaters.io</code
-            >, port <code class="rounded bg-(--surface-subtle) px-1">10110</code
-            >, no token. The station appears as an anonymous <code
-              class="rounded bg-(--surface-subtle) px-1">udp:…</code
+              class="bg-surface rounded px-1">ais.openwaters.io</code
+            >, port <code class="bg-surface rounded px-1">10110</code>, no
+            token. The station appears as an anonymous <code
+              class="bg-surface rounded px-1">udp:…</code
             > unless you bound this address above.
           </p>
         </Card>
 
         <Card>
           <h2 class="mb-2 text-xl font-semibold">Read the stream</h2>
-          <p class="mb-3 text-sm text-(--text-secondary)">
+          <p class="text-fg-muted mb-3 text-sm">
             Any aisstream.io client: hostname <code
-              class="rounded bg-(--surface-subtle) px-1">ais.openwaters.io</code
+              class="bg-surface rounded px-1">ais.openwaters.io</code
             >, API key = your token. Or from a shell:
           </p>
           <pre data-cmd-ws class={pre}></pre>
         </Card>
       </div>
 
-      <p class="text-sm text-(--text-muted)">
+      <p class="text-fg-faint text-sm">
         Personal tokens get 2 concurrent streams, 50 messages a second each, and
-        400 square degrees of subscribed area. Feed data and the same token
-        becomes a feeder on its own: 5 streams, 200 messages a second, any area,
-        and the raw NMEA feed. <a href="/ais#limits">Tiers and limits</a>. Need
-        a named station, or more than that? <a href={`mailto:${CONTACT_EMAIL}`}
-          >{CONTACT_EMAIL}</a
+        400 square degrees of subscribed area. Contribute data and the same
+        token becomes a contributor on its own: 5 streams, 200 messages a
+        second, any area, and the raw NMEA feed. <a href="/ais#limits"
+          >Tiers and limits</a
+        >. Need a named station, or more than that? <a
+          href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a
         >.
       </p>
     </div>

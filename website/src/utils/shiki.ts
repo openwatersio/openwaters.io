@@ -25,7 +25,7 @@ export async function highlight(
         pre(node) {
           this.addClassToHast(
             node,
-            "h-96 overflow-auto rounded-lg p-4 text-sm bg-navy-900! [tab-size:4]",
+            "h-80 overflow-auto p-5 text-sm bg-well! [tab-size:4]",
           );
         },
       },

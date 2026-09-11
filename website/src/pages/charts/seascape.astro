@@ -51,7 +51,7 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
   description="A map of the seafloor built from global open bathymetry with contours, depth shading, and soundings."
 >
   <!-- Map hero -->
-  <section class="border-b border-(--border)">
+  <section class="border-line border-b">
     {
       /* Non-interactive so scrolling past doesn't get captured by the map;
         clicking opens the viewer at this framing instead. Attribution lives
@@ -71,7 +71,7 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
     <div class="mx-auto max-w-4xl">
       <a
         href="/charts/"
-        class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:text-(--accent-hover)"
+        class="text-accent hover:text-accent-hover mb-4 inline-flex items-center gap-1 text-sm font-medium"
       >
         <Icon name="mdi:arrow-left" class="size-4" />
         All charts
@@ -104,31 +104,28 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
       <nav
         aria-label="On this page"
         data-nosnippet
-        class="mb-12 rounded-lg border border-(--border) bg-(--surface-subtle) px-5 py-4 text-sm"
+        class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
       >
         <span class="mr-2 font-semibold">On this page:</span>
-        <a href="#sources" class="text-(--accent) hover:text-(--accent-hover)"
+        <a href="#sources" class="text-accent hover:text-accent-hover"
           >Sources</a
         >
-        <span class="mx-2 text-(--text-muted)">·</span>
-        <a
-          href="#how-to-use"
-          class="text-(--accent) hover:text-(--accent-hover)">How to use</a
+        <span class="text-fg-faint mx-2">·</span>
+        <a href="#how-to-use" class="text-accent hover:text-accent-hover"
+          >How to use</a
         >
-        <span class="mx-2 text-(--text-muted)">·</span>
-        <a href="#license" class="text-(--accent) hover:text-(--accent-hover)"
+        <span class="text-fg-faint mx-2">·</span>
+        <a href="#license" class="text-accent hover:text-accent-hover"
           >License</a
         >
       </nav>
 
       <!-- Not for navigational use -->
-      <div class="mb-12 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4">
-        <h2
-          class="mb-2 flex items-center gap-2 text-lg font-semibold text-amber-900"
-        >
+      <div class="callout mb-12">
+        <h2 class="text-fg mb-2 flex items-center gap-2 text-lg font-semibold">
           <Icon name="mdi:alert" class="size-5" /> Not for navigational use
         </h2>
-        <p class="text-sm text-amber-900/90">
+        <p class="text-fg text-sm">
           Depths are <strong>not</strong> reduced to a chart datum and do not account
           for tides or water level — they are not charted depths. Data is interpolated
           and merged from sources of differing age, resolution, and datum, then smoothed
@@ -142,7 +139,7 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
       <h2 id="sources" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         Sources
       </h2>
-      <p class="mb-4 text-(--text-secondary)">
+      <p class="text-fg-muted mb-4">
         Seascape is a mosaic of {sources.length || "many"} sources. Global coverage
         is at ~450 m resolution (zoom 8), and regional detail is as low as ~8 m (zoom
         14) where high-resolution sources exist. Where sources overlap, datum-authoritative
@@ -159,7 +156,7 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
                     href={source.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-(--accent) hover:text-(--accent-hover)"
+                    class="text-accent hover:text-accent-hover"
                   >
                     {source.name ?? source.id}
                   </a>
@@ -167,20 +164,20 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
                   (source.name ?? source.id)
                 )}
                 <br />
-                <span class="text-(--text-secondary)">
+                <span class="text-fg-muted">
                   {source.producer} · License: {source.license}
                 </span>
               </li>
             ))}
           </ul>
         ) : (
-          <p class="mb-12 text-(--text-secondary)">
+          <p class="text-fg-muted mb-12">
             See the{" "}
             <a
               href="https://tiles.openwaters.io/seascape/manifest.json"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-(--accent) hover:text-(--accent-hover)"
+              class="text-accent hover:text-accent-hover"
             >
               deployed manifest
             </a>{" "}
@@ -194,7 +191,7 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
         How to use
       </h2>
 
-      <p class="mb-4 text-(--text-secondary)">
+      <p class="text-fg-muted mb-4">
         Seascape is published as web map tiles: a Terrarium-encoded raster DEM
         for depth shading, hillshade, and 3D terrain, and vector tiles carrying
         contour lines, spot soundings, and drying areas. Both work with MapLibre
@@ -202,13 +199,13 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
         renders the complete map from a single URL.
       </p>
 
-      <p class="mb-12 text-(--text-secondary)">
+      <p class="text-fg-muted mb-12">
         See the{" "}
         <a
           href="https://github.com/openwatersio/seascape#usage"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)"
+          class="text-accent hover:text-accent-hover"
           >Usage section of the README</a
         > for tile URLs, a ready-to-use style, and MapLibre examples.
       </p>
@@ -217,36 +214,34 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
       <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         License
       </h2>
-      <p class="mb-4 text-(--text-secondary)">
+      <p class="text-fg-muted mb-4">
         <strong>Tiles</strong> — the tile compilation served at <code
-          class="rounded bg-(--surface-subtle) px-1"
-          >tiles.openwaters.io/seascape</code
+          class="bg-surface rounded px-1">tiles.openwaters.io/seascape</code
         > is licensed{" "}
         <a
           href="https://creativecommons.org/licenses/by/4.0/"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)">CC BY 4.0</a
+          class="text-accent hover:text-accent-hover">CC BY 4.0</a
         >: free for any use with the following attribution:
       </p>
-      <div class="bg-navy-900 mb-4 overflow-x-auto rounded-lg p-4 text-white">
+      <div class="bg-well text-fg-strong mb-4 overflow-x-auto rounded-lg p-4">
         <pre
           class="text-sm"><code>© Open Waters: Seascape &lt;https://openwaters.io/charts/seascape&gt;</code></pre>
       </div>
-      <p class="mb-4 text-(--text-secondary)">
+      <p class="text-fg-muted mb-4">
         The TileJSON endpoints carry that credit in their{" "}
-        <code class="rounded bg-(--surface-subtle) px-1">attribution</code> field,
-        so MapLibre's attribution control displays it automatically, linking back
-        to this page. The underlying data remains under each source's own open terms,
-        listed above.
+        <code class="bg-surface rounded px-1">attribution</code> field, so MapLibre's
+        attribution control displays it automatically, linking back to this page.
+        The underlying data remains under each source's own open terms, listed above.
       </p>
-      <p class="mb-4 text-(--text-secondary)">
+      <p class="text-fg-muted mb-4">
         <strong>Code</strong> — the build pipeline is{" "}
         <a
           href="https://github.com/openwatersio/seascape/blob/main/LICENSE"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-(--accent) hover:text-(--accent-hover)">BSD-3-Clause</a
+          class="text-accent hover:text-accent-hover">BSD-3-Clause</a
         >.
       </p>
     </div>

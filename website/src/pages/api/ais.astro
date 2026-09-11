@@ -91,7 +91,7 @@ const groups: {
         protocol: "WS",
         path: `${WSS}/v1/nmea`,
         text: "NMEA",
-        summary: "Deduplicated raw NMEA back to feeders",
+        summary: "Deduplicated raw NMEA back to contributors",
         Content: V1Nmea,
       },
     ],
@@ -142,7 +142,7 @@ const sections = groups.map((group) => ({
 }));
 
 const description =
-  "Reference for the AIS API: live vessel traffic over WebSocket, Server-Sent Events, and raw NMEA, a GeoJSON snapshot of current positions, tokens, and how to feed in your own receiver.";
+  "Reference for the AIS API: live vessel traffic over WebSocket, Server-Sent Events, and raw NMEA, a GeoJSON snapshot of current positions, tokens, and how to contribute your own receiver.";
 
 const article = {
   "@context": "https://schema.org",
@@ -188,7 +188,7 @@ const article = {
       around the world, pushed to you as it happens, plus a snapshot of where
       everything is right now.
     </p>
-    <p class="mb-12 text-sm text-(--text-secondary)">
+    <p class="text-fg-muted mb-12 text-sm">
       Coming from aisstream.io? Change the hostname and keep your code: see{" "}
       <a href="/ais/vs/aisstream/">aiscast vs aisstream.io</a>.
     </p>
@@ -204,13 +204,13 @@ const article = {
           )}
           {tagDescriptions.get(tag) && (
             <div
-              class="prose mb-6 max-w-none text-(--text-secondary)"
+              class="prose text-fg-muted mb-6 max-w-none"
               set:html={md(tagDescriptions.get(tag)!)}
             />
           )}
           {note && (
             <div
-              class="prose mb-6 max-w-none text-(--text-secondary)"
+              class="prose text-fg-muted mb-6 max-w-none"
               set:html={md(note)}
             />
           )}

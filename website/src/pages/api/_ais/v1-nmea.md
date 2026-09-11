@@ -1,4 +1,4 @@
-Raw NMEA sentences for a chartplotter, OpenCPN, or your own decoder: every message Open Waters hears, deduplicated across all receivers, on `wss://ais.openwaters.io/v1/nmea`. It needs a token at the feeder tier or above, which a personal token earns by feeding 1,000 messages a day. Add `?bbox=minLat,minLon,maxLat,maxLon` (repeatable) to limit it to an area.
+Raw NMEA sentences for a chartplotter, OpenCPN, or your own decoder: every message Open Waters hears, deduplicated across all receivers, on `wss://ais.openwaters.io/v1/nmea`. It needs a token at the contributor tier or above, which a personal token earns by contributing 1,000 messages a day. Add `?bbox=minLat,minLon,maxLat,maxLon` (repeatable) to limit it to an area.
 
 [websocat](https://github.com/vi/websocat) prints frames as lines:
 

@@ -10,16 +10,16 @@ import { CONTACT_EMAIL } from "../../utils/constants";
   description="Documentation for Open Waters APIs - tide predictions, live AIS vessel traffic, bathymetry data, and more."
 >
   <h1 class="mb-6">API Documentation</h1>
-  <p class="mb-12 text-xl text-(--text-secondary)">
+  <p class="text-fg-muted mb-12 text-xl">
     Access marine data programmatically through free and open source APIs.
   </p>
 
   <div class="mb-16 space-y-6">
     <Card href="/api/tides/" class="flex items-start gap-4">
-      <Icon name="mdi:waves" class="size-8 shrink-0 text-(--accent)" />
+      <Icon name="mdi:waves" class="text-accent size-8 shrink-0" />
       <div>
         <h2 class="mb-2 text-2xl font-semibold">Tides API</h2>
-        <p class="text-(--text-secondary)">
+        <p class="text-fg-muted">
           Tide predictions from harmonic constituents for thousands of stations
           worldwide, with an OpenAPI specification.
         </p>
@@ -27,10 +27,10 @@ import { CONTACT_EMAIL } from "../../utils/constants";
     </Card>
 
     <Card href="/api/ais/" class="flex items-start gap-4">
-      <Icon name="mdi:radar" class="size-8 shrink-0 text-(--accent)" />
+      <Icon name="mdi:radar" class="text-accent size-8 shrink-0" />
       <div>
         <h2 class="mb-2 text-2xl font-semibold">AIS API</h2>
-        <p class="text-(--text-secondary)">
+        <p class="text-fg-muted">
           aiscast, the Open Waters AIS network: live vessel traffic streamed by
           bounding box over WebSocket, with a GeoJSON snapshot of current
           positions, an aisstream.io-compatible endpoint, and an OpenAPI
@@ -41,10 +41,10 @@ import { CONTACT_EMAIL } from "../../utils/constants";
   </div>
 
   <!-- Support -->
-  <Card class="border-(--accent) bg-(--accent-bg)">
+  <Card class="border-accent bg-accent/10">
     <div class="text-center">
       <h2 class="mb-3 text-2xl font-semibold">Need Help?</h2>
-      <p class="mb-6 text-(--text-secondary)">
+      <p class="text-fg-muted mb-6">
         Have questions about our APIs or need support?
       </p>
       <div class="flex flex-wrap justify-center gap-4">

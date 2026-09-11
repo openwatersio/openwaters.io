@@ -19,14 +19,14 @@ export default function SunYear() {
   return (
     <div className="space-y-5">
       <LocationPicker place={place} onChange={setPlace} />
-      <p className="text-sm text-(--text-secondary)">
+      <p className="text-fg-muted text-sm">
         The Sun at the same UTC time every day in 2026, chosen near noon at this
         longitude. Earth's tilt and changing orbital speed trace this figure
         eight, called an analemma.
       </p>
       <svg
         viewBox="0 0 800 360"
-        className="bg-navy-950 block w-full rounded-xl"
+        className="bg-well block w-full rounded-xl"
         role="img"
         aria-label={`Solar analemma over ${place.label}. Selected Sun altitude ${selected.altDeg.toFixed(1)} degrees, azimuth ${selected.azDeg.toFixed(1)} degrees.`}
       >
@@ -136,10 +136,10 @@ export default function SunYear() {
           max={points.length - 1}
           value={day}
           onChange={(e) => setDay(Number(e.target.value))}
-          className="block w-full accent-(--accent)"
+          className="accent-accent block w-full"
         />
       </label>
-      <p className="text-sm text-(--text-secondary) tabular-nums">
+      <p className="text-fg-muted text-sm tabular-nums">
         Altitude {selected.altDeg.toFixed(1)}° · azimuth{" "}
         {selected.azDeg.toFixed(1)}° · sampled at{" "}
         <DateTime

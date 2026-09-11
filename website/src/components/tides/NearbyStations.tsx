@@ -64,7 +64,7 @@ export function NearbyStationsIsland({
           showGeolocation={false}
           popupContent="simple"
           onStationSelect={handleStationSelect}
-          className="aspect-video overflow-hidden rounded-lg border border-(--border)"
+          className="border-line aspect-video overflow-hidden rounded-lg border"
         />
         <NearbyStations
           stationId={stationId}

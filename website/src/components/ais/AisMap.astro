@@ -50,10 +50,7 @@ const { class: className, center, zoom } = Astro.props;
 <script>
   // Adapted from the aiscast viewer (github.com/openwatersio/aiscast/viewer).
   import * as maplibregl from "../../utils/maplibre";
-  import type {
-    ExpressionSpecification,
-    LngLatLike,
-  } from "maplibre-gl";
+  import type { ExpressionSpecification, LngLatLike } from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 
   const SERVER = "https://ais.openwaters.io";
@@ -170,27 +167,10 @@ const { class: className, center, zoom } = Astro.props;
     });
     new ResizeObserver(() => map.resize()).observe(container);
 
-    let attribution: maplibregl.AttributionControl | null = null;
     const seenSources = new Set<string>();
     function noteSource(src: string) {
       if (!src || seenSources.has(src)) return;
       seenSources.add(src);
-      setAttribution();
-    }
-    function setAttribution() {
-      if (attribution) map.removeControl(attribution);
-      const customAttribution = [...seenSources].map(
-        (s) => LICENSES[s] || `AIS: ${esc(s)}`,
-      );
-      attribution = new maplibregl.AttributionControl({
-        compact: true,
-        customAttribution,
-      });
-      map.addControl(attribution);
-      // compact attribution starts expanded; collapse it to the ⓘ toggle
-      container
-        .querySelector(".maplibregl-ctrl-attrib")
-        ?.classList.remove("maplibregl-compact-show");
     }
 
     const vessels = new Map<number, Vessel>();
@@ -230,6 +210,12 @@ const { class: className, center, zoom } = Astro.props;
           noteSource(p.source);
         }
         dirty = true;
+        container.dispatchEvent(
+          new CustomEvent("ais:snapshot", {
+            bubbles: true,
+            detail: [...vessels].map(([mmsi, v]) => ({ mmsi, ...v })),
+          }),
+        );
       } catch (e) {
         console.warn("snapshot failed", e);
       }
@@ -301,6 +287,13 @@ const { class: className, center, zoom } = Astro.props;
       noteSource(ev.source);
       if (v.lat != null && !stale) pulse(v);
       dirty = true;
+      if (!stale)
+        container.dispatchEvent(
+          new CustomEvent("ais:event", {
+            bubbles: true,
+            detail: { mmsi: ev.mmsi, ...v },
+          }),
+        );
     }
 
     // ---- update pulses: expanding ring on a 2D canvas over the map; the rAF loop only runs while rings are live ----
@@ -416,7 +409,6 @@ const { class: className, center, zoom } = Astro.props;
     }
 
     map.on("load", () => {
-      setAttribution();
       map.getCanvasContainer().appendChild(pulseCanvas);
       map.addImage("ship", triangle(), { sdf: true });
       map.addSource("ais", {

@@ -13,9 +13,9 @@ interface Props {
 const { protocol, path, summary, id } = Astro.props;
 
 const protocolColors: Record<string, string> = {
-  WS: "bg-(--status-purple-bg) text-(--status-purple-text)",
-  SSE: "bg-(--status-blue-bg) text-(--status-blue-text)",
-  UDP: "bg-(--status-orange-bg) text-(--status-orange-text)",
+  WS: "bg-badge-ws/15 text-badge-ws",
+  SSE: "bg-badge-post/15 text-badge-post",
+  UDP: "bg-badge-patch/15 text-badge-patch",
 };
 ---
 
@@ -32,7 +32,7 @@ const protocolColors: Record<string, string> = {
 
     {summary && <p class="font-medium">{summary}</p>}
 
-    <div class="prose max-w-none text-(--text-secondary)">
+    <div class="prose text-fg-muted max-w-none">
       <slot />
     </div>
   </div>

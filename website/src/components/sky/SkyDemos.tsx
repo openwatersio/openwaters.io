@@ -37,7 +37,7 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
           <select
             aria-label="Moon month"
             value={month.slice(5)}
-            className="rounded-lg border bg-(--surface) px-3 py-2"
+            className="bg-canvas rounded-lg border px-3 py-2"
             onChange={(e) =>
               changeMonth(`${month.slice(0, 4)}-${e.target.value}`)
             }
@@ -54,7 +54,7 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
           <select
             aria-label="Moon year"
             value={month.slice(0, 4)}
-            className="rounded-lg border bg-(--surface) px-3 py-2"
+            className="bg-canvas rounded-lg border px-3 py-2"
             onChange={(e) => changeMonth(`${e.target.value}-${month.slice(5)}`)}
           >
             {Array.from({ length: 151 }, (_, i) => (
@@ -64,12 +64,12 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
             ))}
           </select>
         </label>
-        <span className="text-sm text-(--text-secondary)">
+        <span className="text-fg-muted text-sm">
           One disc per day · noon UTC
         </span>
       </div>
       <LocationPicker place={place} onChange={setPlace} />
-      <div className="bg-navy-950 overflow-hidden rounded-xl p-5 text-white sm:p-7">
+      <div className="bg-well text-fg-strong overflow-hidden rounded-xl p-5 sm:p-7">
         <div className="flex flex-wrap items-center justify-center gap-6 pb-6 sm:gap-10">
           <svg
             viewBox="0 0 160 160"
@@ -91,13 +91,13 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
           </svg>
           <div className="min-w-44 space-y-1">
             <p className="text-xl font-semibold sm:text-2xl">{name}</p>
-            <p className="text-navy-300">
-              <span className="text-3xl text-white tabular-nums">
+            <p className="text-fg-muted">
+              <span className="text-fg-strong text-3xl tabular-nums">
                 {Math.round(illumination.fraction * 100)}%
               </span>{" "}
               illuminated
             </p>
-            <p className="text-navy-300 text-sm">
+            <p className="text-fg-muted text-sm">
               <DateTime
                 datetime={instant}
                 timeZone={place.tz}
@@ -110,7 +110,7 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
               />{" "}
               {place.label}
             </p>
-            <p className="text-navy-300 text-sm">
+            <p className="text-fg-muted text-sm">
               Moon {Math.abs(altitude).toFixed(1)}°{" "}
               {altitude >= 0 ? "above" : "below"} the horizon here
             </p>
@@ -128,8 +128,8 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
               aria-label={`${month}-${String(i + 1).padStart(2, "0")}: ${phaseName(day.phase)}, ${Math.round(day.fraction * 100)}% illuminated`}
               onClick={() => setOffset(i + 0.5)}
               className={cn(
-                "focus-visible:outline-ocean-300 rounded-lg px-1 py-2 text-center text-xs tabular-nums hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2",
-                i === selectedDay && "ring-ocean-300 bg-white/10 ring-1",
+                "focus-visible:outline-accent hover:bg-surface-raised rounded-lg px-1 py-2 text-center text-xs tabular-nums focus-visible:outline-2 focus-visible:outline-offset-2",
+                i === selectedDay && "ring-accent bg-surface-raised ring-1",
               )}
             >
               <svg
@@ -151,9 +151,7 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
       <label className="block space-y-2 font-medium">
         <span>
           Day of month{" "}
-          <span className="text-(--text-secondary) tabular-nums">
-            {selectedDay + 1}
-          </span>
+          <span className="text-fg-muted tabular-nums">{selectedDay + 1}</span>
         </span>
         <input
           type="range"
@@ -163,7 +161,7 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
           step="1"
           value={selectedDay + 1}
           onChange={(e) => setOffset(Number(e.target.value) - 0.5)}
-          className="block w-full accent-(--accent)"
+          className="accent-accent block w-full"
         />
       </label>
       <div
@@ -185,7 +183,7 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
           </button>
         ))}
       </div>
-      <p className="text-sm text-(--text-secondary)">
+      <p className="text-fg-muted text-sm">
         Phase buttons jump to the exact instant. The upright discs illustrate
         illumination; their tilt in your sky depends on your location. Phase is
         effectively the same worldwide; location changes the local time and Moon
@@ -263,7 +261,7 @@ export function TwilightRibbon() {
             />
           ))}
         </svg>
-        <div className="mt-2 flex justify-between text-xs text-(--text-secondary) tabular-nums">
+        <div className="text-fg-muted mt-2 flex justify-between text-xs tabular-nums">
           {[0, 6, 12, 18, 24].map((hour) => (
             <span key={hour}>{hourLabel(hour)}</span>
           ))}
@@ -279,7 +277,7 @@ export function TwilightRibbon() {
           </span>
         ))}
       </div>
-      <p className="text-sm text-(--text-secondary)">
+      <p className="text-fg-muted text-sm">
         {daylight === 24
           ? "Midnight Sun: the Sun stays above the horizon all day. "
           : daylight === 0
@@ -297,7 +295,7 @@ export function TwilightRibbon() {
         .
       </p>
       <details className="text-sm">
-        <summary className="cursor-pointer font-medium text-(--accent)">
+        <summary className="text-accent cursor-pointer font-medium">
           Exact twilight intervals
         </summary>
         <ul className="mt-3 space-y-1">

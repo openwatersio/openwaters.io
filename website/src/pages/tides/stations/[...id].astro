@@ -74,7 +74,7 @@ const dehydratedState = dehydrate(queryClient);
         <div>
           <a
             href="/tides/stations/"
-            class="text-ocean-600 hover:text-ocean-700 inline-block"
+            class="text-accent hover:text-accent-hover inline-block"
           >
             ← Back to stations
           </a>
@@ -83,10 +83,7 @@ const dehydratedState = dehydrate(queryClient);
         {
           station.disclaimers &&
             station.disclaimers !== "No obvious issues" && (
-              <div
-                class="mb-4 flex items-center gap-3 rounded border p-4 text-sm"
-                style="background-color: var(--status-red-bg); color: var(--status-red-text); border-color: var(--status-red-border);"
-              >
+              <div class="callout text-alert mb-4 flex items-center gap-3 text-sm">
                 <Icon
                   name="mdi:alert-circle-outline"
                   class="mt-0.5 h-5 w-5 shrink-0"
@@ -105,7 +102,7 @@ const dehydratedState = dehydrate(queryClient);
         <Card class="mt-8">
           <section>
             <div
-              class="mb-6 flex items-center justify-between gap-8 border-b border-(--border) pb-4"
+              class="border-line mb-6 flex items-center justify-between gap-8 border-b pb-4"
             >
               <div>
                 <h3 class="text-xl">Station Data</h3>
@@ -151,7 +148,7 @@ const dehydratedState = dehydrate(queryClient);
                 </a>
                 {
                   !station.license.commercial_use && (
-                    <span class="ml-2 rounded bg-(--status-yellow-bg) px-2 py-0.5 text-xs text-(--status-yellow-text)">
+                    <span class="bg-highlight/15 text-highlight ml-2 rounded px-2 py-0.5 text-xs">
                       Non-commercial
                     </span>
                   )
@@ -162,9 +159,7 @@ const dehydratedState = dehydrate(queryClient);
                 station.license.notes && (
                   <>
                     <dt>License Notes</dt>
-                    <dd class="text-(--text-secondary)">
-                      {station.license.notes}
-                    </dd>
+                    <dd class="text-fg-muted">{station.license.notes}</dd>
                   </>
                 )
               }
@@ -188,7 +183,7 @@ const dehydratedState = dehydrate(queryClient);
                       {station.offsets.height.type === "ratio" ? "x" : "m"},
                       Low: {station.offsets.height.low}
                       {station.offsets.height.type === "ratio" ? "x" : "m"}
-                      <span class="ml-1 text-(--text-muted)">
+                      <span class="text-fg-faint ml-1">
                         ({station.offsets.height.type})
                       </span>
                     </dd>
@@ -227,7 +222,7 @@ const dehydratedState = dehydrate(queryClient);
         <Card>
           <section>
             <div
-              class="mb-6 flex items-center justify-between gap-8 border-b border-(--border-subtle) pb-4"
+              class="border-line mb-6 flex items-center justify-between gap-8 border-b pb-4"
             >
               <div>
                 <h3 class="text-xl">API</h3>
@@ -244,12 +239,12 @@ const dehydratedState = dehydrate(queryClient);
 
             <div class="space-y-4">
               <div>
-                <h4 class="mb-2 text-sm font-semibold text-(--text-secondary)">
+                <h4 class="text-fg-muted mb-2 text-sm font-semibold">
                   Get station info
                 </h4>
                 <div class="flex items-center gap-3 overflow-x-auto">
                   <span
-                    class="shrink-0 rounded-sm bg-(--status-green-bg) px-2 py-1 text-xs font-bold text-(--status-green-text)"
+                    class="bg-tide-high/15 text-tide-high shrink-0 rounded-sm px-2 py-1 text-xs font-bold"
                     >GET</span
                   >
                   <span class="font-mono text-sm"
@@ -259,12 +254,12 @@ const dehydratedState = dehydrate(queryClient);
               </div>
 
               <div>
-                <h4 class="mb-2 text-sm font-semibold text-(--text-secondary)">
+                <h4 class="text-fg-muted mb-2 text-sm font-semibold">
                   Get tide extremes (high/low)
                 </h4>
                 <div class="flex items-center gap-3 overflow-x-auto">
                   <span
-                    class="rounded-sm bg-(--status-green-bg) px-2 py-1 text-xs font-bold text-(--status-green-text)"
+                    class="bg-tide-high/15 text-tide-high rounded-sm px-2 py-1 text-xs font-bold"
                     >GET</span
                   >
                   <span class="font-mono text-sm"
@@ -278,7 +273,7 @@ const dehydratedState = dehydrate(queryClient);
         <Card>
           <section>
             <div
-              class="mb-6 flex items-center justify-between gap-8 border-b border-(--border-subtle) pb-4"
+              class="border-line mb-6 flex items-center justify-between gap-8 border-b pb-4"
             >
               <div>
                 <h3 class="text-xl">JavaScript</h3>
@@ -298,19 +293,19 @@ const dehydratedState = dehydrate(queryClient);
 
             <div class="space-y-4">
               <div>
-                <h4 class="mb-2 text-sm font-semibold text-(--text-secondary)">
+                <h4 class="text-fg-muted mb-2 text-sm font-semibold">
                   Install
                 </h4>
                 <pre
-                  class="bg-navy-900 overflow-x-auto rounded-lg p-4 text-sm text-white"><code>npm install neaps</code></pre>
+                  class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4 text-sm"><code>npm install neaps</code></pre>
               </div>
 
               <div>
-                <h4 class="mb-2 text-sm font-semibold text-(--text-secondary)">
+                <h4 class="text-fg-muted mb-2 text-sm font-semibold">
                   Get tide predictions
                 </h4>
                 <pre
-                  class="bg-navy-900 overflow-x-auto rounded-lg p-4 text-sm text-white"><code>{`import { findStation } from "neaps";
+                  class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4 text-sm"><code>{`import { findStation } from "neaps";
 
 const station = findStation("${station.id}");
 
