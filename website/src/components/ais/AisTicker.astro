@@ -69,8 +69,8 @@ const row =
     <span>Vessel</span>
     <span>MMSI</span>
     <span class="hidden sm:block">Position</span>
-    <span class="hidden text-right sm:block">SOG</span>
-    <span class="hidden text-right sm:block">COG</span>
+    <span class="hidden pr-5 text-right sm:block">SOG</span>
+    <span class="hidden pr-1.5 text-right sm:block">COG</span>
     <span></span>
   </div>
 
@@ -132,8 +132,8 @@ const row =
       <span class="truncate text-fg-strong">${r.name ? esc(r.name) : '<span class="text-fg-faint">—</span>'}</span>
       <span class="text-fg-faint">${r.mmsi}</span>
       <span class="hidden sm:block">${num(r.lat, 3)} ${num(r.lon, 3)}</span>
-      <span class="hidden text-right sm:block">${num(r.sog, 1)}</span>
-      <span class="hidden text-right sm:block">${num(r.cog, 0, 3)}</span>
+      <span class="hidden text-right sm:block">${num(r.sog, 1)} <span class="text-fg-faint">kn</span></span>
+      <span class="hidden text-right sm:block">${num(r.cog, 0, 3)}°</span>
       <span class="text-right text-fg-faint" data-seen="${r.seen}">${ago(r.seen)}</span>
     </div>`;
 
