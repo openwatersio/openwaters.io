@@ -255,7 +255,7 @@ export function TideChart({ type }: TideChartProps) {
           y1={chartData.zeroY}
           x2={width - padding}
           y2={chartData.zeroY}
-          stroke="varfg-faint"
+          stroke="var(--color-fg-faint)"
           strokeWidth="1"
           strokeDasharray="4"
         />

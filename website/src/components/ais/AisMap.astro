@@ -167,27 +167,10 @@ const { class: className, center, zoom } = Astro.props;
     });
     new ResizeObserver(() => map.resize()).observe(container);
 
-    let attribution: maplibregl.AttributionControl | null = null;
     const seenSources = new Set<string>();
     function noteSource(src: string) {
       if (!src || seenSources.has(src)) return;
       seenSources.add(src);
-      setAttribution();
-    }
-    function setAttribution() {
-      if (attribution) map.removeControl(attribution);
-      const customAttribution = [...seenSources].map(
-        (s) => LICENSES[s] || `AIS: ${esc(s)}`,
-      );
-      attribution = new maplibregl.AttributionControl({
-        compact: true,
-        customAttribution,
-      });
-      map.addControl(attribution);
-      // compact attribution starts expanded; collapse it to the ⓘ toggle
-      container
-        .querySelector(".maplibregl-ctrl-attrib")
-        ?.classList.remove("maplibregl-compact-show");
     }
 
     const vessels = new Map<number, Vessel>();
@@ -426,7 +409,6 @@ const { class: className, center, zoom } = Astro.props;
     }
 
     map.on("load", () => {
-      setAttribution();
       map.getCanvasContainer().appendChild(pulseCanvas);
       map.addImage("ship", triangle(), { sdf: true });
       map.addSource("ais", {
