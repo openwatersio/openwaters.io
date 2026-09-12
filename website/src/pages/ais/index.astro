@@ -803,23 +803,28 @@ const licenses = [
       }
     >,
   ) => {
-    document
-      .querySelectorAll<HTMLElement>("#ais-sources tr[data-ids]")
-      .forEach((tr) => {
-        const ids = tr.dataset.ids!.split(",");
-        const mine = Object.entries(sources).filter(([k]) =>
-          ids.includes(k.split(":")[0]!),
-        );
-        if (!mine.length) return;
-        const sum = (f: (v: (typeof mine)[number][1]) => number) =>
-          mine.reduce((n, [, v]) => n + f(v), 0);
-        const set = (k: string, v: string) =>
-          (tr.querySelector(`[data-stat=${k}]`)!.textContent = v);
-        set("vessels", sum((v) => v.vessels).toLocaleString());
-        set("exclusive", sum((v) => v.vessels_exclusive).toLocaleString());
-        set("events", sum((v) => v.events.last_24h).toLocaleString());
-        set("age", ago(Math.min(...mine.map(([, v]) => v.last_age_s))));
-      });
+    const rows = [
+      ...document.querySelectorAll<HTMLElement>("#ais-sources tr[data-ids]"),
+    ].map((tr) => {
+      const ids = tr.dataset.ids!.split(",");
+      const mine = Object.entries(sources).filter(([k]) =>
+        ids.includes(k.split(":")[0]!),
+      );
+      if (!mine.length) return { tr, exclusive: -1 };
+      const sum = (f: (v: (typeof mine)[number][1]) => number) =>
+        mine.reduce((n, [, v]) => n + f(v), 0);
+      const set = (k: string, v: string) =>
+        (tr.querySelector(`[data-stat=${k}]`)!.textContent = v);
+      const exclusive = sum((v) => v.vessels_exclusive);
+      set("vessels", sum((v) => v.vessels).toLocaleString());
+      set("exclusive", exclusive.toLocaleString());
+      set("events", sum((v) => v.events.last_24h).toLocaleString());
+      set("age", ago(Math.min(...mine.map(([, v]) => v.last_age_s))));
+      return { tr, exclusive };
+    });
+    rows
+      .sort((a, b) => b.exclusive - a.exclusive)
+      .forEach(({ tr }) => tr.parentElement!.appendChild(tr));
   };
 
   // Live stats: active stations, vessels in the cache, deduplicated events/sec.
