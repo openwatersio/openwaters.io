@@ -31,7 +31,7 @@
     "astro-icon": "^1.2.0",
     "clsx": "^2.1.1",
     "coordinate-format": "^1.0.0",
-    "maplibre-gl": "^6.6.0",
+    "maplibre-gl": "^6.8.0",
     "marked": "^18.0.12",
     "neaps": "*",
     "react": "^19.0.0",
