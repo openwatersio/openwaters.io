@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@astrojs/react";
@@ -28,6 +29,36 @@ const optimizeSsrDeps = {
 const cacheDir =
   process.argv[2] === "dev" ? "node_modules/.vite-dev" : undefined;
 
+// MapLibre only renders once src/utils/maplibre.ts has set its worker URL. Resolve every
+// client import of maplibre-gl to that module, including imports inside dependencies such
+// as @vis.gl/react-maplibre, and fail the build if anything still reaches it directly.
+const mapLibreSetup = fileURLToPath(
+  new URL("./src/utils/maplibre.ts", import.meta.url),
+);
+const mapLibreWorkerUrl = {
+  name: "openwaters:maplibre-worker-url",
+  enforce: "pre",
+  applyToEnvironment: (environment) => environment.name === "client",
+  resolveId(source, importer) {
+    if (source === "maplibre-gl" && importer !== mapLibreSetup) {
+      return mapLibreSetup;
+    }
+  },
+  async generateBundle() {
+    const mapLibre = await this.resolve("maplibre-gl", mapLibreSetup);
+    const info = mapLibre && this.getModuleInfo(mapLibre.id);
+    if (!info) return;
+    const bypassing = [...info.importers, ...info.dynamicImporters].filter(
+      (id) => id !== mapLibreSetup,
+    );
+    if (bypassing.length > 0) {
+      this.error(
+        `maplibre-gl imported without src/utils/maplibre.ts, so its worker will 404: ${bypassing.join(", ")}`,
+      );
+    }
+  },
+};
+
 // Every prerendered page gets a Markdown sibling (index.md) that src/worker.ts serves
 // for `Accept: text/markdown`. Written after the build so it sees the final HTML.
 const markdownPages = {
@@ -55,9 +86,11 @@ export default defineConfig({
   integrations: [react(), icon(), markdownPages],
   vite: {
     cacheDir,
-    plugins: [tailwindcss(), optimizeSsrDeps],
+    plugins: [tailwindcss(), optimizeSsrDeps, mapLibreWorkerUrl],
     optimizeDeps: {
-      include: ["maplibre-gl"],
+      // Pre-bundling separates MapLibre from the worker it loads relative to itself, so dev
+      // maps reached through dependencies like @vis.gl/react-maplibre would request a 404.
+      exclude: ["maplibre-gl"],
       esbuildOptions: {
         target: "es2022",
       },

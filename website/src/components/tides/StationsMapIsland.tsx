@@ -1,8 +1,6 @@
 import { type ReactNode, useCallback } from "react";
 import { NeapsProvider, StationsMap, StationSearch } from "@neaps/react";
 import "@neaps/react/styles.css";
-// Sets MapLibre's worker URL; @neaps/react imports maplibre-gl directly and skips it.
-import "../../utils/maplibre";
 import { API_HOST } from "../../utils/constants";
 import { BottomDrawer } from "../ui/BottomDrawer";
 import { useMapStyle } from "../../utils/useMapStyle";
