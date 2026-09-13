@@ -184,6 +184,15 @@ import { TideChart } from "../components/tides/TideCharts";
 <TideChart client:load data={chartData} />
 ```
 
+An island whose initial state comes from `new Date()` uses `client:only="react"`, as `SkyDome` does in `src/pages/sky/index.astro`. Pages prerender at build time and `astro dev` renders them in workerd, so a server-rendered clock disagrees with the browser's on hydration.
+
+### Naming aiscast
+
+- aiscast names the AIS service wherever a sentence names it: title tags, hero subtitle, token page, plugin, API intro, comparison pages.
+- "AIS" is the nav label and section word, like Tides and Charts. Open Waters is the publisher.
+- The first mention on a page pairs them once: "aiscast, the Open Waters AIS network". Never use "Open Waters AIS" as a product name. The hostname stays `ais.openwaters.io`.
+- Why: "aiscast" is a search term the project can own; "AIS" is not.
+
 ## Environment Variables
 
 Public variables (accessible client-side) use `PUBLIC_` prefix:
@@ -211,6 +220,10 @@ cd website && npm run format
 3. Wrap content in `Container`
 4. Use semantic HTML and custom color classes
 5. Format with `npm run format`
+
+### Adding a Library Landing Page
+
+Landing pages for Open Waters library repos live here, not in the library's repo. A library that is a whole section takes the section index (aiscast → `src/pages/ais/index.astro`, almanac → `src/pages/sky/index.astro`); otherwise it is a page in its section (neaps → `src/pages/tides/neaps.astro`). The library repo only links to it from its README and sets it as the GitHub homepage URL, so expect a PR in each repo.
 
 ### Adding Interactive Components
 
@@ -251,3 +264,9 @@ config (deploys on push to `main`, preview URLs on PRs):
   bindings.
 
 See `CLOUDFLARE_MIGRATION.md` for the architecture and its rationale.
+
+The `openwaters.io` zone is on Cloudflare's Free plan plus the $5 Workers paid plan, not Pro, so zone-level Pro features such as managed Markdown for Agents are unavailable. That is why `website/src/worker.ts` negotiates `Accept: text/markdown` itself, through `website/src/utils/negotiate.ts` and the Markdown siblings the `markdownPages` hook in `astro.config.mjs` writes at build.
+
+Before writing custom code for a site feature, check for an Astro integration, and check its Astro 7 peer range. For Markdown for Agents, `astro-markdown-for-agents` pins Astro 5, `astro-slop` pins Astro 6, and `@puralex/astro-markdown-for-agents` is GPL-3.0 and sniffs User-Agents.
+
+The served robots.txt is `website/public/robots.txt`. A 403 from `curl -A ClaudeBot/1.0 https://openwaters.io/` run inside an agent sandbox is Cloudflare reacting to the sandbox's request fingerprint; the same request from a normal terminal on the same IP returns 200. It is not evidence the site blocks AI crawlers. Check Cloudflare's AI Crawl Control dashboard instead.

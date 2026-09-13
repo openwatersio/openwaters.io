@@ -1,9 +1,9 @@
 /**
  * The naked-eye star field, placed by real astronomy rather than decoration.
  *
- * The catalog is the same one the iOS app ships: J2000 [rightAscension,
- * declination, magnitude] triples down to magnitude 3.5, which is roughly what
- * a dark anchorage shows you.
+ * The catalog is a copy of the one the iOS app ships, kept here because Almanac
+ * ships no star catalog: J2000 [rightAscension, declination, magnitude] triples
+ * down to magnitude 3.5, which is roughly what a dark anchorage shows you.
  */
 import { starAltAz } from "@openwaters/almanac";
 
