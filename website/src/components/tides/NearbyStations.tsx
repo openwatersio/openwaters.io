@@ -9,6 +9,8 @@ import {
 import { hydrate, type DehydratedState } from "@tanstack/react-query";
 import type { MapRef } from "react-map-gl/maplibre";
 import "@neaps/react/styles.css";
+// Sets MapLibre's worker URL; @neaps/react imports maplibre-gl directly and skips it.
+import "../../utils/maplibre";
 import { API_HOST } from "../../utils/constants";
 import { useMapStyle } from "../../utils/useMapStyle";
 
