@@ -75,6 +75,7 @@ body {
   --neaps-text: var(--color-fg);
   --neaps-text-muted: var(--color-fg-muted);
   --neaps-border: var(--color-line-strong);
+  --neaps-night: color-mix(in srgb, var(--color-black) 45%, transparent);
 
   /* Map overlay colors; the satellite base is always dark */
   --neaps-map-text: #ffffff;
