@@ -10,10 +10,11 @@ import { MoonFilmstrip, TwilightRibbon } from "../../components/sky/SkyDemos";
 
 import SunYear from "../../components/sky/SunYear";
 import LunarEclipseDemo from "../../components/sky/LunarEclipseDemo";
+import SolarEclipseDemo from "../../components/sky/SolarEclipseDemo";
 
 const REPO = "https://github.com/openwatersio/almanac";
 const ROADMAP = `${REPO}/blob/main/docs/ROADMAP.md`;
-const VERSION = "0.2.1";
+const VERSION = "0.4.0";
 const initialMonth = new Date().toISOString().slice(0, 7);
 const moonCode = `import { moonIllumination, searchMoonPhases } from '@openwaters/almanac';
 
@@ -40,6 +41,17 @@ const crossings = sunEvents(start, end, observer)
 // Dawn enters a lighter band; dusk enters a darker one.
 // No crossings? Check altitude: midnight Sun is not a missing result.
 console.log(crossings, sunAltAz(start, observer).altDeg);`;
+const solarCode = `import { solarEclipses, solarObscuration } from '@openwaters/almanac';
+
+const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
+const start = new Date();
+const end = new Date(start);
+end.setUTCFullYear(end.getUTCFullYear() + 10);
+
+for (const eclipse of solarEclipses(start, end, observer)) {
+  console.log(eclipse.kind, eclipse.peak, eclipse.obscuration);
+  console.log(solarObscuration(eclipse.peak, observer));
+}`;
 
 const features = [
   {
@@ -55,7 +67,7 @@ const features = [
   {
     icon: "mdi:weather-night",
     title: "Sun, Moon, stars and eclipses",
-    body: "Positions, rise and set, all three twilights, transit, moon phase and illumination, lunar eclipses with contact times and local visibility, and alt/az for any star you give a catalog position.",
+    body: "Positions, rise and set, all three twilights, transit, moon phase and illumination, lunar and local solar eclipses with contact times, and alt/az for any star you give a catalog position.",
   },
   {
     icon: "mdi:target",
@@ -64,7 +76,7 @@ const features = [
   },
 ];
 
-const tsCode = `import { sunEvents, starAltAz, nextLunarEclipse, lunarEclipseVisibility } from '@openwaters/almanac';
+const tsCode = `import { sunEvents, starAltAz, nextLunarEclipse, lunarEclipseVisibility, nextSolarEclipse } from '@openwaters/almanac';
 
 const observer = { latitudeDeg: 48.5, longitudeDeg: -123.0 };
 
@@ -79,6 +91,10 @@ for (const { kind, time } of sunEvents(now, tomorrow, observer)) {
 const eclipse = nextLunarEclipse(now);
 const visibility = lunarEclipseVisibility(eclipse, observer);
 console.log(eclipse.kind, eclipse.peak, visibility.visibleAtPeak);
+
+// The next solar eclipse visible from this location
+const solar = nextSolarEclipse(now, observer);
+console.log(solar.kind, solar.peak, solar.obscuration);
 
 // Where Sirius is right now, from its J2000 catalog position
 console.log(starAltAz(101.287, -16.716, now, observer));`;
@@ -98,18 +114,21 @@ let eclipse = try nextLunarEclipse(after: now)
 let visibility = try lunarEclipseVisibility(eclipse, observer: observer)
 print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)
 
+let solar = try nextSolarEclipse(after: now, observer: observer)
+print(solar.kind, solar.peak, solar.obscuration)
+
 let sirius = try starAltAz(raDeg: 101.287, decDeg: -16.716, at: now, observer: observer)
 print(sirius.altDeg, sirius.azDeg)`;
 ---
 
 <MainLayout
   title="Sky"
-  description="Explore a live star field, Moon phase filmstrip and daylight/twilight ribbon for your own location. Almanac computes the Sun, Moon, stars and lunar eclipses offline in Swift and TypeScript, with code examples."
+  description="Explore a live star field, Moon phase filmstrip, daylight and eclipses for your own location. Almanac computes the Sun, Moon, stars, and lunar and solar eclipses offline in Swift and TypeScript."
   image="/og/sky.png"
   schema={softwareSourceCode({
     name: "Almanac",
     description:
-      "An offline celestial engine for Swift and TypeScript: Sun and Moon positions, rise and set, twilight, transit, moon phase, lunar eclipses, and alt/az for any catalog star, computed from pure geometry with no network.",
+      "An offline celestial engine for Swift and TypeScript: Sun and Moon positions, rise and set, twilight, transit, moon phase, lunar and solar eclipses, and alt/az for any catalog star, computed from pure geometry with no network.",
     path: "/sky/",
     codeRepository: "https://github.com/openwatersio/almanac",
     programmingLanguage: ["Swift", "TypeScript"],
@@ -142,10 +161,11 @@ print(sirius.altDeg, sirius.azDeg)`;
       <div class="prose prose-xl mb-10 max-w-none">
         <p>
           Where the Sun, Moon and stars are, when they rise and set, how the
-          Moon is lit, and when the Earth's shadow crosses it. No network, no
-          data files to ship, no API key — just geometry, in your app or on your
-          boat. The sky below is live: every star in it is this library running
-          in your browser, placed for your location and the moment you choose.
+          Moon is lit, when the Earth's shadow crosses it, and when the Moon
+          crosses the Sun from your location. No network, no data files to ship,
+          no API key — just geometry, in your app or on your boat. The sky below
+          is live: every star in it is this library running in your browser,
+          placed for your location and the moment you choose.
         </p>
       </div>
 
@@ -242,6 +262,27 @@ const points = Array.from({ length: 365 }, (_, day) => {
 });
 console.log(points);`}
           />
+        </details>
+      </section>
+      <section
+        id="solar-eclipses"
+        aria-labelledby="solar-eclipses-title"
+        class="mt-16 scroll-mt-24 space-y-6"
+      >
+        <h2 id="solar-eclipses-title" class="text-3xl font-semibold">
+          Solar eclipses from here
+        </h2>
+        <p class="text-(--text-secondary)">
+          A solar eclipse is a different event from every place: your location
+          determines which eclipses appear, their contact times, and how much of
+          the Sun the Moon covers.
+        </p>
+        <SolarEclipseDemo client:load />
+        <details>
+          <summary class="cursor-pointer font-medium text-(--accent)"
+            >Show the TypeScript</summary
+          >
+          <CodeBlock code={solarCode} class="mt-4" />
         </details>
       </section>
       <section

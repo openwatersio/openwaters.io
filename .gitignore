@@ -35,3 +35,4 @@ dist/
 
 # AI assistant state
 .claude/
+.worktrees/
