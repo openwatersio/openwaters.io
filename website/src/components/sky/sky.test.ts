@@ -5,6 +5,11 @@ import { moonPath, phaseName } from "./moonPath.ts";
 import { skyColor } from "./skyColor.ts";
 import { eclipseAt, eclipseShade, eclipseCoverage } from "./eclipseShade.ts";
 import {
+  solarContactRows,
+  solarEclipseInstant,
+  solarEclipseWindowState,
+} from "./solarEclipse.ts";
+import {
   DOME_WIDTH,
   HORIZON_Y,
   MAX_ALT_DEG,
@@ -252,6 +257,54 @@ test("eclipseAt: finds the covering eclipse, ignores nulls", () => {
   assert.equal(eclipseAt(new Date(PEAK), [null, total]), total);
   assert.equal(eclipseAt(new Date(PEAK + min(400)), [null, total]), null);
   assert.equal(eclipseAt(new Date(PEAK), [null, null]), null);
+});
+
+test("solar eclipse scrubber spans C1 through C4", () => {
+  const eclipse = {
+    c1: new Date("2026-08-12T17:34:00Z"),
+    c4: new Date("2026-08-12T19:26:00Z"),
+  };
+  assert.equal(
+    solarEclipseInstant(eclipse, 0).toISOString(),
+    eclipse.c1.toISOString(),
+  );
+  assert.equal(
+    solarEclipseInstant(eclipse, 500).toISOString(),
+    "2026-08-12T18:30:00.000Z",
+  );
+  assert.equal(
+    solarEclipseInstant(eclipse, 1000).toISOString(),
+    eclipse.c4.toISOString(),
+  );
+});
+
+test("solar contact rows name totality and annularity by eclipse kind", () => {
+  assert.deepEqual(solarContactRows("partial"), [
+    ["c1", "Partial begins"],
+    ["peak", "Greatest eclipse"],
+    ["c4", "Partial ends"],
+  ]);
+  assert.deepEqual(solarContactRows("annular"), [
+    ["c1", "Partial begins"],
+    ["c2", "Annularity begins"],
+    ["peak", "Greatest eclipse"],
+    ["c3", "Annularity ends"],
+    ["c4", "Partial ends"],
+  ]);
+  assert.deepEqual(solarContactRows("total"), [
+    ["c1", "Partial begins"],
+    ["c2", "Totality begins"],
+    ["peak", "Greatest eclipse"],
+    ["c3", "Totality ends"],
+    ["c4", "Partial ends"],
+  ]);
+});
+
+test("solar eclipse window reports none instead of rendering an empty section", () => {
+  assert.equal(solarEclipseWindowState([]), "none");
+  assert.equal(solarEclipseWindowState([{ kind: "partial" }]), "partial-only");
+  assert.equal(solarEclipseWindowState([{ kind: "annular" }]), "featured");
+  assert.equal(solarEclipseWindowState([{ kind: "total" }]), "featured");
 });
 
 // The Big Dipper: seven stars everyone can draw from memory, circumpolar at
