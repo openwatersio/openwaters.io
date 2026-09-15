@@ -2,28 +2,26 @@
  * Maps an alt/az pair onto the sky panorama.
  *
  * A conformal cylindrical projection — Mercator's, with altitude standing in
- * for latitude — at one scale on both axes. Conformal means angles survive, so
- * a constellation keeps its shape wherever it sits in the frame. The Sun and
- * Moon still enter at one edge, arc over, and leave at the other, because the
- * frame is still a horizon and not a disc.
+ * for latitude — at one scale on both axes, so a constellation keeps its shape
+ * wherever it sits in the frame, and the Sun and Moon enter at one edge, arc
+ * over, and leave at the other.
  *
- * What this replaced mapped altitude to y linearly. That is fine for a lone
- * body tracing an arc, which is all the Sun and Moon ever did here, but a star
- * field has shape and it destroyed it two ways. Horizontal scale ran as
- * 1/cos(altitude), so the zenith — one point of sky — smeared across the full
- * width. And the frame wrapped at 360°, which put the seam on the celestial
- * pole and tore the circumpolar constellations across both edges.
+ * Not a linear altitude axis (plate carrée): horizontal scale would run as
+ * 1/cos(altitude), smearing the zenith across the full width, and a 360° frame
+ * puts its seam on the celestial pole, tearing circumpolar constellations.
+ * Hence the shared scale and a window narrower than a full turn.
  *
- * Both are fixed here by the same two choices: the Mercator term ties the
- * vertical scale to the horizontal one at every altitude, and the window is
- * narrower than a full turn, so there is no seam to place.
+ * Not a stereographic dome either: a body arcing across a horizon reads as
+ * travel, while on a disc the same motion reads as a wobble near the rim. The
+ * frame stays a fixed horizon facing the Sun's transit, with no panning.
  *
- * Mercator's own price is magnification: a figure is drawn sec(altitude)
- * larger overhead than the same figure at the horizon, which is why Greenland
- * looks vast on a world map. That is size, not shape — a constellation high in
- * the sky is drawn big but still looks like itself — and it is the distortion
- * worth taking, because the alternative on a rectangle is shear, which is what
- * made the old frame unreadable.
+ * The accepted cost is Mercator's magnification by sec(altitude), which changes
+ * size, not shape. The Big Dipper test in sky.test.ts bounds the drawn scale by
+ * that secant ratio, so shear or a tear fails it.
+ *
+ * Deliberately unlike slackwater-ios's `skyPoint`, whose frame is a timeline
+ * (each body's rise-to-set arc stretched across the width), not a compass.
+ * Don't unify them.
  */
 
 export const DOME_WIDTH = 800;
