@@ -43,6 +43,14 @@ export async function serve(
   asset: Fetch,
 ): Promise<Response> {
   const url = new URL(request.url);
+  if (
+    !url.pathname.endsWith("/") &&
+    !/\.[a-z0-9]+$/i.test(url.pathname) &&
+    ["GET", "HEAD"].includes(request.method)
+  ) {
+    url.pathname += "/";
+    return Response.redirect(url, 301);
+  }
   if (!isPage(url.pathname) || !["GET", "HEAD"].includes(request.method)) {
     return page(request);
   }

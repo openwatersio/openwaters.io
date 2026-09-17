@@ -37,6 +37,15 @@ test("isPage/markdownPath: directory URLs are pages, files are not", () => {
   assert.equal(markdownPath("/about/"), "/about/index.md");
 });
 
+test("serve: redirects slashless page URLs to their canonical path", async () => {
+  const res = await serve(get("/about?from=test"), async () => html(), assets);
+  assert.equal(res.status, 301);
+  assert.equal(
+    res.headers.get("location"),
+    "https://openwaters.io/about/?from=test",
+  );
+});
+
 test("serve: Accept: text/markdown gets the sibling with the required headers", async () => {
   const res = await serve(
     get("/about/", "text/markdown"),
