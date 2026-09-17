@@ -1,0 +1,10 @@
+{
+  "name": "aiscast",
+  "title": "Open Waters AIS",
+  "description": "Live AIS vessel positions by MMSI, name, area, or radius, plus coverage. No sign-in, no key.",
+  "endpoint": "https://ais.openwaters.io/mcp",
+  "transport": "streamable-http",
+  "authentication": "none",
+  "documentation": "https://openwaters.io/api/ais/#mcp",
+  "registry": "io.openwaters/aiscast"
+}

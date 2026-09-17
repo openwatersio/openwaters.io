@@ -391,11 +391,17 @@ const licenses = [
           <div class="mb-6 flex flex-wrap gap-x-6 gap-y-2 font-medium">
             <a href="/api/ais/">API reference →</a>
             <a href="/ais/vs/aisstream/">Compare with aisstream.io →</a>
+            <a href="/api/ais/#mcp">Ask an AI assistant →</a>
           </div>
           <p class="text-fg-faint text-sm">
             Coming from aisstream.io? Point your client at{" "}
             <code class="text-fg-muted">wss://{SERVER}/v0/stream</code> with a token
             as <code class="text-fg-muted">APIKey</code> and it keeps working.
+          </p>
+          <p class="text-fg-faint mt-3 text-sm">
+            Talking to Claude or ChatGPT instead? Add{" "}
+            <code class="text-fg-muted">https://{SERVER}/mcp</code> as an MCP server
+            and ask what is in the port.
           </p>
         </div>
         <div

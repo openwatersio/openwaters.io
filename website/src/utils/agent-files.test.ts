@@ -58,6 +58,10 @@ test(
         line.includes("https://ais.openwaters.io/openapi.json"),
       ),
     );
+    assert.ok(
+      rest.some((line) => line.includes("https://ais.openwaters.io/mcp")),
+      "llms.txt should point agents at the MCP server",
+    );
   },
 );
 
