@@ -71,7 +71,7 @@ curl -X POST https://ais.openwaters.io/mcp \
 
 ### Authentication
 
-Without a token the assistant gets the anonymous limits, which cover most questions: an area of up to 100 square degrees, about 10° by 10°, or up to 10 vessels by MMSI per call. A [personal token](#authentication) raises that to 400 square degrees and 50 vessels, and the tool says so when a question exceeds the limit. Contributor and commercial tokens work the same way with their own limits; see [Limits](#limits).
+Without a token the assistant gets the anonymous limits, which cover most questions: an area of up to 100 square degrees, about 10° by 10°, or up to 10 vessels per call, by MMSI or IMO number. A [personal token](#authentication) raises that to 400 square degrees and 50 vessels, and the tool says so when a question exceeds the limit. Contributor and commercial tokens work the same way with their own limits; see [Limits](#limits).
 
 Send the token as an `Authorization: Bearer` header. Where to put it depends on the client:
 
@@ -95,4 +95,4 @@ Five read-only tools, so a client that asks before running write tools never pro
 | `search_vessels_by_name` | Vessels whose name contains the text, to turn a name into an MMSI.                                                                                                                 |
 | `get_coverage`           | Which sources and stations are delivering, how fresh they are, and whether a box has any coverage at all.                                                                          |
 
-Every row carries decoded labels (`type_name`, `nav_status_name`) beside the codes, `seen` and `age_s` for freshness, the flag from the MMSI, the source and station it came from, and, once the vessel's static data has been heard, its IMO number, call sign, destination, ETA, draught, length, and beam. The area, radius, and name searches take a `flag` filter. Every result carries an `attribution` map with the credit line per source, and says when it cut the list so the assistant can narrow the question.
+Every row carries decoded labels (`type_name`, `nav_status_name`) beside the codes, `seen` and `age_s` for freshness, the flag from the MMSI, the source and station it came from, and, once the vessel's static data has been heard, its IMO number, call sign, destination, ETA, draught, length, and beam. The flag is present when the MMSI's maritime identification digits are known. The area, radius, and name searches take a `flag` filter, an ISO 3166-1 alpha-2 code such as `NO` or `MH`. Every result carries an `attribution` map with the credit line per source, and says when it cut the list so the assistant can narrow the question.
