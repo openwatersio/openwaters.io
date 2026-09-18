@@ -24,7 +24,7 @@ claude mcp add --transport http open-waters-ais https://ais.openwaters.io/mcp
 
 **ChatGPT:** Settings, Connectors, turn on Developer mode, then add `https://ais.openwaters.io/mcp` with no authentication.
 
-**Cursor:** Edit `~/.cursor/mcp.json`, and add an entry to `mcpServers`:
+**Cursor:** [Install in Cursor](https://cursor.com/en/install-mcp?name=open-waters-ais&config=eyJ1cmwiOiJodHRwczovL2Fpcy5vcGVud2F0ZXJzLmlvL21jcCJ9), or edit `~/.cursor/mcp.json` and add an entry to `mcpServers`:
 
 ```json
 {
@@ -37,7 +37,7 @@ claude mcp add --transport http open-waters-ais https://ais.openwaters.io/mcp
 }
 ```
 
-**VS Code:** Edit `.vscode/mcp.json`, and add an entry to `servers`:
+**VS Code:** [Install in VS Code](https://vscode.dev/redirect/mcp/install?name=open-waters-ais&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fais.openwaters.io%2Fmcp%22%7D), or edit `.vscode/mcp.json` and add an entry to `servers`:
 
 ```json
 {
