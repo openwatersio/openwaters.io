@@ -2,7 +2,7 @@ Ask Claude, ChatGPT, or an agent of your own about ship traffic. Open Waters AIS
 
 ### What you can ask
 
-**Track your fleet.** Where is MMSI 257123000 right now? Where is Viking Cinderella, and how fast is she going? Which of these ten vessels has not reported in the last half hour?
+**Track your fleet.** Where is MMSI 257123000 right now? Where is Viking Cinderella going, and when does she arrive? What flag is IMO 9319466 under, and how long is she? Which of these ten vessels has not reported in the last half hour?
 
 **Monitor your waters.** What is in the port of Rotterdam right now? List the tankers in the Great Belt. Is anything within five miles of 59.9 N, 10.7 E? What is around the ferry Pearl Seaways?
 
@@ -87,12 +87,12 @@ Each tool call is one request against the 120-per-minute HTTP limit, and a call 
 
 Five read-only tools, so a client that asks before running write tools never prompts for these.
 
-| Tool                     | Answers                                                                                                           |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `get_vessels`            | Current position and details for a list of MMSIs, and which of them have not been heard in the last 30 minutes.   |
-| `find_vessels_in_area`   | What is inside a bounding box, newest report first, with optional kind and ship-type filters.                     |
-| `find_vessels_near`      | What is within a radius of up to 50 NM of a point or of another vessel, nearest first, with distance and bearing. |
-| `search_vessels_by_name` | Vessels whose name contains the text, to turn a name into an MMSI.                                                |
-| `get_coverage`           | Which sources and stations are delivering, how fresh they are, and whether a box has any coverage at all.         |
+| Tool                     | Answers                                                                                                                                                                            |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_vessels`            | Position and particulars for a list of MMSIs or IMO numbers: destination, ETA, draught, dimensions, call sign, flag, and which identifiers matched nothing in the last 30 minutes. |
+| `find_vessels_in_area`   | What is inside a bounding box, newest report first, with optional kind and ship-type filters.                                                                                      |
+| `find_vessels_near`      | What is within a radius of up to 50 NM of a point or of another vessel, nearest first, with distance and bearing.                                                                  |
+| `search_vessels_by_name` | Vessels whose name contains the text, to turn a name into an MMSI.                                                                                                                 |
+| `get_coverage`           | Which sources and stations are delivering, how fresh they are, and whether a box has any coverage at all.                                                                          |
 
-Every row carries decoded labels (`type_name`, `nav_status_name`) beside the codes, `seen` and `age_s` for freshness, and the source and station it came from. Every result carries an `attribution` map with the credit line per source, and says when it cut the list so the assistant can narrow the question.
+Every row carries decoded labels (`type_name`, `nav_status_name`) beside the codes, `seen` and `age_s` for freshness, the flag from the MMSI, the source and station it came from, and, once the vessel's static data has been heard, its IMO number, call sign, destination, ETA, draught, length, and beam. The area, radius, and name searches take a `flag` filter. Every result carries an `attribution` map with the credit line per source, and says when it cut the list so the assistant can narrow the question.
