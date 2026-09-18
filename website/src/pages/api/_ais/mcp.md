@@ -12,6 +12,8 @@ Every answer is the last report heard, up to 30 minutes old, and says when it wa
 
 ### Enable it
 
+**Ask your assistant.** Most agents that can edit their own configuration will do this for you. Tell Claude Code, Cursor, or whatever you use: "Add the Open Waters AIS MCP server at https://ais.openwaters.io/mcp". Check that it chose the Streamable HTTP transport with no authentication. The manual steps below are for clients that cannot, and for anyone who wants to see what changes.
+
 **Claude Code:**
 
 ```
