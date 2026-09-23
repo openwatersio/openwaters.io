@@ -52,7 +52,7 @@ const glance: [string, string, string][] = [
   ],
   [
     "Coverage",
-    "Norway and Finland live, volunteers live, world via AISHub 1–6 min, aisstream.io when up",
+    "Norway and Finland live, volunteers live, world via AISHub about a minute behind, aisstream.io when up",
     "global terrestrial when up",
   ],
   ["Source on each event", "yes, with station", "no"],
@@ -302,9 +302,12 @@ const article = {
         </p>
         <p class="text-fg-muted mb-12">
           The gap: outside the Nordics and the volunteer footprint, aiscast's
-          positions are AISHub's, regenerated every five minutes. That is fine
-          for "what is out there" and wrong for close quarters. It closes as
-          receivers join.
+          positions are AISHub's, about a minute behind (<a
+            href="https://ais.openwaters.io/v1/stats"
+            target="_blank"
+            rel="noopener noreferrer">current delay</a
+          >). That is fine for "what is out there" and wrong for close quarters.
+          It closes as receivers join.
         </p>
 
         <h2 id="limits" class="mb-4 scroll-mt-24 text-3xl font-semibold">
