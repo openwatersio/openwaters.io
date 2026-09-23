@@ -39,7 +39,7 @@ const alternatives: {
       },
       {
         label: "Coverage",
-        html: "live from the Norwegian and Finnish coastal authorities and from volunteer receivers; worldwide terrestrial via the AISHub snapshot, which is 1 to 6 minutes old; aisstream.io itself as an upstream when it is up. Every event names its source and station, and <code>/v1/stations</code> shows each source's message rate and age, so you can tell a gap from a fault.",
+        html: "live from the Norwegian and Finnish coastal authorities and from volunteer receivers; worldwide terrestrial via the AISHub snapshot, which runs about a minute behind (<a href='https://ais.openwaters.io/v1/stats' target='_blank' rel='noopener noreferrer'><code>/v1/stats</code></a> reports each source's current delay); aisstream.io itself as an upstream when it is up. Every event names its source and station, and <code>/v1/stations</code> shows each source's message rate and age, so you can tell a gap from a fault.",
       },
       {
         label: "Price",
@@ -67,7 +67,7 @@ const alternatives: {
     bullets: [
       {
         label: "Protocol",
-        html: "REST snapshot (JSON, XML, CSV) polled at most once a minute. No push. The worldwide snapshot regenerates about every 5 minutes, so positions are 1 to 6 minutes old.",
+        html: "REST snapshot (JSON, XML, CSV) polled at most once a minute. No push. The worldwide snapshot regenerates about once a minute, so positions run about a minute behind.",
       },
       {
         label: "Coverage",
@@ -83,7 +83,7 @@ const alternatives: {
       },
       {
         label: "Honest limits",
-        html: "polling only, minutes old, and the gate is a working station.",
+        html: "polling only, about a minute old, and the gate is a working station.",
       },
     ],
     best: "station operators who want a global “who is out there” view. Not for close-quarters use or anyone without a receiver.",
@@ -193,7 +193,7 @@ const glanceRows: [string, ...string[]][] = [
     "aiscast",
     "yes, aisstream-compatible",
     "yes",
-    "Nordic live, world via AISHub (1–6 min), volunteers",
+    "Nordic live, world via AISHub (~1 min behind), volunteers",
     "yes, no account",
     "yes, per-source license published",
     "yes",
@@ -211,7 +211,7 @@ const glanceRows: [string, ...string[]][] = [
     "AISHub",
     "no (≤1/min)",
     "yes",
-    "global, 1,600+ stations, 1–6 min",
+    "global, 1,600+ stations, ~1 min behind",
     "contributors only",
     "yes, confirmed by email",
     "no",
@@ -274,7 +274,7 @@ const faq = [
   },
   {
     q: "Does aiscast have the same coverage as aisstream.io?",
-    a: "Not yet in the same way. aiscast is live in Norway, Finland, and wherever volunteer receivers are, and carries worldwide terrestrial positions from AISHub that are one to six minutes old. It also uses aisstream.io as an upstream when aisstream is up, so you lose nothing by switching.",
+    a: "Not yet in the same way. aiscast is live in Norway, Finland, and wherever volunteer receivers are, and carries worldwide terrestrial positions from AISHub that run about a minute behind. It also uses aisstream.io as an upstream when aisstream is up, so you lose nothing by switching.",
   },
 ];
 

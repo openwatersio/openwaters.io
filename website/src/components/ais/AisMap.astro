@@ -250,7 +250,7 @@ const { class: className, center, zoom } = Astro.props;
       const v = vessels.get(ev.mmsi) || { kind: "vessel", seen: 0 };
       const t = Date.parse(ev.time);
       if (!Number.isFinite(t)) return;
-      // late arrivals (AISHub lags minutes) fold in static fields only, so the marker never jumps backwards
+      // late arrivals (AISHub lags about a minute) fold in static fields only, so the marker never jumps backwards
       const stale = v.lat != null && t < v.seen - 1000;
       if (ev.lat != null && !stale) {
         v.lat = ev.lat;
