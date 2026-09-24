@@ -166,8 +166,8 @@ const contribute = [
   {
     icon: "mdi:radio-tower",
     title: "AIS-catcher",
-    text: "Authenticated HTTP, works behind any NAT. Get a token in your browser, add one flag.",
-    code: `AIS-catcher -H https://${SERVER}/v1/receive USERPWD x:<token> GZIP on INTERVAL 15`,
+    text: "Realtime over MQTT, authenticated, works behind any NAT. Get a token in your browser, add one flag.",
+    code: `AIS-catcher -Q wssmqtt://x:<token>@${SERVER}:443/v1/mqtt MSGFORMAT NMEA`,
     links: [
       { label: "Get a token", href: TOKEN_PAGE },
       {

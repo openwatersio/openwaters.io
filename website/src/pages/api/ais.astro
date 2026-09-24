@@ -17,6 +17,7 @@ import { Content as V0Stream } from "./_ais/v0-stream.md";
 import { Content as V1Stream } from "./_ais/v1-stream.md";
 import { Content as V1StreamSSE } from "./_ais/v1-stream-sse.md";
 import { Content as V1Nmea } from "./_ais/v1-nmea.md";
+import { Content as Mqtt } from "./_ais/mqtt.md";
 import { Content as Udp } from "./_ais/udp.md";
 import { Content as Limits } from "./_ais/limits.md";
 import { Content as Mcp } from "./_ais/mcp.md";
@@ -38,7 +39,7 @@ const tagDescriptions = new Map(
 
 interface Stream {
   id: string;
-  protocol: "WS" | "SSE" | "UDP" | "MCP";
+  protocol: "WS" | "SSE" | "UDP" | "MCP" | "MQTT";
   path: string;
   text: string;
   summary: string;
@@ -117,8 +118,16 @@ const groups: {
     slug: "contributing",
     text: "Contributing data",
     tag: "Contributing",
-    note: "Already on the [WebSocket stream](#stream-v1)? It works in both directions: send `publish` frames with any token, on the same connection you subscribe with.",
+    note: "[MQTT](#stream-mqtt) is the realtime path: AIS-catcher publishes each message as it is decoded, credited to your token's station. Already on the [WebSocket stream](#stream-v1)? It works in both directions: send `publish` frames with any token, on the same connection you subscribe with.",
     streams: [
+      {
+        id: "stream-mqtt",
+        protocol: "MQTT",
+        path: `${WSS}/v1/mqtt`,
+        text: "Contributing over MQTT",
+        summary: "Realtime NMEA ingest over MQTT on a WebSocket",
+        Content: Mqtt,
+      },
       {
         id: "stream-udp",
         protocol: "UDP",
