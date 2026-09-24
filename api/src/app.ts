@@ -1,14 +1,16 @@
 import express, { type Application } from "express";
-import { createApp } from "@neaps/api";
+import { createApp } from "@slackwater/api";
 
 export interface TidesAppOptions {
-  // Passed through to @neaps/api. On Cloudflare Workers set compress:false —
+  // Passed through to @slackwater/api. On Cloudflare Workers set compress:false —
   // compression() corrupts bodies through workerd's node:http bridge, and the
   // edge compresses anyway.
   compress?: boolean;
 }
 
-export function createTidesApp({ compress }: TidesAppOptions = {}): Application {
+export function createTidesApp({
+  compress,
+}: TidesAppOptions = {}): Application {
   const app = express();
 
   app.get("/", (req, res) => {

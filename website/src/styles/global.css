@@ -4,12 +4,12 @@
 
 @plugin "@tailwindcss/typography";
 
-/* Scan @neaps/react source so Tailwind generates its utility classes */
-@source "../../../node_modules/@neaps/react/dist/index.js";
+/* Scan @slackwater/react source so Tailwind generates its utility classes */
+@source "../../../node_modules/@slackwater/react/dist/index.js";
 
 /*
  * The site is always dark. Ground and ink are Slackwater's palette; the accents
- * are the Neaps chart colors, each with one job:
+ * are the Slackwater chart colors, each with one job:
  *   accent    sky    brand: links, eyebrows, active nav, icons
  *   cta       teal   the primary button, nothing else
  *   highlight amber  one highlighted phrase per region, live indicators
@@ -48,7 +48,7 @@
   --color-highlight: #fbbf24;
   --color-alert: #ef6f4a;
 
-  /* Neaps data colors, for tide readouts that sit outside the chart components */
+  /* Slackwater data colors, for tide readouts that sit outside the chart components */
   --color-tide-high: #2dd4bf;
   --color-tide-low: #fbbf24;
 
@@ -65,21 +65,21 @@
   color-scheme: dark;
 }
 
-/* @neaps/react ships its own :root defaults and loads after this file, so these
+/* @slackwater/react ships its own :root defaults and loads after this file, so these
    sit on body and win by inheritance. Its light-dark() values follow color-scheme. */
 body {
   color-scheme: dark;
-  --neaps-primary: var(--color-accent);
-  --neaps-bg: var(--color-canvas);
-  --neaps-bg-subtle: var(--color-well);
-  --neaps-text: var(--color-fg);
-  --neaps-text-muted: var(--color-fg-muted);
-  --neaps-border: var(--color-line-strong);
-  --neaps-night: color-mix(in srgb, var(--color-black) 45%, transparent);
+  --slackwater-primary: var(--color-accent);
+  --slackwater-bg: var(--color-canvas);
+  --slackwater-bg-subtle: var(--color-well);
+  --slackwater-text: var(--color-fg);
+  --slackwater-text-muted: var(--color-fg-muted);
+  --slackwater-border: var(--color-line-strong);
+  --slackwater-night: color-mix(in srgb, var(--color-black) 45%, transparent);
 
   /* Map overlay colors; the satellite base is always dark */
-  --neaps-map-text: #ffffff;
-  --neaps-map-bg: #000000;
+  --slackwater-map-text: #ffffff;
+  --slackwater-map-bg: #000000;
 }
 
 @layer base {

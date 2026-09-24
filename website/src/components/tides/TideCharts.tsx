@@ -1,4 +1,4 @@
-import tidePrediction from "@neaps/tide-predictor";
+import { createTidePredictor } from "@slackwater/engine";
 
 // Monterey, CA harmonic constituents (station noaa/9413450)
 const montereyConstituents = [
@@ -84,7 +84,7 @@ function generateChartData(
 
   if (type === "single") {
     const m2 = montereyConstituents.find((c) => c.name === "M2")!;
-    const prediction = tidePrediction([m2]);
+    const prediction = createTidePredictor([m2]);
     const timeline = prediction.getTimelinePrediction({
       start: new Date("2018-01-01"),
       end: new Date("2018-01-05"),
@@ -114,7 +114,7 @@ function generateChartData(
 
     const datasets = constituentsToShow.map((name) => {
       const constituent = montereyConstituents.find((c) => c.name === name)!;
-      const prediction = tidePrediction([constituent]);
+      const prediction = createTidePredictor([constituent]);
       const timeline = prediction.getTimelinePrediction({
         start: new Date("2018-01-01"),
         end: new Date("2018-01-05"),
@@ -187,7 +187,7 @@ function generateChartData(
       (c) => c.amplitude > 0,
     );
     const datasets = activeConstituents.map((constituent, i) => {
-      const prediction = tidePrediction([constituent]);
+      const prediction = createTidePredictor([constituent]);
       const timeline = prediction.getTimelinePrediction({
         start: new Date("2018-01-01"),
         end: new Date("2018-01-05"),
@@ -222,7 +222,7 @@ function generateChartData(
   }
 
   // Combined prediction
-  const prediction = tidePrediction(montereyConstituents);
+  const prediction = createTidePredictor(montereyConstituents);
   const timeline = prediction.getTimelinePrediction({
     start: new Date("2018-01-01"),
     end: new Date("2018-01-05"),

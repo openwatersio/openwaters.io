@@ -1,14 +1,14 @@
 import { useRef, useCallback, useMemo } from "react";
 import {
-  NeapsProvider,
+  SlackwaterProvider,
   StationsMap,
   NearbyStations,
   createQueryClient,
   type StationSummary,
-} from "@neaps/react";
+} from "@slackwater/react";
 import { hydrate, type DehydratedState } from "@tanstack/react-query";
 import type { MapRef } from "react-map-gl/maplibre";
-import "@neaps/react/styles.css";
+import "@slackwater/react/styles.css";
 import { API_HOST } from "../../utils/constants";
 import { useMapStyle } from "../../utils/useMapStyle";
 
@@ -49,7 +49,7 @@ export function NearbyStationsIsland({
   }, [longitude, latitude]);
 
   return (
-    <NeapsProvider baseUrl={API_HOST} queryClient={queryClient}>
+    <SlackwaterProvider baseUrl={API_HOST} queryClient={queryClient}>
       <div className="flex flex-col gap-4">
         <StationsMap
           ref={mapRef}
@@ -73,6 +73,6 @@ export function NearbyStationsIsland({
           onHoverEnd={handleHoverEnd}
         />
       </div>
-    </NeapsProvider>
+    </SlackwaterProvider>
   );
 }
