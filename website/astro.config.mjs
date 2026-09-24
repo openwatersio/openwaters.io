@@ -85,7 +85,9 @@ export default defineConfig({
   site: "https://openwaters.io",
   redirects: {
     // The engine docs page followed the Neaps → Slackwater rename.
-    "/tides/neaps": "/tides/slackwater",
+    // Slash form: the worker canonicalizes extensionless URLs to a trailing
+    // slash before routing, so this is the form requests arrive in.
+    "/tides/neaps/": "/tides/slackwater/",
   },
   integrations: [react(), icon(), markdownPages],
   vite: {
