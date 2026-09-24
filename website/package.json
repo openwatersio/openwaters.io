@@ -22,6 +22,7 @@
     "@openwaters/almanac": "^0.4.0",
     "@openwaters/seascape": "^0.3.0",
     "@slackwater/api": "*",
+    "@slackwater/database": "*",
     "@slackwater/engine": "*",
     "@slackwater/react": "*",
     "@tailwindcss/typography": "^0.5.20",
