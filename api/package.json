@@ -11,8 +11,8 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@slackwater/api": "https://pkg.pr.new/openwatersio/neaps/@slackwater/api@339",
-    "@slackwater/database": "https://pkg.pr.new/openwatersio/tide-database/@slackwater/database@192",
+    "@slackwater/api": "^1.0.0-beta.0",
+    "@slackwater/database": "^1.0.0-beta.0",
     "express": "^5.2.1"
   },
   "devDependencies": {

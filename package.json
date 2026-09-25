@@ -19,10 +19,10 @@
     "concurrently": "^10.0.5"
   },
   "dependencies": {
-    "@slackwater/api": "https://pkg.pr.new/openwatersio/neaps/@slackwater/api@339",
-    "@slackwater/database": "https://pkg.pr.new/openwatersio/tide-database/@slackwater/database@192",
-    "@slackwater/engine": "https://pkg.pr.new/openwatersio/neaps/@slackwater/engine@339",
-    "@slackwater/react": "https://pkg.pr.new/openwatersio/neaps/@slackwater/react@339",
-    "slackwater": "https://pkg.pr.new/openwatersio/neaps/slackwater@339"
+    "@slackwater/api": "^1.0.0-beta.0",
+    "@slackwater/database": "^1.0.0-beta.0",
+    "@slackwater/engine": "^1.0.0-beta.0",
+    "@slackwater/react": "^1.0.0-beta.0",
+    "slackwater": "^1.0.0-beta.0"
   }
 }
