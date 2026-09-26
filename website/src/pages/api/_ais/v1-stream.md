@@ -112,7 +112,7 @@ One per decoded message, deduplicated across every receiver that heard it.
 - `lat`/`lon` are the vessel's last known position, present on static messages too, so you can place every message on a map. Absent until a position has been heard.
 - `time` is when the message was transmitted: the source's timestamp when it is within 30 s of our receive time, else our receive time.
 - `id` identifies the content, not the event. A static message rebroadcast unchanged every few minutes shares one `id`, so key events on `(id, time)`. Deduplicating on `id` alone drops the rebroadcasts.
-- `source` and `station` say where it was heard: an open feed (`kystverket`, `barentswatch`, `digitraffic`, `aishub`, `aisstream`), an authenticated station (`http:<station>`, `v1:<sub>`), or a volunteer UDP receiver (`udp:<hash>`, or `mmsi:<n>` once it has sent its own position). `channel` is `A` or `B`, or empty when the source was not NMEA.
+- `source` and `station` say where it was heard: an open feed (`kystverket`, `barentswatch`, `digitraffic`, `aishub`, `aisstream`), an authenticated station (`station:<sub>`, whatever transport it fed over), or a volunteer UDP receiver (`udp:<hash>`, or `mmsi:<n>` once it has sent its own position). `channel` is `A` or `B`, or empty when the source was not NMEA.
 - `nmea` holds the sentences as received, or a re-encoded `!AIVDM` when the source was JSON rather than NMEA.
 - `synthesized` is `true` for anything not heard over VHF: a message rebuilt from a JSON source, a vessel's own GPS report, or a snapshot reconstruction. Skip these if you only want receptions.
 

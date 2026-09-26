@@ -17,4 +17,4 @@ To keep the service sustainable, we have limits on how much data you can request
 - 120 requests per minute per address on the HTTP endpoints, and 10 per minute on `POST /v1/keys` and in-band `register`.
 - 500 UDP sentences a second per source address.
 - A client that falls 1,024 events behind is disconnected.
-- Publishing: 6,000 sentences a minute and 1,000 per frame on the WebSocket, 600 posts a minute and 1 MB per post on `/v1/receive`.
+- Publishing: 6,000 sentences a minute per token on MQTT and the WebSocket (1,000 per WebSocket frame, 1 MB per MQTT packet), 600 posts a minute and 1 MB per post on `/v1/receive`.

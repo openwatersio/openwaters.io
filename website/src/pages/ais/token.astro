@@ -93,7 +93,7 @@ const pre =
             Station id <code class="bg-surface rounded px-1" data-sub></code>,
             expires <span data-exp></span>. Your data appears as <code
               class="bg-surface rounded px-1"
-              >source: http:&lt;station id&gt;</code
+              >source: station:&lt;station id&gt;</code
             >; see it on <a data-stlink href={VIEWER}>the live map</a> or at <code
               class="bg-surface rounded px-1">/v1/stations</code
             >.
@@ -104,9 +104,13 @@ const pre =
           <h2 class="mb-4 text-xl font-semibold">Send your receiver's data</h2>
           <h3 class="mb-1 text-base font-semibold">AIS-catcher</h3>
           <p class="text-fg-muted mb-2 text-sm">
-            Authenticated HTTP, works behind any NAT:
+            Realtime over MQTT, authenticated, works behind any NAT:
           </p>
-          <pre data-cmd-aiscatcher class={`${pre} mb-5`}></pre>
+          <pre data-cmd-aiscatcher class={`${pre} mb-3`}></pre>
+          <p class="text-fg-muted mb-2 text-sm">
+            Or its HTTP output, one batch every five seconds:
+          </p>
+          <pre data-cmd-aiscatcher-http class={`${pre} mb-5`}></pre>
           <h3 class="mb-1 text-base font-semibold">Signal K</h3>
           <p class="text-fg-muted mb-5 text-sm">
             Install <code class="bg-surface rounded px-1">signalk-aiscast</code> from
@@ -186,9 +190,11 @@ const pre =
       ? new Date(claims.exp * 1000).toISOString().slice(0, 10)
       : "never";
     $<HTMLAnchorElement>("[data-stlink]").href =
-      `${viewer}?station=${encodeURIComponent("http:" + claims.sub)}`;
+      `${viewer}?station=${encodeURIComponent("station:" + claims.sub)}`;
     $("[data-cmd-aiscatcher]").textContent =
-      `AIS-catcher -d:0 -H ${server}/v1/receive USERPWD x:${token} GZIP on INTERVAL 15`;
+      `AIS-catcher -d:0 -Q wssmqtt://x:${token}@${server.replace(/^https?:\/\//, "")}:443/v1/stream MSGFORMAT NMEA`;
+    $("[data-cmd-aiscatcher-http]").textContent =
+      `AIS-catcher -d:0 -H ${server}/v1/receive USERPWD x:${token} GZIP on INTERVAL 5`;
     $("[data-cmd-ws]").textContent =
       `websocat ${server.replace(/^http/, "ws")}/v0/stream\n{"APIKey":"${token}","BoundingBoxes":[[[41,-71.5],[42.5,-69.5]]]}`;
     $("[data-out]").hidden = false;

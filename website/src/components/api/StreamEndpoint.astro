@@ -2,8 +2,8 @@
 import Card from "../ui/Card.astro";
 
 interface Props {
-  /** Transport chip: WS, SSE, UDP, or MCP. */
-  protocol: "WS" | "SSE" | "UDP" | "MCP";
+  /** Transport chip: WS, SSE, UDP, MCP, or MQTT. */
+  protocol: "WS" | "SSE" | "UDP" | "MCP" | "MQTT";
   /** Address as connected to, e.g. wss://ais.openwaters.io/v1/stream. */
   path: string;
   summary?: string;
@@ -17,6 +17,7 @@ const protocolColors: Record<string, string> = {
   SSE: "bg-badge-post/15 text-badge-post",
   UDP: "bg-badge-patch/15 text-badge-patch",
   MCP: "bg-badge-get/15 text-badge-get",
+  MQTT: "bg-badge-put/15 text-badge-put",
 };
 ---
 
