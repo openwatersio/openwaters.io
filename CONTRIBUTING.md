@@ -37,7 +37,7 @@ Use `.astro` components for static content and layout. Use React only for intera
 
 Use Tailwind classes and the semantic tokens defined in `website/src/styles/global.css`. The site has no light mode, so do not add `dark:` variants. Use `cn()` when classes are conditional or supplied by callers. Avoid inline styles.
 
-Landing pages for Open Waters libraries live in this repository. A library that owns a section uses that section's index, such as `aiscast` at `website/src/pages/ais/index.astro` and `almanac` at `website/src/pages/sky/index.astro`. Other libraries use a page within their section, such as `neaps` at `website/src/pages/tides/neaps.astro`.
+Landing pages for Open Waters libraries live in this repository. A library that owns a section uses that section's index, such as `aiscast` at `website/src/pages/ais/index.astro` and `almanac` at `website/src/pages/sky/index.astro`. Other libraries use a page within their section, such as `slackwater` at `website/src/pages/tides/slackwater.astro`.
 
 Use `aiscast` when prose names the AIS service. "AIS" remains the navigation label and section name. Pair the first mention on a page as "aiscast, the Open Waters AIS network". The hostname remains `ais.openwaters.io`.
 

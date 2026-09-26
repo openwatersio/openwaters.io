@@ -83,6 +83,12 @@ const markdownPages = {
 // https://astro.build/config
 export default defineConfig({
   site: "https://openwaters.io",
+  redirects: {
+    // The engine docs page followed the Neaps → Slackwater rename.
+    // Slash form: the worker canonicalizes extensionless URLs to a trailing
+    // slash before routing, so this is the form requests arrive in.
+    "/tides/neaps/": "/tides/slackwater/",
+  },
   integrations: [react(), icon(), markdownPages],
   vite: {
     cacheDir,
@@ -102,11 +108,11 @@ export default defineConfig({
     ssr: {
       // Process these through Vite's bundler for SSR (instead of externalizing to Node)
       // so that resolve.dedupe applies to React, and browser-only packages don't fail.
-      // Includes @neaps/react and all its dependencies (which live in the neaps workspace
+      // Includes @slackwater/react and all its dependencies (which live in the slackwater workspace
       // and have ESM extensionless imports that Node.js can't resolve natively).
       noExternal: [
-        "@neaps/react",
-        // @neaps/react dependencies (and their transitive deps that use ESM
+        "@slackwater/react",
+        // @slackwater/react dependencies (and their transitive deps that use ESM
         // extensionless imports, which Node.js can't resolve natively)
         /^@visx\//,
         "@tanstack/react-query",

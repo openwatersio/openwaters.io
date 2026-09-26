@@ -2,7 +2,7 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
-import { stations } from "@neaps/tide-database";
+import { stations } from "@slackwater/database";
 import Icon from "../../components/Icon.astro";
 import { SITE, publisher } from "../../utils/schema";
 
@@ -30,7 +30,7 @@ const dataset = {
   distribution: {
     "@type": "DataDownload",
     encodingFormat: "application/json",
-    contentUrl: "https://github.com/neaps/tide-database",
+    contentUrl: "https://github.com/openwatersio/slackwater-database",
   },
   spatialCoverage: {
     "@type": "Place",
@@ -49,7 +49,7 @@ const dataset = {
       <div class="flex items-center justify-between">
         <h1 class="mb-2">Tide Database</h1>
         <a
-          href="https://github.com/neaps/tide-database"
+          href="https://github.com/openwatersio/slackwater-database"
           target="_blank"
           rel="noopener noreferrer"
           class="btn btn-secondary inline-flex items-center gap-2"
@@ -64,8 +64,9 @@ const dataset = {
         <p>
           This database includes harmonic constituents for tide prediction from
           various sources around the world. These constants can be used with a
-          tide harmonic calculator like <a href="/tides/neaps/">Neaps</a> to perform
-          tide predictions.
+          tide harmonic calculator like <a href="/tides/slackwater/"
+            >Slackwater</a
+          > to perform tide predictions.
         </p>
       </div>
 
@@ -176,7 +177,7 @@ const dataset = {
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Card
-            href="https://github.com/neaps/tide-database"
+            href="https://github.com/openwatersio/slackwater-database"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -217,7 +218,7 @@ const dataset = {
           </Card>
 
           <Card
-            href="https://github.com/neaps/tide-database/releases"
+            href="https://github.com/openwatersio/slackwater-database/releases"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -366,7 +367,7 @@ const dataset = {
             corrections, or enhancements. All contributions are welcome!
           </p>
           <a
-            href="https://github.com/neaps/tide-database"
+            href="https://github.com/openwatersio/slackwater-database"
             target="_blank"
             rel="noopener noreferrer"
             class="btn btn-primary"
