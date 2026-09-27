@@ -151,7 +151,13 @@ console.log(points);`}
             >lunar eclipse</a
           >.
         </p>
-        <SolarEclipseDemo client:load />
+        <SolarEclipseDemo client:only="react">
+          <div
+            slot="fallback"
+            class="bg-surface h-96 w-full animate-pulse rounded-xl"
+          >
+          </div>
+        </SolarEclipseDemo>
         <details>
           <summary class="text-accent cursor-pointer font-medium"
             >Show the TypeScript</summary

@@ -500,6 +500,7 @@ test("unwrapLongitudes: a real central line never jumps", () => {
 });
 
 test("centralLineFeatures: a hybrid path splits by kind without a gap", () => {
+  // One annular point first, as 2023-04-20 has: a LineString needs two.
   const kinds = ["annular", "total", "total", "annular"] as const;
   const points = kinds.map((kind, i) => ({
     latitudeDeg: i,
@@ -514,7 +515,10 @@ test("centralLineFeatures: a hybrid path splits by kind without a gap", () => {
   assert.deepEqual(
     features.map(({ geometry }) => geometry.coordinates),
     [
-      [[0, 0]],
+      [
+        [0, 0],
+        [1, 1],
+      ],
       [
         [0, 0],
         [1, 1],
@@ -526,6 +530,18 @@ test("centralLineFeatures: a hybrid path splits by kind without a gap", () => {
       ],
     ],
   );
+});
+
+test("centralLineFeatures: every LineString has two positions", () => {
+  const eclipse = nextGlobalSolarEclipse(new Date("2023-04-20T00:00:00Z"));
+  const line = solarEclipseCentralLine(eclipse.peak);
+  const { features } = centralLineFeatures(line, unwrapLongitudes(line));
+  assert.ok(features.length >= 3);
+  for (const { geometry } of features) {
+    assert.ok(geometry.coordinates.length >= 2);
+  }
+  const lone = [{ latitudeDeg: 0, longitudeDeg: 0, kind: "total" as const }];
+  assert.deepEqual(centralLineFeatures(lone, [0]).features, []);
 });
 
 test("nearestPointIndex: no points gives -1", () => {

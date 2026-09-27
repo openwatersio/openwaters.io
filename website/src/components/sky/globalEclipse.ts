@@ -61,7 +61,8 @@ export const formatLongitude = (deg: number) =>
 /**
  * The central line as GeoJSON, one LineString per run of the same kind, so a
  * hybrid eclipse can be drawn total in one part and annular in another.
- * Adjacent runs share their boundary point so the line stays unbroken.
+ * Adjacent runs share their boundary point so the line stays unbroken, and
+ * every LineString has at least the two positions GeoJSON requires.
  */
 export function centralLineFeatures(
   points: readonly (GroundPoint & { kind: "total" | "annular" })[],
@@ -76,6 +77,11 @@ export function centralLineFeatures(
       return;
     }
     const previous = run?.geometry.coordinates.at(-1);
+    // A LineString needs two positions: a one-point run, such as the first
+    // minute of a hybrid path, extends to the next point.
+    if (run && run.geometry.coordinates.length === 1) {
+      run.geometry.coordinates.push(coordinate);
+    }
     features.push({
       type: "Feature",
       properties: { kind: point.kind },
@@ -85,7 +91,12 @@ export function centralLineFeatures(
       },
     });
   });
-  return { type: "FeatureCollection", features };
+  return {
+    type: "FeatureCollection",
+    features: features.filter(
+      ({ geometry }) => geometry.coordinates.length > 1,
+    ),
+  };
 }
 
 /** Index of the point closest in time to `time`, or −1 for no points. */
