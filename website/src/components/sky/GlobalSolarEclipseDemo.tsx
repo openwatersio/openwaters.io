@@ -218,7 +218,7 @@ export default function GlobalSolarEclipseDemo() {
               {label}
             </h3>
             <div
-              className="flex flex-wrap gap-2"
+              className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap"
               aria-label={`${label}: solar eclipses on Earth`}
             >
               {events.map((event) => (
@@ -231,11 +231,14 @@ export default function GlobalSolarEclipseDemo() {
                     setIndex(undefined);
                   }}
                   className={cn(
-                    "btn",
+                    "btn btn-sm flex-col items-start gap-0 rounded-xl sm:flex-row sm:items-center sm:gap-1 sm:rounded-full",
                     event === eclipse ? "btn-primary" : "btn-secondary",
                   )}
                 >
-                  {KIND_LABEL[event.kind]} ·{" "}
+                  <span className="text-xs font-semibold tracking-wide uppercase opacity-80 sm:text-sm sm:font-medium sm:tracking-normal sm:normal-case sm:opacity-100">
+                    {KIND_LABEL[event.kind]}
+                    <span className="hidden sm:inline"> ·</span>
+                  </span>
                   <DateTime
                     datetime={event.peak}
                     timeZone="UTC"

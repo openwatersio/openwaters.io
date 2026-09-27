@@ -228,7 +228,10 @@ export default function SolarEclipseDemo() {
   return (
     <div className="space-y-5">
       <LocationPicker place={place} onChange={choosePlace} />
-      <div className="flex flex-wrap gap-2" aria-label="Solar eclipses">
+      <div
+        className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap"
+        aria-label="Solar eclipses"
+      >
         {eclipses.map((event) => (
           <button
             key={event.peak.toISOString()}
@@ -239,11 +242,14 @@ export default function SolarEclipseDemo() {
               setProgress(500);
             }}
             className={cn(
-              "btn",
+              "btn btn-sm flex-col items-start gap-0 rounded-xl sm:flex-row sm:items-center sm:gap-1 sm:rounded-full",
               event === eclipse ? "btn-primary" : "btn-secondary",
             )}
           >
-            {KIND_LABEL[event.kind]} ·{" "}
+            <span className="text-xs font-semibold tracking-wide uppercase opacity-80 sm:text-sm sm:font-medium sm:tracking-normal sm:normal-case sm:opacity-100">
+              {KIND_LABEL[event.kind]}
+              <span className="hidden sm:inline"> ·</span>
+            </span>
             <DateTime
               datetime={event.peak}
               timeZone={place.tz}
