@@ -48,7 +48,7 @@ function EclipseCard({
     <div className="card space-y-4">
       <div className="flex items-baseline justify-between gap-3">
         <h3 className="text-lg font-semibold">Solar eclipse on Earth</h3>
-        <span className="rounded-full bg-(--accent-bg) px-3 py-1 text-xs font-semibold tracking-wide text-(--accent) uppercase">
+        <span className="bg-accent/15 text-accent rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase">
           {KIND_LABEL[eclipse.kind]}
         </span>
       </div>
@@ -62,7 +62,7 @@ function EclipseCard({
             year="numeric"
           />
         </div>
-        <div className="text-(--text-secondary)">
+        <div className="text-fg-muted">
           Greatest eclipse at{" "}
           <DateTime
             datetime={eclipse.peak}
@@ -73,6 +73,14 @@ function EclipseCard({
           />
         </div>
       </div>
+      {eclipse.kind === "partial" ? (
+        <p className="bg-surface text-fg-muted rounded-lg px-3 py-2 text-sm">
+          Partial everywhere it is seen. The axis of the Moon's shadow passes
+          outside the Earth, so no one stands in the full shadow and there is no
+          central line: only the Moon's outer shadow, the penumbra, reaches the
+          ground, at high latitudes and with the Sun low.
+        </p>
+      ) : null}
       <dl>
         {eclipse.latitudeDeg !== null && eclipse.longitudeDeg !== null ? (
           <>
@@ -116,15 +124,13 @@ function EclipseCard({
             </dd>
           </>
         ) : null}
-        <dt
-          className={cn(first && "mt-1 border-t border-(--border-subtle) pt-1")}
-        >
+        <dt className={cn(first && "border-line mt-1 border-t pt-1")}>
           Shadow axis from Earth's center
         </dt>
         <dd
           className={cn(
             "text-right tabular-nums",
-            first && "mt-1 border-t border-(--border-subtle) pt-1",
+            first && "border-line mt-1 border-t pt-1",
           )}
         >
           {Math.round(eclipse.axisDistanceKm).toLocaleString("en-US")} km
@@ -212,7 +218,7 @@ export default function GlobalSolarEclipseDemo() {
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
-          <div className="aspect-square overflow-hidden rounded-xl border border-(--border-subtle)">
+          <div className="border-line aspect-square overflow-hidden rounded-xl border">
             <Map
               ref={mapRef}
               mapStyle={mapStyle}
@@ -247,7 +253,7 @@ export default function GlobalSolarEclipseDemo() {
                   longitude={currentLongitude}
                   latitude={current.latitudeDeg}
                 >
-                  <span className="block size-4 rounded-full border-2 border-white bg-(--accent) shadow" />
+                  <span className="bg-accent block size-4 rounded-full border-2 border-white shadow" />
                 </Marker>
               ) : null}
             </Map>
@@ -264,7 +270,7 @@ export default function GlobalSolarEclipseDemo() {
                   aria-label="Time along the central line"
                   value={index ?? peakIndex}
                   onChange={(event) => setIndex(Number(event.target.value))}
-                  className="block w-full accent-(--accent)"
+                  className="accent-accent block w-full"
                 />
               </label>
               <p className="text-sm tabular-nums">
@@ -281,16 +287,15 @@ export default function GlobalSolarEclipseDemo() {
                   timeZoneName="short"
                 />
               </p>
-              <p className="text-xs text-(--text-secondary)">
+              <p className="text-fg-muted text-xs">
                 The line is where the axis of the Moon's shadow meets the
                 ground, one point a minute, colored by what a person standing
                 there sees: gold for total, orange for annular.
               </p>
             </>
           ) : (
-            <p className="text-sm text-(--text-secondary)">
-              The Moon's shadow axis misses the Earth, so this eclipse is
-              partial everywhere it is seen and has no central line.
+            <p className="text-fg-muted text-sm">
+              No central line to draw: the Moon's shadow axis misses the Earth.
             </p>
           )}
         </div>

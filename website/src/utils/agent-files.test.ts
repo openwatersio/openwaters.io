@@ -161,6 +161,8 @@ for (const [page, image] of [
     "ais/alternatives/aisstream/index.html",
     "og/ais-alternatives-aisstream.png",
   ],
+  ["sky/sun/index.html", "og/sun.png"],
+  ["sky/moon/index.html", "og/moon.png"],
 ]) {
   test(`${page} uses its own 1200x630 social image`, { skip }, () => {
     const html = read(page!);

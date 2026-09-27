@@ -48,7 +48,7 @@ function SolarEclipseCard({
     <div className="card space-y-4">
       <div className="flex items-baseline justify-between gap-3">
         <h3 className="text-lg font-semibold">Solar eclipse here</h3>
-        <span className="rounded-full bg-(--accent-bg) px-3 py-1 text-xs font-semibold tracking-wide text-(--accent) uppercase">
+        <span className="bg-accent/15 text-accent rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase">
           {KIND_LABEL[eclipse.kind]}
         </span>
       </div>
@@ -62,7 +62,7 @@ function SolarEclipseCard({
             year="numeric"
           />
         </div>
-        <div className="text-(--text-secondary)">
+        <div className="text-fg-muted">
           Greatest eclipse at{" "}
           <DateTime
             datetime={eclipse.peak}
@@ -76,8 +76,8 @@ function SolarEclipseCard({
       <div
         className={
           peakAlt >= 0
-            ? "rounded-lg bg-(--status-green-bg) px-3 py-2 text-sm text-(--status-green-text)"
-            : "rounded-lg bg-(--surface-subtle) px-3 py-2 text-sm text-(--text-secondary)"
+            ? "bg-cta/15 text-cta rounded-lg px-3 py-2 text-sm"
+            : "bg-surface text-fg-muted rounded-lg px-3 py-2 text-sm"
         }
       >
         {peakAlt >= 0
@@ -101,7 +101,7 @@ function SolarEclipseCard({
                   type="button"
                   onClick={() => onGoTo(time)}
                   title={title ?? `Show the Sun at ${label.toLowerCase()}`}
-                  className="text-(--accent) underline-offset-4 hover:underline"
+                  className="text-accent underline-offset-4 hover:underline"
                 >
                   <DateTime
                     datetime={time}
@@ -114,10 +114,8 @@ function SolarEclipseCard({
             </Fragment>
           );
         })}
-        <dt className="mt-1 border-t border-(--border-subtle) pt-1">
-          Peak obscuration
-        </dt>
-        <dd className="mt-1 border-t border-(--border-subtle) pt-1 text-right tabular-nums">
+        <dt className="border-line mt-1 border-t pt-1">Peak obscuration</dt>
+        <dd className="border-line mt-1 border-t pt-1 text-right tabular-nums">
           {(eclipse.obscuration * 100).toFixed(1)}%
         </dd>
       </dl>
@@ -137,7 +135,7 @@ function NextTotalAnywhere({ after }: { after: Date }) {
   }, [after]);
   if (total.latitudeDeg === null || total.longitudeDeg === null) return null;
   return (
-    <p className="text-sm text-(--text-secondary)">
+    <p className="text-fg-muted text-sm">
       The next total solar eclipse anywhere on Earth is on{" "}
       <DateTime
         datetime={total.peak}
@@ -150,7 +148,7 @@ function NextTotalAnywhere({ after }: { after: Date }) {
       {formatLongitude(total.longitudeDeg)}.{" "}
       <a
         href="#eclipses-anywhere"
-        className="text-(--accent) underline-offset-4 hover:underline"
+        className="text-accent underline-offset-4 hover:underline"
       >
         Follow its shadow
       </a>
@@ -188,7 +186,7 @@ export default function SolarEclipseDemo() {
     return (
       <div className="space-y-5">
         <LocationPicker place={place} onChange={choosePlace} />
-        <p role="status" className="card text-(--text-secondary)">
+        <p role="status" className="card text-fg-muted">
           No solar eclipse is visible from here in the next ten years.
         </p>
         <NextTotalAnywhere after={start} />
@@ -257,7 +255,7 @@ export default function SolarEclipseDemo() {
         ))}
       </div>
       {state === "partial-only" && (
-        <p className="text-sm text-(--text-secondary)">
+        <p className="text-fg-muted text-sm">
           No annular or total solar eclipse is visible from here in this
           ten-year window.
         </p>
@@ -291,7 +289,7 @@ export default function SolarEclipseDemo() {
               aria-label="Solar eclipse time"
               value={progress}
               onChange={(event) => setProgress(Number(event.target.value))}
-              className="block w-full accent-(--accent)"
+              className="accent-accent block w-full"
             />
           </label>
           <p className="text-sm tabular-nums">
@@ -309,7 +307,7 @@ export default function SolarEclipseDemo() {
               timeZoneName="short"
             />
           </p>
-          <p className="text-xs text-(--text-secondary)">
+          <p className="text-fg-muted text-xs">
             Disc positions and sizes use Almanac's topocentric sky positions and
             distances. The drawing is illustrative, not safe-viewing guidance.
           </p>
