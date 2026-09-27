@@ -20,7 +20,19 @@ import {
   project,
   signedBearingDeg,
 } from "./projection.ts";
-import { starAltAz } from "@openwaters/almanac";
+import {
+  nextGlobalSolarEclipse,
+  solarEclipseCentralLine,
+  starAltAz,
+} from "@openwaters/almanac";
+import {
+  centralLineFeatures,
+  formatLatitude,
+  formatLongitude,
+  nearestPointIndex,
+  pathBounds,
+  unwrapLongitudes,
+} from "./globalEclipse.ts";
 import { domeStars, driftOpacity, starRadius } from "./stars.ts";
 import catalog from "./stars.json" with { type: "json" };
 
@@ -462,4 +474,65 @@ test("starRadius: brighter stars draw bigger", () => {
   assert.ok(starRadius(-1.44) > starRadius(0.03));
   assert.ok(starRadius(0.03) > starRadius(3.5));
   assert.ok(starRadius(3.5) > 0);
+});
+
+test("unwrapLongitudes: a line across the antimeridian stays continuous", () => {
+  const points = [170, 178, -176, -168].map((longitudeDeg) => ({
+    latitudeDeg: 0,
+    longitudeDeg,
+  }));
+  assert.deepEqual(unwrapLongitudes(points), [170, 178, 184, 192]);
+  assert.deepEqual(pathBounds(points), [170, 0, 192, 0]);
+});
+
+test("unwrapLongitudes: a real central line never jumps", () => {
+  // 2024-04-08 crosses the Pacific and North America.
+  const eclipse = nextGlobalSolarEclipse(new Date("2024-04-01T00:00:00Z"));
+  const line = solarEclipseCentralLine(eclipse.peak);
+  const longitudes = unwrapLongitudes(line);
+  assert.equal(longitudes.length, line.length);
+  for (let i = 1; i < longitudes.length; i++) {
+    assert.ok(Math.abs(longitudes[i]! - longitudes[i - 1]!) < 180);
+  }
+  const peak = line[nearestPointIndex(line, eclipse.peak)]!;
+  assert.ok(Math.abs(peak.time.getTime() - eclipse.peak.getTime()) <= 30_000);
+});
+
+test("centralLineFeatures: a hybrid path splits by kind without a gap", () => {
+  const kinds = ["annular", "total", "total", "annular"] as const;
+  const points = kinds.map((kind, i) => ({
+    latitudeDeg: i,
+    longitudeDeg: i,
+    kind,
+  }));
+  const { features } = centralLineFeatures(points, [0, 1, 2, 3]);
+  assert.deepEqual(
+    features.map(({ properties }) => properties.kind),
+    ["annular", "total", "annular"],
+  );
+  assert.deepEqual(
+    features.map(({ geometry }) => geometry.coordinates),
+    [
+      [[0, 0]],
+      [
+        [0, 0],
+        [1, 1],
+        [2, 2],
+      ],
+      [
+        [2, 2],
+        [3, 3],
+      ],
+    ],
+  );
+});
+
+test("nearestPointIndex: no points gives -1", () => {
+  assert.equal(nearestPointIndex([], new Date(0)), -1);
+});
+
+test("coordinates: hemispheres from the sign", () => {
+  assert.equal(formatLatitude(-33.87), "33.9° S");
+  assert.equal(formatLongitude(-123), "123.0° W");
+  assert.equal(formatLongitude(151.21), "151.2° E");
 });

@@ -1,5 +1,6 @@
 import { Fragment, useMemo, useState } from "react";
 import {
+  nextGlobalSolarEclipse,
   moonAltAz,
   moonPosition,
   solarEclipses,
@@ -13,6 +14,7 @@ import {
 import { DateTime } from "../DateTime";
 import { cn } from "../../utils/cn";
 import { LocationPicker, toObserver, useLocation } from "./LocationPicker";
+import { formatLatitude, formatLongitude } from "./globalEclipse";
 import {
   solarContactRows,
   solarEclipseInstant,
@@ -123,6 +125,40 @@ function SolarEclipseCard({
   );
 }
 
+/** Points a place with no total eclipse nearby at the next one anywhere. */
+function NextTotalAnywhere({ after }: { after: Date }) {
+  const total = useMemo(() => {
+    let cursor = after;
+    for (;;) {
+      const next = nextGlobalSolarEclipse(cursor);
+      if (next.kind === "total") return next;
+      cursor = next.peak;
+    }
+  }, [after]);
+  if (total.latitudeDeg === null || total.longitudeDeg === null) return null;
+  return (
+    <p className="text-sm text-(--text-secondary)">
+      The next total solar eclipse anywhere on Earth is on{" "}
+      <DateTime
+        datetime={total.peak}
+        timeZone="UTC"
+        month="long"
+        day="numeric"
+        year="numeric"
+      />
+      , greatest over {formatLatitude(total.latitudeDeg)},{" "}
+      {formatLongitude(total.longitudeDeg)}.{" "}
+      <a
+        href="#eclipses-anywhere"
+        className="text-(--accent) underline-offset-4 hover:underline"
+      >
+        Follow its shadow
+      </a>
+      .
+    </p>
+  );
+}
+
 export default function SolarEclipseDemo() {
   const [place, setPlace] = useLocation();
   const [selectedPeak, setSelectedPeak] = useState<number>();
@@ -155,6 +191,7 @@ export default function SolarEclipseDemo() {
         <p role="status" className="card text-(--text-secondary)">
           No solar eclipse is visible from here in the next ten years.
         </p>
+        <NextTotalAnywhere after={start} />
         <p className="font-medium">
           Never look at the Sun without proper eye protection, at any phase but
           totality.
@@ -225,6 +262,7 @@ export default function SolarEclipseDemo() {
           ten-year window.
         </p>
       )}
+      {state === "partial-only" && <NextTotalAnywhere after={start} />}
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <svg

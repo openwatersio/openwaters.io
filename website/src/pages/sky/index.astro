@@ -11,10 +11,11 @@ import { MoonFilmstrip, TwilightRibbon } from "../../components/sky/SkyDemos";
 import SunYear from "../../components/sky/SunYear";
 import LunarEclipseDemo from "../../components/sky/LunarEclipseDemo";
 import SolarEclipseDemo from "../../components/sky/SolarEclipseDemo";
+import GlobalSolarEclipseDemo from "../../components/sky/GlobalSolarEclipseDemo";
 
 const REPO = "https://github.com/openwatersio/almanac";
 const ROADMAP = `${REPO}/blob/main/docs/ROADMAP.md`;
-const VERSION = "0.4.0";
+const VERSION = "0.5.0";
 const initialMonth = new Date().toISOString().slice(0, 7);
 const moonCode = `import { moonIllumination, searchMoonPhases } from '@openwaters/almanac';
 
@@ -52,6 +53,22 @@ for (const eclipse of solarEclipses(start, end, observer)) {
   console.log(eclipse.kind, eclipse.peak, eclipse.obscuration);
   console.log(solarObscuration(eclipse.peak, observer));
 }`;
+const globalCode = `import { globalSolarEclipses, solarEclipseCentralLine } from '@openwaters/almanac';
+
+const start = new Date();
+const end = new Date(start);
+end.setUTCFullYear(end.getUTCFullYear() + 10);
+
+// No observer: every solar eclipse on Earth, with where the shadow axis
+// lands at greatest eclipse (null for a partial, whose axis misses).
+for (const eclipse of globalSolarEclipses(start, end)) {
+  console.log(eclipse.kind, eclipse.peak, eclipse.latitudeDeg, eclipse.longitudeDeg);
+
+  // The central line, one point a minute, each total or annular.
+  const line = solarEclipseCentralLine(eclipse.peak);
+  console.log(line.map(({ time, latitudeDeg, longitudeDeg, kind }) =>
+    [time, latitudeDeg, longitudeDeg, kind]));
+}`;
 
 const features = [
   {
@@ -67,7 +84,7 @@ const features = [
   {
     icon: "mdi:weather-night",
     title: "Sun, Moon, stars and eclipses",
-    body: "Positions, rise and set, all three twilights, transit, moon phase and illumination, lunar and local solar eclipses with contact times, and alt/az for any star you give a catalog position.",
+    body: "Positions, rise and set, all three twilights, transit, moon phase and illumination, lunar and local solar eclipses with contact times, every solar eclipse on Earth with its central line, and alt/az for any star you give a catalog position.",
   },
   {
     icon: "mdi:target",
@@ -76,7 +93,7 @@ const features = [
   },
 ];
 
-const tsCode = `import { sunEvents, starAltAz, nextLunarEclipse, lunarEclipseVisibility, nextSolarEclipse } from '@openwaters/almanac';
+const tsCode = `import { sunEvents, starAltAz, nextLunarEclipse, lunarEclipseVisibility, nextSolarEclipse, nextGlobalSolarEclipse } from '@openwaters/almanac';
 
 const observer = { latitudeDeg: 48.5, longitudeDeg: -123.0 };
 
@@ -95,6 +112,10 @@ console.log(eclipse.kind, eclipse.peak, visibility.visibleAtPeak);
 // The next solar eclipse visible from this location
 const solar = nextSolarEclipse(now, observer);
 console.log(solar.kind, solar.peak, solar.obscuration);
+
+// The next solar eclipse anywhere on Earth, and where its shadow axis lands
+const anywhere = nextGlobalSolarEclipse(now);
+console.log(anywhere.kind, anywhere.peak, anywhere.latitudeDeg, anywhere.longitudeDeg);
 
 // Where Sirius is right now, from its J2000 catalog position
 console.log(starAltAz(101.287, -16.716, now, observer));`;
@@ -116,6 +137,11 @@ print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)
 
 let solar = try nextSolarEclipse(after: now, observer: observer)
 print(solar.kind, solar.peak, solar.obscuration)
+
+let anywhere = try nextGlobalSolarEclipse(after: now)
+if let latitude = anywhere.latitudeDeg, let longitude = anywhere.longitudeDeg {
+  print(anywhere.kind, anywhere.peak, latitude, longitude)
+}
 
 let sirius = try starAltAz(raDeg: 101.287, decDeg: -16.716, at: now, observer: observer)
 print(sirius.altDeg, sirius.azDeg)`;
@@ -283,6 +309,33 @@ console.log(points);`}
             >Show the TypeScript</summary
           >
           <CodeBlock code={solarCode} class="mt-4" />
+        </details>
+      </section>
+      <section
+        id="eclipses-anywhere"
+        aria-labelledby="eclipses-anywhere-title"
+        class="mt-16 scroll-mt-24 space-y-6"
+      >
+        <h2 id="eclipses-anywhere-title" class="text-3xl font-semibold">
+          Solar eclipses anywhere on Earth
+        </h2>
+        <p class="text-(--text-secondary)">
+          Every solar eclipse in the next ten years, wherever it happens. For a
+          total or annular eclipse, follow the Moon's shadow along its central
+          line from where it first touches the Earth to where it leaves.
+        </p>
+        <GlobalSolarEclipseDemo client:only="react">
+          <div
+            slot="fallback"
+            class="bg-surface aspect-square w-full animate-pulse rounded-xl md:w-1/2"
+          >
+          </div>
+        </GlobalSolarEclipseDemo>
+        <details>
+          <summary class="cursor-pointer font-medium text-(--accent)"
+            >Show the TypeScript</summary
+          >
+          <CodeBlock code={globalCode} class="mt-4" />
         </details>
       </section>
       <section
