@@ -31,6 +31,13 @@ const KIND_LABEL: Record<SolarEclipseKind, string> = {
 const LINE_COLOR = { total: "#f7c66b", annular: "#f08a4b" } as const;
 const WHOLE_EARTH = { longitude: 0, latitude: 20, zoom: 0.8 };
 
+/** A partial eclipse has no line to frame: face the globe toward greatest eclipse. */
+const greatestView = (eclipse: GlobalSolarEclipse) => ({
+  longitude: eclipse.greatestLongitudeDeg,
+  latitude: eclipse.greatestLatitudeDeg,
+  zoom: WHOLE_EARTH.zoom,
+});
+
 const formatDuration = (ms: number) => {
   const minutes = Math.round(ms / 60_000);
   const hours = Math.floor(minutes / 60);
@@ -86,29 +93,22 @@ function EclipseCard({
       {eclipse.kind === "partial" ? (
         <p className="bg-surface text-fg-muted rounded-lg px-3 py-2 text-sm">
           Partial everywhere it is seen. The axis of the Moon's shadow passes
-          outside the Earth, so no one stands in the full shadow and there is no
-          central line: only the Moon's outer shadow, the penumbra, reaches the
-          ground, at high latitudes and with the Sun low.
+          outside the Earth, so there is no central line: only the Moon's outer
+          shadow, the penumbra, reaches the ground, at high latitudes and with
+          the Sun low. Greatest eclipse is on the edge of the Earth nearest the
+          axis, where the Sun sits on the horizon.
         </p>
       ) : null}
       <dl>
-        {eclipse.latitudeDeg !== null && eclipse.longitudeDeg !== null ? (
-          <>
-            <dt>Greatest eclipse over</dt>
-            <dd className="text-right tabular-nums">
-              {formatLatitude(eclipse.latitudeDeg)},{" "}
-              {formatLongitude(eclipse.longitudeDeg)}
-            </dd>
-          </>
-        ) : null}
-        {eclipse.obscuration !== null ? (
-          <>
-            <dt>Sun covered there</dt>
-            <dd className="text-right tabular-nums">
-              {(eclipse.obscuration * 100).toFixed(1)}%
-            </dd>
-          </>
-        ) : null}
+        <dt>Greatest eclipse over</dt>
+        <dd className="text-right tabular-nums">
+          {formatLatitude(eclipse.greatestLatitudeDeg)},{" "}
+          {formatLongitude(eclipse.greatestLongitudeDeg)}
+        </dd>
+        <dt>Sun covered there</dt>
+        <dd className="text-right tabular-nums">
+          {(eclipse.greatestObscuration * 100).toFixed(1)}%
+        </dd>
         {first && last ? (
           <>
             <dt>Shadow axis on Earth</dt>
@@ -184,7 +184,11 @@ export default function GlobalSolarEclipseDemo() {
   // The first line frames the initial view; later selections fly to theirs.
   const [initialViewState] = useState(() => {
     const bounds = pathBounds(line);
-    return bounds ? { bounds, fitBoundsOptions: { padding: 48 } } : WHOLE_EARTH;
+    return bounds
+      ? { bounds, fitBoundsOptions: { padding: 48 } }
+      : eclipse
+        ? greatestView(eclipse)
+        : WHOLE_EARTH;
   });
   const framed = useRef(line);
   useEffect(() => {
@@ -193,14 +197,15 @@ export default function GlobalSolarEclipseDemo() {
     const bounds = pathBounds(line);
     if (bounds) {
       mapRef.current?.fitBounds(bounds, { padding: 48, duration: 800 });
-    } else {
+    } else if (eclipse) {
+      const view = greatestView(eclipse);
       mapRef.current?.flyTo({
-        center: [WHOLE_EARTH.longitude, WHOLE_EARTH.latitude],
-        zoom: WHOLE_EARTH.zoom,
+        center: [view.longitude, view.latitude],
+        zoom: view.zoom,
         duration: 800,
       });
     }
-  }, [line]);
+  }, [line, eclipse]);
 
   if (!eclipse) return null;
 
@@ -292,6 +297,14 @@ export default function GlobalSolarEclipseDemo() {
                   <span className="bg-accent block size-4 rounded-full border-2 border-white shadow" />
                 </Marker>
               ) : null}
+              {line.length === 0 ? (
+                <Marker
+                  longitude={eclipse.greatestLongitudeDeg}
+                  latitude={eclipse.greatestLatitudeDeg}
+                >
+                  <span className="bg-accent block size-4 rounded-full border-2 border-white shadow" />
+                </Marker>
+              ) : null}
             </Map>
           </div>
           {current ? (
@@ -332,6 +345,8 @@ export default function GlobalSolarEclipseDemo() {
           ) : (
             <p className="text-fg-muted text-sm">
               No central line to draw: the Moon's shadow axis misses the Earth.
+              The dot marks greatest eclipse, on the edge of the Earth nearest
+              the axis.
             </p>
           )}
         </div>
