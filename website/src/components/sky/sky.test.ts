@@ -569,3 +569,14 @@ test("RECENT_DAYS: 2023-04-20 is a hybrid, total and annular along its line", ()
   );
   assert.deepEqual([...kinds].sort(), ["annular", "total"]);
 });
+
+test("a partial eclipse has a greatest-eclipse point to mark, but no line", () => {
+  // Espenak's catalog: 2029-01-14 is partial, greatest eclipse near 64° N 114° W.
+  const eclipse = nextGlobalSolarEclipse(new Date("2029-01-01T00:00:00Z"));
+  assert.equal(eclipse.kind, "partial");
+  assert.equal(eclipse.latitudeDeg, null);
+  assert.deepEqual(solarEclipseCentralLine(eclipse.peak), []);
+  assert.ok(Math.abs(eclipse.greatestLatitudeDeg - 64) < 1);
+  assert.ok(Math.abs(eclipse.greatestLongitudeDeg + 114) < 1);
+  assert.ok(eclipse.greatestObscuration > 0 && eclipse.greatestObscuration < 1);
+});

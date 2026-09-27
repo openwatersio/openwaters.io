@@ -37,10 +37,12 @@ const start = new Date();
 const end = new Date(start);
 end.setUTCFullYear(end.getUTCFullYear() + 10);
 
-// No observer: every solar eclipse on Earth, with where the shadow axis
-// lands at greatest eclipse (null for a partial, whose axis misses).
+// No observer: every solar eclipse on Earth, with where greatest eclipse
+// falls. For a partial, whose shadow axis misses the Earth, that is the point
+// on the Earth's edge nearest the axis, with the Sun on the horizon.
 for (const eclipse of globalSolarEclipses(start, end)) {
-  console.log(eclipse.kind, eclipse.peak, eclipse.latitudeDeg, eclipse.longitudeDeg);
+  console.log(eclipse.kind, eclipse.peak, eclipse.greatestLatitudeDeg,
+    eclipse.greatestLongitudeDeg, eclipse.greatestObscuration);
 
   // The central line, one point a minute, each total or annular.
   const line = solarEclipseCentralLine(eclipse.peak);
@@ -175,9 +177,9 @@ console.log(points);`}
         </h2>
         <p class="text-fg-muted">
           A few recent solar eclipses, and every one in the next ten years,
-          wherever it happens. For a total or annular eclipse, follow the Moon's
-          shadow along its central line from where it first touches the Earth to
-          where it leaves.
+          wherever it happens, marked where greatest eclipse falls. For a total
+          or annular eclipse, follow the Moon's shadow along its central line
+          from where it first touches the Earth to where it leaves.
         </p>
         <GlobalSolarEclipseDemo client:only="react">
           <div
