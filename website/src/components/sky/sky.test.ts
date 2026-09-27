@@ -20,7 +20,20 @@ import {
   project,
   signedBearingDeg,
 } from "./projection.ts";
-import { starAltAz } from "@openwaters/almanac";
+import {
+  nextGlobalSolarEclipse,
+  solarEclipseCentralLine,
+  starAltAz,
+} from "@openwaters/almanac";
+import {
+  centralLineFeatures,
+  formatLatitude,
+  formatLongitude,
+  nearestPointIndex,
+  pathBounds,
+  RECENT_DAYS,
+  unwrapLongitudes,
+} from "./globalEclipse.ts";
 import { domeStars, driftOpacity, starRadius } from "./stars.ts";
 import catalog from "./stars.json" with { type: "json" };
 
@@ -462,4 +475,97 @@ test("starRadius: brighter stars draw bigger", () => {
   assert.ok(starRadius(-1.44) > starRadius(0.03));
   assert.ok(starRadius(0.03) > starRadius(3.5));
   assert.ok(starRadius(3.5) > 0);
+});
+
+test("unwrapLongitudes: a line across the antimeridian stays continuous", () => {
+  const points = [170, 178, -176, -168].map((longitudeDeg) => ({
+    latitudeDeg: 0,
+    longitudeDeg,
+  }));
+  assert.deepEqual(unwrapLongitudes(points), [170, 178, 184, 192]);
+  assert.deepEqual(pathBounds(points), [170, 0, 192, 0]);
+});
+
+test("unwrapLongitudes: a real central line never jumps", () => {
+  // 2024-04-08 crosses the Pacific and North America.
+  const eclipse = nextGlobalSolarEclipse(new Date("2024-04-01T00:00:00Z"));
+  const line = solarEclipseCentralLine(eclipse.peak);
+  const longitudes = unwrapLongitudes(line);
+  assert.equal(longitudes.length, line.length);
+  for (let i = 1; i < longitudes.length; i++) {
+    assert.ok(Math.abs(longitudes[i]! - longitudes[i - 1]!) < 180);
+  }
+  const peak = line[nearestPointIndex(line, eclipse.peak)]!;
+  assert.ok(Math.abs(peak.time.getTime() - eclipse.peak.getTime()) <= 30_000);
+});
+
+test("centralLineFeatures: a hybrid path splits by kind without a gap", () => {
+  // One annular point first, as 2023-04-20 has: a LineString needs two.
+  const kinds = ["annular", "total", "total", "annular"] as const;
+  const points = kinds.map((kind, i) => ({
+    latitudeDeg: i,
+    longitudeDeg: i,
+    kind,
+  }));
+  const { features } = centralLineFeatures(points, [0, 1, 2, 3]);
+  assert.deepEqual(
+    features.map(({ properties }) => properties.kind),
+    ["annular", "total", "annular"],
+  );
+  assert.deepEqual(
+    features.map(({ geometry }) => geometry.coordinates),
+    [
+      [
+        [0, 0],
+        [1, 1],
+      ],
+      [
+        [0, 0],
+        [1, 1],
+        [2, 2],
+      ],
+      [
+        [2, 2],
+        [3, 3],
+      ],
+    ],
+  );
+});
+
+test("centralLineFeatures: every LineString has two positions", () => {
+  const eclipse = nextGlobalSolarEclipse(new Date("2023-04-20T00:00:00Z"));
+  const line = solarEclipseCentralLine(eclipse.peak);
+  const { features } = centralLineFeatures(line, unwrapLongitudes(line));
+  assert.ok(features.length >= 3);
+  for (const { geometry } of features) {
+    assert.ok(geometry.coordinates.length >= 2);
+  }
+  const lone = [{ latitudeDeg: 0, longitudeDeg: 0, kind: "total" as const }];
+  assert.deepEqual(centralLineFeatures(lone, [0]).features, []);
+});
+
+test("nearestPointIndex: no points gives -1", () => {
+  assert.equal(nearestPointIndex([], new Date(0)), -1);
+});
+
+test("coordinates: hemispheres from the sign", () => {
+  assert.equal(formatLatitude(-33.87), "33.9° S");
+  assert.equal(formatLongitude(-123), "123.0° W");
+  assert.equal(formatLongitude(151.21), "151.2° E");
+});
+
+test("RECENT_DAYS: each day finds the eclipse whose greatest eclipse is that day", () => {
+  for (const day of RECENT_DAYS) {
+    const eclipse = nextGlobalSolarEclipse(new Date(`${day}T00:00:00Z`));
+    assert.equal(eclipse.peak.toISOString().slice(0, 10), day);
+    assert.notEqual(eclipse.kind, "partial", day);
+  }
+});
+
+test("RECENT_DAYS: 2023-04-20 is a hybrid, total and annular along its line", () => {
+  const eclipse = nextGlobalSolarEclipse(new Date("2023-04-20T00:00:00Z"));
+  const kinds = new Set(
+    solarEclipseCentralLine(eclipse.peak).map(({ kind }) => kind),
+  );
+  assert.deepEqual([...kinds].sort(), ["annular", "total"]);
 });
