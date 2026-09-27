@@ -580,3 +580,44 @@ test("a partial eclipse has a greatest-eclipse point to mark, but no line", () =
   assert.ok(Math.abs(eclipse.greatestLongitudeDeg + 114) < 1);
   assert.ok(eclipse.greatestObscuration > 0 && eclipse.greatestObscuration < 1);
 });
+
+test("centralLineFeatures: a path past the pole follows great circles", () => {
+  // 2026-08-12 passes 2° from the North Pole, sweeping up to 26° of
+  // longitude a minute; drawn straight in longitude and latitude, each
+  // step would bow away from the pole.
+  const eclipse = nextGlobalSolarEclipse(new Date("2026-08-12T00:00:00Z"));
+  const line = solarEclipseCentralLine(eclipse.peak);
+  const longitudes = unwrapLongitudes(line);
+  const { features } = centralLineFeatures(line, longitudes);
+  const drawn = features.flatMap(({ geometry }) => geometry.coordinates);
+  for (const { geometry } of features) {
+    for (let i = 1; i < geometry.coordinates.length; i++) {
+      const step =
+        geometry.coordinates[i]![0]! - geometry.coordinates[i - 1]![0]!;
+      assert.ok(Math.abs(step) <= 1 + 1e-9, `longitude step ${step}`);
+    }
+  }
+  // Every sample is still drawn, in order.
+  let at = 0;
+  line.forEach((point, i) => {
+    at = drawn.findIndex(
+      ([lon, lat], j) =>
+        j >= at && lon === longitudes[i] && lat === point.latitudeDeg,
+    );
+    assert.ok(at >= 0, point.time.toISOString());
+  });
+  // Between two samples at 87.8° N the great circle runs nearer the pole.
+  const northmost = Math.max(...drawn.map(([, lat]) => lat!));
+  const sampled = Math.max(...line.map(({ latitudeDeg }) => latitudeDeg));
+  assert.ok(northmost > sampled);
+});
+
+test("centralLineFeatures: an ordinary path is drawn as sampled", () => {
+  const eclipse = nextGlobalSolarEclipse(new Date("2024-04-01T00:00:00Z"));
+  const line = solarEclipseCentralLine(eclipse.peak);
+  const longitudes = unwrapLongitudes(line);
+  const { features } = centralLineFeatures(line, longitudes);
+  const drawn = features.flatMap(({ geometry }) => geometry.coordinates).length;
+  // Only the ends, where the shadow races along the horizon, gain points.
+  assert.ok(drawn < line.length * 1.5, `${drawn} drawn for ${line.length}`);
+});
