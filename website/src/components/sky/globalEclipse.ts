@@ -1,3 +1,15 @@
+/**
+ * Well-known recent solar eclipses, by the UTC day of greatest eclipse.
+ * 2023-04-20 is a hybrid: its central line turns from annular to total and back.
+ */
+export const RECENT_DAYS = [
+  "2017-08-21",
+  "2023-04-20",
+  "2023-10-14",
+  "2024-04-08",
+  "2026-08-12",
+] as const;
+
 export type GroundPoint = { latitudeDeg: number; longitudeDeg: number };
 
 /**

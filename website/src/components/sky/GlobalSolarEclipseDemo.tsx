@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   globalSolarEclipses,
+  nextGlobalSolarEclipse,
   solarEclipseCentralLine,
   type GlobalSolarEclipse,
   type SolarEclipseAxisPoint,
@@ -18,6 +19,7 @@ import {
   formatLongitude,
   nearestPointIndex,
   pathBounds,
+  RECENT_DAYS,
   unwrapLongitudes,
 } from "./globalEclipse";
 
@@ -73,6 +75,14 @@ function EclipseCard({
           />
         </div>
       </div>
+      {new Set(line.map(({ kind }) => kind)).size > 1 ? (
+        <p className="bg-surface text-fg-muted rounded-lg px-3 py-2 text-sm">
+          A hybrid eclipse: total along most of its central line but annular
+          along part of it, often just near the ends, where the Sun is low and
+          the tip of the Moon's full shadow falls short of the ground. The line
+          turns orange where it is annular.
+        </p>
+      ) : null}
       {eclipse.kind === "partial" ? (
         <p className="bg-surface text-fg-muted rounded-lg px-3 py-2 text-sm">
           Partial everywhere it is seen. The axis of the Moon's shadow passes
@@ -149,9 +159,18 @@ export default function GlobalSolarEclipseDemo() {
     end.setUTCFullYear(end.getUTCFullYear() + 10);
     return globalSolarEclipses(start, end);
   }, [start]);
+  const recent = useMemo(
+    () =>
+      RECENT_DAYS.map((day) =>
+        nextGlobalSolarEclipse(new Date(`${day}T00:00:00Z`)),
+      ).filter(({ peak }) => peak < start),
+    [start],
+  );
   const [selectedPeak, setSelectedPeak] = useState<number>();
   const eclipse =
-    eclipses.find(({ peak }) => peak.getTime() === selectedPeak) ?? eclipses[0];
+    [...recent, ...eclipses].find(
+      ({ peak }) => peak.getTime() === selectedPeak,
+    ) ?? eclipses[0];
   const line = useMemo(
     () => (eclipse ? solarEclipseCentralLine(eclipse.peak) : []),
     [eclipse],
@@ -187,35 +206,49 @@ export default function GlobalSolarEclipseDemo() {
 
   return (
     <div className="space-y-5">
-      <div
-        className="flex flex-wrap gap-2"
-        aria-label="Solar eclipses on Earth"
-      >
-        {eclipses.map((event) => (
-          <button
-            key={event.peak.toISOString()}
-            type="button"
-            aria-pressed={event === eclipse}
-            onClick={() => {
-              setSelectedPeak(event.peak.getTime());
-              setIndex(undefined);
-            }}
-            className={cn(
-              "btn",
-              event === eclipse ? "btn-primary" : "btn-secondary",
-            )}
-          >
-            {KIND_LABEL[event.kind]} ·{" "}
-            <DateTime
-              datetime={event.peak}
-              timeZone="UTC"
-              month="short"
-              day="numeric"
-              year="numeric"
-            />
-          </button>
-        ))}
-      </div>
+      {(
+        [
+          ["Recent", recent],
+          ["Next ten years", eclipses],
+        ] as const
+      ).map(([label, events]) =>
+        events.length > 0 ? (
+          <div key={label} className="space-y-2">
+            <h3 className="text-fg-muted text-sm font-semibold tracking-wide uppercase">
+              {label}
+            </h3>
+            <div
+              className="flex flex-wrap gap-2"
+              aria-label={`${label}: solar eclipses on Earth`}
+            >
+              {events.map((event) => (
+                <button
+                  key={event.peak.toISOString()}
+                  type="button"
+                  aria-pressed={event === eclipse}
+                  onClick={() => {
+                    setSelectedPeak(event.peak.getTime());
+                    setIndex(undefined);
+                  }}
+                  className={cn(
+                    "btn",
+                    event === eclipse ? "btn-primary" : "btn-secondary",
+                  )}
+                >
+                  {KIND_LABEL[event.kind]} ·{" "}
+                  <DateTime
+                    datetime={event.peak}
+                    timeZone="UTC"
+                    month="short"
+                    day="numeric"
+                    year="numeric"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null,
+      )}
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div className="border-line aspect-square overflow-hidden rounded-xl border">

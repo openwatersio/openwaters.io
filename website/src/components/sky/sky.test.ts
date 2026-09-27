@@ -31,6 +31,7 @@ import {
   formatLongitude,
   nearestPointIndex,
   pathBounds,
+  RECENT_DAYS,
   unwrapLongitudes,
 } from "./globalEclipse.ts";
 import { domeStars, driftOpacity, starRadius } from "./stars.ts";
@@ -535,4 +536,20 @@ test("coordinates: hemispheres from the sign", () => {
   assert.equal(formatLatitude(-33.87), "33.9° S");
   assert.equal(formatLongitude(-123), "123.0° W");
   assert.equal(formatLongitude(151.21), "151.2° E");
+});
+
+test("RECENT_DAYS: each day finds the eclipse whose greatest eclipse is that day", () => {
+  for (const day of RECENT_DAYS) {
+    const eclipse = nextGlobalSolarEclipse(new Date(`${day}T00:00:00Z`));
+    assert.equal(eclipse.peak.toISOString().slice(0, 10), day);
+    assert.notEqual(eclipse.kind, "partial", day);
+  }
+});
+
+test("RECENT_DAYS: 2023-04-20 is a hybrid, total and annular along its line", () => {
+  const eclipse = nextGlobalSolarEclipse(new Date("2023-04-20T00:00:00Z"));
+  const kinds = new Set(
+    solarEclipseCentralLine(eclipse.peak).map(({ kind }) => kind),
+  );
+  assert.deepEqual([...kinds].sort(), ["annular", "total"]);
 });
