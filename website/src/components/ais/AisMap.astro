@@ -226,10 +226,7 @@ const { class: className, center, zoom } = Astro.props;
       backoff = 1000;
     function connect() {
       ws = new WebSocket(WS);
-      ws.onopen = () => {
-        backoff = 1000;
-        subscribe();
-      };
+      ws.onopen = subscribe;
       ws.onclose = () => {
         setTimeout(connect, backoff);
         backoff = Math.min(backoff * 2, 30e3);
@@ -237,7 +234,11 @@ const { class: className, center, zoom } = Astro.props;
       ws.onerror = () => ws?.close();
       ws.onmessage = (e) => {
         const ev = JSON.parse(e.data);
-        if (ev.type === "event") onEvent(ev);
+        // Reset on the first event, not on open: the server refuses over-limit clients after the upgrade.
+        if (ev.type === "event") {
+          backoff = 1000;
+          onEvent(ev);
+        } else if (ev.type === "error") console.warn("stream:", ev.error);
       };
     }
     function subscribe() {
