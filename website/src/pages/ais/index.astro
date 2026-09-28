@@ -11,6 +11,7 @@ import { CONTACT_EMAIL } from "../../utils/constants";
 import { highlight, SNIPPET_LANGS } from "../../utils/shiki";
 
 const SERVER = "ais.openwaters.io";
+const UDP_HOST = `udp.${SERVER}`;
 const REPO = "https://github.com/openwatersio/aiscast";
 const TOKEN_PAGE = "/ais/token/";
 
@@ -190,7 +191,7 @@ const contribute = [
     icon: "mdi:docker",
     title: "docker-shipfeeder",
     text: "Already sending to the aggregators from a container? Add one more UDP destination.",
-    code: `host ${SERVER}, port 10110`,
+    code: `host ${UDP_HOST}, port 10110`,
     links: [
       {
         label: "docker-shipfeeder",
@@ -202,7 +203,7 @@ const contribute = [
     icon: "mdi:lan-connect",
     title: "Any NMEA forwarder",
     text: "Plain !AIVDM sentences over UDP, no token. Your station is a keyed hash of your address, never the address itself.",
-    code: `AIS-catcher -u ${SERVER} 10110`,
+    code: `AIS-catcher -u ${UDP_HOST} 10110`,
     links: [
       {
         label: "ais-forwarder",
