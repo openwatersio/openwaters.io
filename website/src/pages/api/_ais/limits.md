@@ -15,6 +15,7 @@ To keep the service sustainable, we have limits on how much data you can request
 
 - 32 concurrent streams per network address across all tokens, and 20 WebSocket connects per minute per address.
 - 120 requests per minute per address on the HTTP endpoints, and 10 per minute on `POST /v1/keys` and in-band `register`.
+- 600 requests per minute per address on `/v1/vessels/tiles/{z}/{x}/{y}`, apart from the 120. A map view is about 20 tiles. `/v1/vessels/tiles.json` counts toward the 120. The subscribed area limit does not apply to tiles.
 - 500 UDP sentences a second per source address.
 - A client that falls 1,024 events behind is disconnected.
 - Publishing: 6,000 sentences a minute per token on MQTT and the WebSocket (1,000 per WebSocket frame, 1 MB per MQTT packet), 600 posts a minute and 1 MB per post on `/v1/receive`.
