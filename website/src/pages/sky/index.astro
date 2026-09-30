@@ -6,58 +6,32 @@ import Card from "../../components/ui/Card.astro";
 import CodeBlock from "../../components/ui/CodeBlock.astro";
 import Icon from "../../components/Icon.astro";
 import SkyDome from "../../components/sky/SkyDome";
-import { MoonFilmstrip, TwilightRibbon } from "../../components/sky/SkyDemos";
-
-import SunYear from "../../components/sky/SunYear";
-import LunarEclipseDemo from "../../components/sky/LunarEclipseDemo";
-import SolarEclipseDemo from "../../components/sky/SolarEclipseDemo";
 
 const REPO = "https://github.com/openwatersio/almanac";
 const ROADMAP = `${REPO}/blob/main/docs/ROADMAP.md`;
-const VERSION = "0.4.0";
-const initialMonth = new Date().toISOString().slice(0, 7);
-const moonCode = `import { moonIllumination, searchMoonPhases } from '@openwaters/almanac';
-
-const start = new Date('2026-09-01T00:00:00Z');
-const end = new Date('2026-10-01T00:00:00Z');
-const days = Array.from({ length: 30 }, (_, day) => {
-  const time = new Date(start.getTime() + (day + 0.5) * 86_400_000);
-  return { time, ...moonIllumination(time) };
-});
-
-// Each disc uses fraction (0–1) and waxing (bright side).
-// These are the exact instants for the four phase buttons.
-const quarters = searchMoonPhases(start, end);
-console.log(days, quarters);`;
-const twilightCode = `import { sunEvents, sunAltAz } from '@openwaters/almanac';
-
-const observer = { latitudeDeg: 70, longitudeDeg: 0 };
-const start = new Date('2026-06-21T00:00:00Z');
-const end = new Date('2026-06-22T00:00:00Z');
-const crossings = sunEvents(start, end, observer)
-  .filter(event => event.kind !== 'transit');
-
-// Use each crossing time as a color boundary in the 24-hour ribbon.
-// Dawn enters a lighter band; dusk enters a darker one.
-// No crossings? Check altitude: midnight Sun is not a missing result.
-console.log(crossings, sunAltAz(start, observer).altDeg);`;
-const solarCode = `import { solarEclipses, solarObscuration } from '@openwaters/almanac';
-
-const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
-const start = new Date();
-const end = new Date(start);
-end.setUTCFullYear(end.getUTCFullYear() + 10);
-
-for (const eclipse of solarEclipses(start, end, observer)) {
-  console.log(eclipse.kind, eclipse.peak, eclipse.obscuration);
-  console.log(solarObscuration(eclipse.peak, observer));
-}`;
+const VERSION = "0.6.0";
+const explore = [
+  {
+    href: "/sky/sun/",
+    icon: "mdi:white-balance-sunny",
+    title: "Sun",
+    body: "Twilight from the equator to the midnight Sun, a year of the Sun's path, solar eclipses from your location, and every solar eclipse on Earth with its central line.",
+    cta: "Explore the Sun",
+  },
+  {
+    href: "/sky/moon/",
+    icon: "mdi:moon-waning-crescent",
+    title: "Moon",
+    body: "A month of phases and illumination, and lunar eclipses as the Earth's shadow crosses the Moon.",
+    cta: "Explore the Moon",
+  },
+];
 
 const features = [
   {
     icon: "mdi:wifi-off",
     title: "Offline by construction",
-    body: "Zero network calls and zero runtime data files. Everything on this page is computed in your browser from pure geometry — the same code runs on a boat with no signal.",
+    body: "Zero network calls and zero runtime data files. Every Sun, Moon, star and eclipse on these pages is computed in your browser from pure geometry; only the map tiles behind the eclipse paths are downloaded. The same code runs on a boat with no signal.",
   },
   {
     icon: "mdi:call-split",
@@ -67,7 +41,7 @@ const features = [
   {
     icon: "mdi:weather-night",
     title: "Sun, Moon, stars and eclipses",
-    body: "Positions, rise and set, all three twilights, transit, moon phase and illumination, lunar and local solar eclipses with contact times, and alt/az for any star you give a catalog position.",
+    body: "Positions, rise and set, all three twilights, transit, moon phase and illumination, lunar and local solar eclipses with contact times, every solar eclipse on Earth with its central line, and alt/az for any star you give a catalog position.",
   },
   {
     icon: "mdi:target",
@@ -76,7 +50,7 @@ const features = [
   },
 ];
 
-const tsCode = `import { sunEvents, starAltAz, nextLunarEclipse, lunarEclipseVisibility, nextSolarEclipse } from '@openwaters/almanac';
+const tsCode = `import { sunEvents, starAltAz, nextLunarEclipse, lunarEclipseVisibility, nextSolarEclipse, nextGlobalSolarEclipse } from '@openwaters/almanac';
 
 const observer = { latitudeDeg: 48.5, longitudeDeg: -123.0 };
 
@@ -95,6 +69,10 @@ console.log(eclipse.kind, eclipse.peak, visibility.visibleAtPeak);
 // The next solar eclipse visible from this location
 const solar = nextSolarEclipse(now, observer);
 console.log(solar.kind, solar.peak, solar.obscuration);
+
+// The next solar eclipse anywhere on Earth, and where its shadow axis lands
+const anywhere = nextGlobalSolarEclipse(now);
+console.log(anywhere.kind, anywhere.peak, anywhere.latitudeDeg, anywhere.longitudeDeg);
 
 // Where Sirius is right now, from its J2000 catalog position
 console.log(starAltAz(101.287, -16.716, now, observer));`;
@@ -117,13 +95,18 @@ print(eclipse.kind, eclipse.peak, visibility.visibleAtPeak)
 let solar = try nextSolarEclipse(after: now, observer: observer)
 print(solar.kind, solar.peak, solar.obscuration)
 
+let anywhere = try nextGlobalSolarEclipse(after: now)
+if let latitude = anywhere.latitudeDeg, let longitude = anywhere.longitudeDeg {
+  print(anywhere.kind, anywhere.peak, latitude, longitude)
+}
+
 let sirius = try starAltAz(raDeg: 101.287, decDeg: -16.716, at: now, observer: observer)
 print(sirius.altDeg, sirius.azDeg)`;
 ---
 
 <MainLayout
   title="Sky"
-  description="Explore a live star field, Moon phase filmstrip, daylight and eclipses for your own location. Almanac computes the Sun, Moon, stars, and lunar and solar eclipses offline in Swift and TypeScript."
+  description="Explore a live star field for your own location, then the Sun and Moon: twilight, phases and eclipses. Almanac computes the Sun, Moon, stars, and lunar and solar eclipses offline in Swift and TypeScript."
   image="/og/sky.png"
   schema={softwareSourceCode({
     name: "Almanac",
@@ -165,7 +148,8 @@ print(sirius.altDeg, sirius.azDeg)`;
           crosses the Sun from your location. No network, no data files to ship,
           no API key — just geometry, in your app or on your boat. The sky below
           is live: every star in it is this library running in your browser,
-          placed for your location and the moment you choose.
+          placed for your location and the moment you choose. The Sun and Moon
+          pages have more to explore.
         </p>
       </div>
 
@@ -179,53 +163,36 @@ print(sirius.altDeg, sirius.azDeg)`;
         </div>
       </SkyDome>
 
-      <section
-        id="moon-filmstrip"
-        aria-labelledby="moon-filmstrip-title"
-        class="mt-16 scroll-mt-24 space-y-6"
-      >
-        <div>
-          <h2 id="moon-filmstrip-title" class="mb-3 text-3xl font-semibold">
-            A month of Moon
-          </h2>
-          <p class="text-fg-muted">
-            Watch a crescent grow into a full Moon and fade again. Choose a
-            month, tap a disc or scrub through the days to explore the Moon's
-            phase and illumination.
-          </p>
-        </div>
-        <MoonFilmstrip initialMonth={initialMonth} client:load />
-        <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
-          <CodeBlock code={moonCode} class="mt-4" />
-        </details>
-      </section>
-
-      <section
-        id="twilight-ribbon"
-        aria-labelledby="twilight-ribbon-title"
-        class="mt-16 scroll-mt-24 space-y-6"
-      >
-        <div>
-          <h2 id="twilight-ribbon-title" class="mb-3 text-3xl font-semibold">
-            Where night disappears
-          </h2>
-          <p class="text-fg-muted">
-            A full day, from sunlight through civil, nautical and astronomical
-            twilight into night. Change latitude and season to find the midnight
-            Sun—or a day when the Sun never rises.
-          </p>
-        </div>
-        <TwilightRibbon client:load />
-        <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
-          <CodeBlock code={twilightCode} class="mt-4" />
-        </details>
-      </section>
+      <!-- Demos -->
+      <div class="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
+        {
+          explore.map((card) => (
+            <Card href={card.href} class="space-y-3">
+              <div class="text-accent">
+                <Icon name={card.icon} class="size-12" />
+              </div>
+              <h2 class="text-3xl md:text-4xl">{card.title}</h2>
+              <p class="text-fg-muted">{card.body}</p>
+              <span class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium">
+                {card.cta}
+                <svg
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </span>
+            </Card>
+          ))
+        }
+      </div>
 
       <p class="text-fg-muted mt-8">
         The same astronomy engine powers <a
@@ -235,90 +202,6 @@ print(sirius.altDeg, sirius.azDeg)`;
         >, with Moon illumination and sunrise/sunset alongside the tide
         timeline.
       </p>
-
-      <section
-        id="sun-year"
-        aria-labelledby="sun-year-title"
-        class="mt-16 scroll-mt-24 space-y-6"
-      >
-        <h2 id="sun-year-title" class="text-3xl font-semibold">
-          A year of the Sun
-        </h2>
-        <SunYear client:load />
-        <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
-          <CodeBlock
-            class="mt-4"
-            code={`import { sunAltAz } from '@openwaters/almanac';
-
-const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
-const points = Array.from({ length: 365 }, (_, day) => {
-  // A fixed UTC time near local mean noon, independent of daylight saving.
-  const time = new Date(Date.UTC(2026, 0, day + 1, 12)
-    - observer.longitudeDeg / 360 * 86_400_000);
-  return { time, ...sunAltAz(time, observer) };
-});
-console.log(points);`}
-          />
-        </details>
-      </section>
-      <section
-        id="solar-eclipses"
-        aria-labelledby="solar-eclipses-title"
-        class="mt-16 scroll-mt-24 space-y-6"
-      >
-        <h2 id="solar-eclipses-title" class="text-3xl font-semibold">
-          Solar eclipses from here
-        </h2>
-        <p class="text-(--text-secondary)">
-          A solar eclipse is a different event from every place: your location
-          determines which eclipses appear, their contact times, and how much of
-          the Sun the Moon covers.
-        </p>
-        <SolarEclipseDemo client:load />
-        <details>
-          <summary class="cursor-pointer font-medium text-(--accent)"
-            >Show the TypeScript</summary
-          >
-          <CodeBlock code={solarCode} class="mt-4" />
-        </details>
-      </section>
-      <section
-        id="lunar-eclipses"
-        aria-labelledby="lunar-eclipses-title"
-        class="mt-16 scroll-mt-24 space-y-6"
-      >
-        <h2 id="lunar-eclipses-title" class="text-3xl font-semibold">
-          The Moon in Earth's shadow
-        </h2>
-        <p class="text-fg-muted">
-          Explore penumbral, partial and total lunar eclipses with real examples
-          from 2026–2027. Scrub across each event to see what changes on the
-          Moon itself.
-        </p>
-        <LunarEclipseDemo client:load />
-        <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
-          <CodeBlock
-            class="mt-4"
-            code={`import { lunarEclipses, lunarEclipseVisibility } from '@openwaters/almanac';
-
-const eclipses = lunarEclipses(
-  new Date('2026-01-01T00:00:00Z'),
-  new Date('2028-01-01T00:00:00Z'),
-);
-const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
-for (const eclipse of eclipses) {
-  console.log(eclipse.kind, eclipse.peak,
-    lunarEclipseVisibility(eclipse, observer));
-}`}
-          />
-        </details>
-      </section>
 
       <!-- Key Features -->
       <div class="mt-16 mb-16">

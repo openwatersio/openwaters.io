@@ -11,6 +11,7 @@ import { CONTACT_EMAIL } from "../../utils/constants";
 import { highlight, SNIPPET_LANGS } from "../../utils/shiki";
 
 const SERVER = "ais.openwaters.io";
+const UDP_HOST = `udp.${SERVER}`;
 const REPO = "https://github.com/openwatersio/aiscast";
 const TOKEN_PAGE = "/ais/token/";
 
@@ -147,7 +148,7 @@ const tiers = [
     text: "For products, fleets, or those who need support.",
     cta: {
       label: "Contact us",
-      href: `mailto:${CONTACT_EMAIL}`,
+      href: "/contact/",
     },
   },
 ];
@@ -166,8 +167,8 @@ const contribute = [
   {
     icon: "mdi:radio-tower",
     title: "AIS-catcher",
-    text: "Authenticated HTTP, works behind any NAT. Get a token in your browser, add one flag.",
-    code: `AIS-catcher -H https://${SERVER}/v1/receive USERPWD x:<token> GZIP on INTERVAL 15`,
+    text: "Realtime over MQTT, authenticated, works behind any NAT. Get a token in your browser, add one flag.",
+    code: `AIS-catcher -Q wssmqtt://x:<token>@${SERVER}:443/v1/stream MSGFORMAT NMEA`,
     links: [
       { label: "Get a token", href: TOKEN_PAGE },
       {
@@ -190,7 +191,7 @@ const contribute = [
     icon: "mdi:docker",
     title: "docker-shipfeeder",
     text: "Already sending to the aggregators from a container? Add one more UDP destination.",
-    code: `host ${SERVER}, port 10110`,
+    code: `host ${UDP_HOST}, port 10110`,
     links: [
       {
         label: "docker-shipfeeder",
@@ -202,7 +203,7 @@ const contribute = [
     icon: "mdi:lan-connect",
     title: "Any NMEA forwarder",
     text: "Plain !AIVDM sentences over UDP, no token. Your station is a keyed hash of your address, never the address itself.",
-    code: `AIS-catcher -u ${SERVER} 10110`,
+    code: `AIS-catcher -u ${UDP_HOST} 10110`,
     links: [
       {
         label: "ais-forwarder",
@@ -571,7 +572,7 @@ const licenses = [
             >.
           </p>
         </div>
-        <div class="grid gap-5 sm:grid-cols-2">
+        <div class="grid gap-5">
           {
             contribute.map((c) => (
               <Card class="flex min-w-0 flex-col gap-3">

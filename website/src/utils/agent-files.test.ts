@@ -161,6 +161,8 @@ for (const [page, image] of [
     "ais/alternatives/aisstream/index.html",
     "og/ais-alternatives-aisstream.png",
   ],
+  ["sky/sun/index.html", "og/sun.png"],
+  ["sky/moon/index.html", "og/moon.png"],
 ]) {
   test(`${page} uses its own 1200x630 social image`, { skip }, () => {
     const html = read(page!);
@@ -210,8 +212,62 @@ test(
     assert.match(llms, /free to use/);
     assert.match(llms, /100 requests per minute/);
     assert.match(llms, /^## How Open Waters compares$/m);
+    // Agents need the fit and the call, not just the link list.
+    assert.match(llms, /^## When to use this$/m);
+    assert.match(llms, /api\.openwaters\.io\/tides\/extremes\?latitude=/);
+    assert.match(llms, /ais\.openwaters\.io\/v1\/vessels\?bbox=/);
+    assert.match(llms, /wrong tool for navigation/);
     const about = read("about/index.md");
     assert.match(about, /^## Is it free\?$/m);
     assert.match(about, /^## How does it compare\?$/m);
+  },
+);
+
+test(
+  "a generic contact button routes through /contact/, not straight to email",
+  { skip },
+  () => {
+    // A mailto is fine where the link text is the address itself; a button
+    // labelled "Contact us" has to route, or a bug report lands in a mailbox.
+    // Attribute order varies, so match the whole tag and inspect it.
+    for (const page of globSync("**/index.html", { cwd: dist })) {
+      for (const [tag] of read(page).matchAll(/<a\s[^>]*>/g)) {
+        const isButton = /class="[^"]*\bbtn\b[^"]*"/.test(tag);
+        const href = tag.match(/href="([^"]+)"/)?.[1];
+        assert.ok(
+          !(isButton && href?.startsWith("mailto:")),
+          `${page}: button links ${href} instead of /contact/`,
+        );
+      }
+    }
+    for (const page of ["index", "about", "license", "api", "ais"]) {
+      assert.ok(
+        read(`${page === "index" ? "" : page + "/"}index.html`).includes(
+          'href="/contact/"',
+        ),
+        `${page}: no link to /contact/`,
+      );
+    }
+  },
+);
+
+test(
+  "the legitimacy pages name the operator and what it collects",
+  { skip },
+  () => {
+    for (const page of ["about", "contact", "privacy"]) {
+      const md = read(`${page}/index.md`);
+      assert.match(md, /Open Water Software, LLC/, `${page}: no legal entity`);
+      assert.match(md, /hello@openwaters\.io/, `${page}: no contact address`);
+    }
+    // The privacy page is only honest while it names what actually runs.
+    const privacy = read("privacy/index.md");
+    assert.match(privacy, /Plausible/);
+    assert.match(privacy, /localStorage/);
+    assert.match(privacy, /48 hours/);
+    const footer = read("index.html");
+    for (const href of ["/about/", "/contact/", "/privacy/", "/license/"]) {
+      assert.ok(footer.includes(`href="${href}"`), `footer missing ${href}`);
+    }
   },
 );

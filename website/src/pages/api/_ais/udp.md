@@ -1,7 +1,7 @@
-Point your receiver at `ais.openwaters.io` port 10110. No token, no sign-up. AIS-catcher, rtl-ais, and most other decoders can send UDP out of the box:
+Point your receiver at `udp.ais.openwaters.io` port 10110. No token, no sign-up. AIS-catcher, rtl-ais, and most other decoders can send UDP out of the box:
 
 ```
-AIS-catcher -u ais.openwaters.io 10110
+AIS-catcher -u udp.ais.openwaters.io 10110
 ```
 
 Send newline-separated NMEA (`!AIVDM`, `!AIVDO`, `!BSVDM`, and friends, TAG blocks welcome, lines up to 4 KB), at up to 500 sentences a second. Your station appears as `udp:<hash>` (never your address), or as `mmsi:<n>` once it has sent its own `!AIVDO` position.

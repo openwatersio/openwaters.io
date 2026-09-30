@@ -1,0 +1,122 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import CodeBlock from "../../components/ui/CodeBlock.astro";
+import Icon from "../../components/Icon.astro";
+import { MoonFilmstrip } from "../../components/sky/SkyDemos";
+import LunarEclipseDemo from "../../components/sky/LunarEclipseDemo";
+
+const initialMonth = new Date().toISOString().slice(0, 7);
+const moonCode = `import { moonIllumination, searchMoonPhases } from '@openwaters/almanac';
+
+const start = new Date('2026-09-01T00:00:00Z');
+const end = new Date('2026-10-01T00:00:00Z');
+const days = Array.from({ length: 30 }, (_, day) => {
+  const time = new Date(start.getTime() + (day + 0.5) * 86_400_000);
+  return { time, ...moonIllumination(time) };
+});
+
+// Each disc uses fraction (0–1) and waxing (bright side).
+// These are the exact instants for the four phase buttons.
+const quarters = searchMoonPhases(start, end);
+console.log(days, quarters);`;
+---
+
+<MainLayout
+  title="Moon · Almanac"
+  description="Explore a month of Moon phases and illumination, and penumbral, partial and total lunar eclipses, computed offline by Almanac."
+  image="/og/moon.png"
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-4xl">
+      <a
+        href="/sky/"
+        class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium"
+      >
+        <Icon name="mdi:chevron-left" class="size-5" />
+        Almanac
+      </a>
+      <div class="mt-4 flex items-center gap-3">
+        <span class="text-accent">
+          <Icon name="mdi:moon-waning-crescent" class="size-10" />
+        </span>
+        <h1 class="mb-0">Moon</h1>
+      </div>
+
+      <div class="text-lead mt-2 mb-4">
+        Phases, illumination, and lunar eclipses
+      </div>
+
+      <div class="prose prose-xl mb-10 max-w-none">
+        <p>
+          How the Moon is lit through the month, when each phase arrives, and
+          what happens when the Earth's shadow crosses it. Every demo here is
+          Almanac running in your browser.
+        </p>
+      </div>
+
+      <section
+        id="moon-filmstrip"
+        aria-labelledby="moon-filmstrip-title"
+        class="mt-6 scroll-mt-24 space-y-6"
+      >
+        <div>
+          <h2 id="moon-filmstrip-title" class="mb-3 text-3xl font-semibold">
+            A month of Moon
+          </h2>
+          <p class="text-fg-muted">
+            Watch a crescent grow into a full Moon and fade again. Choose a
+            month, tap a disc or scrub through the days to explore the Moon's
+            phase and illumination.
+          </p>
+        </div>
+        <MoonFilmstrip initialMonth={initialMonth} client:load />
+        <details>
+          <summary class="text-accent cursor-pointer font-medium"
+            >Show the TypeScript</summary
+          >
+          <CodeBlock code={moonCode} class="mt-4" />
+        </details>
+      </section>
+      <section
+        id="lunar-eclipses"
+        aria-labelledby="lunar-eclipses-title"
+        class="mt-16 scroll-mt-24 space-y-6"
+      >
+        <h2 id="lunar-eclipses-title" class="text-3xl font-semibold">
+          The Moon in Earth's shadow
+        </h2>
+        <p class="text-fg-muted">
+          Explore penumbral, partial and total lunar eclipses with real examples
+          from 2026–2027. Scrub across each event to see what changes on the
+          Moon itself. A lunar eclipse is the Earth's shadow falling on the
+          Moon; the Moon's shadow falling on the Earth is a <a
+            href="/sky/sun/#solar-eclipses"
+            class="text-accent font-medium underline-offset-4 hover:underline"
+            >solar eclipse</a
+          >.
+        </p>
+        <LunarEclipseDemo client:load />
+        <details>
+          <summary class="text-accent cursor-pointer font-medium"
+            >Show the TypeScript</summary
+          >
+          <CodeBlock
+            class="mt-4"
+            code={`import { lunarEclipses, lunarEclipseVisibility } from '@openwaters/almanac';
+
+const eclipses = lunarEclipses(
+  new Date('2026-01-01T00:00:00Z'),
+  new Date('2028-01-01T00:00:00Z'),
+);
+const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
+for (const eclipse of eclipses) {
+  console.log(eclipse.kind, eclipse.peak,
+    lunarEclipseVisibility(eclipse, observer));
+}`}
+          />
+        </details>
+      </section>
+    </div>
+  </Container>
+</MainLayout>
