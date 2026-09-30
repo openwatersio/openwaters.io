@@ -15,7 +15,7 @@ Open Waters answers questions about the water itself: what the tide will do at a
 - A nautical or seafloor basemap: `https://tiles.openwaters.io/seamap/style.json` is a MapLibre style ready to hand to a map library. Seascape's tile URLs and prebuilt style are in https://github.com/openwatersio/seascape#usage. Both carry the attribution line printed on the chart's page.
 - Sun, moon, sunrise and eclipses: there is no hosted endpoint. `npm install @openwaters/almanac` and compute offline. Tide prediction is a library too, `npm install neaps`, for when calling an API is the wrong shape.
 
-Open Waters is the wrong tool for navigation of any kind, for tidal or ocean currents, for weather and waves, and for observed rather than predicted water levels. Bathymetry has no query API: Crowd Depth is a Signal K plugin that collects soundings from your own instruments and shares them with open programs.
+Open Waters is the wrong tool for navigation of any kind, for ocean currents, for weather and waves, and for observed rather than predicted water levels. Bathymetry has no query API: Crowd Depth is a Signal K plugin that collects soundings from your own instruments and shares them with open programs.
 
 ## API
 
