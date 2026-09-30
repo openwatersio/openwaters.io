@@ -1,2 +1,5 @@
 .astro
 dist
+
+# Generated star catalog: Prettier reflows all 288 entries on every run.
+src/components/sky/stars.json
