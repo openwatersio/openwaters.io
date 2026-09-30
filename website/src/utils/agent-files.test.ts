@@ -218,6 +218,34 @@ test(
 );
 
 test(
+  "a generic contact button routes through /contact/, not straight to email",
+  { skip },
+  () => {
+    // A mailto is fine where the link text is the address itself; a button
+    // labelled "Contact us" has to route, or a bug report lands in a mailbox.
+    // Attribute order varies, so match the whole tag and inspect it.
+    for (const page of globSync("**/index.html", { cwd: dist })) {
+      for (const [tag] of read(page).matchAll(/<a\s[^>]*>/g)) {
+        const isButton = /class="[^"]*\bbtn\b[^"]*"/.test(tag);
+        const href = tag.match(/href="([^"]+)"/)?.[1];
+        assert.ok(
+          !(isButton && href?.startsWith("mailto:")),
+          `${page}: button links ${href} instead of /contact/`,
+        );
+      }
+    }
+    for (const page of ["index", "about", "license", "api", "ais"]) {
+      assert.ok(
+        read(`${page === "index" ? "" : page + "/"}index.html`).includes(
+          'href="/contact/"',
+        ),
+        `${page}: no link to /contact/`,
+      );
+    }
+  },
+);
+
+test(
   "the legitimacy pages name the operator and what it collects",
   { skip },
   () => {
