@@ -1,0 +1,77 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import Container from "../components/ui/Container.astro";
+import { CONTACT_EMAIL } from "../utils/constants";
+---
+
+<MainLayout
+  title="Contact"
+  description="How to reach Open Waters: email, GitHub issues, or Discord, depending on what you need."
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-3xl">
+      <h1 class="mb-8">Contact</h1>
+
+      <div class="prose prose-lg max-w-none">
+        <p class="text-fg-muted text-xl leading-relaxed">
+          Open Waters is run by Open Water Software, LLC, a small operation
+          rather than a support department. Mail gets read and answered; picking
+          the right place below just gets you an answer faster.
+        </p>
+
+        <h2 class="mt-12 mb-6">Email</h2>
+
+        <p>
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> reaches us for anything:
+          licensing questions, a higher rate limit for a production application, a
+          commercial AIS tier, data or partnership enquiries, press, or anything about
+          the <a href="/privacy/">privacy page</a>.
+        </p>
+
+        <h2 class="mt-12 mb-6">Bugs and feature requests</h2>
+
+        <p>
+          These belong in the issue tracker of the project they concern, on <a
+            href="https://github.com/openwatersio">GitHub</a
+          >, where they are public and get fixed in the open. A wrong tide
+          prediction goes to the tide engine or the station database, a chart
+          rendering problem to the chart style, and a stream that drops out to
+          the AIS server. If you are not sure which, open it anywhere or email
+          us and we will move it.
+        </p>
+
+        <p>
+          A wrong prediction is much easier to fix with the station id, the time
+          you asked about, and what you expected instead.
+        </p>
+
+        <h2 class="mt-12 mb-6">Questions and conversation</h2>
+
+        <p>
+          <a href="https://discord.gg/NeMyrYMGr">Discord</a> is the place for questions
+          that are not yet bugs, for showing what you built, and for talking through
+          an approach before you write it. Contributing a receiver to the AIS network,
+          or depth soundings from your own instruments, usually starts as a conversation
+          there.
+        </p>
+
+        <h2 class="mt-12 mb-6">Not for navigation</h2>
+
+        <p>
+          Nothing published here is fit for navigation, and no answer over email
+          changes that. Official charts and tide tables from your hydrographic
+          office remain the reference on the water. If you have found a
+          discrepancy between an Open Waters prediction and an official one,
+          that is worth reporting, and worth trusting the official one in the
+          meantime.
+        </p>
+
+        <p class="text-fg-faint text-sm">
+          Open Water Software, LLC · <a href={`mailto:${CONTACT_EMAIL}`}
+            >{CONTACT_EMAIL}</a
+          >
+        </p>
+      </div>
+    </div>
+  </Container>
+</MainLayout>

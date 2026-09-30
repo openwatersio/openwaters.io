@@ -216,3 +216,24 @@ test(
     assert.match(about, /^## How does it compare\?$/m);
   },
 );
+
+test(
+  "the legitimacy pages name the operator and what it collects",
+  { skip },
+  () => {
+    for (const page of ["about", "contact", "privacy"]) {
+      const md = read(`${page}/index.md`);
+      assert.match(md, /Open Water Software, LLC/, `${page}: no legal entity`);
+      assert.match(md, /hello@openwaters\.io/, `${page}: no contact address`);
+    }
+    // The privacy page is only honest while it names what actually runs.
+    const privacy = read("privacy/index.md");
+    assert.match(privacy, /Plausible/);
+    assert.match(privacy, /localStorage/);
+    assert.match(privacy, /48 hours/);
+    const footer = read("index.html");
+    for (const href of ["/about/", "/contact/", "/privacy/", "/license/"]) {
+      assert.ok(footer.includes(`href="${href}"`), `footer missing ${href}`);
+    }
+  },
+);
