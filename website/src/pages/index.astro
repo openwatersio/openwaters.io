@@ -4,7 +4,6 @@ import Container from "../components/ui/Container.astro";
 import Card from "../components/ui/Card.astro";
 import ChartMap from "../components/charts/ChartMap.astro";
 import Icon from "../components/Icon.astro";
-import { CONTACT_EMAIL } from "../utils/constants";
 
 // Framings match the /charts cards.
 const charts = [
@@ -253,9 +252,7 @@ const charts = [
             <Icon name="mdi:discord" class="size-6" />
             Join us on Discord
           </a>
-          <a href={`mailto:${CONTACT_EMAIL}`} class="btn btn-secondary">
-            Get in Touch
-          </a>
+          <a href="/contact/" class="btn btn-secondary"> Get in Touch </a>
         </div>
       </div>
     </Container>

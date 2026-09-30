@@ -1,0 +1,102 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import Container from "../components/ui/Container.astro";
+import { CONTACT_EMAIL } from "../utils/constants";
+---
+
+<MainLayout
+  title="Privacy"
+  description="What the Open Waters site and APIs collect, what they do not, and who operates them."
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-3xl">
+      <h1 class="mb-8">Privacy</h1>
+
+      <div class="prose prose-lg max-w-none">
+        <p class="text-fg-muted text-xl leading-relaxed">
+          Open Waters is run by Open Water Software, LLC. There are no accounts
+          here, so there is no profile to build. This page describes what the
+          site and the APIs actually see, and what they deliberately do not.
+        </p>
+
+        <h2 class="mt-12 mb-6">The website</h2>
+
+        <p>
+          Page views are counted with <a href="https://plausible.io/"
+            >Plausible</a
+          >, which is hosted in the EU and does not use cookies. It records the
+          page you asked for, the referrer, and a coarse country, browser and
+          device guess, and it does not store an identifier that follows you
+          between pages or between visits. No advertising or social network
+          scripts load on any page, so nothing here tracks you across other
+          sites.
+        </p>
+
+        <p>
+          The site sets no cookies of its own. If you create an AIS token in the
+          browser, the key is kept in your browser's <code>localStorage</code> on
+          your own machine, and clearing site data removes it.
+        </p>
+
+        <h2 class="mt-12 mb-6">The APIs</h2>
+
+        <p>
+          The tides API needs no authentication and asks for nothing about you.
+          It counts requests per IP address to enforce its published rate
+          limits, which is the only thing the address is used for.
+        </p>
+
+        <p>
+          An AIS token is an Ed25519 keypair generated in your browser. The
+          private key never leaves it; the service stores only the public key
+          and the token's claims. No email address, name or payment detail is
+          required or requested for the free tiers. A token may optionally be
+          bound to an address range, in which case that range is part of the
+          token. Commercial arrangements are made over email, so for those the
+          only record is the correspondence itself.
+        </p>
+
+        <h2 class="mt-12 mb-6">Vessel positions</h2>
+
+        <p>
+          AIS is a public radio broadcast, and the positions Open Waters serves
+          are the ones vessels transmit for anyone to hear. Every event names
+          the source it came from, whether that is a national open feed, an
+          exchange, or a volunteer receiver. Volunteer receivers are identified
+          by an opaque hash or by the station's own MMSI, not by the operator.
+        </p>
+
+        <p>
+          The track endpoint, <code>/v1/vessels/&#123;mmsi&#125;/track</code>,
+          serves the positions the network heard over the last 48 hours. If you
+          contribute a receiver and want to stop, or want its history
+          disassociated from it, email us and we will sort it out.
+        </p>
+
+        <h2 class="mt-12 mb-6">Sharing</h2>
+
+        <p>
+          Nothing collected here is sold, and there is nothing collected here
+          worth selling. Contributed AIS data is forwarded to the open exchanges
+          named in the <a href="/api/ais/">AIS documentation</a>, which is the
+          point of contributing it. The site and APIs run on Cloudflare, which
+          sees request traffic as the infrastructure provider.
+        </p>
+
+        <h2 class="mt-12 mb-6">Questions</h2>
+
+        <p>
+          Email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> with anything
+          about this page, including a request to remove something. A person reads
+          it.
+        </p>
+
+        <p class="text-fg-faint text-sm">
+          Open Water Software, LLC · <a href={`mailto:${CONTACT_EMAIL}`}
+            >{CONTACT_EMAIL}</a
+          >
+        </p>
+      </div>
+    </div>
+  </Container>
+</MainLayout>

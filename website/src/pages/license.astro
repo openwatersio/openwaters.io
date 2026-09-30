@@ -2,7 +2,6 @@
 import MainLayout from "../layouts/MainLayout.astro";
 import Container from "../components/ui/Container.astro";
 import Card from "../components/ui/Card.astro";
-import { CONTACT_EMAIL } from "../utils/constants";
 ---
 
 <MainLayout
@@ -201,9 +200,7 @@ import { CONTACT_EMAIL } from "../utils/constants";
               need clarification on licensing terms, please don't hesitate to
               reach out.
             </p>
-            <a href={`mailto:${CONTACT_EMAIL}`} class="btn btn-primary">
-              Contact Us
-            </a>
+            <a href="/contact/" class="btn btn-primary"> Contact Us </a>
           </div>
         </Card>
       </div>

@@ -2,7 +2,6 @@
 import ApiLayout from "../../layouts/ApiLayout.astro";
 import Card from "../../components/ui/Card.astro";
 import Icon from "../../components/Icon.astro";
-import { CONTACT_EMAIL } from "../../utils/constants";
 ---
 
 <ApiLayout
@@ -70,9 +69,7 @@ import { CONTACT_EMAIL } from "../../utils/constants";
           <Icon name="mdi:discord" class="h-5 w-5" />
           Discord
         </a>
-        <a href={`mailto:${CONTACT_EMAIL}`} class="btn btn-secondary">
-          Email Support
-        </a>
+        <a href="/contact/" class="btn btn-secondary"> Contact </a>
       </div>
     </div>
   </Card>
