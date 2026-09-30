@@ -206,6 +206,11 @@ test(
     assert.match(llms, /free to use/);
     assert.match(llms, /100 requests per minute/);
     assert.match(llms, /^## How Open Waters compares$/m);
+    // Agents need the fit and the call, not just the link list.
+    assert.match(llms, /^## When to use this$/m);
+    assert.match(llms, /api\.openwaters\.io\/tides\/extremes\?latitude=/);
+    assert.match(llms, /ais\.openwaters\.io\/v1\/vessels\?bbox=/);
+    assert.match(llms, /wrong tool for navigation/);
     const about = read("about/index.md");
     assert.match(about, /^## Is it free\?$/m);
     assert.match(about, /^## How does it compare\?$/m);
