@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { jsonLd, organization, place } from "./schema.ts";
+import { jsonLd, organization, place, website } from "./schema.ts";
 
 test("jsonLd: a station name cannot close the script tag", () => {
   const html = jsonLd(
@@ -50,5 +50,15 @@ test("organization: contactPoint carries the support email", () => {
     contactType: "customer support",
     email: "hello@openwaters.io",
     availableLanguage: "English",
+  });
+});
+
+test("website: names Open Waters and keeps the domain as a fallback", () => {
+  assert.deepEqual(website, {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Open Waters",
+    alternateName: "openwaters.io",
+    url: "https://openwaters.io/",
   });
 });
