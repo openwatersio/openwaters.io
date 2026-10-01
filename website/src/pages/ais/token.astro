@@ -43,9 +43,25 @@ const pre =
     >
       <Card>
         <p class="text-fg-muted mb-5">
-          Your token is tied to this browser — come back any time and you'll get
-          the same station id.
+          Your token and station are tied to this browser. Come back any time to
+          get the same station id or to rename it. Clearing this browser's data
+          starts a new station.
         </p>
+        <label class="mb-5 block">
+          <span class="mb-1 block text-sm font-medium">Station name</span>
+          <input
+            type="text"
+            data-name
+            maxlength="40"
+            placeholder="Quissett Harbor"
+            class="border-line bg-surface w-full rounded-lg border px-3 py-2"
+          />
+          <span class="text-fg-faint mt-1 block text-sm">
+            Optional and public. Shown on the station list and the map. Leave it
+            empty and the station is labeled by the town nearest the traffic it
+            hears.
+          </span>
+        </label>
         <label class="text-fg-muted mb-5 flex items-start gap-3 text-sm">
           <input type="checkbox" data-agree class="mt-1" />
           <span>
@@ -61,8 +77,10 @@ const pre =
           <input type="checkbox" data-bind class="mt-1" />
           <span>
             Also bind this network address, so a UDP receiver sending from here
-            counts toward this token. The token then only works from this
-            address.
+            counts toward this token and takes its name. The token then only
+            works from this address. If your address changes, so does the UDP
+            station, so a receiver that can use the token below keeps its name
+            better.
           </span>
         </label>
         <div class="flex flex-wrap items-center gap-3">
@@ -144,8 +162,8 @@ const pre =
         token becomes a contributor on its own: 5 streams, 200 messages a
         second, any area, and the raw NMEA feed. <a href="/ais#limits"
           >Tiers and limits</a
-        >. Need a named station, or more than that? <a
-          href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a
+        >. Need more than that? <a href={`mailto:${CONTACT_EMAIL}`}
+          >{CONTACT_EMAIL}</a
         >.
       </p>
     </div>
@@ -166,8 +184,8 @@ const pre =
       .replace(/=+$/, "");
 
   // The keypair is the device identity: returning with the same public key
-  // yields the same station id, and the private key is what will prove
-  // possession once the server requires signing, so both halves are kept.
+  // yields the same station id, and the private key signs every request, so
+  // nobody else can get a token for this station or rename it.
   async function deviceKey(): Promise<{ pub: string; priv: JsonWebKey }> {
     const saved = localStorage.getItem("aiscast.device");
     if (saved) return JSON.parse(saved);
@@ -200,31 +218,87 @@ const pre =
     $("[data-out]").hidden = false;
   }
 
+  // The lines a token request signs, as the server checks them: no newline at
+  // the end, and a blank line for the vessel name, which only Signal K sends.
+  async function sign(
+    dev: { pub: string; priv: JsonWebKey },
+    ts: number,
+    bind: boolean,
+    name: string,
+  ) {
+    const key = await crypto.subtle.importKey(
+      "jwk",
+      dev.priv,
+      { name: "Ed25519" },
+      false,
+      ["sign"],
+    );
+    const msg = [
+      "aiscast-key",
+      dev.pub,
+      String(ts),
+      bind ? "1" : "0",
+      name,
+      "",
+    ].join("\n");
+    return b64url(
+      await crypto.subtle.sign(
+        { name: "Ed25519" },
+        key,
+        new TextEncoder().encode(msg),
+      ),
+    );
+  }
+
+  const nameInput = $<HTMLInputElement>("[data-name]");
+  nameInput.value = localStorage.getItem("aiscast.name") ?? "";
+
   const status = $("[data-status]");
   const agree = $<HTMLInputElement>("[data-agree]");
   const go = $<HTMLButtonElement>("[data-go]");
   const syncGoDisabled = () => (go.disabled = !agree.checked);
   agree.addEventListener("change", syncGoDisabled);
   syncGoDisabled();
+  // The server accepts a signed request only if its ts is later than the last
+  // one for this key, so two requests in one second need distinct stamps.
+  function nextTs(): number {
+    const ts = Math.max(
+      Math.floor(Date.now() / 1000),
+      Number(localStorage.getItem("aiscast.ts") ?? 0) + 1,
+    );
+    localStorage.setItem("aiscast.ts", String(ts));
+    return ts;
+  }
+
   $("[data-go]").addEventListener("click", async () => {
+    go.disabled = true; // one request at a time
     status.textContent = "…";
     try {
       if (!crypto?.subtle) throw new Error("this browser has no WebCrypto");
       const dev = await deviceKey();
+      const bind = $<HTMLInputElement>("[data-bind]").checked;
+      const name = nameInput.value.trim().replace(/\s+/g, " ");
+      const ts = nextTs();
       const res = await fetch(`${server}/v1/keys`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           pubkey: dev.pub,
-          bind_ip: $<HTMLInputElement>("[data-bind]").checked,
+          bind_ip: bind,
+          name,
+          ts,
+          sig: await sign(dev, ts, bind, name),
         }),
       });
       if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-      const { token, claims } = await res.json();
+      const { token, claims, name_error } = await res.json();
       localStorage.setItem("aiscast.token", JSON.stringify({ token, claims }));
+      if (!name_error) localStorage.setItem("aiscast.name", name);
       show(token, claims);
       $("[data-go-label]").textContent = "Regenerate token";
-      status.textContent = "";
+      status.textContent = name_error
+        ? `Token ready, but the name was not saved: ${name_error}.`
+        : "";
     } catch (e) {
       const msg = String((e as Error).message || e);
       status.textContent =
@@ -232,6 +306,8 @@ const pre =
         (msg.includes("Ed25519")
           ? " (Ed25519 WebCrypto needs a current Chrome, Firefox, or Safari)"
           : "");
+    } finally {
+      syncGoDisabled();
     }
   });
 
