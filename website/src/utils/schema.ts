@@ -12,6 +12,14 @@ export const publisher = {
   url: SITE,
 };
 
+export const website = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Open Waters",
+  alternateName: "openwaters.io",
+  url: `${SITE}/`,
+};
+
 // Emitted on every page by MainLayout. Takes the address rather than importing
 // constants.ts, which reads import.meta.env and so cannot be loaded by node --test.
 export const organization = (email: string) => ({
