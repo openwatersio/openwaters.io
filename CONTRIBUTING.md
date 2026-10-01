@@ -19,6 +19,8 @@ npm run dev
 
 The website runs on `http://localhost:4321` and the tides API runs on `http://localhost:3001`. Run either one by itself with `npm run dev:website` or `npm run dev:api`.
 
+Run `npm ci` again whenever a pull moves `package-lock.json`. A stale `node_modules` makes `astro check` report missing exports from a dependency, which reads as broken source rather than an old install, so `npm run build` checks the installed tree first and says so.
+
 ## Checks
 
 Run these before opening a pull request:
