@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "prebuild": "npm ls --depth=0 >/dev/null 2>&1 || { npm ls --depth=0 2>&1 | grep -iE 'invalid|missing' | head -5; echo ''; echo 'Installed dependencies do not match package.json — run `npm ci` from the repo root.'; echo 'A stale install fails astro check with missing exports, which reads as broken code.'; exit 1; }",
     "build": "astro check && astro build",
     "format": "prettier --write .",
     "preview": "astro preview",
