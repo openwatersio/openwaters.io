@@ -264,7 +264,10 @@ test(
     const privacy = read("privacy/index.md");
     assert.match(privacy, /Plausible/);
     assert.match(privacy, /localStorage/);
-    assert.match(privacy, /48 hours/);
+    // No retention window here on purpose: how far back the track endpoint
+    // reaches is a per-tier access limit, not how long positions are kept, and
+    // the archive has no documented period to state.
+    assert.doesNotMatch(privacy, /\b\d+ (hours|days)\b/);
     const footer = read("index.html");
     for (const href of ["/about/", "/contact/", "/privacy/", "/license/"]) {
       assert.ok(footer.includes(`href="${href}"`), `footer missing ${href}`);
