@@ -259,14 +259,26 @@ const pre =
   const syncGoDisabled = () => (go.disabled = !agree.checked);
   agree.addEventListener("change", syncGoDisabled);
   syncGoDisabled();
+  // The server accepts a signed request only if its ts is later than the last
+  // one for this key, so two requests in one second need distinct stamps.
+  function nextTs(): number {
+    const ts = Math.max(
+      Math.floor(Date.now() / 1000),
+      Number(localStorage.getItem("aiscast.ts") ?? 0) + 1,
+    );
+    localStorage.setItem("aiscast.ts", String(ts));
+    return ts;
+  }
+
   $("[data-go]").addEventListener("click", async () => {
+    go.disabled = true; // one request at a time
     status.textContent = "…";
     try {
       if (!crypto?.subtle) throw new Error("this browser has no WebCrypto");
       const dev = await deviceKey();
       const bind = $<HTMLInputElement>("[data-bind]").checked;
       const name = nameInput.value.trim().replace(/\s+/g, " ");
-      const ts = Math.floor(Date.now() / 1000);
+      const ts = nextTs();
       const res = await fetch(`${server}/v1/keys`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -294,6 +306,8 @@ const pre =
         (msg.includes("Ed25519")
           ? " (Ed25519 WebCrypto needs a current Chrome, Firefox, or Safari)"
           : "");
+    } finally {
+      syncGoDisabled();
     }
   });
 
