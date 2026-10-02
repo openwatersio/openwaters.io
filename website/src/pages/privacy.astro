@@ -47,13 +47,13 @@ import { CONTACT_EMAIL } from "../utils/constants";
         </p>
 
         <p>
-          An AIS token is an Ed25519 keypair generated in your browser. The
-          private key never leaves it; the service stores only the public key
-          and the token's claims. No email address, name or payment detail is
-          required or requested for the free tiers. A token may optionally be
-          bound to an address range, in which case that range is part of the
-          token. Commercial arrangements are made over email, so for those the
-          only record is the correspondence itself.
+          An AIS token is an Ed25519 keypair generated in your browser, and the
+          private key never leaves it. What the AIS service keeps about tokens,
+          stations, and API requests, and for how long, is in the <a
+            href="/ais/privacy/">Open Waters AIS privacy policy</a
+          >. No email address, name or payment detail is required or requested
+          for the free tiers. Commercial arrangements are made over email, so
+          for those the only record is the correspondence itself.
         </p>
 
         <h2 class="mt-12 mb-6">Vessel positions</h2>
@@ -62,8 +62,10 @@ import { CONTACT_EMAIL } from "../utils/constants";
           AIS is a public radio broadcast, and the positions Open Waters serves
           are the ones vessels transmit for anyone to hear. Every event names
           the source it came from, whether that is a national open feed, an
-          exchange, or a volunteer receiver. Volunteer receivers are identified
-          by an opaque hash or by the station's own MMSI, not by the operator.
+          exchange, or a volunteer receiver. Volunteer stations appear under the
+          name their operator gave them; the <a href="/ais/privacy/"
+            >AIS privacy policy</a
+          > covers what a station page shows and how to change it.
         </p>
 
         <p>
@@ -80,8 +82,11 @@ import { CONTACT_EMAIL } from "../utils/constants";
           Nothing collected here is sold, and there is nothing collected here
           worth selling. Contributed AIS data is forwarded to the open exchanges
           named in the <a href="/api/ais/">AIS documentation</a>, which is the
-          point of contributing it. The site and APIs run on Cloudflare, which
-          sees request traffic as the infrastructure provider.
+          point of contributing it. The website and the tides API run on
+          Cloudflare, which sees request traffic as the infrastructure provider.
+          The AIS service runs on its own server; its <a href="/ais/privacy/"
+            >privacy policy</a
+          > names who handles data there.
         </p>
 
         <h2 class="mt-12 mb-6">Questions</h2>
