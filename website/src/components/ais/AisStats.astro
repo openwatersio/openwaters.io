@@ -10,14 +10,14 @@ const { class: className, statsUrl } = Astro.props;
 
 const stats = [
   { key: "vessels", label: "Vessels" },
-  { key: "rate", label: "/ Sec" },
+  { key: "rate", label: "Msg / s" },
   { key: "stations", label: "Stations" },
 ];
 ---
 
 <div
   class:list={[
-    "border-line-strong bg-well/20 grid grid-cols-4 items-center gap-4 rounded-full border px-8 py-3 text-xs tabular-nums backdrop-blur sm:gap-8",
+    "border-line-strong bg-well/20 grid grid-cols-4 items-center gap-3 rounded-full border px-4 py-3 text-xs tabular-nums backdrop-blur sm:gap-8 sm:px-8",
     className,
   ]}
   data-nosnippet
