@@ -9,8 +9,10 @@ interface Props {
 const { class: className } = Astro.props;
 
 const links = [
+  { label: "Live map", href: "/ais/vessels" },
   { label: "API", href: "/api/ais/" },
   { label: "Contribute", href: "/ais/contribute/" },
+  { label: "Pricing", href: "/ais/pricing/" },
 ];
 const current = Astro.url.pathname.replace(/\/?$/, "/");
 ---
