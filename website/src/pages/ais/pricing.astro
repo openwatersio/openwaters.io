@@ -28,7 +28,7 @@ const free = [
   {
     name: "Contributor",
     who: "Receiver operators contributing qualifying data",
-    price: "Free, up to Region-scale limits",
+    price: "Free, at contributor limits",
   },
 ];
 
@@ -62,7 +62,7 @@ const which = [
   { q: "More than one ocean?", a: "World." },
   {
     q: "Running a receiver?",
-    a: "You're already covered, up to Region-scale limits.",
+    a: "You're already covered at contributor limits: any area, 200 vessels by MMSI, 5 streams, and the raw NMEA feed.",
   },
 ];
 
@@ -186,7 +186,8 @@ const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
         <table class="w-full min-w-2xl table-fixed text-sm">
           <thead>
             <tr class="border-line bg-surface border-b">
-              <th class="w-44"></th>
+              <th scope="col" class="w-44"><span class="sr-only">Plan</span></th
+              >
               {
                 plans.map((p) => (
                   <th scope="col" class={th}>
@@ -242,9 +243,9 @@ const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
       </div>
       <p class="text-fg-faint mt-4 max-w-3xl text-sm">
         Extra concurrent streams are {price(5)} each per month on any plan. Custom
-        covers an SLA, raw NMEA, a dedicated node, sub-keys, or a contract your legal
-        team wrote. Following vessels by MMSI is bounded by the list, not the map,
-        so a world-wide MMSI subscription works on Fleet.
+        covers an SLA, a dedicated node, sub-keys, or a contract your legal team wrote.
+        Following vessels by MMSI is bounded by the list, not the map, so a world-wide
+        MMSI subscription works on Fleet.
       </p>
     </Container>
   </section>

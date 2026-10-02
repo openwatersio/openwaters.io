@@ -101,7 +101,7 @@ const sources = [
   },
   {
     name: "Volunteer receivers",
-    ids: ["udp", "http", "v1", "mmsi"],
+    ids: ["station", "udp", "http", "v1", "mmsi"],
     where: "Global, wherever they are",
   },
   {
@@ -233,9 +233,10 @@ const licenses = [
   <!-- The network today -->
   <section class="py-16 lg:py-24">
     <Container>
-      <SectionDivider index={1} total={3} label="Network" id="sources" />
+      <SectionDivider index={1} total={3} label="Network" />
       <div
-        class="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
+        id="sources"
+        class="mt-12 grid scroll-mt-24 items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
       >
         <div>
           <h2 class="mb-5">Six sources, one stream.</h2>
@@ -256,13 +257,19 @@ const licenses = [
           <p class="text-fg-faint text-sm">
             Vessels are distinct MMSIs heard in the last 30 minutes;
             <em>unique</em> counts the ones no other source heard. Delay is the median
-            time from transmission to this server. <a href="/ais/network"
-              >Network status</a
-            > and <a href="/ais/stations">every station</a> have their own pages.
+            time from transmission to this server, weighted by volume where a row
+            combines several sources. <a href="/ais/network">Network status</a> and{
+              " "
+            }
+            <a href="/ais/stations">every station</a> have their own pages.
           </p>
         </div>
         <div class="border-line overflow-x-auto rounded-2xl border">
           <table id="ais-sources" class="w-full min-w-lg text-sm">
+            <caption class="sr-only">
+              Live vessel counts, event volume, delay, and last reception per
+              source
+            </caption>
             <thead
               class="eyebrow border-line bg-surface text-fg-faint border-b text-[10px]"
             >
@@ -555,7 +562,7 @@ const licenses = [
       try {
         const s = await (await fetch(src)).json();
         show("stations", s.stations.active);
-        show("vessels", s.vessels.total);
+        show("vessels", s.vessels.active ?? s.vessels.total);
         show("rate", s.events.per_second);
         fillSources(s.sources);
       } catch {
