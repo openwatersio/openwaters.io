@@ -1,0 +1,35 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import AisNav from "../../components/ais/AisNav.astro";
+import { md } from "../../utils/render-markdown";
+
+// The policy's one source is the aiscast repository; the site re-publishes it
+// on every build. AIS_PRIVACY_POLICY_URL points a local build at a draft.
+const SOURCE =
+  import.meta.env.AIS_PRIVACY_POLICY_URL ||
+  "https://raw.githubusercontent.com/openwatersio/aiscast/main/docs/privacy-policy.md";
+
+const res = await fetch(SOURCE, { signal: AbortSignal.timeout(10_000) });
+if (!res.ok) throw new Error(`AIS privacy policy: ${SOURCE}: ${res.status}`);
+const text = await res.text();
+
+// The document's own h1 becomes the page heading.
+const heading = text.match(/^# (.+)$/m);
+const title = heading?.[1] ?? "Privacy policy";
+const body = heading ? text.replace(heading[0], "") : text;
+---
+
+<MainLayout
+  title={title}
+  image="/og/ais.png"
+  description="What the Open Waters AIS network keeps about vessels, stations, tokens, and API requests, for how long, and who to ask."
+>
+  <Container class="py-12 lg:py-16">
+    <div class="mx-auto max-w-3xl">
+      <AisNav class="mb-8" />
+      <h1 class="mb-8">{title}</h1>
+      <div class="prose prose-lg max-w-none" set:html={md(body)} />
+    </div>
+  </Container>
+</MainLayout>
