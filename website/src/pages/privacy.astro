@@ -33,6 +33,16 @@ import { CONTACT_EMAIL } from "../utils/constants";
         </p>
 
         <p>
+          Pages with a map load their base map from a third party: the AIS page
+          from <a href="https://openfreemap.org/">OpenFreeMap</a>, and the tide,
+          chart, and sky pages from <a href="https://carto.com/basemaps/"
+            >Carto</a
+          > and <a href="https://s2maps.eu/">EOX</a> for Sentinel-2 imagery. Those
+          servers see your IP address and the tiles you asked for, under their own
+          policies, and nothing else about you.
+        </p>
+
+        <p>
           The site sets no cookies of its own. If you create an AIS token in the
           browser, the key is kept in your browser's <code>localStorage</code> on
           your own machine, and clearing site data removes it.
