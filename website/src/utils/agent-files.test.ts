@@ -215,6 +215,40 @@ test(
   },
 );
 
+test("/ais/ describes the service and its questions", { skip }, () => {
+  const html = read("ais/index.html");
+  const graph = [
+    ...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g),
+  ]
+    .map((m) => JSON.parse(m[1]))
+    .flatMap((b) => b["@graph"] ?? b);
+
+  const api = graph.find((b) => b["@type"] === "WebAPI");
+  assert.ok(api, "no WebAPI JSON-LD on /ais/");
+  assert.equal(api.name, "Open Waters AIS");
+  assert.equal(api.url, "https://openwaters.io/ais/");
+  assert.equal(api.documentation, "https://openwaters.io/api/ais/");
+  assert.equal(api.isAccessibleForFree, true);
+  // Prices live on the pricing page, so the offer links there and quotes nothing.
+  assert.equal(api.offers.url, "https://openwaters.io/ais/pricing/");
+  assert.ok(!("price" in api.offers), "offer must not quote a price");
+
+  const faq = graph.find((b) => b["@type"] === "FAQPage");
+  assert.ok(faq, "no FAQPage JSON-LD on /ais/");
+  assert.ok(faq.mainEntity.length >= 4);
+  // Google drops FAQ rich results when the answer is not also visible on the page.
+  for (const q of faq.mainEntity) {
+    assert.ok(html.includes(q.name), `question not rendered: ${q.name}`);
+    assert.equal(q.acceptedAnswer["@type"], "Answer");
+    assert.ok(q.acceptedAnswer.text.length > 40);
+  }
+});
+
+test("/ais/ makes no uptime promise", { skip }, () => {
+  // No tier below Custom carries an SLA; see docs/policy.md in the aiscast repo.
+  assert.doesNotMatch(read("ais/index.html"), /\bSLA\b|guaranteed uptime/i);
+});
+
 test(
   "openapi.json operations all carry an operationId and description",
   { skip },

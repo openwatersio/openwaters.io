@@ -7,6 +7,7 @@ import AisNav from "../../components/ais/AisNav.astro";
 import AisStats from "../../components/ais/AisStats.astro";
 import SectionDivider from "../../components/ui/SectionDivider.astro";
 import { CONTACT_EMAIL } from "../../utils/constants";
+import { SITE, faqPage, publisher } from "../../utils/schema";
 
 const SERVER = "ais.openwaters.io";
 const REPO = "https://github.com/openwatersio/aiscast";
@@ -136,12 +137,68 @@ const licenses = [
     obligation: "Best effort. source: aisstream.",
   },
 ];
+
+// Rendered below and emitted as FAQPage. The questions are the ones people actually
+// arrive with: what it costs, how the coverage compares, and how fresh the positions
+// are. Nothing here promises uptime, because no tier below Custom carries an SLA.
+const faq = [
+  {
+    q: "Is Open Waters AIS free?",
+    a: "Reading is free with no account and no key. A free token raises the limits, and running a receiver raises them further. Products and fleets move to a paid plan; the plans and what each one lifts are on the pricing page.",
+  },
+  {
+    q: "How does coverage compare to aisstream.io?",
+    a: "Live terrestrial coverage is strongest in the Nordics and wherever our volunteer receivers are; elsewhere positions come from partner aggregates and are typically one to six minutes old. Open Waters AIS also reads aisstream.io as an upstream, so switching costs you no vessels.",
+  },
+  {
+    q: "How fresh are the positions?",
+    a: "Government feeds and volunteer receivers arrive as they are heard, within a second or two. Positions that only AISHub carries are a periodic snapshot rather than a live feed, however it looks, and run about a minute behind. The network page shows the current median latency per source.",
+  },
+  {
+    q: "Do I need an account or an API key?",
+    a: "No. Open the WebSocket and read. A token is one click in the browser with no account and no email, and it never expires.",
+  },
+  {
+    q: "Can I switch from aisstream.io without rewriting my client?",
+    a: "Yes. The /v0/stream endpoint speaks aisstream.io's protocol, so pointing an existing client at wss://ais.openwaters.io/v0/stream with your token as APIKey is the whole change.",
+  },
+  {
+    q: "Can I use the data commercially?",
+    a: "Yes, within each source's own licence. The aggregate is never relicensed, so every event names the source it came from and you carry that source's attribution through. The licence table on this page says what each one asks for.",
+  },
+];
+
+// The graph below carries the context, so the FAQ node does not repeat it.
+const { "@context": _faqContext, ...faqNode } = faqPage("/ais/", faq);
+
+// A @graph so the page describes both the service and its questions. The Organization
+// block that MainLayout emits on every page stays separate.
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebAPI",
+      name: "Open Waters AIS",
+      url: `${SITE}/ais/`,
+      description:
+        "A real-time AIS network. Live ship positions from coastal authorities, partner aggregates, and volunteer receivers, streamed over WebSocket, SSE, and raw NMEA.",
+      documentation: `${SITE}/api/ais/`,
+      termsOfService: `${REPO}/blob/main/docs/policy.md`,
+      provider: publisher,
+      isAccessibleForFree: true,
+      // No price here: the tiers and their numbers live on the pricing page.
+      offers: { "@type": "Offer", url: `${SITE}/ais/pricing/` },
+    },
+    faqNode,
+  ],
+};
 ---
 
 <MainLayout
   title="Open Waters AIS: free, real-time vessel data"
   image="/og/ais.png"
   description="Open Waters AIS is a free AIS network with an aisstream-compatible API, streaming live ship positions from coastal authorities and volunteer receivers."
+  schema={schema}
 >
   <!-- Hero: the live map runs full bleed under the header and fades into the page -->
   <section class="-mt-header relative overflow-hidden">
@@ -399,6 +456,31 @@ const licenses = [
           rel="noopener noreferrer">data policy</a
         >.
       </p>
+    </Container>
+  </section>
+
+  <!-- Questions. The text matches the FAQPage schema above; keep them in step. -->
+  <section class="py-16 lg:py-24">
+    <Container>
+      <div class="mx-auto max-w-3xl">
+        <h2 id="faq" class="mb-10 scroll-mt-24">Questions</h2>
+        <dl class="divide-line divide-y">
+          {
+            faq.map((item) => (
+              <div class="py-6 first:pt-0">
+                <dt class="text-fg-strong mb-2 text-lg font-semibold">
+                  {item.q}
+                </dt>
+                <dd class="text-fg-muted">{item.a}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="text-fg-faint mt-8 text-sm">
+          Something else? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a
+          >.
+        </p>
+      </div>
     </Container>
   </section>
 
