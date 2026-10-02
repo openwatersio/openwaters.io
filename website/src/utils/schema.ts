@@ -20,6 +20,20 @@ export const website = {
   url: `${SITE}/`,
 };
 
+// Rich-result eligible only when every question and answer is also on the page,
+// so callers render the same array they pass here.
+export const faqPage = (path: string, items: { q: string; a: string }[]) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  url: `${SITE}${path}`,
+  publisher,
+  mainEntity: items.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+});
+
 // Emitted on every page by MainLayout. Takes the address rather than importing
 // constants.ts, which reads import.meta.env and so cannot be loaded by node --test.
 export const organization = (email: string) => ({
