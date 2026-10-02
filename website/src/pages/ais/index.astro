@@ -73,7 +73,7 @@ const open = [
 const footer = [
   { label: "Live map", href: "/ais/vessels" },
   { label: "API docs", href: "/api/ais/" },
-  { label: "Coverage and sources", href: "#sources" },
+  { label: "Coverage and sources", href: "/ais/network" },
   { label: "Contributor agreement", href: AGREEMENT },
   { label: "Data licenses", href: "#license" },
   { label: "Privacy", href: "/ais/privacy/" },
@@ -82,38 +82,16 @@ const footer = [
   { label: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
 ];
 
-// Live numbers come from /v1/stats; `ids` are the `source` prefixes each row sums.
-const sources = [
-  {
-    name: "Kystverket",
-    ids: ["kystverket"],
-    where: "Norwegian coast, 40–60 nm out",
-  },
-  {
-    name: "BarentsWatch",
-    ids: ["barentswatch"],
-    where: "Norwegian EEZ and Svalbard, incl. satellite",
-  },
-  {
-    name: "Fintraffic Digitraffic",
-    ids: ["digitraffic"],
-    where: "Finnish waters",
-  },
-  {
-    name: "Volunteer receivers",
-    ids: ["station", "udp", "http", "v1", "mmsi"],
-    where: "Global, wherever they are",
-  },
-  {
-    name: "AISHub",
-    ids: ["aishub"],
-    where: "Worldwide terrestrial, about a minute behind",
-  },
-  {
-    name: "aisstream.io",
-    ids: ["aisstream"],
-    where: "Worldwide, intermittent",
-  },
+// Network numbers polled from /v1/stats, plus uptime from the status page.
+const vesselWindows = [
+  { key: "vessels-1d", label: "24 hours" },
+  { key: "vessels-7d", label: "7 days" },
+  { key: "vessels-30d", label: "30 days" },
+];
+const health = [
+  { key: "contributors", label: "Contributor stations" },
+  { key: "latency", label: "Median latency" },
+  { key: "uptime", label: "Uptime, 30 days" },
 ];
 
 const licenses = [
@@ -235,95 +213,63 @@ const licenses = [
     <Container>
       <SectionDivider index={1} total={3} label="Network" />
       <div
-        id="sources"
-        class="mt-12 grid scroll-mt-24 items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
+        class="mt-12 grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
       >
         <div>
-          <h2 class="mb-5">Six sources, one stream.</h2>
+          <h2 class="mb-5">A network that grows with every receiver.</h2>
           <p class="text-fg-muted mb-6 text-lg">
-            Government feeds from Norway and Finland, partner aggregates, and
-            volunteer receivers, deduplicated into a single subscription. AISHub
-            is our largest source today and most of what you see outside the
-            Nordics comes from them.
-          </p>
-          <p class="text-fg-muted mb-6">
-            Terrestrial reception is strongest in the Nordics and wherever
-            volunteers run receivers. Elsewhere positions come from partner
-            aggregates, and the delay column shows how old they are. Check the
-            vessels and places you care about on the <a href="/ais/vessels"
-              >live map</a
-            > before you build.
-          </p>
-          <p class="text-fg-faint text-sm">
-            Vessels are distinct MMSIs heard in the last 30 minutes;
-            <em>unique</em> counts the ones no other source heard. Delay is the median
-            time from transmission to this server, weighted by volume where a row
-            combines several sources. <a href="/ais/network">Network status</a> and{
-              " "
-            }
-            <a href="/ais/stations">every station</a> have their own pages.
+            Government feeds, partner aggregates, and volunteer receivers all
+            land in one deduplicated stream. Every station that joins adds
+            vessels nobody else hears and fresher positions where the rest of
+            the network is a minute behind.
           </p>
         </div>
-        <div class="border-line overflow-x-auto rounded-2xl border">
-          <table id="ais-sources" class="w-full min-w-lg text-sm">
-            <caption class="sr-only">
-              Live vessel counts, event volume, delay, and last reception per
-              source
-            </caption>
-            <thead
-              class="eyebrow border-line bg-surface text-fg-faint border-b text-[10px]"
-            >
-              <tr>
-                <th scope="col" class="px-4 py-3 text-left font-medium"
-                  >Source</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Vessels</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Unique</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Events / 24h</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Delay</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Last heard</th
-                >
-              </tr>
-            </thead>
-            <tbody class="divide-line divide-y">
+        <a
+          href="/ais/network"
+          class="card-hover group text-fg block p-0 no-underline hover:no-underline"
+        >
+          <p class="px-6 pt-6 font-semibold">Unique Vessels</p>
+          <div id="ais-network">
+            <dl class="grid grid-cols-3 gap-4 px-6 pt-3 pb-6">
               {
-                sources.map((row) => (
-                  <tr data-ids={row.ids.join(",")}>
-                    <td class="px-4 py-3">
-                      <span class="text-fg-strong font-medium">{row.name}</span>
-                      <span class="text-fg-faint block text-xs">
-                        {row.where}
-                      </span>
-                    </td>
-                    {["vessels", "exclusive", "events", "delay"].map((k) => (
-                      <td
-                        class="px-4 py-3 text-right font-mono text-xs"
-                        data-stat={k}
-                      >
-                        –
-                      </td>
-                    ))}
-                    <td
-                      class="text-fg-muted px-4 py-3 text-right font-mono text-xs"
-                      data-stat="age"
-                    >
-                      –
-                    </td>
-                  </tr>
+                vesselWindows.map((n) => (
+                  <div class="flex min-w-0 flex-col-reverse justify-end gap-1">
+                    <dt class="text-fg-faint text-[11px] font-medium tracking-[0.12em] whitespace-nowrap uppercase">
+                      <span class="sr-only">Unique vessels in the last </span>
+                      {n.label}
+                    </dt>
+                    <dd class="text-fg-strong text-2xl font-semibold tracking-tight tabular-nums sm:text-4xl">
+                      <span data-stat={n.key}>–</span>
+                    </dd>
+                  </div>
                 ))
               }
-            </tbody>
-          </table>
-        </div>
+            </dl>
+            <dl class="border-line grid grid-cols-3 gap-4 border-t px-6 py-5">
+              {
+                health.map((n) => (
+                  <div class="flex min-w-0 flex-col-reverse justify-end gap-1">
+                    <dt class="text-fg-faint text-[10px] font-medium tracking-[0.12em] uppercase">
+                      {n.label}
+                    </dt>
+                    <dd class="text-fg-strong text-lg font-semibold tabular-nums">
+                      <span data-stat={n.key}>–</span>
+                    </dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+          <div
+            class="border-line text-accent group-hover:text-accent-hover flex items-center justify-between gap-4 border-t px-6 py-4 text-sm font-medium"
+          >
+            <span>Sources, delays, and every station on the network page</span>
+            <Icon
+              name="mdi:arrow-right"
+              class="size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+            />
+          </div>
+        </a>
       </div>
     </Container>
   </section>
@@ -400,7 +346,7 @@ const licenses = [
       <div class="border-line mt-8 overflow-x-auto rounded-2xl border">
         <table class="w-full min-w-lg text-sm">
           <thead
-            class="eyebrow border-line bg-surface text-fg-faint border-b text-[10px]"
+            class="border-line bg-surface text-fg-faint border-b text-[11px] font-medium tracking-[0.12em] uppercase"
           >
             <tr>
               <th scope="col" class="px-4 py-3 text-left font-medium">Source</th
@@ -491,85 +437,84 @@ const licenses = [
 </MainLayout>
 
 <script>
-  // Sources table: each row sums the /v1/stats sources whose prefix (before ":") is in its data-ids.
-  // Summed vessels can double count one heard by two of a row's stations; close enough for a summary.
-  const ago = (s: number) =>
-    s < 60
-      ? `${s}s ago`
-      : s < 3600
-        ? `${Math.round(s / 60)}m ago`
-        : `${Math.round(s / 3600)}h ago`;
-  const delay = (s: number) =>
-    s < 60 ? `${Math.round(s)}s` : `${(s / 60).toFixed(1)}m`;
-  const fillSources = (
-    sources: Record<
-      string,
-      {
-        events: { last_24h: number };
-        delay?: { p50: number };
-        last_age_s: number;
-        vessels: number;
-        vessels_exclusive: number;
-      }
-    >,
-  ) => {
-    const rows = [
-      ...document.querySelectorAll<HTMLElement>("#ais-sources tr[data-ids]"),
-    ].map((tr) => {
-      const ids = tr.dataset.ids!.split(",");
-      const mine = Object.entries(sources).filter(([k]) =>
-        ids.includes(k.split(":")[0]!),
-      );
-      if (!mine.length) return { tr, exclusive: -1 };
-      const sum = (f: (v: (typeof mine)[number][1]) => number) =>
-        mine.reduce((n, [, v]) => n + f(v), 0);
-      const set = (k: string, v: string) =>
-        (tr.querySelector(`[data-stat=${k}]`)!.textContent = v);
-      const exclusive = sum((v) => v.vessels_exclusive);
-      set("vessels", sum((v) => v.vessels).toLocaleString());
-      set("exclusive", exclusive.toLocaleString());
-      set("events", sum((v) => v.events.last_24h).toLocaleString());
-      set("age", ago(Math.min(...mine.map(([, v]) => v.last_age_s))));
-      const timed = mine.filter(([, v]) => v.delay);
-      const weight = timed.reduce((n, [, v]) => n + v.events.last_24h, 0);
-      set(
-        "delay",
-        weight
-          ? delay(
-              timed.reduce(
-                (n, [, v]) => n + v.delay!.p50 * v.events.last_24h,
-                0,
-              ) / weight,
-            )
-          : "–",
-      );
-      return { tr, exclusive };
-    });
-    rows
-      .sort((a, b) => b.exclusive - a.exclusive)
-      .forEach(({ tr }) => tr.parentElement!.appendChild(tr));
+  // Volunteer receivers, as opposed to government feeds and partner aggregates.
+  const CONTRIBUTOR_SOURCES = ["station", "udp", "http", "v1", "mmsi"];
+
+  const fmt = (n: number) => Math.round(n).toLocaleString();
+  const text = (root: HTMLElement | null, values: Record<string, string>) => {
+    if (!root) return;
+    for (const [key, value] of Object.entries(values)) {
+      const el = root.querySelector(`[data-stat="${key}"]`);
+      if (el && value) el.textContent = value;
+    }
+  };
+  const fill = (root: HTMLElement | null, values: Record<string, number>) => {
+    if (!root) return;
+    for (const [key, value] of Object.entries(values)) {
+      const el = root.querySelector(`[data-stat="${key}"]`);
+      if (el && Number.isFinite(value)) el.textContent = fmt(value);
+    }
   };
 
-  // Live stats: active stations, vessels in the cache, deduplicated events/sec.
-  const stats = document.getElementById("ais-stats");
-  if (stats) {
-    const src = stats.dataset.src!;
-    const show = (key: string, value: number | string) => {
-      stats.querySelector(`[data-stat=${key}]`)!.textContent =
-        typeof value === "number" ? Math.round(value).toLocaleString() : value;
-    };
+  const hero = document.getElementById("ais-stats");
+  const network = document.getElementById("ais-network");
+  const src = hero?.dataset.src;
+  if (src) {
     const poll = async () => {
       try {
-        const s = await (await fetch(src)).json();
-        show("stations", s.stations.active);
-        show("vessels", s.vessels.active ?? s.vessels.total);
-        show("rate", s.events.per_second);
-        fillSources(s.sources);
+        const res = await fetch(src);
+        if (!res.ok) return;
+        const s = await res.json();
+        fill(hero, {
+          stations: s.stations.active,
+          vessels: s.vessels.active ?? s.vessels.total,
+          rate: s.events.per_second,
+        });
+        const sources = Object.values(
+          (s.sources ?? {}) as Record<
+            string,
+            { delay?: { p50: number }; events: { last_24h: number } }
+          >,
+        ).filter((v) => v.delay && v.events.last_24h);
+        const weight = sources.reduce((n, v) => n + v.events.last_24h, 0);
+        fill(network, {
+          "vessels-1d": s.vessels.last_24h,
+          "vessels-7d": s.vessels.last_7d,
+          "vessels-30d": s.vessels.last_30d,
+          contributors: Object.entries(
+            (s.stations.by_source ?? {}) as Record<string, number>,
+          ).reduce(
+            (n, [k, v]) => (CONTRIBUTOR_SOURCES.includes(k) ? n + v : n),
+            0,
+          ),
+        });
+        text(network, {
+          // Each source's median, weighted by how many messages it delivers.
+          latency: weight
+            ? `${(sources.reduce((n, v) => n + v.delay!.p50 * v.events.last_24h, 0) / weight).toFixed(1)} s`
+            : "",
+        });
       } catch {
-        // leave the placeholders; the hero works without numbers
+        // leave the placeholders; the page works without numbers
       }
     };
     poll();
     setInterval(poll, 5000);
+  }
+
+  // Uptime of the AIS stream monitor on status.openwaters.io (Upptime).
+  if (network) {
+    fetch(
+      "https://raw.githubusercontent.com/openwatersio/status/master/history/summary.json",
+    )
+      .then((res) => (res.ok ? res.json() : []))
+      .then((monitors: { slug: string; uptimeMonth?: string }[]) => {
+        const month = parseFloat(
+          monitors.find((m) => m.slug === "ais-stream")?.uptimeMonth ?? "",
+        );
+        if (Number.isFinite(month))
+          text(network, { uptime: `${+month.toFixed(2)}%` });
+      })
+      .catch(() => {});
   }
 </script>
