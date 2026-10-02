@@ -11,7 +11,6 @@ const SERVER = "ais.openwaters.io";
 const UDP_HOST = `udp.${SERVER}`;
 const REPO = "https://github.com/openwatersio/aiscast";
 const AGREEMENT = `${REPO}/blob/main/docs/contributor-agreement.md`;
-const VIEWER = "https://openwatersio.github.io/aiscast/";
 const TOKEN_PAGE = "/ais/token/";
 const LIMITS = "/api/ais/#limits";
 
@@ -132,10 +131,11 @@ const questions = [
             {steps.map((s) => <li>{s}</li>)}
           </ol>
           <p class="text-fg-faint mt-8 text-sm">
-            Your station page is the <a href={VIEWER}>live map</a> with{" "}
-            <code class="text-fg-muted">?station=&lt;your id&gt;</code>. It
-            shows vessels heard, coverage extent, and message counts; <code
-              class="text-fg-muted">GET /v1/stations/&#123;id&#125;</code
+            Your station gets a page under <a href="/ais/stations"
+              >/ais/stations</a
+            > as soon as it is heard. It shows vessels heard, coverage extent, and
+            message counts; <code class="text-fg-muted"
+              >GET /v1/stations/&#123;id&#125;</code
             > returns the same numbers. Named stations with higher limits, and anything
             else: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
