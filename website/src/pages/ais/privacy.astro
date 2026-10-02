@@ -26,6 +26,12 @@ async function fetchPolicy() {
   throw new Error("AIS privacy policy unavailable from every source");
 }
 const text = await fetchPolicy();
+// A draft with an unfilled placeholder such as "[LAUNCH DATE]" must not ship.
+const placeholder = text.match(/\[[A-Z][A-Z ]+\]/);
+if (placeholder)
+  throw new Error(
+    `AIS privacy policy still has a placeholder: ${placeholder[0]}`,
+  );
 
 // The document's own h1 becomes the page heading.
 const heading = text.match(/^# (.+)$/m);
