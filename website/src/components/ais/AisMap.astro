@@ -356,7 +356,9 @@ const { class: className, center, zoom } = Astro.props;
     const pulses: { lon: number; lat: number; t0: number; color: string }[] =
       [];
     let pulseRaf = 0;
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
     function pulse(v: Vessel) {
+      if (reducedMotion.matches) return;
       // zoomed out, rings pile into solid blobs over busy ports
       if (map.getZoom() < 5) return;
       pulses.push({
@@ -412,6 +414,8 @@ const { class: className, center, zoom } = Astro.props;
     const svgNS = "http://www.w3.org/2000/svg";
     const calloutLayer = document.createElement("div");
     calloutLayer.className = "ais-callouts";
+    // Decorative: the cards repeat what the map shows and change every few seconds.
+    calloutLayer.setAttribute("aria-hidden", "true");
     const calloutLines = document.createElementNS(svgNS, "svg");
     calloutLayer.appendChild(calloutLines);
     container.appendChild(calloutLayer);
@@ -582,14 +586,18 @@ const { class: className, center, zoom } = Astro.props;
           const v = vessels.get(Number(span.dataset.ago));
           if (v) span.textContent = agoText(v.seen);
         });
+      // ponytail: desktop only — on phones the hero copy covers most of the map.
+      // Reduced motion gets a still map: no cards appearing on a timer.
+      if (reducedMotion.matches || !matchMedia("(min-width: 1024px)").matches) {
+        calloutPending = [];
+        return;
+      }
       // stream quiet (blocked, rate-limited, not yet connected) → pick from
       // the snapshot cache instead, so the map still narrates itself
       const cands = calloutPending.length
         ? calloutPending
         : [...vessels.keys()];
       calloutPending = [];
-      // ponytail: desktop only — on phones the hero copy covers most of the map
-      if (!matchMedia("(min-width: 1024px)").matches) return;
       if (callouts.size >= CALLOUTS) return;
       // half-a-tick slack, or interval drift rounds the spacing up a second
       if (Date.now() - lastCallout < CALLOUT_EVERY_MS - 500) return;
