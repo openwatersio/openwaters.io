@@ -8,7 +8,18 @@
     // Pages are negotiated (HTML or Markdown) in src/worker.ts, so their requests must
     // reach the Worker; everything with an extension is served straight from assets.
     // Vite's /@vite/client, /@react-refresh and /@id/* must reach its dev middleware.
-    "run_worker_first": ["/*", "!/*.*", "!/_astro/*", "!/og/*", "!/@*"],
+    // Redirected paths (astro.config.mjs `redirects`) must go straight to assets:
+    // inside the Worker the Astro handler's internal fetch follows the _redirects
+    // 301 and flattens it into a 200 at the old URL.
+    "run_worker_first": [
+      "/*",
+      "!/*.*",
+      "!/_astro/*",
+      "!/og/*",
+      "!/@*",
+      "!/tides/neaps",
+      "!/tides/neaps/",
+    ],
   },
   "compatibility_date": "2026-06-01",
   "compatibility_flags": ["nodejs_compat"],

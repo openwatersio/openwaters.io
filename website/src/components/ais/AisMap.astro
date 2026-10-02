@@ -51,6 +51,9 @@ const { class: className, center, zoom } = Astro.props;
   // Adapted from the aiscast viewer (github.com/openwatersio/aiscast/viewer).
   import * as maplibregl from "../../utils/maplibre";
   import type { ExpressionSpecification, LngLatLike } from "maplibre-gl";
+  // TypeScript 6 (astro check's compiler) no longer surfaces @types/geojson's
+  // ambient GeoJSON namespace, so import it explicitly.
+  import type * as GeoJSON from "geojson";
   import "maplibre-gl/dist/maplibre-gl.css";
 
   const SERVER = "https://ais.openwaters.io";

@@ -1,4 +1,4 @@
-import { type openapi } from "@neaps/api";
+import { type openapi } from "@slackwater/api";
 
 // Infer types from the imported openapi spec
 type OpenAPISpec = typeof openapi;
@@ -8,7 +8,7 @@ type ParameterObject = Parameters[keyof Parameters];
 
 /**
  * Structural shape of an OpenAPI document as this site renders it: satisfied by
- * both the typed @neaps/api export and a spec fetched as JSON (the AIS
+ * both the typed @slackwater/api export and a spec fetched as JSON (the AIS
  * server's).
  */
 export interface SpecDocument {
@@ -20,22 +20,22 @@ export interface SpecDocument {
 }
 
 /**
- * Path prefix where the neaps API is mounted in the Open Waters API.
- * Mirrors what neaps does internally with `servers: [{ url: prefix }]`.
+ * Path prefix where the Slackwater API is mounted in the Open Waters API.
+ * Mirrors what slackwater does internally with `servers: [{ url: prefix }]`.
  */
-const NEAPS_PREFIX = "/tides";
+const SLACKWATER_PREFIX = "/tides";
 
 export const AIS_OPENAPI_URL = "https://ais.openwaters.io/openapi.json";
 
 /**
- * Fetch OpenAPI spec from @neaps/api at build time, prefixing paths with the
+ * Fetch OpenAPI spec from @slackwater/api at build time, prefixing paths with the
  * mount point used by the Open Waters API.
  */
 export async function getOpenAPISpec(): Promise<OpenAPISpec> {
-  const { openapi } = await import("@neaps/api");
+  const { openapi } = await import("@slackwater/api");
   const paths = Object.fromEntries(
     Object.entries(openapi.paths).map(([path, pathItem]) => [
-      path === "/" ? NEAPS_PREFIX : `${NEAPS_PREFIX}${path}`,
+      path === "/" ? SLACKWATER_PREFIX : `${SLACKWATER_PREFIX}${path}`,
       pathItem,
     ]),
   );
@@ -187,7 +187,7 @@ export function groupEndpointsByTag(
 }
 
 /**
- * The document served at /openapi.json: the mounted neaps spec, addressed at the
+ * The document served at /openapi.json: the mounted slackwater spec, addressed at the
  * public API host so agents can call it without reading the docs page first.
  */
 export async function openApiDocument(host: string) {
@@ -223,7 +223,7 @@ export async function openApiDocument(host: string) {
   };
 }
 
-// Upstream neaps ships no operationIds (yet), so derive stable ones from the route:
+// Upstream slackwater ships no operationIds (yet), so derive stable ones from the route:
 // GET /tides/stations/{source}/{id}/extremes -> getTidesStationsBySourceAndIdExtremes.
 const operationId = (method: string, path: string) => {
   let id = method.toLowerCase();
