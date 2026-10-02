@@ -16,3 +16,4 @@ Content-Signal: search=yes,ai-input=yes,ai-train=yes
 Allow: /
 
 Sitemap: https://openwaters.io/sitemap.xml
+Sitemap: https://openwaters.io/ais/sitemap.xml
