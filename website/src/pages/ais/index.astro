@@ -1,250 +1,97 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
-import Card from "../../components/ui/Card.astro";
-import CodeBlock from "../../components/ui/CodeBlock.astro";
 import Icon from "../../components/Icon.astro";
 import AisMap from "../../components/ais/AisMap.astro";
-import AisTicker from "../../components/ais/AisTicker.astro";
+import AisNav from "../../components/ais/AisNav.astro";
+import AisStats from "../../components/ais/AisStats.astro";
 import SectionDivider from "../../components/ui/SectionDivider.astro";
 import { CONTACT_EMAIL } from "../../utils/constants";
-import { highlight, SNIPPET_LANGS } from "../../utils/shiki";
 
 const SERVER = "ais.openwaters.io";
-const UDP_HOST = `udp.${SERVER}`;
 const REPO = "https://github.com/openwatersio/aiscast";
-const TOKEN_PAGE = "/ais/token/";
+const AGREEMENT = `${REPO}/blob/main/docs/contributor-agreement.md`;
+const STATUS = "https://status.openwaters.io";
 
-const bbox = "59,10,60,11";
-const snippets: {
-  id: string;
-  label: string;
-  lang: (typeof SNIPPET_LANGS)[number];
-  code: string;
-}[] = [
+// Whether boaters get their own card is undecided. Flip to show it.
+const BOATERS = false;
+const uses = [
   {
-    id: "js",
-    label: "JavaScript",
-    lang: "js",
-    code: `const ws = new WebSocket("wss://${SERVER}/v1/stream");
-ws.onopen = () =>
-  ws.send(JSON.stringify({
-    type: "subscribe",
-    bbox: [[59, 10, 60, 11]]
-  }));
-ws.onmessage = ({ data }) => {
-  const ev = JSON.parse(data);
-  if (ev.type !== "event") return; // welcome, ack, error
-  console.log(ev.mmsi, ev.msg_type, ev.lat, ev.lon);
-};`,
+    icon: "mdi:ferry",
+    title: "Track your fleet",
+    text: "Give us a list of MMSIs and every position report for those vessels arrives as JSON, with course, speed, heading, name, destination, and ETA. Free for a personal project.",
+    link: { label: "Subscribe by MMSI", href: "/api/ais/#stream-v1" },
   },
   {
-    id: "python",
-    label: "Python",
-    lang: "python",
-    code: `import asyncio, json, websockets
-
-URL = "wss://${SERVER}/v1/stream"
-SUB = {"type": "subscribe", "bbox": [[59, 10, 60, 11]]}
-
-async def main():
-    async with websockets.connect(URL) as ws:
-        await ws.send(json.dumps(SUB))
-        async for frame in ws:
-            ev = json.loads(frame)
-            if ev["type"] != "event":  # welcome, ack, error
-                continue
-            print(ev["mmsi"], ev["msg_type"],
-                  ev.get("lat"), ev.get("lon"))
-
-asyncio.run(main())`,
+    icon: "mdi:vector-square",
+    title: "Monitor your waters",
+    text: "Draw a box around a port, a strait, or a stretch of coast and read everything inside it. One subscribe frame, no polling, no credits burned per query.",
+    link: { label: "Subscribe by area", href: "/api/ais/#quick-start" },
   },
   {
-    id: "go",
-    label: "Go",
-    lang: "go",
-    code: `url := "wss://${SERVER}/v1/stream"
-c, _, err := websocket.DefaultDialer.Dial(url, nil)
-if err != nil {
-	log.Fatal(err)
-}
-c.WriteJSON(map[string]any{
-	"type": "subscribe",
-	"bbox": [][]float64{{59, 10, 60, 11}},
-})
-for {
-	var ev struct {
-		Type    string  \`json:"type"\`
-		MMSI    int     \`json:"mmsi"\`
-		MsgType string  \`json:"msg_type"\`
-		Lat     float64 \`json:"lat"\`
-		Lon     float64 \`json:"lon"\`
-	}
-	if err := c.ReadJSON(&ev); err != nil {
-		log.Fatal(err)
-	}
-	if ev.Type != "event" { // welcome, ack, error
-		continue
-	}
-	fmt.Println(ev.MMSI, ev.MsgType, ev.Lat, ev.Lon)
-}`,
+    icon: "mdi:chart-timeline-variant",
+    title: "Analyze marine activity",
+    text: "Every event carries a timestamp, the station that heard it, and the source it came from. Log the stream and you own the dataset: transit counts, dwell times, traffic by hour, whatever you want to ask.",
+    link: { label: "Event fields", href: "/api/ais/#stream-v1" },
   },
-  {
-    id: "rust",
-    label: "Rust",
-    lang: "rust",
-    code: `use futures_util::{SinkExt, StreamExt};
-use tokio_tungstenite::{connect_async, tungstenite::Message};
-
-#[tokio::main]
-async fn main() {
-    let url = "wss://${SERVER}/v1/stream";
-    let (mut ws, _) = connect_async(url).await.unwrap();
-    let sub = r#"{"type":"subscribe","bbox":[[59,10,60,11]]}"#;
-    ws.send(Message::text(sub)).await.unwrap();
-    while let Some(Ok(msg)) = ws.next().await {
-        let Message::Text(frame) = msg else { continue };
-        let ev: serde_json::Value =
-            serde_json::from_str(&frame).unwrap();
-        if ev["type"] != "event" { continue } // welcome, ack, error
-        println!("{} {} {} {}",
-            ev["mmsi"], ev["msg_type"], ev["lat"], ev["lon"]);
-    }
-}`,
-  },
-  {
-    id: "shell",
-    label: "Shell",
-    lang: "sh",
-    code: `# live stream
-SUB='{"type":"subscribe","bbox":[[59,10,60,11]]}'
-echo "$SUB" | websocat -n wss://${SERVER}/v1/stream
-
-# snapshot of what is in the box right now
-curl "https://${SERVER}/v1/vessels?bbox=${bbox}"`,
-  },
-];
-const highlighted = await Promise.all(
-  snippets.map((s) => highlight(s.code, s.lang)),
-);
-
-const tiers = [
-  {
-    name: "Anonymous",
-    text: "For trying things out.",
-  },
-  {
-    name: "Personal",
-    text: "For a boat, a hobby project, or a developer’s laptop.",
-    cta: { label: "Get a token", href: TOKEN_PAGE, primary: true },
-  },
-  {
-    name: "Contributor",
-    text: "Awarded to a station that contributes data.",
-    cta: { label: "Start contributing", href: "#contribute" },
-  },
-  {
-    name: "Commercial",
-    text: "For products, fleets, or those who need support.",
-    cta: {
-      label: "Contact us",
-      href: "/contact/",
-    },
-  },
-];
-// one cell per tier: true/false for a check, or a string
-const rows: [string, ...(boolean | string)[]][] = [
-  ["Cost", "Free", "Free", "Free", "Paid"],
-  ["Connections/IP Address", "2", "2", "5", "10 or more"],
-  ["Messages/sec", "20", "50", "200", "Unlimited"],
-  ["Subscribed area", "~10°×10°", "~20°×20°", "Unlimited", "Unlimited"],
-  ["Vessels followed by MMSI", "10", "50", "200", "As agreed"],
-  ["Sending data", false, true, true, true],
-  ["Raw NMEA feed", false, false, true, true],
+  ...(BOATERS
+    ? [
+        {
+          icon: "mdi:sail-boat",
+          title: "See beyond your antenna",
+          text: "The Signal K plugin shows AIS traffic your own receiver cannot hear, on the chartplotter you already have. A supplement to onboard AIS, never a substitute, and not for safety of navigation.",
+          link: {
+            label: "Signal K plugin",
+            href: "https://www.npmjs.com/package/signalk-aiscast",
+          },
+        },
+      ]
+    : []),
 ];
 
-const contribute = [
+const open = [
   {
-    icon: "mdi:radio-tower",
-    title: "AIS-catcher",
-    text: "Realtime over MQTT, authenticated, works behind any NAT. Get a token in your browser, add one flag.",
-    code: `AIS-catcher -Q wssmqtt://x:<token>@${SERVER}:443/v1/stream MSGFORMAT NMEA`,
-    links: [
-      { label: "Get a token", href: TOKEN_PAGE },
-      {
-        label: "AIS-catcher",
-        href: "https://github.com/jvde-github/AIS-catcher",
-      },
-    ],
+    icon: "mdi:lock-open-variant-outline",
+    title: "Open access",
+    text: "No account, no key, no receiver required. Open the WebSocket and read. Run a receiver and your limits go up.",
+    link: { label: "Access and limits", href: "/api/ais/#limits" },
   },
   {
-    icon: "mdi:sail-boat",
-    title: "Signal K",
-    text: "One plugin, both directions: shares what your receiver hears and shows AIS traffic when it hears none. No account; it creates its own token.",
-    code: "npm install signalk-aiscast",
-    links: [
-      { label: "npm", href: "https://www.npmjs.com/package/signalk-aiscast" },
-      { label: "README", href: `${REPO}/tree/main/signalk-plugin#readme` },
-    ],
+    icon: "mdi:open-source-initiative",
+    title: "Open-source software",
+    text: "The server is aiscast, MIT licensed. Read it, change it, run your own.",
+    link: { label: "Source code", href: REPO },
   },
   {
-    icon: "mdi:docker",
-    title: "docker-shipfeeder",
-    text: "Already sending to the aggregators from a container? Add one more UDP destination.",
-    code: `host ${UDP_HOST}, port 10110`,
-    links: [
-      {
-        label: "docker-shipfeeder",
-        href: "https://github.com/sdr-enthusiasts/docker-shipfeeder",
-      },
-    ],
-  },
-  {
-    icon: "mdi:lan-connect",
-    title: "Any NMEA forwarder",
-    text: "Plain !AIVDM sentences over UDP, no token. Your station is a keyed hash of your address, never the address itself.",
-    code: `AIS-catcher -u ${UDP_HOST} 10110`,
-    links: [
-      {
-        label: "ais-forwarder",
-        href: "https://github.com/hkapanen/ais-forwarder",
-      },
-    ],
+    icon: "mdi:license",
+    title: "Openly licensed contributions",
+    text: "Volunteer receptions are dedicated CC0 and the volunteer aggregate is ODbL. Data shared under those licenses stays reusable under them. Partner data carries its own licenses, and source is on every event so you can attribute correctly.",
+    link: { label: "Contributor agreement", href: AGREEMENT },
   },
 ];
 
-// Live numbers come from /v1/stats; `ids` are the `source` prefixes each row sums.
-const sources = [
-  {
-    name: "Kystverket",
-    ids: ["kystverket"],
-    where: "Norwegian coast, 40–60 nm out",
-  },
-  {
-    name: "BarentsWatch",
-    ids: ["barentswatch"],
-    where: "Norwegian EEZ and Svalbard, incl. satellite",
-  },
-  {
-    name: "Fintraffic Digitraffic",
-    ids: ["digitraffic"],
-    where: "Finnish waters",
-  },
-  {
-    name: "Volunteer receivers",
-    ids: ["udp", "http", "v1", "mmsi"],
-    where: "Global, wherever they are",
-  },
-  {
-    name: "AISHub",
-    ids: ["aishub"],
-    where: "worldwide terrestrial; about a minute behind",
-  },
-  {
-    name: "aisstream.io",
-    ids: ["aisstream"],
-    where: "worldwide (when it is up)",
-  },
+const footer = [
+  { label: "Live map", href: "/ais/vessels" },
+  { label: "API docs", href: "/api/ais/" },
+  { label: "Coverage and sources", href: "/ais/network" },
+  { label: "Contributor agreement", href: AGREEMENT },
+  { label: "Data licenses", href: "#license" },
+  { label: "Privacy", href: "/ais/privacy/" },
+  { label: "Status", href: STATUS },
+  { label: "Source code", href: REPO },
+  { label: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
+];
+
+// Network numbers polled from /v1/stats, plus uptime from the status page.
+const vesselWindows = [
+  { key: "vessels-1d", label: "24 hours" },
+  { key: "vessels-7d", label: "7 days" },
+  { key: "vessels-30d", label: "30 days" },
+];
+const health = [
+  { key: "contributors", label: "Contributor stations" },
+  { key: "latency", label: "Median latency" },
+  { key: "uptime", label: "Uptime, 30 days" },
 ];
 
 const licenses = [
@@ -286,7 +133,7 @@ const licenses = [
   {
     source: "aisstream.io",
     license: "no published terms",
-    obligation: "Best effort, frequently offline. source: aisstream.",
+    obligation: "Best effort. source: aisstream.",
   },
 ];
 ---
@@ -302,75 +149,57 @@ const licenses = [
       <AisMap center={[23.6, 59.7]} zoom={6.3} class="h-full w-full" />
     </div>
     <div
-      class="from-canvas/60 to-canvas pointer-events-none absolute inset-0 bg-linear-to-b via-transparent via-25%"
+      class="from-canvas/10 to-canvas pointer-events-none absolute inset-0 bg-linear-to-b via-transparent via-50%"
     >
     </div>
     <div
-      class="bg-canvas/70 lg:from-canvas lg:via-canvas/30 pointer-events-none absolute inset-0 lg:bg-transparent lg:bg-linear-to-r lg:via-40% lg:to-transparent"
+      class="bg-canvas/50 lg:from-canvas lg:via-canvas/30 pointer-events-none absolute inset-0 lg:bg-transparent lg:bg-linear-to-r lg:via-75% lg:to-transparent"
     >
     </div>
-    <Container class="relative pt-36 pb-24 lg:pt-44 lg:pb-28">
+    <Container
+      class="relative min-h-136 pt-36 pb-10 lg:min-h-160 lg:pt-44 lg:pb-12"
+    >
+      <div class="pointer-events-none max-w-2xl">
+        <AisNav class="pointer-events-auto mb-6" />
+        <h1 class="mb-6">
+          The open <span class="text-highlight">AIS network.</span>
+        </h1>
+        <p class="text-lead mb-8 max-w-xl">
+          Track ship traffic in real time, or contribute coverage from your
+          receiver.
+        </p>
+      </div>
       <div
-        class="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]"
+        class="pointer-events-auto flex flex-wrap items-center justify-between gap-x-10 gap-y-6"
       >
-        <div class="pointer-events-none max-w-2xl">
-          <p class="eyebrow mb-6">aiscast · the Open Waters AIS network</p>
-          <h1 class="mb-6">
-            All the ships at sea,<br />
-            <span class="text-highlight">instantaneously.</span>
-          </h1>
-          <p class="text-lead mb-8 max-w-xl">
-            A real-time stream of marine AIS traffic. Open source, and free for
-            personal use.
-          </p>
-          <div class="pointer-events-auto flex flex-wrap gap-3">
-            <a href="/api/ais/" class="btn btn-primary">
-              Read the API docs
-              <Icon name="mdi:arrow-right" class="size-4" />
-            </a>
-            <a href={TOKEN_PAGE} class="btn btn-secondary">Get a token</a>
-            <a href="/ais/vessels" class="btn btn-secondary">
-              <Icon name="mdi:map-outline" class="size-4" />
-              Open the live map
-            </a>
-          </div>
+        <div class="flex flex-wrap gap-3">
+          <a href="/api/ais/" class="btn btn-primary">
+            Use the API
+            <Icon name="mdi:arrow-right" class="size-4" />
+          </a>
+          <a href="/ais/contribute/" class="btn btn-secondary">Contribute</a>
+          <a href="/ais/vessels" class="btn btn-secondary">
+            <Icon name="mdi:map-outline" class="size-4" />
+            Open the live map
+          </a>
         </div>
-        <AisTicker statsUrl={`https://${SERVER}/v1/stats`} />
+        <AisStats statsUrl={`https://${SERVER}/v1/stats`} />
       </div>
     </Container>
   </section>
 
-  <!-- Why -->
+  <!-- What you can do -->
   <section class="py-8">
     <Container>
       <ul class="grid gap-5 md:grid-cols-3">
         {
-          [
-            {
-              icon: "mdi:broadcast",
-              title: "Real-time API",
-              text: "Get every AIS message as it is heard over WebSocket, SSE, or NMEA. Fetch a GeoJSON snapshot of what is in a box right now, plus stations and live stats.",
-              link: { label: "API reference", href: "/api/ais/" },
-            },
-            {
-              icon: "mdi:open-source-initiative",
-              title: "Open source, open data",
-              text: "An open AIS network powered by MIT-licensed code, and data re-served under each source's own terms, with the source named on every event.",
-              link: { label: "GitHub", href: REPO },
-            },
-            {
-              icon: "mdi:hand-heart-outline",
-              title: "Free for personal use",
-              text: "Read without an account; a one-click token covers a boat, a dashboard, or a side project. Contributing AIS data earns more.",
-              link: { label: "See tiers and limits", href: "#limits" },
-            },
-          ].map((w) => (
+          uses.map((u) => (
             <li class="card flex flex-col gap-3">
-              <Icon name={w.icon} class="text-accent size-6" />
-              <h2 class="text-lg font-semibold tracking-normal">{w.title}</h2>
-              <p class="text-fg-muted text-sm">{w.text}</p>
-              <a href={w.link.href} class="mt-auto text-sm font-medium">
-                {w.link.label} →
+              <Icon name={u.icon} class="text-accent size-6" />
+              <h2 class="text-lg font-semibold tracking-normal">{u.title}</h2>
+              <p class="text-fg-muted text-sm">{u.text}</p>
+              <a href={u.link.href} class="mt-auto text-sm font-medium">
+                {u.link.label} →
               </a>
             </li>
           ))
@@ -379,308 +208,130 @@ const licenses = [
     </Container>
   </section>
 
-  <!-- Stream -->
+  <!-- The network today -->
   <section class="py-16 lg:py-24">
     <Container>
-      <SectionDivider index={1} total={4} label="Stream" />
+      <SectionDivider index={1} total={3} label="Network" />
       <div
-        class="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
+        class="mt-12 grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
       >
         <div>
-          <h2 class="mb-5">Stream vessel data in your favorite language.</h2>
+          <h2 class="mb-5">A network that grows with every receiver.</h2>
           <p class="text-fg-muted mb-6 text-lg">
-            Open a WebSocket, send one subscribe frame, and every message inside
-            the box arrives as JSON with its source, station, raw sentence, and
-            decoded fields.
+            Government feeds, partner aggregates, and volunteer receivers all
+            land in one deduplicated stream. Every station that joins adds
+            vessels nobody else hears and fresher positions where the rest of
+            the network is a minute behind.
           </p>
-          <div class="mb-6 flex flex-wrap gap-x-6 gap-y-2 font-medium">
-            <a href="/api/ais/">API reference →</a>
-            <a href="/ais/vs/aisstream/">Compare with aisstream.io →</a>
-            <a href="/api/ais/#mcp">Ask an AI assistant →</a>
+        </div>
+        <a
+          href="/ais/network"
+          class="card-hover group text-fg block p-0 no-underline hover:no-underline"
+        >
+          <p class="px-6 pt-6 font-semibold">Unique Vessels</p>
+          <div id="ais-network">
+            <dl class="grid grid-cols-3 gap-4 px-6 pt-3 pb-6">
+              {
+                vesselWindows.map((n) => (
+                  <div class="flex min-w-0 flex-col-reverse justify-end gap-1">
+                    <dt class="text-fg-faint text-[11px] font-medium tracking-[0.12em] whitespace-nowrap uppercase">
+                      <span class="sr-only">Unique vessels in the last </span>
+                      {n.label}
+                    </dt>
+                    <dd class="text-fg-strong text-2xl font-semibold tracking-tight tabular-nums sm:text-4xl">
+                      <span data-stat={n.key}>–</span>
+                    </dd>
+                  </div>
+                ))
+              }
+            </dl>
+            <dl class="border-line grid grid-cols-3 gap-4 border-t px-6 py-5">
+              {
+                health.map((n) => (
+                  <div class="flex min-w-0 flex-col-reverse justify-end gap-1">
+                    <dt class="text-fg-faint text-[10px] font-medium tracking-[0.12em] uppercase">
+                      {n.label}
+                    </dt>
+                    <dd class="text-fg-strong text-lg font-semibold tabular-nums">
+                      <span data-stat={n.key}>–</span>
+                    </dd>
+                  </div>
+                ))
+              }
+            </dl>
           </div>
-          <p class="text-fg-faint text-sm">
-            Coming from aisstream.io? Point your client at{" "}
-            <code class="text-fg-muted">wss://{SERVER}/v0/stream</code> with a token
-            as <code class="text-fg-muted">APIKey</code> and it keeps working.
+          <div
+            class="border-line text-accent group-hover:text-accent-hover flex items-center justify-between gap-4 border-t px-6 py-4 text-sm font-medium"
+          >
+            <span>Sources, delays, and every station on the network page</span>
+            <Icon
+              name="mdi:arrow-right"
+              class="size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+            />
+          </div>
+        </a>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Two ways to participate -->
+  <section class="py-16 lg:py-24">
+    <Container>
+      <SectionDivider index={2} total={3} label="Participate" />
+      <div class="mt-12 grid gap-5 md:grid-cols-2">
+        <div class="card flex flex-col gap-4 p-8">
+          <h2 class="text-2xl">Use the data</h2>
+          <p class="text-fg-muted text-lg">
+            Open a WebSocket, send one subscribe frame, and the messages start
+            arriving. There is a working example in five languages and nothing
+            to sign up for first.
           </p>
-          <p class="text-fg-faint mt-3 text-sm">
+          <p class="text-fg-faint text-sm">
             Talking to Claude or ChatGPT instead? Add{" "}
             <code class="text-fg-muted">https://{SERVER}/mcp</code> as an MCP server
-            and ask what is in the port.
+            and <a href="/api/ais/#mcp">ask what is in the port</a>.
           </p>
-        </div>
-        <div
-          data-tabs
-          class="border-line bg-well overflow-hidden rounded-2xl border"
-        >
-          <div
-            role="tablist"
-            aria-label="Language"
-            class="border-line flex gap-1 overflow-x-auto border-b p-2"
-          >
-            {
-              snippets.map((s, i) => (
-                <button
-                  id={`tab-${s.id}`}
-                  role="tab"
-                  type="button"
-                  aria-selected={i === 0}
-                  tabindex={i === 0 ? 0 : -1}
-                  aria-controls={`snippet-${s.id}`}
-                  class="text-fg-muted hover:text-fg-strong aria-selected:bg-surface-raised aria-selected:text-fg-strong rounded-lg px-3 py-1.5 text-sm font-medium"
-                >
-                  {s.label}
-                </button>
-              ))
-            }
+          <div class="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-2">
+            <a href="/api/ais/" class="btn btn-primary">Explore the APIs</a>
+            <a href="/ais/pricing/" class="font-medium">View pricing →</a>
           </div>
-          {
-            snippets.map((s, i) => (
-              <div
-                role="tabpanel"
-                id={`snippet-${s.id}`}
-                aria-labelledby={`tab-${s.id}`}
-                tabindex="0"
-                hidden={i !== 0}
-              >
-                <Fragment set:html={highlighted[i]} />
-              </div>
-            ))
-          }
         </div>
-      </div>
-    </Container>
-  </section>
-
-  <!-- Tiers -->
-  <section class="py-16 lg:py-24">
-    <Container>
-      <SectionDivider index={2} total={4} label="Tiers" id="limits" />
-      <div class="mt-12 max-w-2xl">
-        <h2 class="mb-5">Limits, but only to keep the lights on.</h2>
-        <p class="text-fg-muted text-lg">
-          Everything re-served here is open data or volunteer data its
-          contributor chose to share. These limits exist to keep the service
-          healthy and reward the people who contribute to it.
-        </p>
-      </div>
-      <div class="border-line mt-10 overflow-x-auto rounded-2xl border">
-        <table class="w-full min-w-2xl table-fixed text-sm">
-          <thead>
-            <tr class="border-line bg-surface border-b">
-              <th class="w-48"></th>
-              {
-                tiers.map((t) => (
-                  <th
-                    scope="col"
-                    class="text-fg-strong px-4 py-4 text-left align-top font-semibold"
-                  >
-                    {t.name}
-                    <span class="text-fg-muted mt-1 block text-xs font-normal">
-                      {t.text}
-                    </span>
-                  </th>
-                ))
-              }
-            </tr>
-          </thead>
-          <tbody class="divide-line divide-y">
-            {
-              rows.map(([feature, ...cells]) => (
-                <tr>
-                  <th
-                    scope="row"
-                    class="text-fg-muted px-4 py-3 text-left font-normal"
-                  >
-                    {feature}
-                  </th>
-                  {cells.map((c) => (
-                    <td class="px-4 py-3 font-mono text-xs">
-                      {c === true ? (
-                        <Icon
-                          name="mdi:check"
-                          class="text-accent inline size-4"
-                        />
-                      ) : c === false ? (
-                        <span class="text-fg-faint">—</span>
-                      ) : (
-                        c
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            }
-          </tbody>
-          <tfoot>
-            <tr>
-              <td></td>
-              {
-                tiers.map((t) => (
-                  <td class="px-4 py-5">
-                    {t.cta && (
-                      <a
-                        href={t.cta.href}
-                        class:list={[
-                          "btn btn-sm",
-                          t.cta.primary ? "btn-primary" : "btn-secondary",
-                        ]}
-                      >
-                        {t.cta.label}
-                      </a>
-                    )}
-                  </td>
-                ))
-              }
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-      <p class="text-fg-faint mt-6 max-w-3xl text-sm">
-        Limits apply per token and per network address: at most 8 concurrent
-        streams from one address, however many tokens are behind it. Over a
-        per-second rate the stream thins and stays up; over a connection, area,
-        or MMSI-list limit you are refused with a message that says so.
-        Following vessels by MMSI is bounded by the list, not by area, so a
-        world-wide MMSI subscription is allowed in every tier. Need more, or
-        unsure which tier you are? <a href={`mailto:${CONTACT_EMAIL}`}
-          >{CONTACT_EMAIL}</a
-        >.
-      </p>
-    </Container>
-  </section>
-
-  <!-- Contribute -->
-  <section class="py-16 lg:py-24">
-    <Container>
-      <SectionDivider index={3} total={4} label="Contribute" id="contribute" />
-      <div
-        class="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
-      >
-        <div>
-          <h2 class="mb-5">Put your receiver on the map.</h2>
-          <p class="text-fg-muted mb-6 text-lg">
-            Whatever your antenna hears is re-served to everyone, and
-            deduplicated against every other station. Contribute 1,000 messages
-            a day and your token moves to the Contributor tier on its own.
-          </p>
-          <p class="text-fg-faint text-sm">
-            Watch your station arrive at <code class="text-fg-muted"
-              >GET /v1/stations</code
-            >. Named stations with higher limits, and anything else: <a
-              href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a
-            >. Developers: <a
-              href={`${REPO}/blob/main/CONTRIBUTING.md`}
-              target="_blank"
-              rel="noopener noreferrer">CONTRIBUTING.md</a
-            >.
-          </p>
-        </div>
-        <div class="grid gap-5">
-          {
-            contribute.map((c) => (
-              <Card class="flex min-w-0 flex-col gap-3">
-                <div class="flex items-center gap-3">
-                  <Icon name={c.icon} class="text-accent size-6" />
-                  <h3 class="text-lg font-semibold tracking-normal">
-                    {c.title}
-                  </h3>
-                </div>
-                <p class="text-fg-muted text-sm">{c.text}</p>
-                <CodeBlock class="text-xs" code={c.code} />
-                <div class="mt-auto flex flex-wrap gap-4 text-sm font-medium">
-                  {c.links.map((l) => (
-                    <a href={l.href} target="_blank" rel="noopener noreferrer">
-                      {l.label}
-                    </a>
-                  ))}
-                </div>
-              </Card>
-            ))
-          }
-        </div>
-      </div>
-    </Container>
-  </section>
-
-  <!-- Sources and license -->
-  <section class="py-16 lg:py-24">
-    <Container>
-      <SectionDivider index={4} total={4} label="Sources" id="sources" />
-      <div
-        class="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
-      >
-        <div>
-          <h2 class="mb-5">Every event names its source.</h2>
+        <div id="contribute" class="card flex scroll-mt-24 flex-col gap-4 p-8">
+          <h2 class="text-2xl">Contribute coverage</h2>
           <p class="text-fg-muted text-lg">
-            Vessels are distinct MMSIs heard in the last 30 minutes;
-            <em>unique</em> counts the ones no other source heard.
+            Whatever your receiver hears joins the network, deduplicated against
+            every other station, and you get the whole feed back. Add one output
+            line to the software you already run; keep contributing everywhere
+            else you contribute today.
           </p>
-        </div>
-        <div class="border-line overflow-x-auto rounded-2xl border">
-          <table id="ais-sources" class="w-full min-w-lg text-sm">
-            <thead
-              class="eyebrow border-line bg-surface text-fg-faint border-b text-[10px]"
+          <div class="mt-auto pt-2">
+            <a href="/ais/contribute/" class="btn btn-secondary"
+              >Connect your receiver</a
             >
-              <tr>
-                <th scope="col" class="px-4 py-3 text-left font-medium"
-                  >Source</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Vessels</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Unique</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Events / 24h</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Last heard</th
-                >
-              </tr>
-            </thead>
-            <tbody class="divide-line divide-y">
-              {
-                sources.map((row) => (
-                  <tr data-ids={row.ids.join(",")}>
-                    <td class="px-4 py-3">
-                      <span class="text-fg-strong font-medium">{row.name}</span>
-                      <span class="text-fg-faint block text-xs">
-                        {row.where}
-                      </span>
-                    </td>
-                    <td
-                      class="px-4 py-3 text-right font-mono text-xs"
-                      data-stat="vessels"
-                    >
-                      –
-                    </td>
-                    <td
-                      class="px-4 py-3 text-right font-mono text-xs"
-                      data-stat="exclusive"
-                    >
-                      –
-                    </td>
-                    <td
-                      class="px-4 py-3 text-right font-mono text-xs"
-                      data-stat="events"
-                    >
-                      –
-                    </td>
-                    <td
-                      class="text-fg-muted px-4 py-3 text-right font-mono text-xs"
-                      data-stat="age"
-                    >
-                      –
-                    </td>
-                  </tr>
-                ))
-              }
-            </tbody>
-          </table>
+          </div>
         </div>
       </div>
+    </Container>
+  </section>
+
+  <!-- What makes it open -->
+  <section class="py-16 lg:py-24">
+    <Container>
+      <SectionDivider index={3} total={3} label="Open" />
+      <ul class="mt-12 grid gap-5 md:grid-cols-3">
+        {
+          open.map((o) => (
+            <li class="card flex flex-col gap-3">
+              <Icon name={o.icon} class="text-accent size-6" />
+              <h2 class="text-lg font-semibold tracking-normal">{o.title}</h2>
+              <p class="text-fg-muted text-sm">{o.text}</p>
+              <a href={o.link.href} class="mt-auto text-sm font-medium">
+                {o.link.label} →
+              </a>
+            </li>
+          ))
+        }
+      </ul>
 
       <div class="mt-16 max-w-2xl">
         <h3 id="license" class="mb-4 scroll-mt-24">License</h3>
@@ -695,7 +346,7 @@ const licenses = [
       <div class="border-line mt-8 overflow-x-auto rounded-2xl border">
         <table class="w-full min-w-lg text-sm">
           <thead
-            class="eyebrow border-line bg-surface text-fg-faint border-b text-[10px]"
+            class="border-line bg-surface text-fg-faint border-b text-[11px] font-medium tracking-[0.12em] uppercase"
           >
             <tr>
               <th scope="col" class="px-4 py-3 text-left font-medium">Source</th
@@ -743,9 +394,9 @@ const licenses = [
           rel="noopener noreferrer">MIT</a
         >. The full position on licensing, privacy, and how the project funds
         itself without relicensing data is in the <a
-          href={REPO}
+          href={`${REPO}/blob/main/docs/policy.md`}
           target="_blank"
-          rel="noopener noreferrer">GitHub repository</a
+          rel="noopener noreferrer">data policy</a
         >.
       </p>
     </Container>
@@ -758,106 +409,112 @@ const licenses = [
         class="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-12"
       >
         <div>
-          <h2 class="mb-2">Start with one WebSocket.</h2>
+          <h2 class="mb-2">Track ship traffic, or help others see it.</h2>
           <p class="text-fg-muted text-lg">
-            No account, no key. Get a token later if you outgrow the anonymous
-            limits.
+            No account to read. One output line to contribute.
           </p>
         </div>
         <div class="flex shrink-0 flex-wrap gap-3">
-          <a href="/api/ais/" class="btn btn-primary">Read the API docs</a>
-          <a href={TOKEN_PAGE} class="btn btn-secondary">Get a token</a>
+          <a href="/api/ais/" class="btn btn-primary">Use the data</a>
+          <a href="/ais/contribute/" class="btn btn-secondary">Contribute</a>
         </div>
       </div>
+      <p
+        class="text-fg-faint mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm"
+        data-nosnippet
+      >
+        {
+          footer.map((f, i) => (
+            <>
+              {i > 0 && " · "}
+              <a href={f.href}>{f.label}</a>
+            </>
+          ))
+        }
+      </p>
     </Container>
   </section>
 </MainLayout>
 
 <script>
-  // Snippet tabs: click or arrow keys
-  document.querySelectorAll<HTMLElement>("[data-tabs]").forEach((root) => {
-    const tabs = [...root.querySelectorAll<HTMLButtonElement>("[role=tab]")];
-    const panels = [...root.querySelectorAll<HTMLElement>("[role=tabpanel]")];
-    const select = (i: number) => {
-      tabs.forEach((t, j) => {
-        t.setAttribute("aria-selected", String(i === j));
-        t.tabIndex = i === j ? 0 : -1;
-      });
-      panels.forEach((p, j) => (p.hidden = i !== j));
-      tabs[i]!.focus();
-    };
-    tabs.forEach((tab, i) => {
-      tab.addEventListener("click", () => select(i));
-      tab.addEventListener("keydown", (e) => {
-        const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-        if (d) select((i + d + tabs.length) % tabs.length);
-      });
-    });
-  });
+  // Volunteer receivers, as opposed to government feeds and partner aggregates.
+  const CONTRIBUTOR_SOURCES = ["station", "udp", "http", "v1", "mmsi"];
 
-  // Sources table: each row sums the /v1/stats sources whose prefix (before ":") is in its data-ids.
-  // Summed vessels can double count one heard by two of a row's stations; close enough for a summary.
-  const ago = (s: number) =>
-    s < 60
-      ? `${s}s ago`
-      : s < 3600
-        ? `${Math.round(s / 60)}m ago`
-        : `${Math.round(s / 3600)}h ago`;
-  const fillSources = (
-    sources: Record<
-      string,
-      {
-        events: { last_24h: number };
-        last_age_s: number;
-        vessels: number;
-        vessels_exclusive: number;
-      }
-    >,
-  ) => {
-    const rows = [
-      ...document.querySelectorAll<HTMLElement>("#ais-sources tr[data-ids]"),
-    ].map((tr) => {
-      const ids = tr.dataset.ids!.split(",");
-      const mine = Object.entries(sources).filter(([k]) =>
-        ids.includes(k.split(":")[0]!),
-      );
-      if (!mine.length) return { tr, exclusive: -1 };
-      const sum = (f: (v: (typeof mine)[number][1]) => number) =>
-        mine.reduce((n, [, v]) => n + f(v), 0);
-      const set = (k: string, v: string) =>
-        (tr.querySelector(`[data-stat=${k}]`)!.textContent = v);
-      const exclusive = sum((v) => v.vessels_exclusive);
-      set("vessels", sum((v) => v.vessels).toLocaleString());
-      set("exclusive", exclusive.toLocaleString());
-      set("events", sum((v) => v.events.last_24h).toLocaleString());
-      set("age", ago(Math.min(...mine.map(([, v]) => v.last_age_s))));
-      return { tr, exclusive };
-    });
-    rows
-      .sort((a, b) => b.exclusive - a.exclusive)
-      .forEach(({ tr }) => tr.parentElement!.appendChild(tr));
+  const fmt = (n: number) => Math.round(n).toLocaleString();
+  const text = (root: HTMLElement | null, values: Record<string, string>) => {
+    if (!root) return;
+    for (const [key, value] of Object.entries(values)) {
+      const el = root.querySelector(`[data-stat="${key}"]`);
+      if (el && value) el.textContent = value;
+    }
+  };
+  const fill = (root: HTMLElement | null, values: Record<string, number>) => {
+    if (!root) return;
+    for (const [key, value] of Object.entries(values)) {
+      const el = root.querySelector(`[data-stat="${key}"]`);
+      if (el && Number.isFinite(value)) el.textContent = fmt(value);
+    }
   };
 
-  // Live stats: active stations, vessels in the cache, deduplicated events/sec.
-  const stats = document.getElementById("ais-stats");
-  if (stats) {
-    const src = stats.dataset.src!;
-    const show = (key: string, value: number | string) => {
-      stats.querySelector(`[data-stat=${key}]`)!.textContent =
-        typeof value === "number" ? Math.round(value).toLocaleString() : value;
-    };
+  const hero = document.getElementById("ais-stats");
+  const network = document.getElementById("ais-network");
+  const src = hero?.dataset.src;
+  if (src) {
     const poll = async () => {
       try {
-        const s = await (await fetch(src)).json();
-        show("stations", s.stations.active);
-        show("vessels", s.vessels.total);
-        show("rate", s.events.per_second);
-        fillSources(s.sources);
+        const res = await fetch(src);
+        if (!res.ok) return;
+        const s = await res.json();
+        fill(hero, {
+          stations: s.stations.active,
+          vessels: s.vessels.active ?? s.vessels.total,
+          rate: s.events.per_second,
+        });
+        const sources = Object.values(
+          (s.sources ?? {}) as Record<
+            string,
+            { delay?: { p50: number }; events: { last_24h: number } }
+          >,
+        ).filter((v) => v.delay && v.events.last_24h);
+        const weight = sources.reduce((n, v) => n + v.events.last_24h, 0);
+        fill(network, {
+          "vessels-1d": s.vessels.last_24h,
+          "vessels-7d": s.vessels.last_7d,
+          "vessels-30d": s.vessels.last_30d,
+          contributors: Object.entries(
+            (s.stations.by_source ?? {}) as Record<string, number>,
+          ).reduce(
+            (n, [k, v]) => (CONTRIBUTOR_SOURCES.includes(k) ? n + v : n),
+            0,
+          ),
+        });
+        text(network, {
+          // Each source's median, weighted by how many messages it delivers.
+          latency: weight
+            ? `${(sources.reduce((n, v) => n + v.delay!.p50 * v.events.last_24h, 0) / weight).toFixed(1)} s`
+            : "",
+        });
       } catch {
-        // leave the placeholders; the hero works without numbers
+        // leave the placeholders; the page works without numbers
       }
     };
     poll();
     setInterval(poll, 5000);
+  }
+
+  // Uptime of the AIS stream monitor on status.openwaters.io (Upptime).
+  if (network) {
+    fetch(
+      "https://raw.githubusercontent.com/openwatersio/status/master/history/summary.json",
+    )
+      .then((res) => (res.ok ? res.json() : []))
+      .then((monitors: { slug: string; uptimeMonth?: string }[]) => {
+        const month = parseFloat(
+          monitors.find((m) => m.slug === "ais-stream")?.uptimeMonth ?? "",
+        );
+        if (Number.isFinite(month))
+          text(network, { uptime: `${+month.toFixed(2)}%` });
+      })
+      .catch(() => {});
   }
 </script>

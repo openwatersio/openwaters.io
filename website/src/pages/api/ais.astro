@@ -3,6 +3,9 @@ import ApiLayout from "../../layouts/ApiLayout.astro";
 import ApiEndpoint from "../../components/api/ApiEndpoint.astro";
 import StreamEndpoint from "../../components/api/StreamEndpoint.astro";
 import Icon from "../../components/Icon.astro";
+import QuickStart from "../../components/ais/QuickStart.astro";
+import { snippets } from "../../components/ais/snippets";
+import { highlight } from "../../utils/shiki";
 import { SITE, publisher } from "../../utils/schema";
 import { md } from "../../utils/render-markdown";
 import {
@@ -24,6 +27,11 @@ import { Content as Mcp } from "./_ais/mcp.md";
 
 const SERVER = "https://ais.openwaters.io";
 const WSS = "wss://ais.openwaters.io";
+
+// Highlight before the template streams; see utils/shiki.ts.
+const highlighted = await Promise.all(
+  snippets.map((s) => highlight(s.code, s.lang)),
+);
 
 // The request/response endpoints come from the server's own OpenAPI document;
 // the streams, tokens, and UDP feed are documented in prose alongside it.
@@ -151,20 +159,23 @@ if (unclaimed.length) {
   );
 }
 
-const sections = groups.map((group) => ({
-  slug: group.slug,
-  text: group.text,
-  children: [
-    ...(byTag.get(group.tag ?? group.text) ?? []).map((endpoint) => ({
-      slug: endpointId(endpoint),
-      text: endpoint.summary ?? `${endpoint.method} ${endpoint.path}`,
-    })),
-    ...(group.streams ?? []).map((stream) => ({
-      slug: stream.id,
-      text: stream.text,
-    })),
-  ],
-}));
+const sections = [
+  { slug: "quick-start", text: "Quick start", children: [] },
+  ...groups.map((group) => ({
+    slug: group.slug,
+    text: group.text,
+    children: [
+      ...(byTag.get(group.tag ?? group.text) ?? []).map((endpoint) => ({
+        slug: endpointId(endpoint),
+        text: endpoint.summary ?? `${endpoint.method} ${endpoint.path}`,
+      })),
+      ...(group.streams ?? []).map((stream) => ({
+        slug: stream.id,
+        text: stream.text,
+      })),
+    ],
+  })),
+];
 
 const description =
   "Reference for the AIS API: live vessel traffic over WebSocket, Server-Sent Events, and raw NMEA, a GeoJSON snapshot of current positions, an MCP server for AI assistants, tokens, and how to contribute your own receiver.";
@@ -209,14 +220,36 @@ const article = {
       </div>
     </div>
     <p class="text-lead mb-4">
-      aiscast, the Open Waters AIS network: every AIS message heard by receivers
-      around the world, pushed to you as it happens, plus a snapshot of where
-      everything is right now.
+      Open Waters AIS: every AIS message heard by receivers around the world,
+      pushed to you as it happens, plus a snapshot of where everything is right
+      now.
     </p>
     <p class="text-fg-muted mb-12 text-sm">
+      Free for personal use; <a href="/ais/pricing/">see pricing</a> for products.
       Coming from aisstream.io? Change the hostname and keep your code: see{" "}
-      <a href="/ais/vs/aisstream/">aiscast vs aisstream.io</a>.
+      <a href="/ais/vs/aisstream/">Open Waters AIS vs aisstream.io</a>.
     </p>
+
+    <section id="quick-start" class="mb-16 scroll-mt-24">
+      <h2 class="mb-3 text-3xl font-semibold">
+        Stream vessel data in your favorite language.
+      </h2>
+      <p class="text-fg-muted mb-6">
+        Connect to <code>{WSS}/v1/stream</code>, subscribe to an area or a
+        vessel list, and receive vessel data as JSON. Run the example below
+        without an account or token.
+      </p>
+      <QuickStart highlighted={highlighted} />
+      <p class="text-fg-muted mt-4 text-sm">
+        The box is <code>[minLat, minLon, maxLat, maxLon]</code>, here a stretch
+        of the Oslofjord. Change it, or follow specific vessels with{" "}
+        <code>{'{"type":"subscribe","mmsi":[257123456]}'}</code>. Every frame
+        that is not an <code>event</code> is a <code>welcome</code> with your limits,
+        an <code>ack</code>, or an <code>error</code> that says what to fix. Full
+        details under <a href="#stream-v1">WebSocket</a>;{" "}
+        <a href="/ais/token/">get a token</a> when you outgrow the anonymous limits.
+      </p>
+    </section>
 
     {
       groups.map(({ slug, text, tag = text, note, Intro, streams }) => (
