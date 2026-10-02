@@ -464,18 +464,22 @@ const schema = {
     <Container>
       <div class="mx-auto max-w-3xl">
         <h2 id="faq" class="mb-10 scroll-mt-24">Questions</h2>
-        <dl class="divide-line divide-y">
+        {
+          /* Not a <dl>: global.css lays every definition list out as a two-column
+            term grid, and a question is a heading rather than a term. */
+        }
+        <div class="divide-line divide-y">
           {
             faq.map((item) => (
               <div class="py-6 first:pt-0">
-                <dt class="text-fg-strong mb-2 text-lg font-semibold">
+                <h3 class="text-fg-strong mb-2 text-lg font-semibold">
                   {item.q}
-                </dt>
-                <dd class="text-fg-muted">{item.a}</dd>
+                </h3>
+                <p class="text-fg-muted">{item.a}</p>
               </div>
             ))
           }
-        </dl>
+        </div>
         <p class="text-fg-faint mt-8 text-sm">
           Something else? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a
           >.
