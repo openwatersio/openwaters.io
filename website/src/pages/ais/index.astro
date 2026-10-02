@@ -5,7 +5,7 @@ import Card from "../../components/ui/Card.astro";
 import CodeBlock from "../../components/ui/CodeBlock.astro";
 import Icon from "../../components/Icon.astro";
 import AisMap from "../../components/ais/AisMap.astro";
-import AisTicker from "../../components/ais/AisTicker.astro";
+import AisStats from "../../components/ais/AisStats.astro";
 import SectionDivider from "../../components/ui/SectionDivider.astro";
 import { CONTACT_EMAIL } from "../../utils/constants";
 import { highlight, SNIPPET_LANGS } from "../../utils/shiki";
@@ -302,11 +302,11 @@ const licenses = [
       <AisMap center={[23.6, 59.7]} zoom={6.3} class="h-full w-full" />
     </div>
     <div
-      class="from-canvas/60 to-canvas pointer-events-none absolute inset-0 bg-linear-to-b via-transparent via-25%"
+      class="from-canvas/10 to-canvas pointer-events-none absolute inset-0 bg-linear-to-b via-transparent via-50%"
     >
     </div>
     <div
-      class="bg-canvas/70 lg:from-canvas lg:via-canvas/30 pointer-events-none absolute inset-0 lg:bg-transparent lg:bg-linear-to-r lg:via-40% lg:to-transparent"
+      class="bg-canvas/50 lg:from-canvas lg:via-canvas/30 pointer-events-none absolute inset-0 lg:bg-transparent lg:bg-linear-to-r lg:via-75% lg:to-transparent"
     >
     </div>
     <Container class="relative pt-36 pb-24 lg:pt-44 lg:pb-28">
@@ -335,7 +335,7 @@ const licenses = [
             </a>
           </div>
         </div>
-        <AisTicker statsUrl={`https://${SERVER}/v1/stats`} />
+        <AisStats statsUrl={`https://${SERVER}/v1/stats`} />
       </div>
     </Container>
   </section>
