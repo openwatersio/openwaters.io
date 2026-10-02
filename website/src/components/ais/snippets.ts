@@ -109,6 +109,6 @@ SUB='{"type":"subscribe","bbox":[[59,10,60,11]]}'
 echo "$SUB" | websocat -n wss://${SERVER}/v1/stream
 
 # snapshot of what is in the box right now
-curl "https://${SERVER}/v1/vessels?bbox=${bbox}"`,
+curl "https://${SERVER}/v1/vessels?bbox=${bbox}&max_age=30m"`,
   },
 ];
