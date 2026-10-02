@@ -1,0 +1,71 @@
+---
+// The five-language quick start. The page highlights the snippets in its own
+// frontmatter and passes the HTML in: awaiting the highlighter here, while the
+// page is already streaming, stalls the dev server (see utils/shiki.ts).
+import { snippets } from "./snippets";
+
+interface Props {
+  /** Highlighted HTML, one entry per snippet, in order. */
+  highlighted: string[];
+}
+const { highlighted } = Astro.props;
+---
+
+<div data-tabs class="border-line bg-well overflow-hidden rounded-2xl border">
+  <div
+    role="tablist"
+    aria-label="Language"
+    class="border-line flex gap-1 overflow-x-auto border-b p-2"
+  >
+    {
+      snippets.map((s, i) => (
+        <button
+          id={`tab-${s.id}`}
+          role="tab"
+          type="button"
+          aria-selected={i === 0}
+          tabindex={i === 0 ? 0 : -1}
+          aria-controls={`snippet-${s.id}`}
+          class="text-fg-muted hover:text-fg-strong aria-selected:bg-surface-raised aria-selected:text-fg-strong rounded-lg px-3 py-1.5 text-sm font-medium"
+        >
+          {s.label}
+        </button>
+      ))
+    }
+  </div>
+  {
+    snippets.map((s, i) => (
+      <div
+        role="tabpanel"
+        id={`snippet-${s.id}`}
+        aria-labelledby={`tab-${s.id}`}
+        tabindex="0"
+        hidden={i !== 0}
+      >
+        <Fragment set:html={highlighted[i]} />
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-tabs]").forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>("[role=tab]")];
+    const panels = [...root.querySelectorAll<HTMLElement>("[role=tabpanel]")];
+    const select = (i: number) => {
+      tabs.forEach((t, j) => {
+        t.setAttribute("aria-selected", String(i === j));
+        t.tabIndex = i === j ? 0 : -1;
+      });
+      panels.forEach((p, j) => (p.hidden = i !== j));
+      tabs[i]!.focus();
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => select(i));
+      tab.addEventListener("keydown", (e) => {
+        const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (d) select((i + d + tabs.length) % tabs.length);
+      });
+    });
+  });
+</script>
