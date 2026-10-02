@@ -1,0 +1,342 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Icon from "../../components/Icon.astro";
+import AisNav from "../../components/ais/AisNav.astro";
+import { CONTACT_EMAIL } from "../../utils/constants";
+
+const REPO = "https://github.com/openwatersio/aiscast";
+const LIMITS = "/api/ais/#limits";
+const TRIAL = "/contact/";
+
+// The numbers are the same in both currencies; only the symbol changes.
+const CURRENCY: "EUR" | "USD" = "EUR";
+const sym = CURRENCY === "EUR" ? "€" : "$";
+const price = (n: number) => `${sym}${n}`;
+
+const free = [
+  {
+    name: "Anonymous",
+    who: "Anyone trying the stream",
+    price: "Free, no account",
+  },
+  {
+    name: "Personal",
+    who: "A boat, a hobby project, a laptop, a thesis",
+    price: "Free",
+  },
+  {
+    name: "Contributor",
+    who: "Receiver operators contributing qualifying data",
+    price: "Free, up to Region-scale limits",
+  },
+];
+
+const plans = ["Fleet", "Region", "World", "Custom"];
+// One cell per plan: true/false for a check, or a string.
+const paid: [string, ...(boolean | string)[]][] = [
+  ["Per month", price(49), price(99), price(199), `from ${price(499)}`],
+  ["Vessels by MMSI", "500", "2,000", "unlimited", "agreed"],
+  [
+    "Subscribed area",
+    "MMSI only",
+    "2,500 sq deg (~50°×50°)",
+    "unlimited",
+    "agreed",
+  ],
+  ["Concurrent streams", "5", "10", "10", "agreed"],
+  ["Messages per second", "unlimited", "unlimited", "unlimited", "unlimited"],
+  ["Raw NMEA", false, false, true, true],
+  ["SLA", "best effort", "best effort", "best effort", true],
+];
+
+const which = [
+  {
+    q: "Following specific ships?",
+    a: "Fleet. A yacht tracker, a port agent, an insurer watching a book of hulls.",
+  },
+  {
+    q: "Need everything in an area?",
+    a: "Region. A regional app, a port dashboard, a weather router.",
+  },
+  { q: "More than one ocean?", a: "World." },
+  {
+    q: "Running a receiver?",
+    a: "You're already covered, up to Region-scale limits.",
+  },
+];
+
+const questions = [
+  {
+    q: "Can I try it first?",
+    a: "Yes. The anonymous stream needs no account at all, and every paid plan has a 30-day trial with full limits and no card.",
+  },
+  {
+    q: "Do I need to pay for a commercial product?",
+    a: "Yes, unless you contribute a receiver. Qualifying contributors get commercial use within the contributor limits. Above those limits, contributing earns a discount rather than a free ride.",
+  },
+  {
+    q: "Why no credits or per-message pricing?",
+    a: "Our marginal cost per message is zero, so metering it would only make your bill unpredictable.",
+  },
+  {
+    q: "What about history?",
+    a: "Not yet. When it exists it will be priced on its own, not folded into a plan.",
+  },
+  { q: "Can I pay annually?", a: "Yes, ten months for twelve." },
+  {
+    q: "I need an invoice, a VAT number, a contract.",
+    a: `Email ${CONTACT_EMAIL}. Invoicing is through Stripe.`,
+  },
+];
+
+const th = "text-fg-strong px-4 py-4 text-left align-top font-semibold";
+const td = "px-4 py-3 font-mono text-xs";
+const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
+---
+
+<MainLayout
+  title="Open Waters AIS pricing"
+  image="/og/ais.png"
+  description={`Free for people and for anyone running a receiver. ${price(49)} a month for a fleet, ${price(99)} for a region, ${price(199)} for the world. No credits, no per-message billing, cancel whenever.`}
+>
+  <section class="py-12 lg:py-16">
+    <Container>
+      <AisNav class="mb-8" />
+      <div class="max-w-2xl">
+        <h1 class="mb-5">Pick a plan and start a 30-day trial.</h1>
+        <p class="text-lead mb-8">
+          Free for people and for anyone running a receiver. {price(49)} a month for
+          a fleet, {price(99)} for a region, {price(199)} for the world. No credits,
+          no per-message billing, cancel whenever.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href={TRIAL} class="btn btn-primary">
+            Start a trial
+            <Icon name="mdi:arrow-right" class="size-4" />
+          </a>
+          <a href="/api/ais/" class="btn btn-secondary">Read the API docs</a>
+        </div>
+        <p class="text-fg-faint mt-4 text-sm">
+          There is no checkout yet, so a message does the work: say which plan,
+          a person answers, and your token is minted the same day. Prices are
+          per month in {CURRENCY}. Annual is ten months.
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <section class="py-12 lg:py-16">
+    <Container>
+      <div class="max-w-2xl">
+        <h2 class="mb-5">Free, and not a trial.</h2>
+        <p class="text-fg-muted text-lg">
+          Read the live stream with no account. Get a personal token when you
+          outgrow the anonymous limits. It takes one click and no email address.
+          Run a receiver and your limits go up again.
+        </p>
+      </div>
+      <div class="border-line mt-8 overflow-x-auto rounded-2xl border">
+        <table class="w-full min-w-lg text-sm">
+          <thead>
+            <tr class="border-line bg-surface border-b">
+              <th scope="col" class={th}>Option</th>
+              <th scope="col" class={th}>Who it's for</th>
+              <th scope="col" class={th}>Price</th>
+            </tr>
+          </thead>
+          <tbody class="divide-line divide-y">
+            {
+              free.map((f) => (
+                <tr>
+                  <th
+                    scope="row"
+                    class="text-fg-strong px-4 py-3 text-left font-medium"
+                  >
+                    {f.name}
+                  </th>
+                  <td class="text-fg-muted px-4 py-3">{f.who}</td>
+                  <td class={td}>{f.price}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="text-fg-faint mt-4 max-w-3xl text-sm">
+        The current limits for each are in the <a href={LIMITS}
+          >access documentation</a
+        >. Students, researchers, journalists, and open-source projects that
+        need more than the personal limits: <a href="/contact/">contact us</a>.
+        That request gets a free token, not a quote.{" "}
+        <a href="/ais/token/">Get a personal token →</a>
+      </p>
+    </Container>
+  </section>
+
+  <section class="py-12 lg:py-16">
+    <Container>
+      <div class="max-w-2xl">
+        <h2 class="mb-5">For products and businesses built on the feed.</h2>
+        <p class="text-fg-muted text-lg">
+          Every plan includes a 30-day trial with the full limits and no card.
+        </p>
+      </div>
+      <div class="border-line mt-8 overflow-x-auto rounded-2xl border">
+        <table class="w-full min-w-2xl table-fixed text-sm">
+          <thead>
+            <tr class="border-line bg-surface border-b">
+              <th class="w-44"></th>
+              {
+                plans.map((p) => (
+                  <th scope="col" class={th}>
+                    {p}
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody class="divide-line divide-y">
+            {
+              paid.map(([feature, ...cells]) => (
+                <tr>
+                  <th
+                    scope="row"
+                    class="text-fg-muted px-4 py-3 text-left font-normal"
+                  >
+                    {feature}
+                  </th>
+                  {cells.map((c) => (
+                    <td class={td}>
+                      {c === true ? (
+                        <Icon
+                          name="mdi:check"
+                          class="text-accent inline size-4"
+                        />
+                      ) : c === false ? (
+                        <span class="text-fg-faint">—</span>
+                      ) : (
+                        c
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td></td>
+              {
+                plans.map((p) => (
+                  <td class="px-4 py-5">
+                    <a href={TRIAL} class="btn btn-sm btn-secondary">
+                      {p === "Custom" ? "Contact us" : "Start a trial"}
+                    </a>
+                  </td>
+                ))
+              }
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="text-fg-faint mt-4 max-w-3xl text-sm">
+        Extra concurrent streams are {price(5)} each per month on any plan. Custom
+        covers an SLA, raw NMEA, a dedicated node, sub-keys, or a contract your legal
+        team wrote. Following vessels by MMSI is bounded by the list, not the map,
+        so a world-wide MMSI subscription works on Fleet.
+      </p>
+    </Container>
+  </section>
+
+  <section class="py-12 lg:py-16">
+    <Container>
+      <div
+        class="grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
+      >
+        <div>
+          <h2 class="mb-5">Which one</h2>
+          <ul class="space-y-5">
+            {
+              which.map((w) => (
+                <li>
+                  <h3 class={q}>{w.q}</h3>
+                  <p class="text-fg-muted">{w.a}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="card">
+          <h2 class="mb-4 text-xl font-semibold tracking-normal">
+            What you should know before you pay
+          </h2>
+          <p class="text-fg-muted mb-4">
+            Terrestrial coverage is strongest in the Nordics and wherever our
+            volunteers run receivers. Elsewhere positions come from partner
+            aggregates and run about a minute behind; the <a href="/ais/network"
+              >network status</a
+            > shows the current delay, so check your own waters on the <a
+              href="/ais/vessels">live map</a
+            > first. There is no SLA below Custom, and the plans are month-to-month
+            so you can leave if that stops working for you.
+          </p>
+          <p class="text-fg-muted">
+            Attribution goes on every paid plan: “Vessel positions: Open Waters
+            AIS (openwaters.io/ais/)” somewhere a user can see, plus the <a
+              href="/ais/#license">source credits</a
+            > if you republish.
+          </p>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <section class="py-12 lg:py-16">
+    <Container>
+      <div class="max-w-3xl">
+        <h2 class="mb-8">Questions</h2>
+        <ul class="space-y-6">
+          {
+            questions.map((item) => (
+              <li>
+                <h3 class={q}>{item.q}</h3>
+                <p class="text-fg-muted">{item.a}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </Container>
+  </section>
+
+  <section class="pb-24">
+    <Container>
+      <div
+        class="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-12"
+      >
+        <div>
+          <h2 class="mb-2">Start with the free stream.</h2>
+          <p class="text-fg-muted text-lg">
+            No account, no key. Pick a plan when a product depends on it.
+          </p>
+        </div>
+        <div class="flex shrink-0 flex-wrap gap-3">
+          <a href={TRIAL} class="btn btn-primary">Start a trial</a>
+          <a href="/api/ais/" class="btn btn-secondary">Read the API docs</a>
+        </div>
+      </div>
+      <p
+        class="text-fg-faint mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm"
+        data-nosnippet
+      >
+        <a href="/api/ais/">API docs</a> ·
+        <a href="/ais/contribute/">Contribute</a> ·
+        <a href="/ais/#license">Source licenses</a> ·
+        <a href={`${REPO}/blob/main/docs/contributor-agreement.md`}
+          >Contributor agreement</a
+        >
+      </p>
+    </Container>
+  </section>
+</MainLayout>
