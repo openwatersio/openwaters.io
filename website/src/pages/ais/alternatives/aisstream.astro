@@ -16,7 +16,7 @@ const sections = [
   { id: "alternatives", label: "The alternatives" },
   { id: "glance", label: "At a glance" },
   { id: "which", label: "Which one" },
-  { id: "switch", label: "Switching to aiscast" },
+  { id: "switch", label: "Switching to Open Waters AIS" },
   { id: "faq", label: "FAQ" },
 ];
 
@@ -29,13 +29,13 @@ const alternatives: {
   best: string;
 }[] = [
   {
-    name: "aiscast, the Open Waters AIS network",
+    name: "Open Waters AIS",
     intro:
       "An open AIS network that speaks aisstream's protocol. We built it because we had the same problem: our chart app streamed from aisstream and went dark with it.",
     bullets: [
       {
         label: "Protocol",
-        html: "WebSocket push, bounding box or MMSI list. <code>/v0/stream</code> is aisstream-compatible: change the hostname, use your aiscast token as <code>APIKey</code>, and <code>aisstream-ts</code>, the official Go/Python/JS examples, and <code>signalk-aisstream</code> run unmodified. <code>/v1/stream</code> is the native API and needs no token to subscribe. <code>GET /v1/vessels?bbox=</code> returns a GeoJSON snapshot so a view fills instantly instead of waiting for the next position report.",
+        html: "WebSocket push, bounding box or MMSI list. <code>/v0/stream</code> is aisstream-compatible: change the hostname, use your Open Waters AIS token as <code>APIKey</code>, and <code>aisstream-ts</code>, the official Go/Python/JS examples, and <code>signalk-aisstream</code> run unmodified. <code>/v1/stream</code> is the native API and needs no token to subscribe. <code>GET /v1/vessels?bbox=</code> returns a GeoJSON snapshot so a view fills instantly instead of waiting for the next position report.",
       },
       {
         label: "Coverage",
@@ -90,7 +90,7 @@ const alternatives: {
   },
   {
     name: "Open government feeds directly (Digitraffic, Kystverket, BarentsWatch, EuRIS)",
-    intro: "The sources aiscast is built on, available to anyone.",
+    intro: "The sources Open Waters AIS is built on, available to anyone.",
     bullets: [
       {
         label: "Protocol",
@@ -190,7 +190,7 @@ const glanceColumns = [
 ];
 const glanceRows: [string, ...string[]][] = [
   [
-    "aiscast",
+    "Open Waters AIS",
     "yes, aisstream-compatible",
     "yes",
     "Nordic live, world via AISHub (~1 min behind), volunteers",
@@ -241,15 +241,15 @@ const glanceRows: [string, ...string[]][] = [
 const which: { when: string; then: string }[] = [
   {
     when: "Your aisstream client stopped and you want it back this afternoon:",
-    then: "aiscast /v0/stream. One hostname.",
+    then: "Open Waters AIS /v0/stream. One hostname.",
   },
   {
     when: "You run a receiver and want the world:",
-    then: "AISHub for the snapshot, aiscast for the live stream, and feed both. aiscast already feeds AISHub for you.",
+    then: "AISHub for the snapshot, Open Waters AIS for the live stream, and feed both. Open Waters AIS already feeds AISHub for you.",
   },
   {
     when: "Finland or Norway only:",
-    then: "go direct to Digitraffic or Kystverket, or use aiscast for one protocol and the license carried through.",
+    then: "go direct to Digitraffic or Kystverket, or use Open Waters AIS for one protocol and the license carried through.",
   },
   {
     when: "A few known ships, occasionally:",
@@ -266,15 +266,15 @@ const faq = [
   },
   {
     q: "Is there a free alternative to aisstream.io?",
-    a: "aiscast is free without an account and speaks the same protocol. AISHub is free if you run a receiver. The Finnish and Norwegian government feeds are free and open.",
+    a: "Open Waters AIS is free without an account and speaks the same protocol. AISHub is free if you run a receiver. The Finnish and Norwegian government feeds are free and open.",
   },
   {
     q: "Can I use aisstream.io data commercially?",
-    a: "aisstream publishes no terms, and its licensing issues have gone unanswered since 2023. aiscast publishes the license of every source it re-serves and carries it on every event.",
+    a: "aisstream publishes no terms, and its licensing issues have gone unanswered since 2023. Open Waters AIS publishes the license of every source it re-serves and carries it on every event.",
   },
   {
-    q: "Does aiscast have the same coverage as aisstream.io?",
-    a: "Not yet in the same way. aiscast is live in Norway, Finland, and wherever volunteer receivers are, and carries worldwide terrestrial positions from AISHub that run about a minute behind. It also uses aisstream.io as an upstream when aisstream is up, so you lose nothing by switching.",
+    q: "Does Open Waters AIS have the same coverage as aisstream.io?",
+    a: "Not yet in the same way. Open Waters AIS is live in Norway, Finland, and wherever volunteer receivers are, and carries worldwide terrestrial positions from AISHub that run about a minute behind. It also uses aisstream.io as an upstream when aisstream is up, so you lose nothing by switching.",
   },
 ];
 
@@ -314,8 +314,8 @@ const faqSchema = {
         If your aisstream.io client is sitting on a connection that delivers
         nothing, point it at <code class="bg-surface rounded px-1"
           >wss://ais.openwaters.io/v0/stream</code
-        > with an aiscast token as the <code class="bg-surface rounded px-1"
-          >APIKey</code
+        > with an Open Waters AIS token as the <code
+          class="bg-surface rounded px-1">APIKey</code
         > and it starts receiving again. Same subscribe message, same frames. If you
         need global coverage with an SLA, that is a paid product (Kpler, VesselFinder,
         Datalastic) and none of them stream. If you run a receiver, AISHub's snapshot
@@ -429,7 +429,7 @@ const faqSchema = {
               {i === 0 && (
                 <p class="mt-4 text-sm">
                   <a href="/ais/vs/aisstream/">Field-by-field comparison</a> of
-                  aiscast and aisstream.io, or read the{" "}
+                  Open Waters AIS and aisstream.io, or read the{" "}
                   <a href="/api/ais/">API reference</a>.
                 </p>
               )}
@@ -492,7 +492,7 @@ const faqSchema = {
       </ul>
 
       <h2 id="switch" class="mb-4 scroll-mt-24 text-3xl font-semibold">
-        Switching from aisstream.io to aiscast
+        Switching from aisstream.io to Open Waters AIS
       </h2>
       <ol
         class="text-fg-muted marker:text-fg-faint mb-6 list-decimal space-y-2 pl-5"

@@ -24,6 +24,68 @@ const { class: className, center, zoom } = Astro.props;
     height: 100%;
     pointer-events: none;
   }
+  /* Callout cards sit above the hero's gradient overlays (siblings of the map
+     wrapper, no stacking context of their own), hence the z-index. */
+  .ais-callouts {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .ais-callouts svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .ais-callouts line {
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+  .ais-callouts line[data-show] {
+    opacity: 0.55;
+  }
+  .ais-callout {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: 14rem;
+    padding: 5px 10px 6px;
+    border: 1px solid var(--color-line-strong);
+    border-left-width: 2px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--color-well) 33%, transparent);
+    backdrop-filter: blur(8px);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--color-fg-muted);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 1000ms ease;
+  }
+  .ais-callout[data-show] {
+    opacity: 1;
+  }
+  .ais-callout strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+    color: var(--color-fg-strong);
+  }
+  .ais-callout small {
+    display: block;
+    font-size: 10px;
+    color: var(--color-fg-faint);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ais-callouts line,
+    .ais-callout {
+      transition: none;
+    }
+  }
   .maplibregl-popup-content {
     font:
       12px/1.5 system-ui,
@@ -210,12 +272,6 @@ const { class: className, center, zoom } = Astro.props;
           noteSource(p.source);
         }
         dirty = true;
-        container.dispatchEvent(
-          new CustomEvent("ais:snapshot", {
-            bubbles: true,
-            detail: [...vessels].map(([mmsi, v]) => ({ mmsi, ...v })),
-          }),
-        );
       } catch (e) {
         console.warn("snapshot failed", e);
       }
@@ -286,15 +342,11 @@ const { class: className, center, zoom } = Astro.props;
         });
       vessels.set(ev.mmsi, v);
       noteSource(ev.source);
-      if (v.lat != null && !stale) pulse(v);
+      if (v.lat != null && !stale) {
+        pulse(v);
+        if (calloutPending.length < 500) calloutPending.push(ev.mmsi);
+      }
       dirty = true;
-      if (!stale)
-        container.dispatchEvent(
-          new CustomEvent("ais:event", {
-            bubbles: true,
-            detail: { mmsi: ev.mmsi, ...v },
-          }),
-        );
     }
 
     // ---- update pulses: expanding ring on a 2D canvas over the map; the rAF loop only runs while rings are live ----
@@ -348,6 +400,211 @@ const { class: className, center, zoom } = Astro.props;
       pulses.length = i;
       pulseRaf = pulses.length ? requestAnimationFrame(drawPulses) : 0;
     }
+
+    // ---- callouts: a few self-dismissing popup cards over the map, each
+    // starting together with a pulse on its ship, tied to it by a leader line ----
+    const CALLOUTS = 3; // shown at once
+    const CALLOUT_FADE_MS = 1000; // matches the CSS transition
+    const CALLOUT_MS = 9000 - CALLOUT_FADE_MS; // 9s on screen incl. fade-out
+    const CALLOUT_EVERY_MS = 3000; // spacing between new cards
+    const CALLOUT_GAP = 36; // px from ship point to card corner
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const calloutLayer = document.createElement("div");
+    calloutLayer.className = "ais-callouts";
+    const calloutLines = document.createElementNS(svgNS, "svg");
+    calloutLayer.appendChild(calloutLines);
+    container.appendChild(calloutLayer);
+
+    // Ships heard since the last tick; the tick promotes at most one to a card.
+    let calloutPending: number[] = [];
+    let lastCallout = 0;
+    // When a ship's card fades out, don't card it again for a while.
+    const CALLOUT_COOLDOWN_MS = 60e3;
+    const carded = new Map<number, number>(); // mmsi -> when shown
+
+    type Callout = {
+      el: HTMLElement;
+      line: SVGLineElement;
+      lon: number;
+      lat: number;
+      dx: number; // card top-left relative to the projected ship point
+      dy: number;
+      w: number;
+      h: number;
+    };
+    const callouts = new Map<number, Callout>();
+
+    // The map band that stays readable under the hero's gradients: off the
+    // copy on the left, off the top and bottom fades.
+    function calloutRegion() {
+      const w = container.clientWidth,
+        h = container.clientHeight;
+      return {
+        left: w * 0.48,
+        right: w * 0.97,
+        top: h * 0.15,
+        bottom: h * 0.78,
+      };
+    }
+
+    function positionCallout(c: Callout) {
+      const p = map.project([c.lon, c.lat]);
+      c.el.style.transform = `translate(${p.x + c.dx}px, ${p.y + c.dy}px)`;
+      c.line.setAttribute("x1", String(p.x));
+      c.line.setAttribute("y1", String(p.y));
+      // the line runs to the card's centre and vanishes underneath it
+      c.line.setAttribute("x2", String(p.x + c.dx + c.w / 2));
+      c.line.setAttribute("y2", String(p.y + c.dy + c.h / 2));
+    }
+    map.on("move", () => callouts.forEach(positionCallout));
+
+    function showCallout(mmsi: number): boolean {
+      const v = vessels.get(mmsi);
+      if (
+        !v ||
+        v.lat == null ||
+        v.lon == null ||
+        callouts.has(mmsi) ||
+        Date.now() - (carded.get(mmsi) ?? 0) < CALLOUT_COOLDOWN_MS
+      )
+        return false;
+      const r = calloutRegion();
+      const p = map.project([v.lon, v.lat]);
+      if (p.x < r.left || p.x > r.right || p.y < r.top || p.y > r.bottom)
+        return false;
+
+      const cls = shipClass(v.kind, v.type);
+      const color = CLASS_COLORS[cls]!;
+      const el = document.createElement("div");
+      el.className = "ais-callout";
+      el.style.borderLeftColor = color;
+      const detail =
+        [
+          v.sog != null && `${v.sog.toFixed(1)} kn`,
+          v.cog != null && `${Math.round(v.cog)}°`,
+        ]
+          .filter(Boolean)
+          .join(" · ") || cls;
+      el.innerHTML =
+        `<strong>${esc(v.name || mmsi)}</strong>${esc(detail)}` +
+        `<small>${v.name ? `${mmsi} · ` : ""}<span data-ago="${mmsi}">${agoText(v.seen)}</span></small>`;
+      calloutLayer.appendChild(el);
+
+      // Try the four corners around the ship; take the first spot inside the
+      // region that doesn't touch another card. None free → skip this ship.
+      const w = el.offsetWidth,
+        h = el.offsetHeight,
+        g = CALLOUT_GAP,
+        pad = 12;
+      const rects = [...callouts.values()].map((c) => {
+        const q = map.project([c.lon, c.lat]);
+        return { x: q.x + c.dx, y: q.y + c.dy, w: c.w, h: c.h };
+      });
+      // page elements over the map (e.g. the stats bar) are off-limits too
+      const box = container.getBoundingClientRect();
+      for (const a of document.querySelectorAll("[data-callout-avoid]")) {
+        const b = a.getBoundingClientRect();
+        rects.push({ x: b.x - box.x, y: b.y - box.y, w: b.width, h: b.height });
+      }
+      const spot = (
+        [
+          [g, -g - h],
+          [-g - w, -g - h],
+          [g, g],
+          [-g - w, g],
+        ] as const
+      ).find(([dx, dy]) => {
+        const x = p.x + dx,
+          y = p.y + dy;
+        return (
+          x >= r.left &&
+          x + w <= r.right &&
+          y >= r.top &&
+          y + h <= r.bottom &&
+          !rects.some(
+            (o) =>
+              x < o.x + o.w + pad &&
+              x + w + pad > o.x &&
+              y < o.y + o.h + pad &&
+              y + h + pad > o.y,
+          )
+        );
+      });
+      if (!spot) {
+        el.remove();
+        return false;
+      }
+
+      const line = document.createElementNS(svgNS, "line");
+      line.setAttribute("stroke", color);
+      calloutLines.appendChild(line);
+      const c: Callout = {
+        el,
+        line,
+        lon: v.lon,
+        lat: v.lat,
+        dx: spot[0],
+        dy: spot[1],
+        w,
+        h,
+      };
+      callouts.set(mmsi, c);
+      carded.set(mmsi, Date.now());
+      lastCallout = Date.now();
+      positionCallout(c);
+      pulse(v); // ring and fade-in start together
+      requestAnimationFrame(() => {
+        el.dataset.show = line.dataset.show = "";
+      });
+      setTimeout(() => {
+        delete el.dataset.show;
+        delete line.dataset.show;
+        // stays in `callouts` until removed so nothing lands on the fading card
+        setTimeout(() => {
+          el.remove();
+          line.remove();
+          callouts.delete(mmsi);
+        }, CALLOUT_FADE_MS);
+      }, CALLOUT_MS);
+      return true;
+    }
+
+    const agoText = (t: number) => {
+      const s = Math.max(0, Math.round((Date.now() - t) / 1000));
+      return (s < 60 ? `${s}s` : `${Math.round(s / 60)}m`) + " ago";
+    };
+
+    setInterval(() => {
+      calloutLayer
+        .querySelectorAll<HTMLElement>("[data-ago]")
+        .forEach((span) => {
+          const v = vessels.get(Number(span.dataset.ago));
+          if (v) span.textContent = agoText(v.seen);
+        });
+      // stream quiet (blocked, rate-limited, not yet connected) → pick from
+      // the snapshot cache instead, so the map still narrates itself
+      const cands = calloutPending.length
+        ? calloutPending
+        : [...vessels.keys()];
+      calloutPending = [];
+      // ponytail: desktop only — on phones the hero copy covers most of the map
+      if (!matchMedia("(min-width: 1024px)").matches) return;
+      if (callouts.size >= CALLOUTS) return;
+      // half-a-tick slack, or interval drift rounds the spacing up a second
+      if (Date.now() - lastCallout < CALLOUT_EVERY_MS - 500) return;
+      // freshest first, named vessels ahead of anonymous ones
+      const byRank = (a: number, b: number) => {
+        const va = vessels.get(a),
+          vb = vessels.get(b);
+        return (
+          (vb?.name ? 1 : 0) - (va?.name ? 1 : 0) ||
+          (vb?.seen ?? 0) - (va?.seen ?? 0)
+        );
+      };
+      for (const mmsi of new Set(cands.sort(byRank)))
+        if (showCallout(mmsi)) break;
+    }, 1000);
 
     // ---- rendering ----
     function render() {

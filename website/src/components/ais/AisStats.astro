@@ -1,0 +1,53 @@
+---
+// Slim live-stats bar for the AIS hero. The numbers are polled from statsUrl
+// by the page script that owns `#ais-stats`.
+interface Props {
+  class?: string;
+  /** Polled for the stats row. */
+  statsUrl: string;
+}
+const { class: className, statsUrl } = Astro.props;
+
+const stats = [
+  { key: "vessels", label: "Vessels" },
+  { key: "rate", label: "/ Sec" },
+  { key: "stations", label: "Stations" },
+];
+---
+
+<div
+  class:list={[
+    "border-line-strong bg-well/20 grid grid-cols-4 items-center gap-4 rounded-full border px-8 py-3 text-xs tabular-nums backdrop-blur sm:gap-8",
+    className,
+  ]}
+  data-nosnippet
+  data-callout-avoid
+>
+  <span class="text-fg-strong flex items-center gap-2.5 tracking-[0.08em]">
+    <span class="relative flex size-3">
+      <span
+        class="bg-highlight absolute inset-0 animate-ping rounded-full opacity-30 [animation-duration:2.5s] motion-reduce:animate-none"
+      ></span>
+      <span class="bg-highlight absolute inset-0.5 size-2 rounded-full"></span>
+    </span>
+    LIVE
+  </span>
+  <dl
+    id="ais-stats"
+    data-src={statsUrl}
+    class="col-span-3 grid grid-cols-subgrid text-center"
+  >
+    {
+      stats.map((s) => (
+        <div class="flex flex-col-reverse gap-0.5">
+          <dt class="text-fg-faint text-[10px] tracking-[0.12em] whitespace-nowrap uppercase">
+            {s.label}
+          </dt>
+          <dd class="text-fg-strong text-base leading-none font-medium tabular-nums">
+            <span data-stat={s.key}>–</span>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</div>
