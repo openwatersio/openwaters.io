@@ -21,7 +21,7 @@ const sections = [
   { id: "migration", title: "Migration" },
 ];
 
-// [label, aiscast, aisstream.io]
+// [label, Open Waters AIS, aisstream.io]
 const glance: [string, string, string][] = [
   [
     "Protocol",
@@ -79,7 +79,7 @@ const glance: [string, string, string][] = [
   ],
 ];
 
-// Live rows: the aiscast column sums every source; the aisstream column is what
+// Live rows: the Open Waters AIS column sums every source; the aisstream column is what
 // aisstream.io delivers to this server's own world-wide subscription, since it is
 // one of our upstreams. Both are measured by the same process.
 const live = [
@@ -90,12 +90,12 @@ const live = [
 ];
 
 const description =
-  "Same WebSocket protocol, different everything else. A field-by-field comparison of aiscast and aisstream.io: uptime, coverage, limits, license, and what changes when you switch.";
+  "Same WebSocket protocol, different everything else. A field-by-field comparison of Open Waters AIS and aisstream.io: uptime, coverage, limits, license, and what changes when you switch.";
 
 const article = {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  headline: "aiscast vs aisstream.io",
+  headline: "Open Waters AIS vs aisstream.io",
   description,
   url: `${SITE}/ais/vs/aisstream/`,
   author: publisher,
@@ -107,7 +107,7 @@ const article = {
 ---
 
 <MainLayout
-  title="aiscast vs aisstream.io"
+  title="Open Waters AIS vs aisstream.io"
   image="/og/ais-vs-aisstream.png"
   description={description}
   schema={article}
@@ -122,16 +122,16 @@ const article = {
         AIS
       </a>
 
-      <h1 class="mb-2">aiscast vs aisstream.io</h1>
+      <h1 class="mb-2">Open Waters AIS vs aisstream.io</h1>
       <p class="text-fg-faint mb-4 text-sm">Last checked 4 September 2026</p>
 
       <p class="text-lead mb-4">
-        aiscast, the Open Waters AIS network, speaks aisstream.io's protocol, so
-        the choice is not about rewriting code. It is about whether you want a
-        feed that tells you when it fails, names its sources and licenses, and
-        answers email, in exchange for a beta whose live coverage outside the
-        Nordics still leans on minutes-old snapshots. aisstream's own upstream
-        is one of aiscast's inputs, so switching costs you no coverage.
+        Open Waters AIS speaks aisstream.io's protocol, so the choice is not
+        about rewriting code. It is about whether you want a feed that tells you
+        when it fails, names its sources and licenses, and answers email, in
+        exchange for a beta whose live coverage outside the Nordics still leans
+        on minutes-old snapshots. aisstream's own upstream is one of our inputs,
+        so switching costs you no coverage.
       </p>
       <p class="text-fg-muted mb-8">
         Comparing more than these two? <a href={ALTERNATIVES}
@@ -162,8 +162,8 @@ const article = {
           Right now
         </h2>
         <p class="text-fg-muted mb-4">
-          aisstream.io is one of aiscast's upstreams, so the same server
-          measures both columns: everything aiscast hears, and what aisstream.io
+          aisstream.io is one of our upstreams, so the same server measures both
+          columns: everything Open Waters AIS hears, and what aisstream.io
           delivers to a world-wide subscription on one key. When aisstream is
           healthy this table says so.
         </p>
@@ -177,7 +177,8 @@ const article = {
             <thead class="bg-surface">
               <tr>
                 <th scope="col" class="px-3 py-2 text-left"></th>
-                <th scope="col" class="px-3 py-2 text-right">aiscast</th>
+                <th scope="col" class="px-3 py-2 text-right">Open Waters AIS</th
+                >
                 <th scope="col" class="px-3 py-2 text-right">aisstream.io</th>
               </tr>
             </thead>
@@ -222,7 +223,7 @@ const article = {
             <thead class="bg-surface">
               <tr>
                 <th scope="col" class="px-3 py-2 text-left"></th>
-                <th scope="col" class="px-3 py-2 text-left">aiscast</th>
+                <th scope="col" class="px-3 py-2 text-left">Open Waters AIS</th>
                 <th scope="col" class="px-3 py-2 text-left">aisstream.io</th>
               </tr>
             </thead>
@@ -261,7 +262,7 @@ const article = {
             >encoding/json</code
           > over the go-ais structs, typo and all (<code
             class="bg-surface rounded px-1">VenderIDModel</code
-          >). aiscast uses the same decoder, so <code
+          >). Open Waters AIS uses the same decoder, so <code
             class="bg-surface rounded px-1">/v0/stream</code
           > frames are structurally identical; golden tests pin the envelope, rounding,
           time format, error messages, and resubscribe behaviour against captured
@@ -290,18 +291,18 @@ const article = {
           there is simply no receiver.
         </p>
         <p class="text-fg-muted mb-4">
-          aiscast publishes every source: Kystverket and BarentsWatch for
-          Norway, Digitraffic for Finland, volunteer receivers wherever they
+          Open Waters AIS publishes every source: Kystverket and BarentsWatch
+          for Norway, Digitraffic for Finland, volunteer receivers wherever they
           are, the AISHub aggregate for the rest of the world, and aisstream.io
           itself when it is delivering. <code class="bg-surface rounded px-1"
             >/v1/stations</code
           > gives each source's message count and age, and the live map draws the
           same data. Where aisstream is honest by accident (no data means no data),
-          aiscast is honest on purpose (no data means this source has been silent
-          for this long).
+          Open Waters AIS is honest on purpose (no data means this source has been
+          silent for this long).
         </p>
         <p class="text-fg-muted mb-12">
-          The gap: outside the Nordics and the volunteer footprint, aiscast's
+          The gap: outside the Nordics and the volunteer footprint, our
           positions are AISHub's, about a minute behind (<a
             href="https://ais.openwaters.io/v1/stats"
             target="_blank"
@@ -321,10 +322,10 @@ const article = {
           for the 2026 instability.
         </p>
         <p class="text-fg-muted mb-12">
-          aiscast limits per token, publishes the numbers, thins a stream that
-          exceeds its rate rather than dropping the connection, refuses an
-          oversize area with a message that says so, and allows in-band
-          resubscribe for free. CORS is open on <code
+          Open Waters AIS limits per token, publishes the numbers, thins a
+          stream that exceeds its rate rather than dropping the connection,
+          refuses an oversize area with a message that says so, and allows
+          in-band resubscribe for free. CORS is open on <code
             class="bg-surface rounded px-1">/v1/vessels</code
           >.
         </p>
@@ -333,8 +334,8 @@ const article = {
           License and terms
         </h2>
         <p class="text-fg-muted mb-12">
-          aisstream has none. aiscast does not relicense the aggregate: each
-          event is re-served under its source's terms, and the <a
+          aisstream has none. Open Waters AIS does not relicense the aggregate:
+          each event is re-served under its source's terms, and the <a
             href="/ais/#license">terms</a
           > give you the attribution string to carry. If you are one of the twenty
           people who asked aisstream for a license and heard nothing, this is the
@@ -344,7 +345,7 @@ const article = {
         <h2 id="who" class="mb-4 scroll-mt-24 text-3xl font-semibold">
           Who each one is for
         </h2>
-        <h3 class="mb-2 text-xl font-semibold">Who aiscast is for</h3>
+        <h3 class="mb-2 text-xl font-semibold">Who Open Waters AIS is for</h3>
         <p class="text-fg-muted mb-6">
           aisstream clients that need to keep running; Signal K boats;
           dashboards and hobby projects; research that needs provenance;
@@ -354,7 +355,8 @@ const article = {
         <h3 class="mb-2 text-xl font-semibold">Who aisstream.io is for</h3>
         <p class="text-fg-muted mb-12">
           Honestly: a free key to try the category, and nothing that runs
-          unattended. When it is up it is fine, and aiscast consumes it too.
+          unattended. When it is up it is fine, and Open Waters AIS consumes it
+          too.
         </p>
 
         <h2 id="migration" class="mb-4 scroll-mt-24 text-3xl font-semibold">
