@@ -138,21 +138,19 @@ const licenses = [
   },
 ];
 
-// Rendered below and emitted as FAQPage. The questions are the ones people actually
-// arrive with: what it costs, how the coverage compares, and how fresh the positions
-// are. Nothing here promises uptime, because no tier below Custom carries an SLA.
+// The visible questions and FAQPage schema share the same copy.
 const faq = [
   {
     q: "Is Open Waters AIS free?",
-    a: "Reading is free with no account and no key. A free token raises the limits, and running a receiver raises them further. Products and fleets move to a paid plan; the plans and what each one lifts are on the pricing page.",
+    a: "Read the live stream with no account and no key. Get a free personal token when you outgrow the anonymous limits. Qualifying receiver contributors get higher limits, including commercial use within those limits. Paid plans for products and businesses are on the pricing page.",
   },
   {
     q: "How does coverage compare to aisstream.io?",
-    a: "Live terrestrial coverage is strongest in the Nordics and wherever our volunteer receivers are; elsewhere positions come from partner aggregates and are typically one to six minutes old. Open Waters AIS also reads aisstream.io as an upstream, so switching costs you no vessels.",
+    a: "Terrestrial coverage is strongest in the Nordics and wherever our volunteers run receivers. Elsewhere positions come from partner aggregates and run about a minute behind. Open Waters AIS also reads aisstream.io as an upstream when it is available. Check your own waters on the live map and the current delay on the network page.",
   },
   {
     q: "How fresh are the positions?",
-    a: "Government feeds and volunteer receivers arrive as they are heard, within a second or two. Positions that only AISHub carries are a periodic snapshot rather than a live feed, however it looks, and run about a minute behind. The network page shows the current median latency per source.",
+    a: "Government feeds and volunteer receivers stream positions as they are heard. Positions from AISHub are a periodic snapshot and run about a minute behind. The network page shows the current delay for each source.",
   },
   {
     q: "Do I need an account or an API key?",
@@ -164,7 +162,7 @@ const faq = [
   },
   {
     q: "Can I use the data commercially?",
-    a: "Yes, within each source's own licence. The aggregate is never relicensed, so every event names the source it came from and you carry that source's attribution through. The licence table on this page says what each one asks for.",
+    a: "Yes. Commercial products need a paid plan unless you contribute a qualifying receiver and stay within the contributor limits. Licensing is per source, and the aggregate is not relicensed. If you display or redistribute the data, carry the source's attribution through. The license table on this page lists each source's terms.",
   },
 ];
 

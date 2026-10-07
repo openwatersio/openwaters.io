@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { test } from "node:test";
+import { pageToMarkdown } from "./markdown.ts";
 
 // Checks the built site, so it only runs after `npm run build`.
 const dist = new URL("../../dist/client/", import.meta.url);
@@ -236,11 +237,15 @@ test("/ais/ describes the service and its questions", { skip }, () => {
   const faq = graph.find((b) => b["@type"] === "FAQPage");
   assert.ok(faq, "no FAQPage JSON-LD on /ais/");
   assert.ok(faq.mainEntity.length >= 4);
-  // Google drops FAQ rich results when the answer is not also visible on the page.
+  // Check visible content separately so the JSON-LD cannot satisfy the assertion.
+  const visible = pageToMarkdown(html);
   for (const q of faq.mainEntity) {
-    assert.ok(html.includes(q.name), `question not rendered: ${q.name}`);
+    assert.ok(visible.includes(q.name), `question not rendered: ${q.name}`);
     assert.equal(q.acceptedAnswer["@type"], "Answer");
-    assert.ok(q.acceptedAnswer.text.length > 40);
+    assert.ok(
+      visible.includes(q.acceptedAnswer.text),
+      `answer not rendered: ${q.name}`,
+    );
   }
 });
 

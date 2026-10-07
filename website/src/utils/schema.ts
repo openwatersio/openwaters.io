@@ -20,8 +20,7 @@ export const website = {
   url: `${SITE}/`,
 };
 
-// Rich-result eligible only when every question and answer is also on the page,
-// so callers render the same array they pass here.
+// Callers render the same questions and answers on the page.
 export const faqPage = (path: string, items: { q: string; a: string }[]) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
