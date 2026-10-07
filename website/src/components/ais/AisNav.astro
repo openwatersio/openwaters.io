@@ -1,6 +1,6 @@
 ---
-// Section navigation for Open Waters AIS: the service name, then the three
-// places a visitor can go from any AIS page.
+// Section navigation for the Open Waters AIS pages. Pages adopt it as they
+// gain it, and each new AIS page adds its own link.
 import { cn } from "../../utils/cn";
 
 interface Props {
@@ -13,7 +13,8 @@ const links = [
   { label: "API", href: "/api/ais/" },
   { label: "Contribute", href: "/ais/contribute/" },
 ];
-const current = Astro.url.pathname.replace(/\/?$/, "/");
+const normalize = (path: string) => path.replace(/\/?$/, "/");
+const current = normalize(Astro.url.pathname);
 ---
 
 <nav
@@ -31,12 +32,10 @@ const current = Astro.url.pathname.replace(/\/?$/, "/");
     links.map((link) => (
       <a
         href={link.href}
-        aria-current={
-          current === link.href.replace(/\/?$/, "/") ? "page" : undefined
-        }
+        aria-current={current === normalize(link.href) ? "page" : undefined}
         class={cn(
           "hover:text-fg-strong",
-          current === link.href ? "text-accent" : "text-fg-muted",
+          current === normalize(link.href) ? "text-accent" : "text-fg-muted",
         )}
       >
         {link.label}
