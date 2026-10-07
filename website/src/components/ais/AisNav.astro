@@ -31,7 +31,9 @@ const current = Astro.url.pathname.replace(/\/?$/, "/");
     links.map((link) => (
       <a
         href={link.href}
-        aria-current={current === link.href ? "page" : undefined}
+        aria-current={
+          current === link.href.replace(/\/?$/, "/") ? "page" : undefined
+        }
         class={cn(
           "hover:text-fg-strong",
           current === link.href ? "text-accent" : "text-fg-muted",

@@ -34,24 +34,28 @@ import { CONTACT_EMAIL } from "../utils/constants";
 
         <p>
           Pages with a map load their base map from a third party: the AIS page
-          from <a href="https://openfreemap.org/">OpenFreeMap</a>, and the tide,
-          chart, and sky pages from <a href="https://carto.com/basemaps/"
-            >Carto</a
-          > and <a href="https://s2maps.eu/">EOX</a> for Sentinel-2 imagery. Those
-          servers see your IP address and the tiles you asked for, under their own
-          policies, and nothing else about you.
+          from <a href="https://openfreemap.org/">OpenFreeMap</a>, and the tide
+          and sky pages from <a href="https://carto.com/basemaps/">Carto</a>{
+            " "
+          }
+          and <a href="https://s2maps.eu/">EOX</a> for Sentinel-2 imagery. The chart
+          viewers load their tiles from our own server, and the Seascape viewer fetches
+          terrain from{" "}
+          <a href="https://mapterhorn.com/">Mapterhorn</a>. Those third-party
+          servers see your IP address and the tiles you asked for, under their
+          own policies, and nothing else about you.
         </p>
 
         <p>
           Pages outside the AIS map set no cookies. The map at <a
             href="/ais/vessels">/ais/vessels</a
-          > stores your light-or-dark choice in a cookie scoped to <code
-            >/ais</code
-          > once you pick a theme; the <a href="/ais/privacy/"
-            >AIS privacy policy</a
-          > covers it. If you create an AIS token in the browser, the key is kept
-          in your browser's <code>localStorage</code> on your own machine, and clearing
-          site data removes it.
+          > stores your light-or-dark choice in a cookie once you pick a theme; the{
+            " "
+          }
+          <a href="/ais/privacy/">AIS privacy policy</a> covers it. If you create
+          an AIS token in the browser, the key is kept in your browser's <code
+            >localStorage</code
+          > on your own machine, and clearing site data removes it.
         </p>
 
         <h2 class="mt-12 mb-6">The APIs</h2>

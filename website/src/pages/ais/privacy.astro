@@ -17,7 +17,7 @@ async function fetchPolicy() {
   for (const url of SOURCES) {
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
-      if (res.ok) return res.text();
+      if (res.ok) return await res.text();
       console.warn(`[ais] privacy policy ${url}: ${res.status}`);
     } catch (err) {
       console.warn(`[ais] privacy policy ${url}: ${err}`);
