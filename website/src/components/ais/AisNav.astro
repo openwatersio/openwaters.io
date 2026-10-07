@@ -1,0 +1,44 @@
+---
+// Section navigation for Open Waters AIS: the service name, then the three
+// places a visitor can go from any AIS page.
+import { cn } from "../../utils/cn";
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+
+const links = [
+  { label: "Live map", href: "/ais/vessels" },
+  { label: "API", href: "/api/ais/" },
+  { label: "Contribute", href: "/ais/contribute/" },
+];
+const current = Astro.url.pathname.replace(/\/?$/, "/");
+---
+
+<nav
+  aria-label="Open Waters AIS"
+  data-nosnippet
+  class={cn(
+    "flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium tracking-[0.12em] uppercase",
+    className,
+  )}
+>
+  <a href="/ais/" class="text-fg-strong hover:text-fg-strong"
+    >Open Waters AIS:</a
+  >
+  {
+    links.map((link) => (
+      <a
+        href={link.href}
+        aria-current={current === link.href ? "page" : undefined}
+        class={cn(
+          "hover:text-fg-strong",
+          current === link.href ? "text-accent" : "text-fg-muted",
+        )}
+      >
+        {link.label}
+      </a>
+    ))
+  }
+</nav>
