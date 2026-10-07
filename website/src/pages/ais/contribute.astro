@@ -31,7 +31,7 @@ const setups = [
   {
     icon: "mdi:sail-boat",
     title: "Signal K",
-    text: "One plugin, both directions: shares what your receiver hears and shows AIS traffic beyond your own antenna. No account; it creates its own token. Not for safety of navigation.",
+    text: "One plugin, both directions: shares what your receiver hears and shows AIS traffic when it hears none. No account; it creates its own token. Not for safety of navigation.",
     code: "npm install signalk-aiscast",
     links: [
       { label: "npm", href: "https://www.npmjs.com/package/signalk-aiscast" },
@@ -66,7 +66,7 @@ const setups = [
 
 const steps = [
   "Choose your receiver software or forwarding method above.",
-  "Read the contributor agreement, then get a token if your path needs one.",
+  "Read the contributor agreement, then get a token. UDP needs none to send, so bind your address to the token and the station counts toward it.",
   "Add the destination to your receiver's configuration.",
   "Confirm reception on your station page.",
 ];
@@ -74,7 +74,7 @@ const steps = [
 const questions = [
   {
     q: "What do I get for contributing?",
-    a: `The whole network back at contributor limits, free, including commercial use within those limits, plus a station page with your name on it. Once your station has delivered 1,000 messages in a day your token moves to the contributor tier on its own, and stays there as long as you keep contributing.`,
+    a: `The whole network back at contributor limits, free, including commercial use within those limits, plus a station page with your name on it. Once your station has delivered 1,000 messages in a day your token moves to the contributor tier on its own, and stays there as long as you keep contributing. UDP stations earn credit once their address is bound to a token on the token page.`,
     link: { label: "Contributor limits", href: LIMITS },
   },
   {
