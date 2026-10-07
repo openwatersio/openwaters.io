@@ -64,9 +64,10 @@ const setups = [
   },
 ];
 
+// Rendered with set:html; static strings, no user input.
 const steps = [
   "Choose your receiver software or forwarding method above.",
-  "Read the contributor agreement, then get a token. UDP needs none to send, so bind your address to the token and the station counts toward it.",
+  `Read the <a href="${AGREEMENT}">contributor agreement</a>, then get a token. UDP needs none to send, so bind the address on the <a href="/ais/token/">token page</a> from the network your receiver sends from, and the station counts toward your token.`,
   "Add the destination to your receiver's configuration.",
   "Confirm reception on your station page.",
 ];
@@ -74,7 +75,7 @@ const steps = [
 const questions = [
   {
     q: "What do I get for contributing?",
-    a: `The whole network back at contributor limits, free, including commercial use within those limits, plus a station page with your name on it. Once your station has delivered 1,000 messages in a day your token moves to the contributor tier on its own, and stays there as long as you keep contributing. UDP stations earn credit once their address is bound to a token on the token page.`,
+    a: `The whole network back at contributor limits, free, including commercial use within those limits, plus a station page with your name on it. Once your station has delivered 1,000 messages in a day that the network had not already heard, your token moves to the contributor tier on its own, and stays there as long as you keep contributing. UDP stations earn credit once the receiver's address is bound to a token, created from that address on the token page.`,
     link: { label: "Contributor limits", href: LIMITS },
   },
   {
@@ -128,7 +129,7 @@ const questions = [
             run.
           </p>
           <ol class="text-fg-muted list-decimal space-y-3 pl-5">
-            {steps.map((s) => <li>{s}</li>)}
+            {steps.map((s) => <li set:html={s} />)}
           </ol>
           <p class="text-fg-faint mt-8 text-sm">
             Your station gets a page under <a href="/ais/stations"

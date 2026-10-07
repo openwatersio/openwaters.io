@@ -309,9 +309,10 @@ test("every internal link on a prerendered page resolves", { skip }, () => {
   const exists = (path: string) => {
     if (path === "/") return true;
     const clean = path.replace(/^\//, "").replace(/\/$/, "");
+    // A page, or a real file like /robots.txt; a bare directory is not a page.
     return (
       existsSync(new URL(`${clean}/index.html`, dist)) ||
-      existsSync(new URL(clean, dist))
+      (/\.[a-z0-9]+$/i.test(clean) && existsSync(new URL(clean, dist)))
     );
   };
   for (const page of globSync("**/index.html", { cwd: dist })) {
