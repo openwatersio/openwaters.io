@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { test } from "node:test";
+import { pageToMarkdown } from "./markdown.ts";
 
 // Checks the built site, so it only runs after `npm run build`.
 const dist = new URL("../../dist/client/", import.meta.url);
@@ -214,6 +215,44 @@ test(
     });
   },
 );
+
+test("/ais/ describes the service and its questions", { skip }, () => {
+  const html = read("ais/index.html");
+  const graph = [
+    ...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g),
+  ]
+    .map((m) => JSON.parse(m[1]))
+    .flatMap((b) => b["@graph"] ?? b);
+
+  const api = graph.find((b) => b["@type"] === "WebAPI");
+  assert.ok(api, "no WebAPI JSON-LD on /ais/");
+  assert.equal(api.name, "Open Waters AIS");
+  assert.equal(api.url, "https://openwaters.io/ais/");
+  assert.equal(api.documentation, "https://openwaters.io/api/ais/");
+  assert.equal(api.isAccessibleForFree, true);
+  // Prices live on the pricing page, so the offer links there and quotes nothing.
+  assert.equal(api.offers.url, "https://openwaters.io/ais/pricing/");
+  assert.ok(!("price" in api.offers), "offer must not quote a price");
+
+  const faq = graph.find((b) => b["@type"] === "FAQPage");
+  assert.ok(faq, "no FAQPage JSON-LD on /ais/");
+  assert.ok(faq.mainEntity.length >= 4);
+  // Check visible content separately so the JSON-LD cannot satisfy the assertion.
+  const visible = pageToMarkdown(html);
+  for (const q of faq.mainEntity) {
+    assert.ok(visible.includes(q.name), `question not rendered: ${q.name}`);
+    assert.equal(q.acceptedAnswer["@type"], "Answer");
+    assert.ok(
+      visible.includes(q.acceptedAnswer.text),
+      `answer not rendered: ${q.name}`,
+    );
+  }
+});
+
+test("/ais/ makes no uptime promise", { skip }, () => {
+  // No tier below Custom carries an SLA; see docs/policy.md in the aiscast repo.
+  assert.doesNotMatch(read("ais/index.html"), /\bSLA\b|guaranteed uptime/i);
+});
 
 test(
   "openapi.json operations all carry an operationId and description",
