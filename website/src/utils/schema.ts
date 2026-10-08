@@ -26,6 +26,14 @@ export const organization = (email: string) => ({
   "@context": "https://schema.org",
   ...publisher,
   email,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "411 Walnut St #15547",
+    addressLocality: "Green Cove Springs",
+    addressRegion: "FL",
+    postalCode: "32043",
+    addressCountry: "US",
+  },
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer support",
