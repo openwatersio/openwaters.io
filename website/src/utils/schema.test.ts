@@ -69,7 +69,7 @@ test("organization: public service offers distinguish free access from quoted co
     assert.equal(offer.priceCurrency, "USD");
   }
   const commercial = offers.find(
-    (offer) => offer.name === "aiscast Commercial",
+    (offer) => offer.name === "Open Waters AIS Commercial",
   )!;
   assert.ok(commercial);
   assert.ok(!("price" in commercial));

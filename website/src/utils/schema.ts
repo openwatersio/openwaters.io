@@ -56,13 +56,13 @@ export const organization = (email: string) => ({
     },
     {
       "@type": "Offer",
-      name: "Free aiscast access",
+      name: "Open Waters AIS free personal access",
       price: 0,
       priceCurrency: "USD",
       url: `${SITE}/ais/#limits`,
       description:
-        "Free Anonymous and Personal tiers with published usage limits. The free Contributor tier requires contributing receiver data. Source data terms apply.",
-      itemOffered: { "@type": "Service", name: "aiscast AIS stream" },
+        "Real-time vessel data from coastal authorities and volunteer receivers, free for personal use through an aisstream-compatible API. Anonymous and Personal tiers have published usage limits; contributing receiver data earns the free Contributor tier. Source data terms apply.",
+      itemOffered: { "@type": "Service", name: "Open Waters AIS" },
     },
     {
       "@type": "Offer",
@@ -76,11 +76,11 @@ export const organization = (email: string) => ({
     },
     {
       "@type": "Offer",
-      name: "aiscast Commercial",
+      name: "Open Waters AIS Commercial",
       url: `${SITE}/contact/`,
       description:
         "Paid AIS access for products, fleets, or support. Pricing is arranged by email; contact us for a quote.",
-      itemOffered: { "@type": "Service", name: "aiscast Commercial tier" },
+      itemOffered: { "@type": "Service", name: "Open Waters AIS Commercial tier" },
     },
   ],
 });
