@@ -80,7 +80,10 @@ export const organization = (email: string) => ({
       url: `${SITE}/contact/`,
       description:
         "Paid AIS access for products, fleets, or support. Pricing is arranged by email; contact us for a quote.",
-      itemOffered: { "@type": "Service", name: "Open Waters AIS Commercial tier" },
+      itemOffered: {
+        "@type": "Service",
+        name: "Open Waters AIS Commercial tier",
+      },
     },
   ],
 });
