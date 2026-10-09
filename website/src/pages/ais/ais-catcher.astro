@@ -195,15 +195,16 @@ const faqSchema = {
       </h2>
       <div class="text-fg-muted mb-6 space-y-4">
         <p>
-          This is the part most people do not know exists. AIS-catcher can take
-          NMEA in over a WebSocket as well as send it, so the deduplicated feed
-          from every station and every source in the network can be an input to
-          your own instance. Your viewer stops being a picture of what your
-          antenna hears and becomes a picture of what the network hears.
+          This is the part most people do not know exists. Contributors can read
+          the deduplicated feed — every station, every source, one stream — back
+          into their own AIS-catcher instance, so the viewer stops being a
+          picture of what your antenna hears and becomes a picture of what the
+          network hears.
         </p>
         <p>
-          Bridge the feed to AIS-catcher's built-in UDP server and point its web
-          viewer at the result:
+          AIS-catcher's own network inputs are plain TCP and UDP, not
+          WebSockets, so bridge the feed into its built-in UDP server and point
+          its web viewer at the result:
         </p>
       </div>
       <CodeBlock
@@ -234,6 +235,18 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
           leave community sharing off on an instance that reads the feed, so you
           are not republishing it to aiscatcher.org either.
         </p>
+        <p>
+          <strong>Already running Signal K?</strong> Then skip the bridge. The <a
+            href="/ais/signalk/"
+            class="text-accent hover:text-accent-hover">Signal K plugin</a
+          > already pulls network traffic in and re-emits it as NMEA 0183, so AIS-catcher
+          can read the server's output directly and show your receiver's own targets
+          and the network's together, with no token and nothing to install:
+        </p>
+        <CodeBlock
+          code="AIS-catcher -t txt://localhost:10110 -N 8100 -X off"
+          class="mb-2"
+        />
         <p class="text-sm">
           <a href={API} class="text-accent hover:text-accent-hover"
             >Raw NMEA feed reference</a
