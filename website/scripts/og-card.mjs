@@ -4,15 +4,29 @@
 //   npm run og -w website                  every card in CARDS
 //
 // Each card is laid out in HTML and screenshotted, so it picks up the real Geist
-// face and the colour tokens from global.css rather than approximating them.
-// sharp is already installed and can rasterise an SVG, but its renderer ignores
-// both system-installed and @font-face-embedded Geist and silently falls back to
-// a default sans, which is why this drives a browser instead.
+// face rather than approximating it. sharp is already installed and can rasterise
+// an SVG, but its renderer ignores Geist both system-installed and embedded as an
+// @font-face data URI, and silently falls back to a default sans.
 //
-// A card may sit on top of an existing card (`base`). og/ais.png carries the
-// Turku map, its fade, and the OpenStreetMap credit; reusing it whole and
-// repainting only the left panel keeps the AIS cards pixel-identical to each
-// other. The base images themselves are hand-made and are not regenerated here.
+// A card sits on top of an existing image (`base`). og/ais.png carries the Turku
+// map, its fade, and the OpenStreetMap credit; reusing it whole and repainting
+// only the left panel keeps the AIS cards identical to each other where it counts.
+//
+// What is in public/og/, and why only some of it is here:
+//
+//   ais-signalk, ais-vs-aisstream, ais-alternatives-aisstream
+//       Generated. Text over the ais.png base.
+//   ais.png
+//       Not generated: it is the base the three above sit on, and the panel that
+//       hides a base's text would hide its own. Generating it needs a text-free
+//       version of the map committed as a separate base image.
+//   openwaters.png
+//       Not generated: a different template — centred text on a blue gradient
+//       with a wave motif and a domain footer. Wants a second layout here.
+//   sky.png, moon.png, sun.png
+//       Not generated: renderings of the Almanac visuals with a footer bar, not
+//       text over a photograph. Reproducing them means driving the site's own sky
+//       components, which is a different job from laying out a card.
 
 import { chromium } from "playwright-core";
 import { createRequire } from "node:module";
@@ -31,10 +45,10 @@ const FONT = createRequire(import.meta.url).resolve(
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-// Tokens copied from src/styles/global.css. They are duplicated rather than
-// parsed out of the stylesheet because a card is rendered off the page, with no
-// Tailwind build to resolve them.
-const CANVAS = "#05122a";
+// Measured off the existing cards rather than taken from global.css: the cards
+// predate the current tokens and sit on #071421, where --color-canvas is now
+// #05122a. Matching the family matters more here than matching the site.
+const CANVAS = "#071421";
 const ACCENT = "#38bdf8";
 const FG_STRONG = "#fcfcfc";
 const FG_MUTED = "rgba(228,240,228,0.62)";
@@ -45,6 +59,18 @@ const CARDS = {
     eyebrow: "Open Waters · AIS",
     title: ["AIS for", "Signal K"],
     sub: ["Worldwide traffic without a receiver,", "on your chartplotter too."],
+  },
+  "ais-vs-aisstream": {
+    base: "ais.png",
+    eyebrow: "Open Waters · AIS",
+    title: ["aiscast vs", "aisstream.io"],
+    sub: ["Same protocol. Different everything else."],
+  },
+  "ais-alternatives-aisstream": {
+    base: "ais.png",
+    eyebrow: "Open Waters · AIS",
+    title: ["aisstream.io", "alternatives"],
+    sub: ["Free and paid AIS feeds, compared."],
   },
 };
 
@@ -73,13 +99,16 @@ function html(card, fontDataUri, baseDataUri) {
          background: ${background};
          font-family: "Geist Variable", system-ui, sans-serif; }
   .panel { position: absolute; inset: 0; background: ${panel}; }
-  .text { position: absolute; left: 68px; top: 96px; width: 540px; }
-  .eyebrow { color: ${ACCENT}; font-size: 15px; font-weight: 700;
+  /* Centred as a block: measured on the shipped cards, the eyebrow-to-subhead
+     span is centred on the canvas rather than pinned to a top margin. */
+  .text { position: absolute; left: 68px; top: calc(50% + 1px); width: 540px;
+          transform: translateY(-50%); }
+  .eyebrow { color: ${ACCENT}; font-size: 20px; font-weight: 700;
              letter-spacing: 0.2em; text-transform: uppercase; }
-  h1 { color: ${FG_STRONG}; font-size: 72px; font-weight: 700; line-height: 1.06;
-       letter-spacing: -0.025em; margin-top: 30px; }
+  h1 { color: ${FG_STRONG}; font-size: 62px; font-weight: 700; line-height: 1.115;
+       letter-spacing: -0.025em; margin-top: 29px; }
   .sub { color: ${FG_MUTED}; font-size: 25px; font-weight: 400;
-         line-height: 1.35; margin-top: 150px; }
+         line-height: 1.35; margin-top: 32px; }
 </style>
 <div class="panel"></div>
 <div class="text">
