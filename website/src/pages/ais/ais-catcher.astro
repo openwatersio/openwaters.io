@@ -58,6 +58,29 @@ const paths: {
   },
 ];
 
+const gets: { icon: string; title: string; text: string }[] = [
+  {
+    icon: "mdi:radar",
+    title: "Ships past your horizon",
+    text: "Your antenna reaches as far as it reaches. Read the network back and the same viewer shows every vessel every other station and source hears, worldwide.",
+  },
+  {
+    icon: "mdi:download-network",
+    title: "The aggregate, not a snapshot",
+    text: "Deduplicated raw NMEA on one WebSocket, live, bbox-filterable. No other AIS network hands contributors the whole feed back.",
+  },
+  {
+    icon: "mdi:map-marker-radius",
+    title: "A station with your name on it",
+    text: "Vessels heard, coverage extent, and how many messages yours delivered first \u2014 the number that says what your antenna adds rather than how busy its harbour is.",
+  },
+  {
+    icon: "mdi:source-branch",
+    title: "Nothing exclusive",
+    text: "CC0 on your receptions, ODbL on the aggregate, and no request that you stop feeding anywhere else. Adding this is one more output line.",
+  },
+];
+
 const faq = [
   {
     q: "Do I need an account or an API key?",
@@ -183,6 +206,18 @@ const faqSchema = {
         </p>
       </Card>
 
+      <div class="mb-12 grid gap-4 sm:grid-cols-2">
+        {
+          gets.map((g) => (
+            <Card class="p-5">
+              <Icon name={g.icon} class="text-accent mb-3 size-7" />
+              <h3 class="mb-1 text-base font-semibold">{g.title}</h3>
+              <p class="text-fg-muted text-sm">{g.text}</p>
+            </Card>
+          ))
+        }
+      </div>
+
       <h2 id="send" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         Send what you hear
       </h2>
@@ -265,6 +300,29 @@ const faqSchema = {
       <h2 id="readback" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         Read the network back
       </h2>
+
+      <figure class="mb-6">
+        {
+          /* A plain img, not astro:assets: <Image> routes through the runtime
+            /_image endpoint, which on Cloudflare needs an IMAGES binding this
+            repo does not configure. The file is already sized and encoded for
+            the one place it appears, so the service has nothing to add. */
+        }
+        <img
+          src="/ais/ais-catcher-network.webp"
+          alt="AIS-catcher's own web viewer showing 6,602 vessels worldwide: both coasts of North America, dense traffic across northern Europe and the Mediterranean, the Gulf, southeast Asia and Australia."
+          width="2000"
+          height="1125"
+          loading="lazy"
+          decoding="async"
+          class="border-line h-auto w-full rounded-xl border"
+        />
+        <figcaption class="text-fg-faint mt-2 text-sm">
+          AIS-catcher's viewer on a Raspberry Pi, fed the Open Waters aggregate.
+          The receiver attached to it hears one harbour.
+        </figcaption>
+      </figure>
+
       <div class="text-fg-muted mb-6 space-y-4">
         <p>
           This is the part most people do not know exists. Contributors can read
@@ -291,10 +349,17 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
           contributor tier, which your station earns by feeding — so this is the thing
           feeding gets you, not a separate product. Each frame is one message, sentences
           joined by CRLF, with a TAG block naming the station that heard it, the time,
-          and the licence its source publishes under. The <code
-            class="bg-surface rounded px-1">bbox</code
-          > is optional and repeatable; start with one around your own waters, because
-          the whole world is a lot of messages a second for a Raspberry Pi to draw.
+          and the licence its source publishes under.
+        </p>
+        <p>
+          The <code class="bg-surface rounded px-1">bbox</code> is optional and repeatable,
+          and worth setting even though the load is not the reason. A Pi 5 took the
+          unfiltered world at about 0.2% CPU, so that is not what bites. AIS-catcher's
+          vessel table holds 4,096 ships, and a worldwide feed fills it in minutes
+          and then churns — which means the six-minutely static messages carrying
+          vessel names mostly arrive after a ship has already been evicted, and you
+          get a map of unnamed contacts. Bound it to the water you care about and
+          the names stay.
         </p>
         <p>
           <strong>Keep the network out of your outputs.</strong> AIS-catcher sends
