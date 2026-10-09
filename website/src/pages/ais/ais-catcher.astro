@@ -1,0 +1,376 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Card from "../../components/ui/Card.astro";
+import CodeBlock from "../../components/ui/CodeBlock.astro";
+import Icon from "../../components/Icon.astro";
+import { SITE, publisher } from "../../utils/schema";
+
+const REPO = "https://github.com/openwatersio/aiscast";
+const AISCATCHER = "https://github.com/jvde-github/AIS-catcher";
+const AISCATCHER_DOCS = "https://jvde-github.github.io/AIS-catcher-docs";
+const SHIPFEEDER = "https://github.com/sdr-enthusiasts/docker-shipfeeder";
+const TOKEN = "/ais/token/";
+const MAP = "/ais/vessels";
+const API = "/api/ais/";
+
+const DESCRIPTION =
+  "Send what your AIS-catcher station hears to Open Waters AIS, and read the whole deduplicated network back into your own AIS-catcher map. One output line, no sign-up, and the contributor tier earns itself.";
+
+const sections = [
+  { id: "send", label: "Send what you hear" },
+  { id: "readback", label: "Read the network back" },
+  { id: "vhf", label: "Already have a VHF?" },
+  { id: "elsewhere", label: "Keep feeding everyone" },
+  { id: "station", label: "Your station" },
+  { id: "data", label: "Your data" },
+  { id: "faq", label: "FAQ" },
+];
+
+const paths: { name: string; cmd: string; when: string; credit: string }[] = [
+  {
+    name: "MQTT over WebSocket",
+    cmd: "AIS-catcher -Q wssmqtt://x:<token>@ais.openwaters.io:443/v1/stream MSGFORMAT NMEA",
+    when: "The one to start with. AIS-catcher publishes each message the moment it is decoded, and it dials out over 443, so it works behind any home router with nothing forwarded.",
+    credit: "Credited to your token",
+  },
+  {
+    name: "HTTP POST",
+    cmd: "AIS-catcher -H https://ais.openwaters.io/v1/receive USERPWD x:<token>",
+    when: "The same station identity, batched on an interval instead of sent per message. Use it if you already feed something else over HTTP and want one more of the same shape.",
+    credit: "Credited to your token",
+  },
+  {
+    name: "Plain UDP",
+    cmd: "AIS-catcher -u udp.ais.openwaters.io 10110",
+    when: "Nothing to create and nothing to paste. Fine for trying it in a minute, and the path to use if your build predates the other two.",
+    credit: "Needs its address bound to earn the tier",
+  },
+];
+
+const faq = [
+  {
+    q: "Do I need an account or an API key?",
+    a: "No account. The UDP path needs nothing at all. The authenticated paths need a token, which you create yourself on the token page in a browser — there is no sign-up, no email, and it never expires.",
+  },
+  {
+    q: "What do I get for feeding?",
+    a: "The contributor tier, which turns on by itself once your station has delivered 1,000 messages the network had not already heard in 24 hours. That is five concurrent streams, 200 messages a second, any area, history, and the raw NMEA feed this page is built around. There is no application and nobody to email. Stop feeding and it lapses after a day; start again and it comes back.",
+  },
+  {
+    q: "Which output should I use?",
+    a: "MQTT, unless you have a reason not to. It is realtime where the HTTP output batches on an interval, it carries your station identity, and it connects outward over port 443 so a home network needs no port forwarding. UDP is the quickest to try and the only one that needs no token, but it earns no tier until you bind its source address.",
+  },
+  {
+    q: "Why does my UDP station not get the contributor tier?",
+    a: "UDP carries no authentication, so the network cannot tell whose station it is. Create a personal token from the same address with address binding turned on, and that station starts counting toward it. Switching to the MQTT or HTTP output instead does the same thing without the binding step.",
+  },
+  {
+    q: "Can I keep feeding AISHub, MarineTraffic, or aiscatcher.org?",
+    a: "Yes, and please do. AIS-catcher fans out to as many destinations as you give it, and Open Waters AIS never asks a station to stop feeding anywhere else. Adding this is one more output, not a switch.",
+  },
+  {
+    q: "I have a VHF radio with AIS receive, not an SDR. Can I still contribute?",
+    a: "Yes, and AIS-catcher is probably not the tool. Your radio has already decoded the signal and hands over finished NMEA sentences, so there is nothing left to decode. If the machine it is wired to runs Signal K, the Signal K plugin shares what the radio hears and needs no extra wiring.",
+  },
+  {
+    q: "Is it free?",
+    a: "Yes. Reading is free, feeding is free, and feeding earns higher limits including commercial use within them. What you share is published under the contributor agreement: volunteer receptions are CC0 and the aggregate is ODbL.",
+  },
+  {
+    q: "Does this replace an AIS receiver or a transponder?",
+    a: "No. Network traffic arrives seconds to a minute behind, and nothing on the internet makes you visible to a ship that cannot see you. Open Waters AIS is a supplement to onboard AIS, never a substitute, and it is not for safety of navigation.",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  url: `${SITE}/ais/ais-catcher/`,
+  publisher,
+  mainEntity: faq.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
+---
+
+<MainLayout
+  title="AIS for AIS-catcher"
+  description={DESCRIPTION}
+  schema={faqSchema}
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-4xl">
+      <a
+        href="/ais/"
+        class="text-accent hover:text-accent-hover mb-4 inline-flex items-center gap-1 text-sm font-medium"
+      >
+        <Icon name="mdi:arrow-left" class="size-4" />
+        AIS
+      </a>
+
+      <h1 class="mb-4">AIS for AIS-catcher</h1>
+
+      <p class="text-lead mb-8">
+        Add one output line and the AIS your antenna hears joins <a href="/ais/"
+          >Open Waters AIS</a
+        >, deduplicated against every other station and open to everyone. Add one
+        input line and the whole network comes back the other way, so the
+        AIS-catcher map you already watch shows every ship the network hears
+        instead of only the ones in range of your antenna.
+      </p>
+
+      <nav
+        data-nosnippet
+        aria-label="On this page"
+        class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
+      >
+        <span class="mr-2 font-semibold">On this page:</span>
+        {
+          sections.map((s, i) => (
+            <>
+              {i > 0 && <span class="text-fg-faint mx-2">·</span>}
+              <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
+                {s.label}
+              </a>
+            </>
+          ))
+        }
+      </nav>
+
+      <h2 id="send" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Send what you hear
+      </h2>
+      <div class="text-fg-muted mb-8 space-y-4">
+        <p>
+          Three outputs reach the network. They differ in how fast the data
+          arrives and whether it comes with your name on it, so the short answer
+          is <strong>use MQTT</strong> and read on only if you want to know why.
+        </p>
+      </div>
+
+      <div class="mb-8 space-y-6">
+        {
+          paths.map((p) => (
+            <div>
+              <div class="mb-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h3 class="text-base font-semibold">{p.name}</h3>
+                <span class="text-fg-faint text-xs">{p.credit}</span>
+              </div>
+              <CodeBlock code={p.cmd} class="mb-2" />
+              <p class="text-fg-muted text-sm">{p.when}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          Two details that trip people up. The port in the MQTT address is
+          required — AIS-catcher does not assume 443 for <code
+            class="bg-surface rounded px-1">wssmqtt://</code
+          >. And <code class="bg-surface rounded px-1">MSGFORMAT NMEA_TAG</code> works
+          too, carrying the time each message was received in a TAG block, which
+          is worth it if your station ever buffers.
+        </p>
+        <p>
+          For the UDP path, your station shows up as a hash of your address,
+          never the address itself, or as your vessel's MMSI once it has sent its
+          own position report. UDP is unauthenticated and therefore the
+          lowest-trust path: those messages appear on the map and in the streams
+          immediately, but they reach the raw feed and other aggregators only
+          while a trusted source has heard the same vessel recently.
+        </p>
+        <p>
+          <a href={TOKEN} class="text-accent hover:text-accent-hover"
+            >Create a token</a
+          > in your browser — no sign-up, no email, and it does not expire.
+        </p>
+      </div>
+
+      <h2 id="readback" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Read the network back
+      </h2>
+      <div class="text-fg-muted mb-6 space-y-4">
+        <p>
+          This is the part most people do not know exists. AIS-catcher can take
+          NMEA in over a WebSocket as well as send it, so the deduplicated feed
+          from every station and every source in the network can be an input to
+          your own instance. Your viewer stops being a picture of what your
+          antenna hears and becomes a picture of what the network hears.
+        </p>
+        <p>
+          Bridge the feed to AIS-catcher's built-in UDP server and point its web
+          viewer at the result:
+        </p>
+      </div>
+      <CodeBlock
+        code={`websocat -t 'wss://ais.openwaters.io/v1/nmea?key=<token>&bbox=48,-126,51,-122' udp:127.0.0.1:10110
+AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
+        class="mb-6"
+      />
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          <code class="bg-surface rounded px-1">/v1/nmea</code> needs a token at
+          the contributor tier, which your station earns by feeding — so this is
+          the thing feeding gets you, not a separate product. Each frame is one
+          message, sentences joined by CRLF, with a TAG block naming the station
+          that heard it, the time, and the licence its source publishes under.
+          The <code class="bg-surface rounded px-1">bbox</code> is optional and
+          repeatable; start with one around your own waters, because the whole
+          world is a lot of messages a second for a Raspberry Pi to draw.
+        </p>
+        <p>
+          <strong>Keep the network out of your outputs.</strong> AIS-catcher
+          sends everything from every input to every output by default, so an
+          instance that reads the network <em>and</em> feeds it will echo the
+          whole aggregate straight back, which makes your station look like it
+          heard the planet. Put the network input in its own group and list only
+          your receiver's group on each output with <code
+            class="bg-surface rounded px-1">groups_in</code
+          >. The same goes for <code class="bg-surface rounded px-1">-X</code>:
+          leave community sharing off on an instance that reads the feed, so you
+          are not republishing it to aiscatcher.org either.
+        </p>
+        <p class="text-sm">
+          <a href={API} class="text-accent hover:text-accent-hover"
+            >Raw NMEA feed reference</a
+          >
+        </p>
+      </div>
+
+      <h2 id="vhf" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Already have a VHF with AIS receive?
+      </h2>
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          Then you probably do not want AIS-catcher. It is a decoder: it turns
+          radio into NMEA sentences. A fixed-mount VHF with AIS receive has
+          already done that, and already has the filtering and a real marine
+          antenna, so it hands your computer finished sentences with nothing left
+          to decode.
+        </p>
+        <p>
+          If the machine it is wired to runs Signal K, use <a
+            href="/ais/signalk/"
+            class="text-accent hover:text-accent-hover">the Signal K plugin</a
+          > instead. It shares every sentence the server receives, needs no extra
+          wiring, and sends network traffic back out to your chartplotter. Running
+          AIS-catcher alongside it would also mean two programs wanting the same serial
+          device, which one of them will lose.
+        </p>
+        <p>
+          With no Signal K, AIS-catcher can forward from the serial port instead
+          of decoding — <code class="bg-surface rounded px-1"
+            >AIS-catcher -e 38400 /dev/ttyUSB0 -u udp.ais.openwaters.io 10110</code
+          >. 38400 is the standard rate for AIS on NMEA 0183. Wire the adapter
+          receive-only.
+        </p>
+      </div>
+
+      <h2 id="elsewhere" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Keep feeding everyone
+      </h2>
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          Open Waters AIS never asks a station to stop feeding anywhere else, and
+          never will. AIS-catcher fans out to as many destinations as you
+          configure, and <a
+            href={SHIPFEEDER}
+            class="text-accent hover:text-accent-hover">docker-shipfeeder</a
+          > already points one receiver at a long list of them. This is one more
+          line in that list.
+        </p>
+        <p>
+          That is not generosity. Exclusivity is how the big aggregators extract
+          a perpetual, transferable licence to what your antenna hears, and a
+          network that needs exclusivity to survive has already lost the argument
+          about whose data it is.
+        </p>
+      </div>
+
+      <h2 id="station" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Your station
+      </h2>
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          Your station gets a page as soon as it is heard, showing the vessels it
+          has heard, how far it reaches, and how many messages it was the first
+          to deliver. That last number is the one worth watching. A rooftop in a
+          busy harbour can log millions of messages that three other stations
+          also logged; a station on an empty headland can log a fraction of that
+          and be the only reason those vessels appear at all.
+        </p>
+        <p>
+          Ranking by volume would tell you to point antennas where the ships
+          already are. Heard-first tells you to point them at the gaps, which is
+          the actual problem. Naming your station is optional and free.
+        </p>
+        <p class="text-sm">
+          <a href={MAP} class="text-accent hover:text-accent-hover"
+            >Open the live map</a
+          >
+        </p>
+      </div>
+
+      <h2 id="data" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Your data
+      </h2>
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          Volunteer receptions are published under CC0 and the volunteer
+          aggregate under ODbL, so anyone can reuse and build on them and they
+          stay reusable. The <a
+            href={`${REPO}/blob/main/docs/contributor-agreement.md`}
+            class="text-accent hover:text-accent-hover"
+            >contributor agreement</a
+          > says so before the data exists, says the aggregate stays open even if the
+          project is sold, and changes only through public pull requests — so disagreeing
+          with one is a review comment.
+        </p>
+        <p>
+          Station locations are never requested, and derived ones are shown
+          coarse.
+        </p>
+      </div>
+
+      <h2 id="faq" class="mb-6 scroll-mt-24 text-3xl font-semibold">FAQ</h2>
+      <div class="mb-12 space-y-6">
+        {
+          faq.map((item) => (
+            <div>
+              <h3 class="mb-1 text-base font-semibold">{item.q}</h3>
+              <p class="text-fg-muted text-sm">{item.a}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <Card class="p-6">
+        <h2 class="mb-2 text-xl font-semibold">One more output line</h2>
+        <p class="text-fg-muted mb-4 text-sm">
+          Then read back the network you just joined. Coverage questions, antenna
+          advice, and setup problems go to the discussions.
+        </p>
+        <p class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+          <a href={TOKEN} class="text-accent hover:text-accent-hover"
+            >Create a token</a
+          >
+          <a href={API} class="text-accent hover:text-accent-hover">API docs</a>
+          <a href={AISCATCHER} class="text-accent hover:text-accent-hover"
+            >AIS-catcher</a
+          >
+          <a href={AISCATCHER_DOCS} class="text-accent hover:text-accent-hover"
+            >AIS-catcher docs</a
+          >
+          <a
+            href={`${REPO}/discussions`}
+            class="text-accent hover:text-accent-hover">Discussions</a
+          >
+        </p>
+      </Card>
+    </div>
+  </Container>
+</MainLayout>
