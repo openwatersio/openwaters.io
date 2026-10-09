@@ -5,13 +5,14 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "prebuild": "npm ls --depth=0 >/dev/null 2>&1 || { npm ls --depth=0 2>&1 | grep -iE 'invalid|missing' | head -5; echo ''; echo 'Installed dependencies do not match package.json — run `npm ci` from the repo root.'; echo 'A stale install fails astro check with missing exports, which reads as broken code.'; exit 1; }",
+    "prebuild": "npm ls --depth=0 >/dev/null 2>&1 || { npm ls --depth=0 2>&1 | grep -iE 'invalid|missing' | head -5; echo ''; echo 'Installed dependencies do not match package.json \u2014 run `npm ci` from the repo root.'; echo 'A stale install fails astro check with missing exports, which reads as broken code.'; exit 1; }",
     "build": "astro check && astro build",
     "format": "prettier --write .",
     "preview": "astro preview",
     "astro": "astro",
     "prepare": "husky",
-    "test": "node --test \"src/**/*.test.ts\""
+    "test": "node --test \"src/**/*.test.ts\"",
+    "og:ais": "node scripts/og-ais.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
@@ -49,6 +50,7 @@
     "@types/turndown": "^5.0.6",
     "husky": "^9.1.7",
     "lint-staged": "^17.4.1",
+    "playwright-core": "^1.56.0",
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
