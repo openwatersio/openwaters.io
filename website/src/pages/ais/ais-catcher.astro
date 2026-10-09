@@ -44,7 +44,7 @@ const paths: {
   },
   {
     name: "HTTP POST",
-    cmd: "AIS-catcher -H https://ais.openwaters.io/v1/receive USERPWD x:<token>",
+    cmd: "AIS-catcher -H https://ais.openwaters.io/v1/receive USERPWD x:<token> GZIP on INTERVAL 5",
     when: "The same station identity, batched on an interval instead of sent per message. Use it if you already feed something else over HTTP and want one more of the same shape.",
     credit: "Credited to your token",
     token: true,
@@ -148,12 +148,10 @@ const faqSchema = {
       <h1 class="mb-4">AIS for AIS-catcher</h1>
 
       <p class="text-lead mb-8">
-        Add one output line and the AIS your antenna hears joins <a href="/ais/"
+        One line feeds what your antenna hears to <a href="/ais/"
           >Open Waters AIS</a
-        >, deduplicated against every other station and open to everyone. Add
-        one input line and the whole network comes back the other way, so the
-        AIS-catcher map you already watch shows every ship the network hears
-        instead of only the ones in range of your antenna.
+        >. One more reads the whole network back. Your receptions stay yours —
+        CC0, open to everyone, never exclusive to us.
       </p>
 
       <nav
@@ -196,12 +194,6 @@ const faqSchema = {
             class="btn btn-primary"
             rel="noopener"
             target="_blank">Create a token</a
-          >
-          <a
-            data-cta-station
-            href={STATIONS}
-            class="text-accent hover:text-accent-hover hidden font-medium"
-            >See your station</a
           >
         </p>
       </Card>
@@ -451,6 +443,24 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
         </p>
       </div>
 
+      {
+        /* Filled in from /v1/stations/<id> when the visitor has a token. Hidden
+          in the shipped HTML, so nobody without one sees an empty frame. */
+      }
+      <Card class="mb-12 p-5" data-stats hidden>
+        <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+          <h3 class="text-base font-semibold" data-stats-name></h3>
+          <a
+            data-stats-link
+            href={STATIONS}
+            class="text-accent hover:text-accent-hover text-sm font-medium"
+            >Station page</a
+          >
+        </div>
+        <p class="text-fg-muted mb-4 text-sm" data-stats-note></p>
+        <dl data-stats-list></dl>
+      </Card>
+
       <h2 id="elsewhere" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         Keep feeding everyone
       </h2>
@@ -523,7 +533,6 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
   const title = $<HTMLElement>("[data-cta-title]");
   const body = $<HTMLElement>("[data-cta-body]");
   const primary = $<HTMLAnchorElement>("[data-cta-primary]");
-  const station = $<HTMLAnchorElement>("[data-cta-station]");
 
   const noToken = {
     title: title.textContent ?? "",
@@ -537,7 +546,6 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
       primary.textContent = "Create a token";
       primary.target = "_blank";
       primary.href = "/ais/token/";
-      station.classList.add("hidden");
       return;
     }
     // Named or not, the station has an id, so there is always something to
@@ -549,11 +557,96 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
     primary.textContent = regenLabel(t.name);
     primary.removeAttribute("target");
     primary.href = "/ais/token/";
-    station.href = stationHref(t.claims);
-    station.classList.remove("hidden");
   });
 
   function regenLabel(name: string | null) {
     return name ? "Manage token" : "Name your station";
   }
+</script>
+
+<script>
+  import { onTokenChange, stationHref } from "../../utils/aiscast-token";
+
+  const card = document.querySelector<HTMLElement>("[data-stats]")!;
+  const nameEl = card.querySelector<HTMLElement>("[data-stats-name]")!;
+  const noteEl = card.querySelector<HTMLElement>("[data-stats-note]")!;
+  const listEl = card.querySelector<HTMLElement>("[data-stats-list]")!;
+  const linkEl = card.querySelector<HTMLAnchorElement>("[data-stats-link]")!;
+
+  const n = (v: number) => v.toLocaleString();
+  const ago = (s: number) =>
+    s < 90
+      ? `${Math.round(s)} s ago`
+      : s < 5400
+        ? `${Math.round(s / 60)} min ago`
+        : s < 172800
+          ? `${Math.round(s / 3600)} h ago`
+          : `${Math.round(s / 86400)} days ago`;
+
+  interface Station {
+    name?: string;
+    near?: string;
+    events?: { last_24h?: number };
+    vessels_24h?: number;
+    vessels_exclusive_24h?: number;
+    uptime_7d?: number;
+    last_age_s?: number;
+  }
+
+  function rows(st: Station) {
+    // dt/dd as direct children: global.css lays a dl out as a two-column grid
+    // and a wrapper element would become one cell.
+    const pairs: [string, string][] = [
+      ["Heard first, 24 h", n(st.vessels_exclusive_24h ?? 0) + " vessels"],
+      ["Vessels heard, 24 h", n(st.vessels_24h ?? 0)],
+      ["Messages, 24 h", n(st.events?.last_24h ?? 0)],
+      ["Uptime, 7 days", Math.round((st.uptime_7d ?? 0) * 100) + "%"],
+    ];
+    if (st.last_age_s != null) pairs.push(["Last heard", ago(st.last_age_s)]);
+    if (st.near) pairs.push(["Near", st.near]);
+    listEl.replaceChildren(
+      ...pairs.flatMap(([k, v]) => {
+        const dt = document.createElement("dt");
+        dt.textContent = k;
+        const dd = document.createElement("dd");
+        dd.textContent = v;
+        return [dt, dd];
+      }),
+    );
+  }
+
+  onTokenChange(async (t) => {
+    if (!t) {
+      card.hidden = true;
+      return;
+    }
+    const href = stationHref(t.claims);
+    linkEl.href = href;
+    try {
+      const res = await fetch(
+        `https://ais.openwaters.io/v1/stations/station:${t.claims.sub}`,
+      );
+      // 404 is the normal state for a token whose receiver has not been set up
+      // yet, which is most people reading this page. Say so rather than hide.
+      if (res.status === 404) {
+        nameEl.textContent = t.name || "Your station";
+        noteEl.textContent =
+          "Nothing heard from this token yet. Run one of the commands above and this fills in within a minute or two.";
+        listEl.replaceChildren();
+        card.hidden = false;
+        return;
+      }
+      if (!res.ok) return;
+      const st: Station = (await res.json()).station;
+      nameEl.textContent = st.name || t.name || "Your station";
+      noteEl.textContent =
+        (st.vessels_exclusive_24h ?? 0) > 0
+          ? "Heard first is the number worth watching: receptions no other station and no open feed had already delivered."
+          : "Everything this station heard in the last day, another station or an open feed had already delivered. That changes the moment you are the only ears somewhere.";
+      rows(st);
+      card.hidden = false;
+    } catch {
+      // Offline or blocked: the prose above already stands on its own.
+    }
+  });
 </script>

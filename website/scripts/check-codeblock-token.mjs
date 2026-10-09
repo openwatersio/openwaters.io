@@ -116,15 +116,28 @@ try {
     (await page.locator("[data-cta-title]").innerText()).includes("Bench rig"),
     "CTA names the station",
   );
-  const stationLink = page.locator("[data-cta-station]");
-  check(await stationLink.isVisible(), "CTA offers the station page");
   check(
-    (await stationLink.getAttribute("href")) === "/ais/stations/station:test",
-    `station link points at the station: ${await stationLink.getAttribute("href")}`,
+    (await page.locator("[data-cta-station]").count()) === 0,
+    "CTA does not divert to the station page before setup",
   );
   check(
     (await page.locator("[data-cta-primary]").innerText()) === "Manage token",
     "CTA primary becomes manage, not create",
+  );
+
+  // The station card lives further down, past the install steps, and its link
+  // is the one that should point at the station.
+  const stats = page.locator("[data-stats]");
+  await stats.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
+  check(await stats.isVisible(), "station card appears once there is a token");
+  check(
+    (await page.locator("[data-stats-link]").getAttribute("href")) ===
+      "/ais/stations/station:test",
+    `station card links the station: ${await page.locator("[data-stats-link]").getAttribute("href")}`,
+  );
+  check(
+    (await page.locator("[data-stats-note]").innerText()).length > 20,
+    "station card explains what it is showing",
   );
 
   await page.evaluate(() => localStorage.removeItem("aiscast.name"));
@@ -159,8 +172,8 @@ try {
     "expired token puts the CTA back to create",
   );
   check(
-    !(await page.locator("[data-cta-station]").isVisible()),
-    "expired token hides the station link",
+    !(await page.locator("[data-stats]").isVisible()),
+    "expired token hides the station card",
   );
 
   await browser.close();

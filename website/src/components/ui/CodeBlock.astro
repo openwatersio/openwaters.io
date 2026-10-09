@@ -18,10 +18,18 @@ const { code, class: className, token = false } = Astro.props;
   <div
     class="border-line bg-well text-fg overflow-x-auto rounded-xl border p-4 pr-14 font-mono"
   >
+    {
+      /* Token blocks wrap the way /ais/token/ does: a substituted token is
+        300-odd unbroken characters, and scrolling sideways through one to
+        check the end of a command is worse than a mid-token break. Blocks
+        without a token keep scrolling, so the multi-line TypeScript and
+        Swift samples on /sky/ are not broken mid-identifier. */
+    }
     <pre
-      class="text-sm"><code data-code data-token={token ? "" : undefined}>{
-        code
-      }</code></pre>
+      class:list={[
+        "text-sm",
+        token && "break-all whitespace-pre-wrap",
+      ]}><code data-code data-token={token ? "" : undefined}>{code}</code></pre>
   </div>
   <button
     type="button"
