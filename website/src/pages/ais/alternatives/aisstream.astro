@@ -8,7 +8,7 @@ import { CONTACT_EMAIL } from "../../../utils/constants";
 import { SITE, publisher } from "../../../utils/schema";
 
 const DESCRIPTION =
-  "aisstream.io down again? Six real alternatives compared on protocol, coverage, price, and license, including one that speaks aisstream's protocol so your code keeps working.";
+  "Compare AIS providers for real-time vessel tracking and historical analysis: streaming, vessel tracks, coverage, access, and source terms.";
 
 const sections = [
   { id: "why", label: "Why people look for an alternative" },
@@ -31,11 +31,15 @@ const alternatives: {
   {
     name: "Open Waters AIS",
     intro:
-      "An open AIS network that speaks aisstream's protocol. We built it because we had the same problem: our chart app streamed from aisstream and went dark with it.",
+      "An open AIS network for real-time vessel tracking and historical analysis, with an aisstream-compatible stream and a REST API for vessel tracks.",
     bullets: [
       {
-        label: "Protocol",
-        html: "WebSocket push, bounding box or MMSI list. <code>/v0/stream</code> is aisstream-compatible: change the hostname, use your Open Waters AIS token as <code>APIKey</code>, and <code>aisstream-ts</code>, the official Go/Python/JS examples, and <code>signalk-aisstream</code> run unmodified. <code>/v1/stream</code> is the native API and needs no token to subscribe. <code>GET /v1/vessels?bbox=</code> returns a GeoJSON snapshot so a view fills instantly instead of waiting for the next position report.",
+        label: "Real-time tracking",
+        html: "WebSocket push, bounding box or MMSI list. <code>/v0/stream</code> is aisstream-compatible: change the hostname, use your Open Waters AIS token as <code>APIKey</code>, and <code>aisstream-ts</code>, the official Go/Python/JS examples, and <code>signalk-aisstream</code> run unmodified. <code>/v1/stream</code> is the native API and needs no token to subscribe. REST vessel lookups support applications that poll rather than keep a stream open.",
+      },
+      {
+        label: "Historical analysis",
+        html: "<a href='/api/ais/#get-v1-vessels-mmsi-track'>Vessel tracks</a> return recorded positions for a requested time range as GeoJSON or GPX. Each request can span up to 366 days; that is a query limit, not a guarantee of a year of coverage. Available dates and detail depend on the vessel, source, and access tier. For a historical project, <a href='/contact/'>send us your vessels, area, and dates</a> to check the fit.",
       },
       {
         label: "Coverage",
@@ -43,7 +47,7 @@ const alternatives: {
       },
       {
         label: "Price",
-        html: "free without a token (2 streams, 20 msg/s, about 10°×10°); free personal token in one click, never expires (2 streams, 50 msg/s, about 20°×20°, or 50 vessels by MMSI anywhere); contributor tier is earned by contributing a receiver; commercial by arrangement.",
+        html: "free without a token (2 streams, 20 msg/s, about 10°×10°); free personal token in one click, never expires (2 streams, 50 msg/s, about 20°×20°, or 50 vessels by MMSI anywhere); contributor tier is earned by contributing a receiver; free access is for personal use; commercial products should <a href='/contact/'>contact us</a> for terms and a quote.",
       },
       {
         label: "License",
@@ -55,10 +59,10 @@ const alternatives: {
       },
       {
         label: "Honest limits",
-        html: "it is a beta with no SLA, launched in 2026. Live sub-minute coverage outside Norway, Finland, and volunteer stations depends on the AISHub snapshot. No history or bulk export yet. No satellite coverage outside the Norwegian EEZ.",
+        html: "standard access is best effort. Coverage and latency vary by source; AISHub positions are typically about a minute behind. Historical tracks only contain positions the network holds, and gaps remain gaps. Check the required vessels and dates before relying on the data; contact us about bulk datasets or contractual requirements. This is not a global satellite feed or a service for safety of navigation.",
       },
     ],
-    best: "anyone with an aisstream client that needs to keep running today, Signal K boats, dashboards, hobby and research projects, and anyone who needs to know where a message came from and under what license.",
+    best: "developers building vessel tracking, fleet monitoring, and marine apps; analysts and researchers reconstructing vessel movements over time.",
   },
   {
     name: "AISHub",
@@ -124,6 +128,10 @@ const alternatives: {
       },
       { label: "Coverage", html: "global terrestrial plus satellite." },
       {
+        label: "Historical analysis",
+        html: "<a href='https://www.vesselfinder.com/historical-ais-data'>Historical datasets</a> for vessels, ports, or areas, delivered as CSV or XLS. Confirm the dates and resolution available for your request.",
+      },
+      {
         label: "Price",
         html: "€330 for 10,000 credits, €625 for 20,000, €1,470 for 50,000. A terrestrial position is one credit, satellite ten.",
       },
@@ -143,7 +151,7 @@ const alternatives: {
     bullets: [
       {
         label: "Protocol",
-        html: "REST with credits; historical data included.",
+        html: "REST with credits and a <a href='https://docs.datalastic.com/'>historical data API</a>; check the plan and date range for your project.",
       },
       {
         label: "Price",
@@ -165,24 +173,24 @@ const alternatives: {
       { label: "Protocol", html: "GraphQL, raw NMEA streams, Snowflake." },
       {
         label: "Coverage",
-        html: "the best on earth: 13,000+ receivers plus a satellite constellation with sub-minute latency.",
+        html: "terrestrial and satellite coverage; confirm latency and coverage for your required area.",
       },
       {
         label: "Price",
-        html: "not published. The wholesale figure in Kpler's own SEC filing is $437,500 a month for a global feed; regional live satellite has gone for about $10,000 a year in public procurement.",
+        html: "contact sales for a quote matched to coverage, history, delivery, and usage rights.",
       },
       {
         label: "License",
         html: "no redistribution, no access through any third-party software or aggregator.",
       },
     ],
-    best: "fleets and analysts with procurement. Not for individuals or anything open.",
+    best: "fleets and analysts evaluating contracted terrestrial and satellite data.",
   },
 ];
 
 const glanceColumns = [
   "Push stream",
-  "Snapshot API",
+  "Historical data",
   "Coverage",
   "Free tier",
   "Redistribution",
@@ -192,7 +200,7 @@ const glanceRows: [string, ...string[]][] = [
   [
     "Open Waters AIS",
     "yes, aisstream-compatible",
-    "yes",
+    "vessel tracks, subject to recorded coverage",
     "Nordic live, world via AISHub (~1 min behind), volunteers",
     "yes, no account",
     "yes, per-source license published",
@@ -204,13 +212,13 @@ const glanceRows: [string, ...string[]][] = [
     "no",
     "global terrestrial, when up",
     "only tier",
-    "no terms",
+    "confirm reuse terms",
     "no",
   ],
   [
     "AISHub",
     "no (≤1/min)",
-    "yes",
+    "current positions, not an archive",
     "global, 1,600+ stations, ~1 min behind",
     "contributors only",
     "yes, confirmed by email",
@@ -219,18 +227,34 @@ const glanceRows: [string, ...string[]][] = [
   [
     "Government feeds",
     "MQTT/TCP",
-    "some",
+    "varies by agency and dataset",
     "Finland, Norway, EU inland",
     "yes",
     "yes",
     "per agency",
   ],
-  ["VesselFinder", "quote", "credits", "global + satellite", "no", "no", "no"],
-  ["Datalastic", "no", "credits", "global", "trial", "no public display", "no"],
+  [
+    "VesselFinder",
+    "quote",
+    "historical datasets",
+    "global + satellite",
+    "no",
+    "no",
+    "no",
+  ],
+  [
+    "Datalastic",
+    "no",
+    "historical API",
+    "global",
+    "trial",
+    "no public display",
+    "no",
+  ],
   [
     "Kpler",
     "raw NMEA",
-    "GraphQL",
+    "historical products; contact sales",
     "global + satellite",
     "no",
     "no",
@@ -245,7 +269,7 @@ const which: { when: string; then: string }[] = [
   },
   {
     when: "You run a receiver and want the world:",
-    then: "AISHub for the snapshot, Open Waters AIS for the live stream, and feed both. Open Waters AIS already feeds AISHub for you.",
+    then: "Compare AISHub’s reciprocal access with Open Waters AIS contributor access. Choose based on coverage, latency, and how you use the data.",
   },
   {
     when: "Finland or Norway only:",
@@ -255,14 +279,21 @@ const which: { when: string; then: string }[] = [
     when: "A few known ships, occasionally:",
     then: "VesselFinder credits.",
   },
-  { when: "History and a budget:", then: "Datalastic." },
+  {
+    when: "Historical vessel movements or research:",
+    then: "Start with Open Waters AIS vessel tracks and check the vessels and dates available. Compare Datalastic, VesselFinder, or government archives when you need a different region, time span, or delivery format.",
+  },
   { when: "A fleet and a procurement department:", then: "Kpler." },
 ];
 
 const faq = [
   {
+    q: "Can I get historical AIS data from Open Waters AIS?",
+    a: "Yes. The vessel-track REST endpoint returns recorded positions over a requested time range as GeoJSON or GPX. A request can span up to 366 days, but available history depends on the vessel and source. Check coverage for your dates; contact us about commercial historical analysis or bulk dataset needs.",
+  },
+  {
     q: "Is aisstream.io down?",
-    a: "Check the aisstream issue tracker; there is no status page. As of early September 2026 the newest issues report 429 lockouts and instant connection closes.",
+    a: "Check current service reports in the aisstream issue tracker and your client logs. A quiet stream can also mean filters, coverage gaps, or a connection limit; it is not proof of an outage.",
   },
   {
     q: "Is there a free alternative to aisstream.io?",
@@ -270,11 +301,11 @@ const faq = [
   },
   {
     q: "Can I use aisstream.io data commercially?",
-    a: "aisstream publishes no terms, and its licensing issues have gone unanswered since 2023. Open Waters AIS publishes the license of every source it re-serves and carries it on every event.",
+    a: "Confirm reuse terms with aisstream before building a commercial product on its feed. Open Waters AIS publishes source terms and attribution requirements; contact us about commercial access and any sources your product needs to exclude.",
   },
   {
     q: "Does Open Waters AIS have the same coverage as aisstream.io?",
-    a: "Not yet in the same way. Open Waters AIS is live in Norway, Finland, and wherever volunteer receivers are, and carries worldwide terrestrial positions from AISHub that run about a minute behind. It also uses aisstream.io as an upstream when aisstream is up, so you lose nothing by switching.",
+    a: "Not yet in the same way. Open Waters AIS is live in Norway, Finland, and wherever volunteer receivers are, and carries worldwide terrestrial positions from AISHub that run about a minute behind. It also uses aisstream.io as an upstream when aisstream is up, but compare your actual vessels and regions before switching.",
   },
 ];
 
@@ -308,19 +339,17 @@ const faqSchema = {
       </a>
 
       <h1 class="mb-2">aisstream.io alternatives</h1>
-      <p class="text-fg-faint mb-4 text-sm">Last checked 4 September 2026</p>
+      <p class="text-fg-faint mb-4 text-sm">
+        Open Waters AIS and aisstream documentation checked 8 October 2026;
+        other provider details last checked 4 September 2026
+      </p>
 
       <p class="text-lead mb-8">
-        If your aisstream.io client is sitting on a connection that delivers
-        nothing, point it at <code class="bg-surface rounded px-1"
-          >wss://ais.openwaters.io/v0/stream</code
-        > with an Open Waters AIS token as the <code
-          class="bg-surface rounded px-1">APIKey</code
-        > and it starts receiving again. Same subscribe message, same frames. If you
-        need global coverage with an SLA, that is a paid product (Kpler, VesselFinder,
-        Datalastic) and none of them stream. If you run a receiver, AISHub's snapshot
-        is free and unrestricted. The rest of this page is the honest version of those
-        three sentences.
+        Choose an AIS provider around the work you need to do: track vessels in
+        real time, or analyse where they have been. Open Waters AIS supports
+        both, with an aisstream-compatible stream for live applications and
+        historical vessel tracks over REST. Compare coverage, available dates,
+        and data terms before choosing a provider.
       </p>
 
       <nav
@@ -346,32 +375,19 @@ const faqSchema = {
       </h2>
       <div class="text-fg-muted mb-12 space-y-4">
         <p>
-          aisstream.io is the only free service that pushes global AIS over a
-          WebSocket, and it is a one-person project that has been failing the
-          way one-person projects fail. Its issue tracker had 190 open issues on
-          4 September 2026. The most recent, from the first two days of
-          September, describe connections stuck for days blocking new ones with
-          429s, and every connection attempt closing instantly with code 1006.
-          In August the service was down roughly 14 days out of 20. Earlier
-          outage cycles were expired TLS certificates, four times since 2024.
+          A live map or fleet monitor needs timely positions and a connection it
+          can recover when interrupted. Historical analysis needs recorded
+          positions for specific vessels, places, and dates. A streaming API
+          alone does not provide the past: your application must store the feed
+          or use a provider with an archive.
         </p>
         <p>
-          The failures are silent. aisstream sends no subscription
-          acknowledgement, no heartbeat, and no close reason, so a dead backend
-          looks exactly like an empty ocean or a flipped bounding box. Every
-          outage produces a dozen “is it me?” issues.
-        </p>
-        <p>
-          There are also no terms. Twenty issues ask for a data license,
-          attribution wording, or a commercial contact, the latest two on 29 and
-          30 August 2026, and none have been answered. The server is closed
-          source and the public repository has been empty since December 2022,
-          so nobody can fork it.
-        </p>
-        <p>
-          None of that makes aisstream a bad idea. It proved that free,
-          push-based, bounding-box AIS is what developers want. It is just not
-          something you can build on.
+          aisstream.io offers a free WebSocket feed. Its <a
+            href="https://aisstream.io/documentation">current documentation</a
+          >{" "}
+          describes subscription confirmations and connection limits, but no durable
+          replay or uptime guarantee. Look for an alternative when your project needs
+          historical queries, different coverage, or commercial terms.
         </p>
       </div>
 
@@ -380,9 +396,14 @@ const faqSchema = {
       </h2>
       <ul class="text-fg-muted mb-12 space-y-3">
         <li>
-          <span class="font-semibold">Push or pull.</span> aisstream is push: subscribe
-          once, receive forever. Almost everything else is a REST API you poll, which
-          changes your architecture and your bill.
+          <span class="font-semibold">Real-time tracking.</span> Decide whether you
+          need a continuous stream or periodic REST lookups. Check position age, reconnect
+          behaviour, and coverage for the vessels you follow.
+        </li>
+        <li>
+          <span class="font-semibold">Historical analysis.</span> Check available
+          dates, sampling, gaps, vessel identifiers, and export formats. A current
+          position snapshot does not replace a historical track.
         </li>
         <li>
           <span class="font-semibold">Coverage you can see.</span> Terrestrial AIS
@@ -497,7 +518,10 @@ const faqSchema = {
       <ol
         class="text-fg-muted marker:text-fg-faint mb-6 list-decimal space-y-2 pl-5"
       >
-        <li>Get a token (one click, stays in your browser, never expires).</li>
+        <li>
+          Get a personal token for personal use, or contact us for commercial
+          access.
+        </li>
         <li>
           Replace <code class="bg-surface rounded px-1"
             >wss://stream.aisstream.io/v0/stream</code
@@ -507,8 +531,8 @@ const faqSchema = {
         </li>
         <li>
           Put the token in <code class="bg-surface rounded px-1">APIKey</code>.
-          Everything else stays: <code class="bg-surface rounded px-1"
-            >BoundingBoxes</code
+          The compatibility endpoint accepts: <code
+            class="bg-surface rounded px-1">BoundingBoxes</code
           >, <code class="bg-surface rounded px-1">FiltersShipMMSI</code>, <code
             class="bg-surface rounded px-1">FilterMessageTypes</code
           >, and the <code class="bg-surface rounded px-1">MessageType</code> / <code
@@ -535,9 +559,10 @@ const faqSchema = {
 
       <div class="text-fg-muted mb-12 space-y-4">
         <p>
-          What changes: the limits are per token rather than per IP (2
-          concurrent streams, 50 messages a second, about 20°×20°), so a
-          world-sized bounding box is refused with a message that says so
+          Check your client against both providers’ current limits and control
+          messages before migrating. Open Waters AIS personal limits are per
+          token (2 concurrent streams, 50 messages a second, about 20°×20°), so
+          a world-sized bounding box is refused with a message that says so
           instead of silently throttled. Where aisstream's decoder was wrong (<code
             class="bg-surface rounded px-1">Valid: true</code
           > on out-of-range values, message 27 labelled 23), <code

@@ -31,9 +31,10 @@ const setups = [
   {
     icon: "mdi:sail-boat",
     title: "Signal K",
-    text: "Both directions: shares what your receiver hears and your own position, each behind its own switch, and shows AIS traffic when it hears none. Enable it in Plugin Config after installing. No account; it creates its own token. Not for safety of navigation.",
+    text: "Both directions: shares what your receiver hears and your own position, each behind its own switch, and shows AIS traffic when it hears none, on your chartplotter too. Enable it in Plugin Config after installing. No account; it creates its own token. Not for safety of navigation.",
     code: "cd ~/.signalk && npm install signalk-aiscast",
     links: [
+      { label: "AIS for Signal K", href: "/ais/signalk/" },
       { label: "npm", href: "https://www.npmjs.com/package/signalk-aiscast" },
       { label: "README", href: `${REPO}/tree/main/signalk-plugin#readme` },
     ],
@@ -155,7 +156,14 @@ const questions = [
                 <CodeBlock class="text-xs" code={c.code} />
                 <div class="mt-auto flex flex-wrap gap-4 text-sm font-medium">
                   {c.links.map((l) => (
-                    <a href={l.href} target="_blank" rel="noopener noreferrer">
+                    // Only the off-site links open a new tab; this list also
+                    // holds same-site pages, which should navigate in place.
+                    <a
+                      href={l.href}
+                      {...(l.href.startsWith("http")
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                    >
                       {l.label}
                     </a>
                   ))}
