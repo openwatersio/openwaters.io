@@ -70,7 +70,7 @@ const CARDS = {
   "ais-vs-aisstream": {
     base: "ais.png",
     eyebrow: "Open Waters · AIS",
-    title: ["aiscast vs", "aisstream.io"],
+    title: ["Open Waters AIS", "vs aisstream.io"],
     sub: ["Same protocol. Different everything else."],
   },
   "ais-alternatives-aisstream": {
