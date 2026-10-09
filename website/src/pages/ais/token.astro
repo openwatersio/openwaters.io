@@ -6,7 +6,10 @@ import Icon from "../../components/Icon.astro";
 import { CONTACT_EMAIL } from "../../utils/constants";
 
 const SERVER = "https://ais.openwaters.io";
-const VIEWER = "https://openwatersio.github.io/aiscast/";
+// The GitHub Pages viewer still redirects here, preserving the query and the old hash,
+// so links volunteers already shared keep working. New links skip that hop.
+const MAP = "/ais/vessels";
+const STATIONS = "/ais/stations";
 const pre =
   "bg-well overflow-x-auto rounded-lg p-4 text-sm break-all whitespace-pre-wrap text-fg-strong";
 ---
@@ -39,7 +42,7 @@ const pre =
       class="mx-auto max-w-2xl space-y-8"
       data-token-page
       data-server={SERVER}
-      data-viewer={VIEWER}
+      data-stations={STATIONS}
     >
       <Card>
         <p class="text-fg-muted mb-5">
@@ -112,7 +115,7 @@ const pre =
             expires <span data-exp></span>. Your data appears as <code
               class="bg-surface rounded px-1"
               >source: station:&lt;station id&gt;</code
-            >; see it on <a data-stlink href={VIEWER}>the live map</a> or at <code
+            >; see it on <a data-stlink href={MAP}>the live map</a> or at <code
               class="bg-surface rounded px-1">/v1/stations</code
             >.
           </p>
@@ -173,7 +176,7 @@ const pre =
 <script>
   const root = document.querySelector<HTMLElement>("[data-token-page]")!;
   const server = root.dataset.server!;
-  const viewer = root.dataset.viewer!;
+  const stations = root.dataset.stations!;
   const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
 
   type Claims = { sub: string; exp?: number };
@@ -207,8 +210,11 @@ const pre =
     $("[data-exp]").textContent = claims.exp
       ? new Date(claims.exp * 1000).toISOString().slice(0, 10)
       : "never";
+    // Left unencoded: the id's colons and slashes are legal in a path, the route is a
+    // splat, and this is the address /ais/vessels?station= redirects to, so the link a
+    // volunteer copies is already the canonical one.
     $<HTMLAnchorElement>("[data-stlink]").href =
-      `${viewer}?station=${encodeURIComponent("station:" + claims.sub)}`;
+      `${stations}/station:${claims.sub}`;
     $("[data-cmd-aiscatcher]").textContent =
       `AIS-catcher -d:0 -Q wssmqtt://x:${token}@${server.replace(/^https?:\/\//, "")}:443/v1/stream MSGFORMAT NMEA`;
     $("[data-cmd-aiscatcher-http]").textContent =
