@@ -1,7 +1,14 @@
-// Renders the link-preview cards in public/og/ at 1200x630.
+// Renders the AIS link-preview cards in public/og/ at 1200x630.
 //
-//   npm run og -w website ais-signalk      one card
-//   npm run og -w website                  every card in CARDS
+//   npm run og:ais -w website ais-signalk      one card
+//   npm run og:ais -w website                  every card in CARDS
+//
+// Named for the AIS family because that is what the layout is: the background
+// colour, the left text block and the panel gradient are all tuned to sit over
+// og/ais.png. The browser, font and compositing machinery below is not
+// AIS-specific, so when a second template earns its place (og-brand.mjs for
+// openwaters.png, say) lift the shared parts out then — with two real cases to
+// generalise from rather than one guessed at.
 //
 // Each card is laid out in HTML and screenshotted, so it picks up the real Geist
 // face rather than approximating it. sharp is already installed and can rasterise
