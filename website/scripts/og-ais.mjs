@@ -67,6 +67,12 @@ const CARDS = {
     title: ["AIS for", "Signal K"],
     sub: ["Worldwide traffic without a receiver,", "on your chartplotter too."],
   },
+  "ais-ais-catcher": {
+    base: "ais.png",
+    eyebrow: "Open Waters · AIS",
+    title: ["AIS for", "AIS-catcher"],
+    sub: ["Feed one line. Read the whole", "network back."],
+  },
   "ais-vs-aisstream": {
     base: "ais.png",
     eyebrow: "Open Waters · AIS",
