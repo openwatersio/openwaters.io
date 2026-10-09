@@ -1,0 +1,415 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Card from "../../components/ui/Card.astro";
+import CodeBlock from "../../components/ui/CodeBlock.astro";
+import Icon from "../../components/Icon.astro";
+import { SITE, publisher } from "../../utils/schema";
+
+const REPO = "https://github.com/openwatersio/aiscast";
+const PLUGIN_README = `${REPO}/tree/main/signalk-plugin#readme`;
+const NPM = "https://www.npmjs.com/package/signalk-aiscast";
+const VIEWER = "https://openwatersio.github.io/aiscast/";
+
+const DESCRIPTION =
+  "Put worldwide AIS traffic on your Signal K boat, and on the chartplotter already wired to it, without an AIS receiver and without an account. One plugin, both directions.";
+
+const sections = [
+  { id: "install", label: "Install" },
+  { id: "receive", label: "What you get" },
+  { id: "plotter", label: "On your chartplotter" },
+  { id: "buddies", label: "Buddy boats" },
+  { id: "share", label: "What you share" },
+  { id: "setup", label: "Works with" },
+  { id: "settings", label: "Settings" },
+  { id: "faq", label: "FAQ" },
+];
+
+const gets: { icon: string; title: string; text: string }[] = [
+  {
+    icon: "mdi:map-marker-radius",
+    title: "Traffic without a receiver",
+    text: "No AIS receiver, receiver switched off, or a server running ashore: the plugin subscribes to aiscast around your position and injects what it hears as Signal K targets. Freeboard-SK and every other Signal K app shows them.",
+  },
+  {
+    icon: "mdi:radar",
+    title: "Traffic beyond VHF range",
+    text: "A receiver hears to the horizon, roughly 15 to 20 nm from a masthead depending on how high the other vessel's antenna is. Always mode adds aiscast traffic past that, and a locally heard target still wins.",
+  },
+  {
+    icon: "mdi:monitor-dashboard",
+    title: "On the plotter you already own",
+    text: "Injected targets go back out as !AIVDM on NMEA 0183, so a Raymarine, B&G, Garmin, or tablet app wired to the server sees them too. No Signal K support needed at the other end.",
+  },
+  {
+    icon: "mdi:account-multiple",
+    title: "Buddy boats, anywhere",
+    text: "With the buddylist plugin installed, the boats on your buddy list stay on your chart wherever they are in the world, in every receive mode.",
+  },
+];
+
+const worksWith: { name: string; text: string }[] = [
+  {
+    name: "NMEA 0183",
+    text: "Nothing to configure. The plugin reads every <code>!AIVDM</code> sentence the server receives.",
+  },
+  {
+    name: "NMEA 2000",
+    text: "Nothing extra to install. The plugin re-encodes the AIS PGNs to sentences itself, and ignores <code>signalk-n2kais-to-nmea0183</code>'s output rather than looping on it.",
+  },
+  {
+    name: "A fixed-mount VHF with AIS receive",
+    text: "A Standard Horizon, Icom, or Garmin radio with AIS receive and an NMEA 0183 output already has the receiver, the filtering, and a real marine antenna. An RS422 adapter into the Signal K machine is the whole bridge. Wire it receive-only.",
+  },
+  {
+    name: "Victron Cerbo GX and Venus OS Large",
+    text: "Signal K ships in Venus OS Large, and the plugin installs from the App Store the same way it does anywhere else. It needs Node 20 or newer.",
+  },
+  {
+    name: "Freeboard-SK",
+    text: "Injected targets carry <code>$source</code> <code>signalk-aiscast.net</code> and come through the server's own AIS parser, so they are shaped exactly like a VHF reception and need no app changes.",
+  },
+  {
+    name: "signalk-buddylist-plugin",
+    text: "Optional. It owns the buddy list and the proximity alerts; this plugin only supplies the positions, so the buddy icon, the buddies-only filter, and phone alerts work at any distance.",
+  },
+  {
+    name: "signalk-vessels-to-ais",
+    text: "Installed? Turn off <em>Send aiscast traffic to NMEA 0183 output</em>, because that plugin converts network-injected targets to 0183 itself.",
+  },
+];
+
+const settings: [string, string, string][] = [
+  [
+    "Share → AIS targets I receive",
+    "on",
+    "Publish the AIS your receiver hears, from NMEA 0183 or NMEA 2000.",
+  ],
+  [
+    "Share → My own ship's AIS transponder data",
+    "on",
+    "Forward what your transponder already broadcasts on VHF. Your position becomes open data on aiscast.",
+  ],
+  [
+    "Share → Fallback to self-reported AIS position",
+    "on",
+    "No transponder? Build class B reports from the Signal K position instead, tagged as self-reported. Stays disabled until an MMSI is set in Vessel settings.",
+  ],
+  [
+    "Receive → Show traffic from aiscast",
+    "auto",
+    "Off, Auto (only while nothing is heard locally for 90 s), or Always (also beyond VHF range).",
+  ],
+  [
+    "Receive → Radius",
+    "50 nm",
+    "The subscription box around the vessel, 5 to 200 nm.",
+  ],
+  [
+    "Receive → Send aiscast traffic to NMEA 0183 output",
+    "on",
+    "Re-emit injected targets as !AIVDM so chartplotters and tablet apps see them.",
+  ],
+];
+
+const faq = [
+  {
+    q: "Do I need an AIS receiver to see AIS in Signal K?",
+    a: "No. Install signalk-aiscast and it subscribes to aiscast around your position, injecting traffic as Signal K targets. A receiver is still better close in — it is realtime, works with no internet, and hears vessels no shore station can — so the default only uses the network while nothing is heard locally.",
+  },
+  {
+    q: "Does it need an account or an API key?",
+    a: "No. On first start the plugin generates its own Ed25519 keypair and requests its own token. There is nothing to sign up for and nothing to paste. Contributing a receiver lifts the limits automatically, with no application.",
+  },
+  {
+    q: "Will the traffic show up on my chartplotter?",
+    a: "Yes, if the plotter is already reading NMEA 0183 from the Signal K server. Injected targets are re-emitted as !AIVDM, which the server's TCP 10110 interface relays. Only aiscast-sourced targets, and only events from the last two minutes, go out that way: a plotter sees a bare sentence and cannot tell a network position from a VHF reception, so stale ones stay in Signal K where they are timestamped and attributed. A fresh target can be unnamed on the plotter until its next static retransmission, up to six minutes.",
+  },
+  {
+    q: "Does it work on a Victron Cerbo GX?",
+    a: "Yes, on Venus OS Large, which ships Signal K. The plugin requires Node 20 or newer.",
+  },
+  {
+    q: "Do I have to share my own position?",
+    a: "No. Sharing is three separate checkboxes — received targets, your own transponder, and a self-reported fallback — and any of them can be off. The plugin itself ships disabled; enabling it is the consent.",
+  },
+  {
+    q: "Can I keep feeding AISHub or MarineTraffic?",
+    a: "Yes. aiscast never asks a station to stop feeding anywhere else. Adding it is one more output, not a switch.",
+  },
+  {
+    q: "Is it free?",
+    a: "Yes, and the plugin is MIT licensed. What you share is published under the aiscast contributor agreement: volunteer receptions are CC0 and the aggregate is ODbL.",
+  },
+  {
+    q: "Does it replace an AIS transponder?",
+    a: "No. Nothing on the internet makes you visible to the ship that cannot see you. aiscast is a supplement to onboard AIS, never a substitute, and it is a beta with no SLA.",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  url: `${SITE}/ais/signalk/`,
+  publisher,
+  mainEntity: faq.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
+---
+
+<MainLayout
+  title="AIS for Signal K"
+  image="/og/ais.png"
+  description={DESCRIPTION}
+  schema={faqSchema}
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-4xl">
+      <a
+        href="/ais/"
+        class="text-accent hover:text-accent-hover mb-4 inline-flex items-center gap-1 text-sm font-medium"
+      >
+        <Icon name="mdi:arrow-left" class="size-4" />
+        AIS
+      </a>
+
+      <h1 class="mb-4">AIS for Signal K</h1>
+
+      <p class="text-lead mb-8">
+        <code class="bg-surface rounded px-1">signalk-aiscast</code> puts worldwide
+        AIS traffic on a Signal K boat that has no AIS receiver, and on the chartplotter
+        already wired to it. It also sends what your receiver hears to <a
+          href="/ais/">aiscast, the Open Waters AIS network</a
+        >, so the water only boats can hear gets covered. One plugin, one
+        connection, both directions, and no account.
+      </p>
+
+      <nav
+        data-nosnippet
+        aria-label="On this page"
+        class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
+      >
+        <span class="mr-2 font-semibold">On this page:</span>
+        {
+          sections.map((s, i) => (
+            <>
+              {i > 0 && <span class="text-fg-faint mx-2">·</span>}
+              <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
+                {s.label}
+              </a>
+            </>
+          ))
+        }
+      </nav>
+
+      <h2 id="install" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Install
+      </h2>
+      <div class="text-fg-muted mb-6 space-y-4">
+        <p>
+          In the Signal K admin UI, open <strong>App Store</strong> → search <strong
+            >AIScast</strong
+          > → Install, then enable it in <strong>Plugin Config</strong>. Or from
+          a shell in <code class="bg-surface rounded px-1">~/.signalk</code>:
+        </p>
+      </div>
+      <CodeBlock code="npm install signalk-aiscast" class="mb-6" />
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          The defaults are the ones most boats want: share what the receiver
+          hears, and show aiscast traffic only while the receiver hears nothing.
+          Nothing is published until you enable the plugin.
+        </p>
+        <p class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+          <a href={NPM} class="text-accent hover:text-accent-hover">npm</a>
+          <a href={PLUGIN_README} class="text-accent hover:text-accent-hover"
+            >README</a
+          >
+          <a href={REPO} class="text-accent hover:text-accent-hover">Source</a>
+          <a href={VIEWER} class="text-accent hover:text-accent-hover"
+            >Live map</a
+          >
+        </p>
+      </div>
+
+      <h2 id="receive" class="mb-6 scroll-mt-24 text-3xl font-semibold">
+        What you get
+      </h2>
+      <div class="mb-12 grid gap-4 sm:grid-cols-2">
+        {
+          gets.map((g) => (
+            <Card class="p-5">
+              <Icon name={g.icon} class="text-accent mb-3 size-7" />
+              <h3 class="mb-1 text-base font-semibold">{g.title}</h3>
+              <p class="text-fg-muted text-sm">{g.text}</p>
+            </Card>
+          ))
+        }
+      </div>
+
+      <h2 id="plotter" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        On your chartplotter
+      </h2>
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          This is the part most people do not expect. Signal K apps are not the
+          only thing that can show aiscast traffic: the plugin re-emits every
+          injected target as a plain <code class="bg-surface rounded px-1"
+            >!AIVDM</code
+          > sentence on the server's NMEA 0183 output. Anything already reading that
+          output — a Raymarine, B&G, or Garmin MFD on the network, OpenCPN, a tablet
+          app on TCP 10110 — draws the targets as if they came from a receiver. The
+          other end needs no Signal K support and no configuration.
+        </p>
+        <p>
+          A plotter sees a bare sentence and cannot tell a network position from
+          a VHF reception the way a Signal K app can, so two limits keep
+          anything misleading off the wire: only aiscast-sourced targets go out
+          (what your receiver hears already reaches the plotter through its own
+          connection), and only events from the last two minutes. The snapshot
+          replayed on subscribe and the slower upstream aggregates stay in the
+          Signal K data model, where they are timestamped and attributed. That
+          also keeps the replay burst off a 4800-baud serial line.
+        </p>
+      </div>
+
+      <h2 id="buddies" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Buddy boats
+      </h2>
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          Install <a
+            href="https://github.com/sbender9/signalk-buddylist-plugin"
+            class="text-accent hover:text-accent-hover"
+            >signalk-buddylist-plugin</a
+          > alongside this one and the boats on your buddy list stay on your chart
+          wherever they are, far beyond VHF range. Add a buddy in Freeboard-SK by
+          tapping a vessel, and this plugin follows that MMSI on aiscast alongside
+          the radius.
+        </p>
+        <p>
+          Buddies are followed in every receive mode, including <strong
+            >Off</strong
+          >: following a boat across an ocean is the whole point. The buddylist
+          plugin raises its own proximity alert the moment positions arrive, so
+          the buddy icon, the buddies-only filter, and phone alerts work at any
+          distance.
+        </p>
+        <p>
+          A buddy only appears when some station or satellite feed hears them.
+          Coastal coverage is good, mid-ocean gaps are real, and the more boats
+          running this plugin the fewer of them there are.
+        </p>
+      </div>
+
+      <h2 id="share" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        What you share
+      </h2>
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          A boat hears AIS where no shore station can: anchorages behind
+          islands, channels nobody lives on, a coast with no rooftops. That is
+          the coverage a shore network structurally cannot buy, which is why the
+          plugin shares as well as receives.
+        </p>
+        <p>
+          Every AIS sentence your receiver hears goes to aiscast as it arrives,
+          stamped with the time it was received. Anything heard while the boat
+          is offline waits on disk, up to 100 MB, and replays oldest-first when
+          the connection returns; replayed sentences are archived rather than
+          shown as live. Your own position is a separate checkbox, and so is the
+          fallback that builds position reports from Signal K when there is no
+          transponder. aiscast marks those as self-reported and keeps them out
+          of its onward feed to other aggregators.
+        </p>
+        <p>
+          What you share is published under the <a
+            href={`${REPO}/blob/main/docs/contributor-agreement.md`}
+            class="text-accent hover:text-accent-hover">contributor agreement</a
+          >: volunteer receptions are CC0, the aggregate is ODbL, and the
+          agreement says so before the data exists. Contributors also get the
+          deduplicated raw stream back, which no other AIS network offers. The
+          agreement changes only through public pull requests.
+        </p>
+      </div>
+
+      <h2 id="setup" class="mb-6 scroll-mt-24 text-3xl font-semibold">
+        Works with
+      </h2>
+      <dl class="mb-12 space-y-4">
+        {
+          worksWith.map((w) => (
+            <div class="border-line border-l-2 pl-4">
+              <dt class="font-semibold">{w.name}</dt>
+              <dd class="text-fg-muted text-sm" set:html={w.text} />
+            </div>
+          ))
+        }
+      </dl>
+
+      <h2 id="settings" class="mb-6 scroll-mt-24 text-3xl font-semibold">
+        Settings
+      </h2>
+      <div class="border-line mb-12 overflow-x-auto rounded-lg border">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-surface">
+            <tr>
+              <th class="px-4 py-3 font-semibold">Setting</th>
+              <th class="px-4 py-3 font-semibold">Default</th>
+              <th class="px-4 py-3 font-semibold">Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              settings.map(([name, dflt, meaning]) => (
+                <tr class="border-line border-t">
+                  <td class="px-4 py-3 align-top">{name}</td>
+                  <td class="text-fg-muted px-4 py-3 align-top font-mono text-xs">
+                    {dflt}
+                  </td>
+                  <td class="text-fg-muted px-4 py-3 align-top">{meaning}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="faq" class="mb-6 scroll-mt-24 text-3xl font-semibold">FAQ</h2>
+      <div class="mb-12 space-y-6">
+        {
+          faq.map((item) => (
+            <div>
+              <h3 class="mb-1 text-base font-semibold">{item.q}</h3>
+              <p class="text-fg-muted text-sm">{item.a}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <Card class="p-6">
+        <h2 class="mb-2 text-xl font-semibold">Put your boat on the map</h2>
+        <p class="text-fg-muted mb-4 text-sm">
+          Install the plugin, enable it, and watch the status line in Plugin
+          Config. Coverage questions, antenna advice, and setup problems go to
+          the aiscast discussions.
+        </p>
+        <p class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+          <a href={NPM} class="text-accent hover:text-accent-hover"
+            >signalk-aiscast on npm</a
+          >
+          <a
+            href={`${REPO}/discussions`}
+            class="text-accent hover:text-accent-hover">Discussions</a
+          >
+          <a href="/ais/" class="text-accent hover:text-accent-hover"
+            >About aiscast</a
+          >
+        </p>
+      </Card>
+    </div>
+  </Container>
+</MainLayout>

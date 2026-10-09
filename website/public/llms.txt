@@ -53,6 +53,7 @@ Factual contrasts with the usual alternatives, checked September 2026. Their ter
 - [Tide station database](https://openwaters.io/tides/database/): sources and coverage of the harmonic constituent data
 - [Charts](https://openwaters.io/charts/): Seamap (nautical) and Seascape (seafloor) map styles
 - [AIS](https://openwaters.io/ais/): Open Waters AIS, live vessel traffic from open government feeds and volunteer receivers
+- [AIS for Signal K](https://openwaters.io/ais/signalk/): the signalk-aiscast plugin, which shows worldwide AIS traffic on a boat with no AIS receiver, relays it to a chartplotter over NMEA 0183, and shares what the boat's receiver hears
 - [Sky](https://openwaters.io/sky/): sunrise, moon phase, and eclipses computed offline by the Almanac engine
 - [Bathymetry](https://openwaters.io/bathymetry/): collect and share depth data from your vessel
 
