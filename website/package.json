@@ -12,7 +12,8 @@
     "astro": "astro",
     "prepare": "husky",
     "test": "node --test \"src/**/*.test.ts\"",
-    "og:ais": "node scripts/og-ais.mjs"
+    "og:ais": "node scripts/og-ais.mjs",
+    "check:codeblock": "node scripts/check-codeblock-token.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
