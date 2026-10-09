@@ -364,22 +364,22 @@ const faqSchema = {
       <h2 id="setup" class="mb-6 scroll-mt-24 text-3xl font-semibold">
         Works with
       </h2>
-      <dl class="mb-12 space-y-4">
+      <div class="mb-12 space-y-4">
         {
           worksWith.map((w) => (
             <div class="border-line border-l-2 pl-4">
-              <dt class="font-semibold">{w.name}</dt>
-              <dd class="text-fg-muted text-sm" set:html={w.text} />
+              <h3 class="mb-1 text-base font-semibold">{w.name}</h3>
+              <p class="text-fg-muted text-sm" set:html={w.text} />
             </div>
           ))
         }
-      </dl>
+      </div>
 
       <h2 id="settings" class="mb-6 scroll-mt-24 text-3xl font-semibold">
         Settings
       </h2>
       <div class="border-line mb-12 overflow-x-auto rounded-lg border">
-        <table class="w-full text-left text-sm">
+        <table class="w-full min-w-[34rem] text-left text-sm">
           <thead class="bg-surface">
             <tr>
               <th class="px-4 py-3 font-semibold">Setting</th>
