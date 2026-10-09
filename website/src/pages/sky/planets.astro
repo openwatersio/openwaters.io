@@ -1,0 +1,139 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import CodeBlock from "../../components/ui/CodeBlock.astro";
+import Icon from "../../components/Icon.astro";
+import PlanetTonight from "../../components/sky/PlanetTonight";
+import PlanetWander from "../../components/sky/PlanetWander";
+import SolarSystem from "../../components/sky/SolarSystem";
+const tonightCode = `import { planetAltAz, planetEvents, planetIllumination } from '@openwaters/almanac';
+
+const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
+const start = new Date('2026-10-10T02:00:00Z');
+const end = new Date('2026-10-10T15:00:00Z');
+for (const planet of ['mercury', 'venus', 'mars', 'jupiter', 'saturn'] as const) {
+  console.log(planet, planetAltAz(planet, start, observer));
+  console.log(planetIllumination(planet, start).magnitude);
+  console.log(planetEvents(planet, start, end, observer));
+}`;
+const wanderCode = `import { planetHeliocentricPosition, planetPosition } from '@openwaters/almanac';
+
+// Sample daily across Mars's 2022–2023 retrograde interval.
+for (let day = 0; day <= 181; day++) {
+  const time = new Date(Date.UTC(2022, 8, 1 + day));
+  console.log(time,
+    planetHeliocentricPosition('earth', time),
+    planetHeliocentricPosition('mars', time),
+    planetPosition('mars', time));
+}
+// Sun-centered vectors are fixed J2000 equatorial coordinates in AU.
+// Apparent positions are right ascension/declination in degrees of date.`;
+---
+
+<MainLayout
+  title="Planets · Almanac"
+  description="Explore the planets through tonight's sky and see how Earth's motion produces retrograde loops, computed offline by Almanac."
+>
+  <Container class="py-16">
+    <div class="mx-auto max-w-4xl">
+      <a
+        href="/sky/"
+        class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium"
+        ><Icon name="mdi:chevron-left" class="size-5" />Almanac</a
+      >
+      <div class="mt-4 flex items-center gap-3">
+        <span class="text-accent"
+          ><Icon name="mdi:orbit" class="size-10" /></span
+        ><h1 class="mb-0">Planets</h1>
+      </div>
+      <div class="text-lead mt-2 mb-4">
+        Tonight's sky and the wandering planets
+      </div>
+      <div class="prose prose-xl mb-10 max-w-none">
+        <p>
+          Find Mercury, Venus, Mars, Jupiter, and Saturn above your horizon,
+          then step back to see why their paths sometimes reverse. Every
+          position here is Almanac running in your browser.
+        </p>
+      </div>
+      <section
+        id="tonight"
+        aria-labelledby="tonight-title"
+        class="mt-6 scroll-mt-24 space-y-6"
+      >
+        <div>
+          <h2 id="tonight-title" class="mb-3 text-3xl font-semibold">
+            Planets tonight
+          </h2><p class="text-fg-muted">
+            Follow five planets from sunset to sunrise. Choose a place and
+            evening date, select a planet, and scrub through the night to find
+            its altitude and direction.
+          </p>
+        </div>
+        <PlanetTonight client:only="react"
+          ><div
+            slot="fallback"
+            class="bg-surface h-96 animate-pulse rounded-xl"
+          >
+          </div></PlanetTonight
+        >
+        <details>
+          <summary class="text-accent cursor-pointer font-medium"
+            >Show the TypeScript</summary
+          ><CodeBlock code={tonightCode} class="mt-4" />
+        </details>
+      </section>
+      <section
+        id="wandering"
+        aria-labelledby="wandering-title"
+        class="mt-16 scroll-mt-24 space-y-6"
+      >
+        <div>
+          <h2 id="wandering-title" class="mb-3 text-3xl font-semibold">
+            Why planets wander
+          </h2><p class="text-fg-muted">
+            Move through a few months of Mars, Jupiter, or Saturn. The view from
+            above and the view from Earth share the same date: watch the line of
+            sight turn as Earth passes the planet.
+          </p>
+        </div>
+        <PlanetWander client:load />
+        <details>
+          <summary class="text-accent cursor-pointer font-medium"
+            >Show the TypeScript</summary
+          ><CodeBlock code={wanderCode} class="mt-4" />
+        </details>
+      </section>
+      <section
+        id="solar-system"
+        aria-labelledby="solar-system-title"
+        class="mt-16 scroll-mt-24 space-y-6"
+      >
+        <div>
+          <h2 id="solar-system-title" class="mb-3 text-3xl font-semibold">
+            The solar system in motion
+          </h2><p class="text-fg-muted">
+            Thirty years, six planets, one Sun. Scrub through the years or press
+            Play to watch each planet circle at its own pace.
+          </p>
+        </div>
+        <SolarSystem client:load />
+        <details>
+          <summary class="text-accent cursor-pointer font-medium"
+            >Show the TypeScript</summary
+          ><CodeBlock
+            class="mt-4"
+            code={`import { planetHeliocentricPosition } from '@openwaters/almanac';
+
+const time = new Date('2026-01-01T00:00:00Z');
+for (const planet of ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn'] as const) {
+  console.log(planet, planetHeliocentricPosition(planet, time));
+}
+// Sun-centered vectors in AU, in the fixed J2000 equatorial frame.
+// Update the date to move all six planets together.`}
+          />
+        </details>
+      </section>
+    </div>
+  </Container>
+</MainLayout>

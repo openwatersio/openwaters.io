@@ -8,9 +8,16 @@ import Icon from "../../components/Icon.astro";
 import SkyDome from "../../components/sky/SkyDome";
 
 const REPO = "https://github.com/openwatersio/almanac";
-const ROADMAP = `${REPO}/blob/main/docs/ROADMAP.md`;
-const VERSION = "0.6.0";
+const PERFORMANCE = `${REPO}#performance`;
+const VERSION = "0.7.0";
 const explore = [
+  {
+    href: "/sky/planets/",
+    icon: "mdi:orbit",
+    title: "Planets",
+    body: "Five planets through tonight's sky, and linked orbital and sky views that explain retrograde motion.",
+    cta: "Explore the planets",
+  },
   {
     href: "/sky/sun/",
     icon: "mdi:white-balance-sunny",
@@ -31,7 +38,7 @@ const features = [
   {
     icon: "mdi:wifi-off",
     title: "Offline by construction",
-    body: "Zero network calls and zero runtime data files. Every Sun, Moon, star and eclipse on these pages is computed in your browser from pure geometry; only the map tiles behind the eclipse paths are downloaded. The same code runs on a boat with no signal.",
+    body: "Zero network calls and zero runtime data files. Every Sun, Moon, planet, star and eclipse on these pages is computed in your browser from pure geometry; only the map tiles behind the eclipse paths are downloaded. The same code runs on a boat with no signal.",
   },
   {
     icon: "mdi:call-split",
@@ -40,7 +47,7 @@ const features = [
   },
   {
     icon: "mdi:weather-night",
-    title: "Sun, Moon, stars and eclipses",
+    title: "Sun, Moon, planets and eclipses",
     body: "Positions, rise and set, all three twilights, transit, moon phase and illumination, lunar and local solar eclipses with contact times, every solar eclipse on Earth with its central line, and alt/az for any star you give a catalog position.",
   },
   {
@@ -148,8 +155,8 @@ print(sirius.altDeg, sirius.azDeg)`;
           crosses the Sun from your location. No network, no data files to ship,
           no API key — just geometry, in your app or on your boat. The sky below
           is live: every star in it is this library running in your browser,
-          placed for your location and the moment you choose. The Sun and Moon
-          pages have more to explore.
+          placed for your location and the moment you choose. The Sun, Moon, and
+          planet pages have more to explore.
         </p>
       </div>
 
@@ -225,6 +232,75 @@ print(sirius.altDeg, sirius.azDeg)`;
         </div>
       </div>
 
+      <section aria-labelledby="performance-title" class="mb-16 space-y-6">
+        <div>
+          <h2 id="performance-title" class="mb-3 text-3xl font-semibold">
+            Built for interactive sky views
+          </h2>
+          <p class="text-fg-muted">
+            Almanac uses astronomy translated from Don Cross's Astronomy Engine,
+            with optimized event searches and TypeScript Sun calculations. Scrub
+            the sky above to see positions update in your browser. Both ports
+            share correctness fixtures and a performance suite covering 30
+            workloads, including planetary tracks and rise/set.
+          </p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left tabular-nums">
+            <caption class="text-fg-muted mb-3 text-left text-sm"
+              >Median query time saved compared with Almanac 0.4.1</caption
+            >
+            <thead
+              ><tr class="border-line border-b"
+                ><th scope="col" class="py-3 pr-4">Workload</th><th
+                  scope="col"
+                  class="py-3 pr-4">TypeScript</th
+                ><th scope="col" class="py-3">Swift</th></tr
+              ></thead
+            >
+            <tbody>
+              <tr class="border-line border-b"
+                ><th scope="row" class="py-3 pr-4 font-medium"
+                  >Sun events · one year</th
+                ><td class="text-accent py-3 pr-4">73.4%</td><td
+                  class="text-accent py-3">62.8%</td
+                ></tr
+              >
+              <tr class="border-line border-b"
+                ><th scope="row" class="py-3 pr-4 font-medium"
+                  >Moon events · one year</th
+                ><td class="text-accent py-3 pr-4">57.6%</td><td
+                  class="text-accent py-3">57.4%</td
+                ></tr
+              >
+              <tr class="border-line border-b"
+                ><th scope="row" class="py-3 pr-4 font-medium"
+                  >Sun events · 228 hours</th
+                ><td class="text-accent py-3 pr-4">73.4%</td><td
+                  class="text-accent py-3">61.9%</td
+                ></tr
+              >
+              <tr
+                ><th scope="row" class="py-3 pr-4 font-medium"
+                  >Moon events · 228 hours</th
+                ><td class="text-accent py-3 pr-4">57.1%</td><td
+                  class="text-accent py-3">57.0%</td
+                ></tr
+              >
+            </tbody>
+          </table>
+        </div>
+        <p class="text-fg-muted text-sm">
+          Measurements use seven interleaved process pairs with the same harness
+          and toolchain; build and startup time are excluded. Timings vary by
+          machine. CI checks for median regressions above 20%. <a
+            href={PERFORMANCE}
+            class="text-accent hover:underline"
+            >Read the benchmark results and reproduction instructions</a
+          >.
+        </p>
+      </section>
+
       <!-- Usage -->
       <div class="mb-16">
         <h2 class="mb-6 text-3xl font-semibold">Using Almanac</h2>
@@ -250,11 +326,10 @@ print(sirius.altDeg, sirius.azDeg)`;
           </div>
         </Card>
         <p class="text-fg-muted mt-4 text-sm">
-          Supported interval: 1950-01-01 through 2100-12-31. Where the library
-          is going next is written down in the <a
-            href={ROADMAP}
-            class="text-accent hover:underline">roadmap</a
-          >.
+          Supported interval: 1950-01-01 through 2100-12-31. See the <a
+            href={`${REPO}/blob/main/docs/SCOPE.md`}
+            class="text-accent hover:underline">supported scope</a
+          > for capabilities and limits.
         </p>
       </div>
 
@@ -278,7 +353,7 @@ print(sirius.altDeg, sirius.azDeg)`;
               <Icon name="mdi:github" class="size-6" />
               View on GitHub
             </a>
-            <a href={ROADMAP} class="btn btn-secondary"> Roadmap </a>
+            <a href={PERFORMANCE} class="btn btn-secondary"> Benchmarks </a>
           </div>
         </div>
       </Card>
