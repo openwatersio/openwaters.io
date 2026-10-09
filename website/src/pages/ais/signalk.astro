@@ -9,7 +9,7 @@ import { SITE, publisher } from "../../utils/schema";
 const REPO = "https://github.com/openwatersio/aiscast";
 const PLUGIN_README = `${REPO}/tree/main/signalk-plugin#readme`;
 const NPM = "https://www.npmjs.com/package/signalk-aiscast";
-const VIEWER = "https://openwatersio.github.io/aiscast/";
+const MAP = "/ais/vessels";
 
 const DESCRIPTION =
   "Put worldwide AIS traffic on your Signal K boat, and on the chartplotter already wired to it, without an AIS receiver and without an account. One plugin, both directions.";
@@ -20,6 +20,7 @@ const sections = [
   { id: "plotter", label: "On your chartplotter" },
   { id: "buddies", label: "Buddy boats" },
   { id: "share", label: "What you share" },
+  { id: "yourboat", label: "Your boat on the map" },
   { id: "setup", label: "Works with" },
   { id: "settings", label: "Settings" },
   { id: "faq", label: "FAQ" },
@@ -229,9 +230,7 @@ const faqSchema = {
             >README</a
           >
           <a href={REPO} class="text-accent hover:text-accent-hover">Source</a>
-          <a href={VIEWER} class="text-accent hover:text-accent-hover"
-            >Live map</a
-          >
+          <a href={MAP} class="text-accent hover:text-accent-hover">Live map</a>
         </p>
       </div>
 
@@ -333,6 +332,32 @@ const faqSchema = {
           agreement says so before the data exists. Contributors also get the
           deduplicated raw stream back, which no other AIS network offers. The
           agreement changes only through public pull requests.
+        </p>
+      </div>
+
+      <h2 id="yourboat" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Your boat on the map
+      </h2>
+      <div class="text-fg-muted mb-12 space-y-4">
+        <p>
+          Sharing your own position gives you something back: your boat gets a
+          page at <code class="bg-surface rounded px-1"
+            >/ais/vessels/&lt;mmsi&gt;</code
+          >, with where it is, where it has been, and a photo if there is one on
+          Wikimedia Commons. Leave the boat on its mooring and you can open that
+          page from anywhere to see that it is still there.
+        </p>
+        <p>
+          That is the same open data everyone else gets, which is the point and
+          also the limit worth stating plainly: a transponder already broadcasts
+          your position in the clear over VHF, and this publishes it. If you do
+          not want that, turn the own-ship switches off and the plugin still
+          relays everything else your receiver hears.
+        </p>
+        <p class="text-sm">
+          <a href={MAP} class="text-accent hover:text-accent-hover"
+            >Open the live map</a
+          >
         </p>
       </div>
 
