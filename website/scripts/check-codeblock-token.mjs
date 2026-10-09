@@ -130,6 +130,66 @@ try {
   const stats = page.locator("[data-stats]");
   await stats.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
   check(await stats.isVisible(), "station card appears once there is a token");
+
+  // Stub the station API so the rows are exercised deterministically. The
+  // labels matter: `events` is heard-first, `vessels_exclusive_24h` is
+  // vessels nobody else heard, and conflating them was a real review finding.
+  const stubStation = (station) =>
+    page.route("**/v1/stations/station:*", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ station }),
+      }),
+    );
+
+  await stubStation({
+    name: "Bench rig",
+    events: { last_24h: 1234 },
+    vessels_24h: 88,
+    vessels_exclusive_24h: 7,
+    uptime_7d: 0.5,
+    last_age_s: 42,
+    near: "Sidney, BC",
+  });
+  await page.reload({ waitUntil: "networkidle" });
+  const list = await page.locator("[data-stats-list]").innerText();
+  check(
+    /Heard first, 24 h[\s\S]*1,234 messages/.test(list),
+    "heard-first row reads from events, not vessels_exclusive",
+  );
+  check(
+    /Of those, only you heard[\s\S]*\b7\b/.test(list),
+    "vessels_exclusive_24h is labelled as vessels only you heard",
+  );
+  check(/Uptime, 7 days[\s\S]*50%/.test(list), "uptime renders as a percent");
+  check(
+    await page.locator("[data-stats-credit]").isVisible(),
+    "GeoNames credit shows when a place name does",
+  );
+
+  // uptime_7d is nullable, and 0% would be a lie rather than a gap.
+  await page.unroute("**/v1/stations/station:*");
+  await stubStation({
+    name: "New rig",
+    events: { last_24h: 3 },
+    vessels_24h: 1,
+    vessels_exclusive_24h: 0,
+    uptime_7d: null,
+    last_age_s: 10,
+  });
+  await page.reload({ waitUntil: "networkidle" });
+  const list2 = await page.locator("[data-stats-list]").innerText();
+  check(
+    !/Uptime/.test(list2),
+    "null uptime omits the row rather than showing 0%",
+  );
+  check(!/Near/.test(list2), "absent place name omits its row");
+  check(
+    !(await page.locator("[data-stats-credit]").isVisible()),
+    "no GeoNames credit without a place name",
+  );
+  await page.unroute("**/v1/stations/station:*");
   check(
     (await page.locator("[data-stats-link]").getAttribute("href")) ===
       "/ais/stations/station:test",

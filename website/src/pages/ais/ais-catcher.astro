@@ -459,6 +459,17 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
         </div>
         <p class="text-fg-muted mb-4 text-sm" data-stats-note></p>
         <dl data-stats-list></dl>
+        {
+          /* "Near" is a GeoNames place name, which is CC BY 4.0 and so cannot
+            be shown uncredited. Revealed with the row, not before. */
+        }
+        <p class="text-fg-faint mt-4 hidden text-xs" data-stats-credit>
+          Place name from <a
+            href="https://www.geonames.org/"
+            rel="noopener"
+            class="hover:text-fg-muted underline">GeoNames</a
+          >, CC BY 4.0.
+        </p>
       </Card>
 
       <h2 id="elsewhere" class="mb-4 scroll-mt-24 text-3xl font-semibold">
@@ -572,6 +583,7 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
   const noteEl = card.querySelector<HTMLElement>("[data-stats-note]")!;
   const listEl = card.querySelector<HTMLElement>("[data-stats-list]")!;
   const linkEl = card.querySelector<HTMLAnchorElement>("[data-stats-link]")!;
+  const creditEl = card.querySelector<HTMLElement>("[data-stats-credit]")!;
 
   const n = (v: number) => v.toLocaleString();
   const ago = (s: number) =>
@@ -586,10 +598,18 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
   interface Station {
     name?: string;
     near?: string;
+    // `events` is the heard-first count: messages this station delivered
+    // before any other station or open feed. `vessels_exclusive_24h` is a
+    // different thing — vessels nobody else heard at all, first delivery or
+    // not — so the two are labelled apart. Per the station schema in
+    // aiscast's openapi.json.
     events?: { last_24h?: number };
+    duplicates?: number;
     vessels_24h?: number;
     vessels_exclusive_24h?: number;
-    uptime_7d?: number;
+    // Null until the hourly series has the station, and whenever those totals
+    // go stale, so it is omitted rather than shown as 0%.
+    uptime_7d?: number | null;
     last_age_s?: number;
   }
 
@@ -597,13 +617,15 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
     // dt/dd as direct children: global.css lays a dl out as a two-column grid
     // and a wrapper element would become one cell.
     const pairs: [string, string][] = [
-      ["Heard first, 24 h", n(st.vessels_exclusive_24h ?? 0) + " vessels"],
+      ["Heard first, 24 h", n(st.events?.last_24h ?? 0) + " messages"],
       ["Vessels heard, 24 h", n(st.vessels_24h ?? 0)],
-      ["Messages, 24 h", n(st.events?.last_24h ?? 0)],
-      ["Uptime, 7 days", Math.round((st.uptime_7d ?? 0) * 100) + "%"],
+      ["Of those, only you heard", n(st.vessels_exclusive_24h ?? 0)],
     ];
+    if (st.uptime_7d != null)
+      pairs.push(["Uptime, 7 days", Math.round(st.uptime_7d * 100) + "%"]);
     if (st.last_age_s != null) pairs.push(["Last heard", ago(st.last_age_s)]);
     if (st.near) pairs.push(["Near", st.near]);
+    creditEl.classList.toggle("hidden", !st.near);
     listEl.replaceChildren(
       ...pairs.flatMap(([k, v]) => {
         const dt = document.createElement("dt");
@@ -633,6 +655,7 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
         noteEl.textContent =
           "Nothing heard from this token yet. Run one of the commands above and this fills in within a minute or two.";
         listEl.replaceChildren();
+        creditEl.classList.add("hidden");
         card.hidden = false;
         return;
       }
@@ -640,7 +663,7 @@ AIS-catcher -x 127.0.0.1 10110 -N 8100 -X off`}
       const st: Station = (await res.json()).station;
       nameEl.textContent = st.name || t.name || "Your station";
       noteEl.textContent =
-        (st.vessels_exclusive_24h ?? 0) > 0
+        (st.events?.last_24h ?? 0) > 0
           ? "Heard first is the number worth watching: receptions no other station and no open feed had already delivered."
           : "Everything this station heard in the last day, another station or an open feed had already delivered. That changes the moment you are the only ears somewhere.";
       rows(st);
