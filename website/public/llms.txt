@@ -62,4 +62,5 @@ Factual contrasts with the usual alternatives, checked September 2026. Their ter
 - [About Open Waters](https://openwaters.io/about/): who runs it and why. Operated by Open Water Software, LLC.
 - [Contact](https://openwaters.io/contact/): email for licensing and higher rate limits, GitHub issues for bugs, Discord for questions
 - [License](https://openwaters.io/license/): terms for the code and data
-- [Privacy](https://openwaters.io/privacy/): no accounts and no cookies; what the site and APIs do see
+- [Privacy](https://openwaters.io/privacy/): no accounts; what the site and APIs do see
+- [AIS privacy policy](https://openwaters.io/ais/privacy/): what the AIS network keeps about vessels, stations, tokens, and requests
