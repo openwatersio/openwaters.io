@@ -2,7 +2,7 @@
 
 > Open source marine software and data: tide and tidal current predictions, live AIS vessel traffic, nautical charts, sun and moon almanac, and crowd-sourced bathymetry. Everything is free to use; the code lives at https://github.com/openwatersio.
 
-Every page also serves Markdown for `Accept: text/markdown`. The station map and chart viewers are interactive and need JavaScript; the tide data behind them is available from the API and, per station, at https://slackwater.xyz/stations/tides/. Every page is listed in https://openwaters.io/sitemap.xml. Nonexistent paths return HTTP 404.
+Every page also serves Markdown for `Accept: text/markdown`. The station map and chart viewers are interactive and need JavaScript; the data behind them is available from the API and, per station, at https://slackwater.xyz/tides/ and https://slackwater.xyz/currents/. Every page is listed in https://openwaters.io/sitemap.xml. Nonexistent paths return HTTP 404.
 
 ## When to use this
 
@@ -51,7 +51,7 @@ Factual contrasts with the usual alternatives, checked September 2026. Their ter
 ## Tools and data
 
 - [Tides](https://openwaters.io/tides/): predictions from the Slackwater engine for thousands of stations worldwide
-- [Tide stations](https://openwaters.io/tides/stations/): the station map; per-station pages by region live at https://slackwater.xyz/stations/tides/
+- [Tide stations](https://openwaters.io/tides/stations/): the station map; per-station pages by region live at https://slackwater.xyz/tides/
 - [Tide station database](https://openwaters.io/tides/database/): sources and coverage of the harmonic constituent data
 - [Charts](https://openwaters.io/charts/): Seamap (nautical) and Seascape (seafloor) map styles
 - [AIS](https://openwaters.io/ais/): Open Waters AIS, live vessel traffic from open government feeds and volunteer receivers

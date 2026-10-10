@@ -108,7 +108,7 @@ test(
       );
     }
     const stations = read("tides/stations/index.md");
-    assert.match(stations, /slackwater\.xyz\/stations\/tides\//);
+    assert.match(stations, /slackwater\.xyz\/tides\//);
     assert.match(stations, /api\.openwaters\.io\/tides\/stations\?query=/);
   },
 );
