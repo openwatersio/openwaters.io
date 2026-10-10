@@ -110,3 +110,13 @@ test("mergeAgreeing: shared names must have identical definitions", () => {
     /parameters "start"/,
   );
 });
+
+test("mergeAgreeing: key order does not make definitions differ", () => {
+  const a = {
+    start: { name: "start", schema: { type: "string", format: "date-time" } },
+  };
+  const b = {
+    start: { schema: { format: "date-time", type: "string" }, name: "start" },
+  };
+  assert.deepEqual(mergeAgreeing("parameters", a, b), b);
+});

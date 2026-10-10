@@ -53,7 +53,7 @@ Before adding an Astro integration, check its Astro 7 peer dependency and licens
 
 ## Deployment
 
-Cloudflare Workers Builds creates preview versions for pull requests and deploys `main` for the website and API workers. The gateway has no Workers Build; deploy it by hand with `npx wrangler deploy -c gateway/wrangler.jsonc` after a change to `gateway/` merges. Each worker has its own Wrangler configuration:
+Cloudflare Workers Builds creates preview versions for pull requests and deploys `main` for all three workers, each when its own directory changes. Each worker has its own Wrangler configuration:
 
 - `website/wrangler.jsonc` deploys `openwaters-io` for `openwaters.io` and `www.openwaters.io`.
 - `api/wrangler.jsonc` deploys `openwaters-api` without a public route. The gateway reaches it through a service binding.

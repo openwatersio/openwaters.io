@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from "node:util";
 import { type openapi, type currentsOpenapi } from "@slackwater/api";
 
 // Infer types from the imported openapi specs
@@ -213,7 +214,7 @@ export function mergeAgreeing<T>(
   b: Record<string, T> = {},
 ): Record<string, T> {
   for (const [key, value] of Object.entries(b)) {
-    if (key in a && JSON.stringify(a[key]) !== JSON.stringify(value)) {
+    if (key in a && !isDeepStrictEqual(a[key], value)) {
       throw new Error(
         `openapi: tides and currents define ${kind} "${key}" differently`,
       );

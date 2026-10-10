@@ -25,4 +25,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the repository layout, conventions, a
 
 ## Deployment
 
-Cloudflare Workers Builds creates pull request previews and deploys merges to `main`, except for the API gateway, which is deployed by hand. This website does not use versioned releases.
+Cloudflare Workers Builds creates pull request previews and deploys merges to `main`. This website does not use versioned releases.
