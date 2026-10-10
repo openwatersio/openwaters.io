@@ -1,0 +1,245 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Card from "../../components/ui/Card.astro";
+import CodeBlock from "../../components/ui/CodeBlock.astro";
+import Icon from "../../components/Icon.astro";
+import AisNav from "../../components/ais/AisNav.astro";
+import { CONTACT_EMAIL } from "../../utils/constants";
+
+const SERVER = "ais.openwaters.io";
+const UDP_HOST = `udp.${SERVER}`;
+const REPO = "https://github.com/openwatersio/aiscast";
+const AGREEMENT = `${REPO}/blob/main/docs/contributor-agreement.md`;
+const TOKEN_PAGE = "/ais/token/";
+const LIMITS = "/api/ais/#limits";
+
+const setups = [
+  {
+    icon: "mdi:radio-tower",
+    title: "AIS-catcher",
+    text: "Realtime over MQTT, authenticated, works behind any NAT. Get a token in your browser, add one flag.",
+    code: `AIS-catcher -Q wssmqtt://x:<token>@${SERVER}:443/v1/stream MSGFORMAT NMEA`,
+    links: [
+      { label: "Get a token", href: TOKEN_PAGE },
+      {
+        label: "AIS-catcher",
+        href: "https://github.com/jvde-github/AIS-catcher",
+      },
+    ],
+  },
+  {
+    icon: "mdi:sail-boat",
+    title: "Signal K",
+    text: "Both directions: shares what your receiver hears and your own position, each behind its own switch, and shows AIS traffic when it hears none, on your chartplotter too. Enable it in Plugin Config after installing. No account; it creates its own token. Not for safety of navigation.",
+    code: "cd ~/.signalk && npm install signalk-aiscast",
+    links: [
+      { label: "AIS for Signal K", href: "/ais/signalk/" },
+      { label: "npm", href: "https://www.npmjs.com/package/signalk-aiscast" },
+      { label: "README", href: `${REPO}/tree/main/signalk-plugin#readme` },
+    ],
+  },
+  {
+    icon: "mdi:docker",
+    title: "docker-shipfeeder",
+    text: "Already sending to other networks from a container? Add one more UDP destination.",
+    code: `host ${UDP_HOST}, port 10110`,
+    links: [
+      {
+        label: "docker-shipfeeder",
+        href: "https://github.com/sdr-enthusiasts/docker-shipfeeder",
+      },
+    ],
+  },
+  {
+    icon: "mdi:lan-connect",
+    title: "Any NMEA forwarder",
+    text: "Plain !AIVDM sentences over UDP, no token. Your station is a keyed hash of your address, never the address itself, or your vessel's MMSI once it sends its own position.",
+    code: `AIS-catcher -u ${UDP_HOST} 10110`,
+    links: [
+      {
+        label: "ais-forwarder",
+        href: "https://github.com/hkapanen/ais-forwarder",
+      },
+    ],
+  },
+];
+
+// Rendered with set:html; static strings, no user input.
+const steps = [
+  "Choose your receiver software or forwarding method above.",
+  `Read the <a href="${AGREEMENT}">contributor agreement</a>, then get a token. UDP needs none to send, so bind the address on the <a href="/ais/token/">token page</a> from the network your receiver sends from, and the station counts toward your token.`,
+  "Add the destination to your receiver's configuration.",
+  "Confirm reception on your station page.",
+];
+
+const questions = [
+  {
+    q: "What do I get for contributing?",
+    a: `The whole network back at contributor limits, free, including commercial use within those limits, plus a station page that takes your token's name. Once your station has delivered 1,000 messages in 24 hours that the network had not already heard, your token moves to the contributor tier on its own, and stays there as long as you keep contributing. UDP stations earn credit once the receiver's address is bound to a token, created from that address on the token page.`,
+    link: { label: "Contributor limits", href: LIMITS },
+  },
+  {
+    q: "Can I keep contributing elsewhere?",
+    a: "Yes, and please do. AIS-catcher and docker-shipfeeder fan out to as many destinations as you configure; this is one more line in the config.",
+  },
+  {
+    q: "Does another receiver help in an area already covered?",
+    a: "Usually yes: a second station means fresher positions, fewer gaps behind buildings and headlands, and a source that keeps working when the other one drops. Your station page shows what yours adds.",
+  },
+];
+---
+
+<MainLayout
+  title="Contribute to Open Waters AIS"
+  image="/og/ais.png"
+  description="Help others see what your AIS receiver hears. Add one output line to the software you already run and get the whole network back."
+>
+  <section class="py-12 lg:py-16">
+    <Container>
+      <AisNav class="mb-8" />
+      <div class="max-w-2xl">
+        <h1 class="mb-5">Help others see what your receiver hears.</h1>
+        <p class="text-lead mb-5">
+          Whatever your antenna picks up joins the network, deduplicated against
+          every other station, and turns up in what other people track, monitor,
+          and analyze.
+        </p>
+        <p class="text-fg-muted mb-8 text-lg">
+          You get the whole feed back: every source, every station, on one
+          WebSocket. Add one more output line to the software you already run
+          and keep contributing everywhere else you contribute today.
+        </p>
+        <a href="#connect" class="btn btn-primary">
+          Connect your receiver
+          <Icon name="mdi:arrow-down" class="size-4" />
+        </a>
+      </div>
+    </Container>
+  </section>
+
+  <section id="connect" class="scroll-mt-24 py-12 lg:py-16">
+    <Container>
+      <div
+        class="grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
+      >
+        <div>
+          <h2 class="mb-5">Connect your receiver.</h2>
+          <p class="text-fg-muted mb-8 text-lg">
+            Every path is one line. Pick the one that matches what you already
+            run.
+          </p>
+          <ol class="text-fg-muted list-decimal space-y-3 pl-5">
+            {steps.map((s) => <li set:html={s} />)}
+          </ol>
+          <p class="text-fg-faint mt-8 text-sm">
+            Your station gets a page under <a href="/ais/stations"
+              >/ais/stations</a
+            > as soon as it is heard. It shows vessels heard, coverage extent, and
+            message counts; <code class="text-fg-muted"
+              >GET /v1/stations/&#123;id&#125;</code
+            > returns the same numbers. Named stations with higher limits, and anything
+            else: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+          </p>
+        </div>
+        <div class="grid gap-5">
+          {
+            setups.map((c) => (
+              <Card class="flex min-w-0 flex-col gap-3">
+                <div class="flex items-center gap-3">
+                  <Icon name={c.icon} class="text-accent size-6" />
+                  <h3 class="text-lg font-semibold tracking-normal">
+                    {c.title}
+                  </h3>
+                </div>
+                <p class="text-fg-muted text-sm">{c.text}</p>
+                <CodeBlock class="text-xs" code={c.code} />
+                <div class="mt-auto flex flex-wrap gap-4 text-sm font-medium">
+                  {c.links.map((l) => (
+                    // Only the off-site links open a new tab; this list also
+                    // holds same-site pages, which should navigate in place.
+                    <a
+                      href={l.href}
+                      {...(l.href.startsWith("http")
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                    >
+                      {l.label}
+                    </a>
+                  ))}
+                </div>
+              </Card>
+            ))
+          }
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <section class="py-12 lg:py-16">
+    <Container>
+      <div class="max-w-2xl">
+        <h2 class="mb-5">What happens to your contribution.</h2>
+        <p class="text-fg-muted mb-4 text-lg">
+          Volunteer receptions are shared under CC0 and the volunteer aggregate
+          under ODbL, so others can reuse and build on them. Data shared under
+          those licenses stays reusable under them.
+        </p>
+        <p class="text-fg-faint text-sm">
+          The <a href={AGREEMENT}>contributor agreement</a> is written in plain language
+          and changes only by public pull request. Partner data and the <code
+            class="text-fg-muted">aiscast</code
+          > server code carry their own licenses; the <a href="/ais/#license"
+            >licensing table</a
+          > keeps them apart.
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <section class="py-12 lg:py-16">
+    <Container>
+      <div class="max-w-3xl">
+        <h2 class="mb-8">Questions</h2>
+        <ul class="space-y-6">
+          {
+            questions.map((item) => (
+              <li>
+                <h3 class="text-fg-strong mb-1 text-lg font-semibold tracking-normal">
+                  {item.q}
+                </h3>
+                <p class="text-fg-muted">
+                  {item.a}{" "}
+                  {item.link && (
+                    <a href={item.link.href} class="ml-1 font-medium">
+                      {item.link.label} →
+                    </a>
+                  )}
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </Container>
+  </section>
+
+  <section class="pb-24">
+    <Container>
+      <div
+        class="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-12"
+      >
+        <div>
+          <h2 class="mb-2">One more output line.</h2>
+          <p class="text-fg-muted text-lg">
+            Then start reading the network you just joined.
+          </p>
+        </div>
+        <div class="flex shrink-0 flex-wrap gap-3">
+          <a href="#connect" class="btn btn-primary">Connect your receiver</a>
+          <a href="/api/ais/" class="btn btn-secondary">Read the API docs</a>
+        </div>
+      </div>
+    </Container>
+  </section>
+</MainLayout>
