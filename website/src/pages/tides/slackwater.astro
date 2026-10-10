@@ -7,23 +7,23 @@ import Icon from "../../components/Icon.astro";
 ---
 
 <MainLayout
-  title="Neaps"
-  description="Learn about Neaps, the open source tide prediction engine that powers Open Waters."
+  title="Slackwater"
+  description="Learn about Slackwater, the open source tide prediction engine that powers Open Waters."
   schema={softwareSourceCode({
-    name: "Neaps",
+    name: "Slackwater",
     description:
       "An open source tide prediction engine that computes tide heights from harmonic constituents, offline and anywhere.",
-    path: "/tides/neaps/",
-    codeRepository: "https://github.com/openwatersio/neaps",
+    path: "/tides/slackwater/",
+    codeRepository: "https://github.com/openwatersio/slackwater",
     programmingLanguage: ["TypeScript", "JavaScript"],
   })}
 >
   <Container class="py-16">
     <div class="mx-auto max-w-4xl">
       <div class="flex items-center justify-between">
-        <h1 class="mb-2">Neaps</h1>
+        <h1 class="mb-2">Slackwater</h1>
         <a
-          href="https://github.com/openwatersio/neaps"
+          href="https://github.com/openwatersio/slackwater"
           target="_blank"
           rel="noopener noreferrer"
           class="btn btn-secondary inline-flex items-center gap-2"
@@ -41,8 +41,8 @@ import Icon from "../../components/Icon.astro";
             href="https://tidesandcurrents.noaa.gov/web_services_info.html"
             >like NOAA</a
           > provide high-quality tide data and prediction services. But these services
-          require online access, and are not available for every country. Neaps uses
-          standard algorithms to predict tide heights anywhere that has <a
+          require online access, and are not available for every country. Slackwater
+          uses standard algorithms to predict tide heights anywhere that has <a
             href="/tides/harmonics/">well-defined harmonic constituents</a
           >.
         </p>
@@ -164,13 +164,13 @@ import Icon from "../../components/Icon.astro";
 
       <!-- Installation -->
       <div class="mb-16">
-        <h2 class="mb-6 text-3xl font-semibold">Using Neaps</h2>
+        <h2 class="mb-6 text-3xl font-semibold">Using Slackwater</h2>
         <Card>
           <div class="space-y-6">
             <div>
               <h3 class="mb-3 text-xl font-semibold">Installation</h3>
               <div class="bg-well text-fg-strong rounded-lg p-4">
-                <pre class="text-sm"><code>npm install neaps</code></pre>
+                <pre class="text-sm"><code>npm install slackwater</code></pre>
               </div>
             </div>
 
@@ -183,7 +183,7 @@ import Icon from "../../components/Icon.astro";
                   class="text-sm"><code>{`import {
   getTimelinePrediction,
   getExtremesPrediction
-} from 'neaps';
+} from 'slackwater';
 
 const start = new Date();
 const end = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -216,13 +216,13 @@ const { extremes } = getExtremesPrediction({
             Free & Open Source
           </h2>
           <p class="text-fg-muted mb-6 text-xl text-balance">
-            Neaps is open source software, available under the MIT license. Use
-            it freely in your projects, contribute improvements, or fork it for
-            your own needs.
+            Slackwater is open source software, available under the MIT license.
+            Use it freely in your projects, contribute improvements, or fork it
+            for your own needs.
           </p>
           <div class="flex flex-wrap justify-center gap-4">
             <a
-              href="https://github.com/openwatersio/neaps"
+              href="https://github.com/openwatersio/slackwater"
               target="_blank"
               rel="noopener noreferrer"
               class="btn btn-primary"

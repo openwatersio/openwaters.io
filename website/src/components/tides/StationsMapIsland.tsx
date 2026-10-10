@@ -1,6 +1,10 @@
 import { type ReactNode, useCallback } from "react";
-import { NeapsProvider, StationsMap, StationSearch } from "@neaps/react";
-import "@neaps/react/styles.css";
+import {
+  SlackwaterProvider,
+  StationsMap,
+  StationSearch,
+} from "@slackwater/react";
+import "@slackwater/react/styles.css";
 import { API_HOST } from "../../utils/constants";
 import { BottomDrawer } from "../ui/BottomDrawer";
 import { useMapStyle } from "../../utils/useMapStyle";
@@ -16,7 +20,7 @@ export function StationsMapIsland({ children }: Props) {
   }, []);
 
   return (
-    <NeapsProvider baseUrl={API_HOST}>
+    <SlackwaterProvider baseUrl={API_HOST}>
       {/* Inline height so h-full on StationsMap resolves; calc subtracts the fixed header */}
       <div className="absolute inset-0 h-full w-full">
         <StationsMap
@@ -45,6 +49,6 @@ export function StationsMapIsland({ children }: Props) {
           </BottomDrawer>
         </StationsMap>
       </div>
-    </NeapsProvider>
+    </SlackwaterProvider>
   );
 }
