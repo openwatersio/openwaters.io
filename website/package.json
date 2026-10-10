@@ -12,7 +12,8 @@
     "astro": "astro",
     "prepare": "husky",
     "test": "node --test \"src/**/*.test.ts\"",
-    "og:ais": "node scripts/og-ais.mjs"
+    "og:ais": "node scripts/og-ais.mjs",
+    "check:station-redirects": "node scripts/check-station-redirects.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
@@ -26,10 +27,8 @@
     "@slackwater/api": "^1.0.0-beta.3",
     "@slackwater/database": "^1.0.0-beta.0",
     "@slackwater/engine": "^1.0.0-beta.0",
-    "@slackwater/react": "^1.0.0-beta.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
-    "@tanstack/react-query": "^5.102.8",
     "astro": "^7.2.10",
     "astro-icon": "^1.2.0",
     "clsx": "^2.1.1",
