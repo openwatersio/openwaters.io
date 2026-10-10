@@ -23,7 +23,7 @@
     "@iconify-json/mdi": "^1.2.3",
     "@openwaters/almanac": "^0.7.0",
     "@openwaters/seascape": "^0.3.0",
-    "@slackwater/api": "^1.0.0-beta.0",
+    "@slackwater/api": "^1.0.0-beta.3",
     "@slackwater/database": "^1.0.0-beta.0",
     "@slackwater/engine": "^1.0.0-beta.0",
     "@slackwater/react": "^1.0.0-beta.0",

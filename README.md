@@ -1,6 +1,6 @@
 # openwaters.io
 
-The source for [openwaters.io](https://openwaters.io), including the Astro website, tides API, and API gateway. All three run on Cloudflare Workers.
+The source for [openwaters.io](https://openwaters.io), including the Astro website, tides and currents API, and API gateway. All three run on Cloudflare Workers.
 
 ## Development
 
@@ -25,4 +25,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the repository layout, conventions, a
 
 ## Deployment
 
-Cloudflare Workers Builds creates pull request previews and deploys merges to `main`. This website does not use versioned releases.
+Cloudflare Workers Builds creates pull request previews and deploys merges to `main`, except for the API gateway, which is deployed by hand. This website does not use versioned releases.

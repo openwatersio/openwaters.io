@@ -63,7 +63,7 @@ test("organization: public service offers distinguish free access from quoted co
     assert.ok(offer.url.startsWith("https://openwaters.io/"));
   }
   const free = offers.filter((offer) => "price" in offer);
-  assert.equal(free.length, 3);
+  assert.equal(free.length, 4);
   for (const offer of free) {
     assert.equal(offer.price, 0);
     assert.equal(offer.priceCurrency, "USD");

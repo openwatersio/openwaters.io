@@ -1,0 +1,171 @@
+---
+import ApiLayout from "../../layouts/ApiLayout.astro";
+import ApiEndpoint from "../../components/api/ApiEndpoint.astro";
+import Card from "../../components/ui/Card.astro";
+import { API_HOST } from "../../utils/constants";
+import {
+  getCurrentsOpenAPISpec,
+  extractEndpoints,
+  groupEndpointsByTag,
+  endpointId,
+} from "../../utils/openapi";
+
+// Fetch and process OpenAPI spec at build time
+const spec = await getCurrentsOpenAPISpec();
+const endpoints = extractEndpoints(spec);
+const groupedEndpoints = groupEndpointsByTag(endpoints, "Currents");
+const tagId = (tag: string) => `${tag.toLowerCase().replaceAll(" ", "-")}`;
+
+// With a single tag the group heading would just repeat the page title.
+const showGroups = groupedEndpoints.size > 1;
+const sections = [
+  { slug: "getting-started", text: "Getting Started" },
+  { slug: "reading-predictions", text: "Reading Predictions" },
+  ...Array.from(groupedEndpoints.entries()).map(([tag, tagEndpoints]) => ({
+    slug: tagId(tag),
+    text: showGroups ? tag : "Endpoints",
+    children: tagEndpoints.map((endpoint) => ({
+      slug: endpointId(endpoint),
+      text: endpoint.summary ?? `${endpoint.method} ${endpoint.path}`,
+    })),
+  })),
+];
+
+const link = "text-accent hover:text-accent-hover font-medium";
+---
+
+<ApiLayout
+  title="Currents API"
+  description="Reference for the currents API: tidal current predictions from harmonic constituents, with slack water and maximum flood and ebb for current stations."
+  sections={sections}
+>
+  <h1 class="mb-6">Currents API</h1>
+  <p class="text-fg-muted mb-12 text-xl">
+    Tidal current predictions from harmonic constituents, powered by the open
+    source{" "}
+    <a href="https://github.com/openwatersio/slackwater" class={link}
+      >Slackwater</a
+    > engine. Open and free, no authentication required, and described by an <a
+      href="/openapi.json"
+      class={link}>OpenAPI specification</a
+    >. To browse current stations on a phone, use the{" "}
+    <a href="https://slackwater.xyz/" class={link}>Slackwater app</a>.
+  </p>
+
+  <div id="getting-started" class="mb-16 scroll-mt-24">
+    <h2 class="mb-6 text-3xl font-semibold">Getting Started</h2>
+    <Card>
+      <div class="space-y-6">
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Authentication</h3>
+          <p class="text-fg-muted">
+            The currents API is open and does not require authentication.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Rate Limits</h3>
+          <p class="text-fg-muted">
+            The currents API shares the <a href="/api/tides/" class={link}
+              >tides API</a
+            >'s limits:
+          </p>
+          <ul class="text-fg-muted ml-4 list-inside list-disc space-y-1">
+            <li>100 requests per minute per IP address</li>
+            <li>10,000 requests per day per IP address</li>
+          </ul>
+          <p class="text-fg-faint mt-2 text-sm">
+            If you need higher limits for a production application, please
+            contact us.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">A First Request</h3>
+          <p class="text-fg-muted mb-2">
+            Slack water and the strongest flood and ebb at the current station
+            nearest a point, for the next seven days:
+          </p>
+          <div class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4">
+            <pre
+              class="text-sm"><code>{`curl "${API_HOST}/currents/events?latitude=48.406&longitude=-122.643"`}</code></pre>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Error Handling</h3>
+          <p class="text-fg-muted mb-2">
+            Errors are returned with appropriate HTTP status codes and a JSON
+            body with a <code>message</code>, the same shape as the tides API.
+          </p>
+        </div>
+      </div>
+    </Card>
+  </div>
+
+  <div id="reading-predictions" class="mb-16 scroll-mt-24">
+    <h2 class="mb-6 text-3xl font-semibold">Reading Predictions</h2>
+    <Card>
+      <div class="space-y-6">
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Signed Speeds</h3>
+          <p class="text-fg-muted">
+            Speeds are in knots along the station's flood axis. Positive is
+            flood and negative is ebb. Responses carry the station's{" "}
+            <code>floodDirection</code> and <code>ebbDirection</code> in degrees true
+            when it publishes them.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Events</h3>
+          <p class="text-fg-muted">
+            Each event has a <code>kind</code>: <code>slack</code>,{" "}
+            <code>maxFlood</code>, or <code>maxEbb</code>. Maximum flood and ebb
+            also carry a <code>direction</code> in degrees true when the station has
+            one. Slack carries the small residual speed left at the turn. The timeline
+            endpoints return a signed speed every 10 minutes instead.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Depth Bins</h3>
+          <p class="text-fg-muted">
+            Some stations predict currents at several depths, called bins. A
+            station ID on its own selects the primary bin, the one NOAA predicts
+            by default. Append <code>@N</code> to select bin N, as in{" "}
+            <code>/currents/stations/noaa/EPT0003@11</code>. Every station lists
+            its bins in <code>bins</code>, primary first, and station searches
+            return each station once, at its primary bin.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Canadian Stations</h3>
+          <p class="text-fg-muted">
+            Canadian Hydrographic Service stations are listed so you can show
+            them, but CHS terms do not allow its predictions to be
+            redistributed. Their prediction endpoints return{" "}
+            <code>451</code> with a link to the official CHS predictions, and station
+            listings mark them <code>predictions: false</code>. The
+            nearest-station endpoints return that <code>451</code> rather than answering
+            for a station farther away. Stations with no prediction model return <code
+              >404</code
+            >.
+          </p>
+        </div>
+      </div>
+    </Card>
+  </div>
+
+  {
+    Array.from(groupedEndpoints.entries()).map(([tag, tagEndpoints]) => (
+      <div id={tagId(tag)} class="mb-16 scroll-mt-24">
+        {showGroups && <h2 class="mb-6 text-3xl font-semibold">{tag}</h2>}
+        {tagEndpoints.map((endpoint) => (
+          <ApiEndpoint endpoint={endpoint} id={endpointId(endpoint)} />
+        ))}
+      </div>
+    ))
+  }
+</ApiLayout>

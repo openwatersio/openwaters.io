@@ -56,6 +56,16 @@ export const organization = (email: string) => ({
     },
     {
       "@type": "Offer",
+      name: "Free Currents API",
+      price: 0,
+      priceCurrency: "USD",
+      url: `${SITE}/api/currents/`,
+      description:
+        "Free tidal current predictions without authentication, subject to published rate limits and source data licenses.",
+      itemOffered: { "@type": "Service", name: "Open Waters Currents API" },
+    },
+    {
+      "@type": "Offer",
       name: "Open Waters AIS free personal access",
       price: 0,
       priceCurrency: "USD",

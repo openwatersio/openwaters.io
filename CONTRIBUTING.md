@@ -5,8 +5,8 @@ This repository contains the Open Waters website and the workers behind its publ
 ## Layout
 
 - `website/` contains the Astro site and its React islands. Astro pages live in `website/src/pages/`, shared components in `website/src/components/`, and global styles in `website/src/styles/global.css`.
-- `api/` contains the Express tides API and its Cloudflare Worker entry point.
-- `gateway/` owns `api.openwaters.io` and routes `/tides` and `/bathymetry` requests to service-bound workers.
+- `api/` contains the Express tides and currents API and its Cloudflare Worker entry point.
+- `gateway/` owns `api.openwaters.io` and routes `/tides`, `/currents`, and `/bathymetry` requests to service-bound workers.
 
 ## Setup and development
 
@@ -53,7 +53,7 @@ Before adding an Astro integration, check its Astro 7 peer dependency and licens
 
 ## Deployment
 
-Cloudflare Workers Builds creates preview versions for pull requests and deploys `main`. Each worker has its own Wrangler configuration:
+Cloudflare Workers Builds creates preview versions for pull requests and deploys `main` for the website and API workers. The gateway has no Workers Build; deploy it by hand with `npx wrangler deploy -c gateway/wrangler.jsonc` after a change to `gateway/` merges. Each worker has its own Wrangler configuration:
 
 - `website/wrangler.jsonc` deploys `openwaters-io` for `openwaters.io` and `www.openwaters.io`.
 - `api/wrangler.jsonc` deploys `openwaters-api` without a public route. The gateway reaches it through a service binding.
