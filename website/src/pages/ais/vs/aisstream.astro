@@ -21,7 +21,7 @@ const sections = [
   { id: "migration", title: "Migration" },
 ];
 
-// [label, aiscast, aisstream.io]
+// [label, Open Waters AIS, aisstream.io]
 const glance: [string, string, string][] = [
   [
     "Protocol",
@@ -39,16 +39,21 @@ const glance: [string, string, string][] = [
     "yes, CORS open",
     "banned; proxy through your own server",
   ],
-  ["Snapshot API", "GET /v1/vessels?bbox= GeoJSON", "none"],
+  [
+    "Historical analysis",
+    "REST vessel tracks as GeoJSON or GPX; coverage varies",
+    "no durable replay documented",
+  ],
+  ["Current vessel lookups", "REST by area or vessel", "stream only"],
   [
     "Limits",
     "documented, per token: 2 streams, 50 msg/s, ~20°×20° personal; more for contributors",
-    "1 connection per IP, undocumented 429s, browsers banned",
+    "3 subscribed connections per account and 3 open connections per IP",
   ],
   [
     "Failure signalling",
     "ack, heartbeat, close reason, /health, public status page",
-    "none",
+    "subscription confirmations; reconnect and keepalive guidance",
   ],
   [
     "Coverage",
@@ -57,21 +62,20 @@ const glance: [string, string, string][] = [
   ],
   ["Source on each event", "yes, with station", "no"],
   ["Live coverage map", "yes, per station and source", "no"],
-  ["Data license", "per source, published, attribution strings given", "none"],
+  [
+    "Data license",
+    "per source, published, attribution strings given",
+    "confirm reuse terms",
+  ],
   ["Contribute a receiver", "yes: HTTP, UDP, Signal K", "no"],
   ["Raw NMEA", "contributors and commercial", "no"],
-  ["History", "not yet (archive exists)", "no"],
   [
     "Code",
     "MIT, public: run your own, or fork it if we disappear",
     "closed; public repo empty, nothing to fork",
   ],
-  [
-    "Uptime",
-    "beta, no SLA; monitored publicly",
-    "down ~14 of 20 days in Aug 2026",
-  ],
-  ["Cost", "free; commercial by arrangement", "free; no way to pay"],
+  ["Uptime", "beta, no SLA; monitored publicly", "no SLA or uptime guarantee"],
+  ["Cost", "free personal access; contact us for commercial use", "free"],
   [
     "A human to email",
     "hello@openwaters.io answers",
@@ -79,7 +83,7 @@ const glance: [string, string, string][] = [
   ],
 ];
 
-// Live rows: the aiscast column sums every source; the aisstream column is what
+// Live rows: the Open Waters AIS column sums every source; the aisstream column is what
 // aisstream.io delivers to this server's own world-wide subscription, since it is
 // one of our upstreams. Both are measured by the same process.
 const live = [
@@ -90,12 +94,12 @@ const live = [
 ];
 
 const description =
-  "Same WebSocket protocol, different everything else. A field-by-field comparison of aiscast and aisstream.io: uptime, coverage, limits, license, and what changes when you switch.";
+  "Compare Open Waters AIS and aisstream.io for real-time vessel tracking and historical analysis: streams, vessel tracks, coverage, limits, and migration.";
 
 const article = {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  headline: "aiscast vs aisstream.io",
+  headline: "Open Waters AIS vs aisstream.io",
   description,
   url: `${SITE}/ais/vs/aisstream/`,
   author: publisher,
@@ -107,7 +111,7 @@ const article = {
 ---
 
 <MainLayout
-  title="aiscast vs aisstream.io"
+  title="Open Waters AIS vs aisstream.io"
   image="/og/ais-vs-aisstream.png"
   description={description}
   schema={article}
@@ -122,16 +126,18 @@ const article = {
         AIS
       </a>
 
-      <h1 class="mb-2">aiscast vs aisstream.io</h1>
-      <p class="text-fg-faint mb-4 text-sm">Last checked 4 September 2026</p>
+      <h1 class="mb-2">Open Waters AIS vs aisstream.io</h1>
+      <p class="text-fg-faint mb-4 text-sm">
+        API documentation checked 8 October 2026
+      </p>
 
       <p class="text-lead mb-4">
-        aiscast, the Open Waters AIS network, speaks aisstream.io's protocol, so
-        the choice is not about rewriting code. It is about whether you want a
-        feed that tells you when it fails, names its sources and licenses, and
-        answers email, in exchange for a beta whose live coverage outside the
-        Nordics still leans on minutes-old snapshots. aisstream's own upstream
-        is one of aiscast's inputs, so switching costs you no coverage.
+        Open Waters AIS serves two workflows: following vessels in real time and
+        analysing their recorded movements. aisstream.io provides a free live
+        WebSocket feed. Open Waters AIS adds historical vessel tracks over REST,
+        current vessel lookups, and commercial access by arrangement. Its
+        compatibility endpoint accepts aisstream subscriptions, so existing
+        clients can start with a hostname and token change.
       </p>
       <p class="text-fg-muted mb-8">
         Comparing more than these two? <a href={ALTERNATIVES}
@@ -162,8 +168,8 @@ const article = {
           Right now
         </h2>
         <p class="text-fg-muted mb-4">
-          aisstream.io is one of aiscast's upstreams, so the same server
-          measures both columns: everything aiscast hears, and what aisstream.io
+          aisstream.io is one of our upstreams, so the same server measures both
+          columns: everything Open Waters AIS hears, and what aisstream.io
           delivers to a world-wide subscription on one key. When aisstream is
           healthy this table says so.
         </p>
@@ -177,7 +183,8 @@ const article = {
             <thead class="bg-surface">
               <tr>
                 <th scope="col" class="px-3 py-2 text-left"></th>
-                <th scope="col" class="px-3 py-2 text-right">aiscast</th>
+                <th scope="col" class="px-3 py-2 text-right">Open Waters AIS</th
+                >
                 <th scope="col" class="px-3 py-2 text-right">aisstream.io</th>
               </tr>
             </thead>
@@ -222,7 +229,7 @@ const article = {
             <thead class="bg-surface">
               <tr>
                 <th scope="col" class="px-3 py-2 text-left"></th>
-                <th scope="col" class="px-3 py-2 text-left">aiscast</th>
+                <th scope="col" class="px-3 py-2 text-left">Open Waters AIS</th>
                 <th scope="col" class="px-3 py-2 text-left">aisstream.io</th>
               </tr>
             </thead>
@@ -248,8 +255,12 @@ const article = {
             target="_blank"
             rel="noopener noreferrer">documentation</a
           >{" "}
-          and its public issue tracker, checked 4 September 2026. Spotted something
-          out of date?{" "}
+          checked 8 October 2026. Open Waters AIS capabilities are documented in the{
+            " "
+          }
+          <a href="/api/ais/">API reference</a>. Spotted something out of date?{
+            " "
+          }
           <a href="/contact/">Tell us</a>.
         </p>
 
@@ -261,7 +272,7 @@ const article = {
             >encoding/json</code
           > over the go-ais structs, typo and all (<code
             class="bg-surface rounded px-1">VenderIDModel</code
-          >). aiscast uses the same decoder, so <code
+          >). Open Waters AIS uses the same decoder, so <code
             class="bg-surface rounded px-1">/v0/stream</code
           > frames are structurally identical; golden tests pin the envelope, rounding,
           time format, error messages, and resubscribe behaviour against captured
@@ -276,55 +287,57 @@ const article = {
           > fixes it; the <a href="/api/ais/">API reference</a> lists each one.
         </p>
         <p class="text-fg-muted mb-12">
-          Bottom line: the migration is a hostname and a token.
+          Start with a hostname and token change, then test your filters,
+          limits, and control-message handling. aisstream now documents
+          subscription confirmations, compression negotiation, and binary JSON
+          frames; do not assume every transport detail is identical.
         </p>
 
         <h2 id="coverage" class="mb-4 scroll-mt-24 text-3xl font-semibold">
           Coverage
         </h2>
         <p class="text-fg-muted mb-4">
-          aisstream claims a global network of stations about 200 km off
-          coastlines and publishes no map, no station list, and no per-region
-          health. Its coverage issues (45 open) are people comparing against
-          MarineTraffic and debugging their own code for hours before learning
-          there is simply no receiver.
+          Both services depend on the receivers and upstreams that hear a
+          vessel. Compare your actual area or vessel list, and the age of its
+          reports, rather than treating “global” as continuous ocean coverage.
         </p>
         <p class="text-fg-muted mb-4">
-          aiscast publishes every source: Kystverket and BarentsWatch for
-          Norway, Digitraffic for Finland, volunteer receivers wherever they
+          Open Waters AIS publishes every source: Kystverket and BarentsWatch
+          for Norway, Digitraffic for Finland, volunteer receivers wherever they
           are, the AISHub aggregate for the rest of the world, and aisstream.io
           itself when it is delivering. <code class="bg-surface rounded px-1"
             >/v1/stations</code
           > gives each source's message count and age, and the live map draws the
-          same data. Where aisstream is honest by accident (no data means no data),
-          aiscast is honest on purpose (no data means this source has been silent
-          for this long).
+          same data. Use the <a href="/ais/">coverage map</a> and source health to
+          investigate missing or delayed positions.
         </p>
         <p class="text-fg-muted mb-12">
-          The gap: outside the Nordics and the volunteer footprint, aiscast's
+          The gap: outside the Nordics and the volunteer footprint, our
           positions are AISHub's, about a minute behind (<a
             href="https://ais.openwaters.io/v1/stats"
             target="_blank"
             rel="noopener noreferrer">current delay</a
           >). That is fine for "what is out there" and wrong for close quarters.
-          It closes as receivers join.
+          Coverage grows as receivers join. Neither a live feed nor historical
+          tracks are a substitute for onboard AIS or suitable for safety of
+          navigation.
         </p>
 
         <h2 id="limits" class="mb-4 scroll-mt-24 text-3xl font-semibold">
           Limits and connection model
         </h2>
         <p class="text-fg-muted mb-4">
-          aisstream caps one connection per IP, counts a resubscribe as a new
-          connection, returns undocumented 429s, and forbids browsers, which
-          pushes NATed users into reconnect storms and whole-world
-          subscriptions. Its maintainer blames "applications created by LLMs"
-          for the 2026 instability.
+          aisstream documents three subscribed connections per account and three
+          open connections per originating IP. Subscription updates replace the
+          active configuration, are limited to one per second, and receive a
+          confirmation when accepted. Browser connections require a server
+          proxy.
         </p>
         <p class="text-fg-muted mb-12">
-          aiscast limits per token, publishes the numbers, thins a stream that
-          exceeds its rate rather than dropping the connection, refuses an
-          oversize area with a message that says so, and allows in-band
-          resubscribe for free. CORS is open on <code
+          Open Waters AIS limits per token, publishes the numbers, thins a
+          stream that exceeds its rate rather than dropping the connection,
+          refuses an oversize area with a message that says so, and allows
+          in-band resubscribe for free. CORS is open on <code
             class="bg-surface rounded px-1">/v1/vessels</code
           >.
         </p>
@@ -333,28 +346,45 @@ const article = {
           License and terms
         </h2>
         <p class="text-fg-muted mb-12">
-          aisstream has none. aiscast does not relicense the aggregate: each
-          event is re-served under its source's terms, and the <a
-            href="/ais/#license">terms</a
-          > give you the attribution string to carry. If you are one of the twenty
-          people who asked aisstream for a license and heard nothing, this is the
-          answer.
+          Confirm the terms for your intended use before displaying, storing, or
+          redistributing AIS data. Open Waters AIS publishes <a
+            href="/ais/#license">source terms and attribution</a
+          >; a commercial subscription does not erase upstream conditions.
+          Contact us about the sources your product can use, including whether
+          to exclude aisstream data when its reuse terms do not meet your
+          requirements.
         </p>
 
         <h2 id="who" class="mb-4 scroll-mt-24 text-3xl font-semibold">
           Who each one is for
         </h2>
-        <h3 class="mb-2 text-xl font-semibold">Who aiscast is for</h3>
+        <h3 class="mb-2 text-xl font-semibold">Real-time tracking</h3>
         <p class="text-fg-muted mb-6">
-          aisstream clients that need to keep running; Signal K boats;
-          dashboards and hobby projects; research that needs provenance;
-          products that need a license and a contact; receiver operators who
-          want the network's data back.
+          Marine apps, fleet monitors, and dashboards can consume Open Waters
+          AIS as a stream, or poll the REST API when periodic updates are
+          enough. Current-position snapshots help initialise a map before live
+          updates arrive. aisstream is an option for a free server-side stream
+          when its coverage and terms fit your project.
         </p>
-        <h3 class="mb-2 text-xl font-semibold">Who aisstream.io is for</h3>
+        <h3 class="mb-2 text-xl font-semibold">Historical analysis</h3>
+        <p class="text-fg-muted mb-6">
+          To reconstruct movements or study vessel activity, use the <a
+            href="/api/ais/#get-v1-vessels-mmsi-track"
+            >Open Waters AIS vessel-track API</a
+          >. It returns GeoJSON or GPX for a requested time range, with up to
+          366 days per request. That limit does not promise a year of
+          observations: check the recorded dates, gaps, and sampling for the
+          vessels you need. IMO lookup is available to contributor and
+          commercial tokens, but tracks under earlier MMSIs are not
+          automatically joined.
+        </p>
         <p class="text-fg-muted mb-12">
-          Honestly: a free key to try the category, and nothing that runs
-          unattended. When it is up it is fine, and aiscast consumes it too.
+          <a href="/ais/token/">Try personal access</a> or <a href="/contact/"
+            >discuss a commercial project</a
+          >. For historical work, include your vessel list, area, date range,
+          and required detail. Bulk datasets and contractual requirements need a
+          separate discussion; they are not implied by the public track
+          endpoint.
         </p>
 
         <h2 id="migration" class="mb-4 scroll-mt-24 text-3xl font-semibold">
@@ -364,8 +394,12 @@ const article = {
           class="text-fg-muted marker:text-fg-faint mb-4 list-decimal space-y-2 pl-6"
         >
           <li>
-            Get a token at <a href="/ais/token/">openwaters.io/ais/token</a>:
-            one click, stays in your browser, never expires.
+            Get a token at <a href="/ais/token/">openwaters.io/ais/token</a>{
+              " "
+            }
+            for personal use. For a commercial product, <a href="/contact/"
+              >contact us</a
+            > for access.
           </li>
           <li>
             Replace <code class="bg-surface rounded px-1"
@@ -376,7 +410,8 @@ const article = {
           </li>
           <li>
             Put the token in <code class="bg-surface rounded px-1">APIKey</code
-            >. Everything else stays the same.
+            >. Test your subscriptions and message handling before switching
+            production traffic.
           </li>
         </ol>
         <p class="text-fg-muted mb-4">

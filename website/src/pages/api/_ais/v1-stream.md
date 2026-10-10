@@ -26,13 +26,16 @@ Stops events and keeps the socket open for publishing.
 
 #### `register`
 
-Creates a personal token in-band, equivalent to [`POST /v1/keys`](#post-v1-keys). Works on an anonymous socket only and shares that endpoint's rate limit.
+Creates a personal token in-band, equivalent to [`POST /v1/keys`](#post-v1-keys), with the same fields: sign it with the key, and name the station if you like. Works on an anonymous socket only and shares that endpoint's rate limit.
 
 ```json
 {
   "type": "register",
   "pubkey": "<base64url Ed25519 public key>",
-  "bind_ip": false
+  "bind_ip": false,
+  "name": "Quissett Harbor",
+  "ts": 1790000000,
+  "sig": "<base64url Ed25519 signature>"
 }
 ```
 
@@ -126,7 +129,7 @@ One per `publish` frame, in order, with the number of sentences accepted.
 
 #### `key`
 
-The reply to `register`: the new token and its claims.
+The reply to `register`: the new token and its claims, and `name_error` when a requested name was not stored.
 
 ```json
 { "type": "key", "token": "ak1....", "claims": { "...": "..." } }

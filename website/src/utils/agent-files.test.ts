@@ -153,6 +153,14 @@ test("AIS metadata uses its own 1200x630 social image", { skip }, () => {
     [image.readUInt32BE(16), image.readUInt32BE(20)],
     [1200, 630],
   );
+  assert.match(
+    html,
+    /<title>Open Waters AIS: free, real-time vessel data \| Open Waters<\/title>/,
+  );
+  assert.match(
+    html,
+    /name="description" content="Open Waters AIS is a free AIS network with an aisstream-compatible API, streaming live ship positions from coastal authorities and volunteer receivers\."/,
+  );
 });
 
 for (const [page, image] of [
@@ -186,6 +194,26 @@ test("homepage Organization schema has a contactPoint", { skip }, () => {
   assert.ok(org.contactPoint.email);
   assert.ok(org.contactPoint.contactType);
 });
+
+test(
+  "homepage WebSite schema prefers the Open Waters site name",
+  { skip },
+  () => {
+    const blocks = [
+      ...read("index.html").matchAll(
+        /<script type="application\/ld\+json">([^<]+)<\/script>/g,
+      ),
+    ].map((m) => JSON.parse(m[1]));
+    const site = blocks.find((b) => b["@type"] === "WebSite");
+    assert.deepEqual(site, {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Open Waters",
+      alternateName: "openwaters.io",
+      url: "https://openwaters.io/",
+    });
+  },
+);
 
 test(
   "openapi.json operations all carry an operationId and description",
@@ -264,7 +292,10 @@ test(
     const privacy = read("privacy/index.md");
     assert.match(privacy, /Plausible/);
     assert.match(privacy, /localStorage/);
-    assert.match(privacy, /48 hours/);
+    // No retention window here on purpose: how far back the track endpoint
+    // reaches is a per-tier access limit, not how long positions are kept, and
+    // the archive has no documented period to state.
+    assert.doesNotMatch(privacy, /\b\d+ (hours|days)\b/);
     const footer = read("index.html");
     for (const href of ["/about/", "/contact/", "/privacy/", "/license/"]) {
       assert.ok(footer.includes(`href="${href}"`), `footer missing ${href}`);

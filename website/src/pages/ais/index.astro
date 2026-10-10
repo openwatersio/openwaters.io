@@ -5,7 +5,7 @@ import Card from "../../components/ui/Card.astro";
 import CodeBlock from "../../components/ui/CodeBlock.astro";
 import Icon from "../../components/Icon.astro";
 import AisMap from "../../components/ais/AisMap.astro";
-import AisTicker from "../../components/ais/AisTicker.astro";
+import AisStats from "../../components/ais/AisStats.astro";
 import SectionDivider from "../../components/ui/SectionDivider.astro";
 import { CONTACT_EMAIL } from "../../utils/constants";
 import { highlight, SNIPPET_LANGS } from "../../utils/shiki";
@@ -180,9 +180,10 @@ const contribute = [
   {
     icon: "mdi:sail-boat",
     title: "Signal K",
-    text: "One plugin, both directions: shares what your receiver hears and shows AIS traffic when it hears none. No account; it creates its own token.",
+    text: "One plugin, both directions: shares what your receiver hears and shows AIS traffic when it hears none, on your chartplotter too. No account; it creates its own token.",
     code: "npm install signalk-aiscast",
     links: [
+      { label: "AIS for Signal K", href: "/ais/signalk/" },
       { label: "npm", href: "https://www.npmjs.com/package/signalk-aiscast" },
       { label: "README", href: `${REPO}/tree/main/signalk-plugin#readme` },
     ],
@@ -292,9 +293,9 @@ const licenses = [
 ---
 
 <MainLayout
-  title="aiscast: an open AIS network, streamed in real time"
+  title="Open Waters AIS: free, real-time vessel data"
   image="/og/ais.png"
-  description="aiscast is the Open Waters AIS network: live ship positions from coastal authorities and volunteer receivers, streamed in real time. Open source and free for personal use."
+  description="Open Waters AIS is a free AIS network with an aisstream-compatible API, streaming live ship positions from coastal authorities and volunteer receivers."
 >
   <!-- Hero: the live map runs full bleed under the header and fades into the page -->
   <section class="-mt-header relative overflow-hidden">
@@ -302,11 +303,11 @@ const licenses = [
       <AisMap center={[23.6, 59.7]} zoom={6.3} class="h-full w-full" />
     </div>
     <div
-      class="from-canvas/60 to-canvas pointer-events-none absolute inset-0 bg-linear-to-b via-transparent via-25%"
+      class="from-canvas/10 to-canvas pointer-events-none absolute inset-0 bg-linear-to-b via-transparent via-50%"
     >
     </div>
     <div
-      class="bg-canvas/70 lg:from-canvas lg:via-canvas/30 pointer-events-none absolute inset-0 lg:bg-transparent lg:bg-linear-to-r lg:via-40% lg:to-transparent"
+      class="bg-canvas/50 lg:from-canvas lg:via-canvas/30 pointer-events-none absolute inset-0 lg:bg-transparent lg:bg-linear-to-r lg:via-75% lg:to-transparent"
     >
     </div>
     <Container class="relative pt-36 pb-24 lg:pt-44 lg:pb-28">
@@ -314,7 +315,7 @@ const licenses = [
         class="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]"
       >
         <div class="pointer-events-none max-w-2xl">
-          <p class="eyebrow mb-6">aiscast · the Open Waters AIS network</p>
+          <p class="eyebrow mb-6">Open Waters AIS</p>
           <h1 class="mb-6">
             All the ships at sea,<br />
             <span class="text-highlight">instantaneously.</span>
@@ -329,9 +330,13 @@ const licenses = [
               <Icon name="mdi:arrow-right" class="size-4" />
             </a>
             <a href={TOKEN_PAGE} class="btn btn-secondary">Get a token</a>
+            <a href="/ais/vessels" class="btn btn-secondary">
+              <Icon name="mdi:map-outline" class="size-4" />
+              Open the live map
+            </a>
           </div>
         </div>
-        <AisTicker statsUrl={`https://${SERVER}/v1/stats`} />
+        <AisStats statsUrl={`https://${SERVER}/v1/stats`} />
       </div>
     </Container>
   </section>
@@ -586,7 +591,14 @@ const licenses = [
                 <CodeBlock class="text-xs" code={c.code} />
                 <div class="mt-auto flex flex-wrap gap-4 text-sm font-medium">
                   {c.links.map((l) => (
-                    <a href={l.href} target="_blank" rel="noopener noreferrer">
+                    // Only the off-site links open a new tab; this list also holds
+                    // same-site pages now, which should navigate in place.
+                    <a
+                      href={l.href}
+                      {...(l.href.startsWith("http")
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                    >
                       {l.label}
                     </a>
                   ))}
