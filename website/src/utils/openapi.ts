@@ -1,10 +1,15 @@
-import { type openapi } from "@slackwater/api";
+import { isDeepStrictEqual } from "node:util";
+import { type openapi, type currentsOpenapi } from "@slackwater/api";
 
-// Infer types from the imported openapi spec
+// Infer types from the imported openapi specs
 type OpenAPISpec = typeof openapi;
-type Components = NonNullable<OpenAPISpec["components"]>;
-type Parameters = NonNullable<Components["parameters"]>;
-type ParameterObject = Parameters[keyof Parameters];
+type ParametersOf<Spec extends { components: { parameters: object } }> =
+  Spec["components"]["parameters"];
+type TideParameters = ParametersOf<OpenAPISpec>;
+type CurrentParameters = ParametersOf<typeof currentsOpenapi>;
+type ParameterObject =
+  | TideParameters[keyof TideParameters]
+  | CurrentParameters[keyof CurrentParameters];
 
 /**
  * Structural shape of an OpenAPI document as this site renders it: satisfied by
@@ -20,26 +25,38 @@ export interface SpecDocument {
 }
 
 /**
- * Path prefix where the Slackwater API is mounted in the Open Waters API.
+ * Path prefixes where the Slackwater route groups are mounted in the Open Waters API.
  * Mirrors what slackwater does internally with `servers: [{ url: prefix }]`.
  */
-const SLACKWATER_PREFIX = "/tides";
+export const TIDES_PREFIX = "/tides";
+export const CURRENTS_PREFIX = "/currents";
 
 export const AIS_OPENAPI_URL = "https://ais.openwaters.io/openapi.json";
 
-/**
- * Fetch OpenAPI spec from @slackwater/api at build time, prefixing paths with the
- * mount point used by the Open Waters API.
- */
-export async function getOpenAPISpec(): Promise<OpenAPISpec> {
-  const { openapi } = await import("@slackwater/api");
+/** A spec's paths, each prefixed with the mount point used by the Open Waters API. */
+function mount<T extends { paths: Record<string, unknown> }>(
+  spec: T,
+  prefix: string,
+): T {
   const paths = Object.fromEntries(
-    Object.entries(openapi.paths).map(([path, pathItem]) => [
-      path === "/" ? SLACKWATER_PREFIX : `${SLACKWATER_PREFIX}${path}`,
+    Object.entries(spec.paths).map(([path, pathItem]) => [
+      path === "/" ? prefix : `${prefix}${path}`,
       pathItem,
     ]),
   );
-  return { ...openapi, paths } as OpenAPISpec;
+  return { ...spec, paths };
+}
+
+/** The tides spec from @slackwater/api, mounted at /tides. */
+export async function getOpenAPISpec(): Promise<OpenAPISpec> {
+  const { openapi } = await import("@slackwater/api");
+  return mount(openapi, TIDES_PREFIX);
+}
+
+/** The tidal currents spec from @slackwater/api, mounted at /currents. */
+export async function getCurrentsOpenAPISpec() {
+  const { currentsOpenapi } = await import("@slackwater/api");
+  return mount(currentsOpenapi, CURRENTS_PREFIX);
 }
 
 /**
@@ -126,7 +143,7 @@ export function extractEndpoints(spec: SpecDocument): EndpointInfo[] {
       const parameters = rawParams
         ?.map((param) => {
           if ("$ref" in param && typeof param.$ref === "string") {
-            const refPath = param.$ref.split("/").pop() as keyof Parameters;
+            const refPath = param.$ref.split("/").pop()!;
             return spec.components?.parameters?.[refPath] ?? null;
           }
           return param as ParameterObject;
@@ -187,34 +204,76 @@ export function groupEndpointsByTag(
 }
 
 /**
- * The document served at /openapi.json: the mounted slackwater spec, addressed at the
- * public API host so agents can call it without reading the docs page first.
+ * Union of two records that must agree on any key they share. The currents spec
+ * reuses the tides spec's parameters and schemas by name, so a shared name with a
+ * different definition would silently change one API's documented contract.
  */
-export async function openApiDocument(host: string) {
-  const spec = await getOpenAPISpec();
-  const paths = Object.fromEntries(
-    Object.entries(spec.paths).map(([path, item]) => [
-      path,
-      Object.fromEntries(
-        Object.entries(item).map(([method, op]) => [
-          method,
-          {
-            operationId: operationId(method, path),
-            description: op.summary,
-            ...op,
-          },
-        ]),
-      ),
+export function mergeAgreeing<T>(
+  kind: string,
+  a: Record<string, T> = {},
+  b: Record<string, T> = {},
+): Record<string, T> {
+  for (const [key, value] of Object.entries(b)) {
+    if (key in a && !isDeepStrictEqual(a[key], value)) {
+      throw new Error(
+        `openapi: tides and currents define ${kind} "${key}" differently`,
+      );
+    }
+  }
+  return { ...a, ...b };
+}
+
+type ComponentGroups = Record<string, Record<string, unknown>>;
+
+/** Every component group of both specs, each merged with {@link mergeAgreeing}. */
+function mergeComponents(a: object, b: object) {
+  const tides = a as ComponentGroups;
+  const currents = b as ComponentGroups;
+  const kinds = new Set([...Object.keys(tides), ...Object.keys(currents)]);
+  return Object.fromEntries(
+    [...kinds].map((kind) => [
+      kind,
+      mergeAgreeing(kind, tides[kind], currents[kind]),
     ]),
   );
+}
+
+/**
+ * The document served at /openapi.json: the mounted slackwater tides and currents
+ * specs as one document, addressed at the public API host so agents can call it
+ * without reading the docs pages first.
+ */
+export async function openApiDocument(host: string) {
+  const [tides, currents] = await Promise.all([
+    getOpenAPISpec(),
+    getCurrentsOpenAPISpec(),
+  ]);
+  const paths = Object.fromEntries(
+    Object.entries({ ...tides.paths, ...currents.paths }).map(
+      ([path, item]) => [
+        path,
+        Object.fromEntries(
+          Object.entries(item).map(([method, op]) => [
+            method,
+            {
+              operationId: operationId(method, path),
+              description: op.summary,
+              ...op,
+            },
+          ]),
+        ),
+      ],
+    ),
+  );
   return {
-    ...spec,
+    ...tides,
     paths,
+    components: mergeComponents(tides.components, currents.components),
     info: {
-      ...spec.info,
+      ...tides.info,
       title: "Open Waters API",
       // The AIS API lives on its own host with its own spec; point agents at it.
-      description: `${spec.info.description.replace(/\.?$/, ".")} The AIS API is described separately at ${AIS_OPENAPI_URL}.`,
+      description: `Tide predictions under ${TIDES_PREFIX} and tidal current predictions under ${CURRENTS_PREFIX}, from harmonic constituents. The AIS API is described separately at ${AIS_OPENAPI_URL}.`,
     },
     servers: [{ url: host }],
     // The API is open: an explicit empty requirement says so in-spec.

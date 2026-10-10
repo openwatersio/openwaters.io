@@ -37,6 +37,7 @@ test(
     assert.match(doc.openapi, /^3\./);
     assert.equal(doc.servers[0].url, "https://api.openwaters.io");
     assert.ok(doc.paths["/tides/stations/{source}/{id}"]);
+    assert.ok(doc.paths["/currents/events"]);
   },
 );
 
@@ -107,7 +108,7 @@ test(
       );
     }
     const stations = read("tides/stations/index.md");
-    assert.match(stations, /slackwater\.xyz\/stations\/tides\//);
+    assert.match(stations, /slackwater\.xyz\/tides\//);
     assert.match(stations, /api\.openwaters\.io\/tides\/stations\?query=/);
   },
 );
@@ -243,6 +244,8 @@ test(
     // Agents need the fit and the call, not just the link list.
     assert.match(llms, /^## When to use this$/m);
     assert.match(llms, /api\.openwaters\.io\/tides\/extremes\?latitude=/);
+    assert.match(llms, /api\.openwaters\.io\/currents\/events\?latitude=/);
+    assert.match(llms, /\(https:\/\/openwaters\.io\/api\/currents\/\)/);
     assert.match(llms, /ais\.openwaters\.io\/v1\/vessels\?bbox=/);
     assert.match(llms, /wrong tool for navigation/);
     const about = read("about/index.md");
@@ -299,6 +302,30 @@ test(
     const footer = read("index.html");
     for (const href of ["/about/", "/contact/", "/privacy/", "/license/"]) {
       assert.ok(footer.includes(`href="${href}"`), `footer missing ${href}`);
+    }
+  },
+);
+
+test(
+  "currents API page is built, linked, and listed wherever the tides page is",
+  { skip },
+  () => {
+    const html = read("api/currents/index.html");
+    assert.match(html, /<h1[^>]*>Currents API<\/h1>/);
+    assert.ok(html.includes("https://api.openwaters.io/currents/events"));
+    for (const term of ["@N", "maxFlood", "maxEbb", "451"]) {
+      assert.ok(html.includes(term), `currents page never mentions ${term}`);
+    }
+    assert.match(read("api/currents/index.md"), /^# Currents API/m);
+    assert.match(
+      read("sitemap.xml"),
+      /<loc>https:\/\/openwaters\.io\/api\/currents\/<\/loc>/,
+    );
+    for (const page of ["api/index.html", "api/tides/index.html"]) {
+      assert.ok(
+        read(page).includes('href="/api/currents/"'),
+        `${page} does not link the currents page`,
+      );
     }
   },
 );

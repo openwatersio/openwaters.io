@@ -4,7 +4,7 @@
   "compatibility_date": "2026-06-01",
   "compatibility_flags": ["nodejs_compat"],
   // No routes: api.openwaters.io lives on the gateway worker (gateway/), which
-  // dispatches /tides* here via a service binding.
+  // dispatches /tides* and /currents* here via a service binding.
   "workers_dev": true,
   "preview_urls": true,
   // The website's dev server defaults to the API on 3001.

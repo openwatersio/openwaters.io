@@ -6,7 +6,7 @@ import Icon from "../../components/Icon.astro";
 
 <ApiLayout
   title="API Documentation"
-  description="Documentation for Open Waters APIs - tide predictions, live AIS vessel traffic, bathymetry data, and more."
+  description="Documentation for Open Waters APIs - tide and tidal current predictions, live AIS vessel traffic, bathymetry data, and more."
 >
   <h1 class="mb-6">API Documentation</h1>
   <p class="text-fg-muted mb-12 text-xl">
@@ -21,6 +21,17 @@ import Icon from "../../components/Icon.astro";
         <p class="text-fg-muted">
           Tide predictions from harmonic constituents for thousands of stations
           worldwide, with an OpenAPI specification.
+        </p>
+      </div>
+    </Card>
+
+    <Card href="/api/currents/" class="flex items-start gap-4">
+      <Icon name="mdi:waves-arrow-right" class="text-accent size-8 shrink-0" />
+      <div>
+        <h2 class="mb-2 text-2xl font-semibold">Currents API</h2>
+        <p class="text-fg-muted">
+          Tidal current predictions for current stations: slack water, maximum
+          flood and ebb, and signed speeds, with an OpenAPI specification.
         </p>
       </div>
     </Card>

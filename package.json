@@ -19,7 +19,7 @@
     "concurrently": "^10.0.5"
   },
   "dependencies": {
-    "@slackwater/api": "^1.0.0-beta.0",
+    "@slackwater/api": "^1.0.0-beta.3",
     "@slackwater/database": "^1.0.0-beta.0",
     "@slackwater/engine": "^1.0.0-beta.0",
     "@slackwater/react": "^1.0.0-beta.0",

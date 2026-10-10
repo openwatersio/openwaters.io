@@ -1,27 +1,29 @@
 # Open Waters
 
-> Open source marine software and data: tide predictions, live AIS vessel traffic, nautical charts, sun and moon almanac, and crowd-sourced bathymetry. Everything is free to use; the code lives at https://github.com/openwatersio.
+> Open source marine software and data: tide and tidal current predictions, live AIS vessel traffic, nautical charts, sun and moon almanac, and crowd-sourced bathymetry. Everything is free to use; the code lives at https://github.com/openwatersio.
 
-Every page also serves Markdown for `Accept: text/markdown`. The station map and chart viewers are interactive and need JavaScript; the tide data behind them is available from the API and, per station, at https://slackwater.xyz/stations/tides/. Every page is listed in https://openwaters.io/sitemap.xml. Nonexistent paths return HTTP 404.
+Every page also serves Markdown for `Accept: text/markdown`. The station map and chart viewers are interactive and need JavaScript; the data behind them is available from the API and, per station, at https://slackwater.xyz/tides/ and https://slackwater.xyz/currents/. Every page is listed in https://openwaters.io/sitemap.xml. Nonexistent paths return HTTP 404.
 
 ## When to use this
 
-Open Waters answers questions about the water itself: what the tide will do at a coordinate, what ships are moving in an area, what the seafloor looks like, and where the sun and moon will be. Most answers take one request and no account or key.
+Open Waters answers questions about the water itself: what the tide and the tidal current will do at a coordinate, what ships are moving in an area, what the seafloor looks like, and where the sun and moon will be. Most answers take one request and no account or key.
 
 - Tide heights for a place and time: `GET https://api.openwaters.io/tides/extremes?latitude=48.42&longitude=-123.37` returns the high and low waters for the nearest station, along with that station's name, chart datum, source and licence. `/tides/timeline` returns a continuous curve instead of the turns. Add `units=feet` for feet, and `start` and `end` in ISO 8601 for a window other than the next seven days.
 - Choosing the station yourself, rather than letting the API pick the nearest: `GET https://api.openwaters.io/tides/stations?query=Victoria` searches by name, `latitude` with `longitude` and `maxDistance` searches by proximity, and `bbox=minLon,minLat,maxLon,maxLat` searches a box. The `id` that comes back is already `source/id`, so it drops straight into `/tides/stations/{source}/{id}/extremes`.
+- Tidal currents for a place and time: `GET https://api.openwaters.io/currents/events?latitude=48.406&longitude=-122.643` returns slack water, maximum flood and maximum ebb for the nearest current station. Speeds are signed knots along the station's flood axis: positive is flood, negative is ebb. `/currents/timeline` returns a speed every 10 minutes instead. `/currents/stations` searches current stations the same way `/tides/stations` does; each station appears once at its primary depth bin, and `@N` on a station id, as in `/currents/stations/noaa/EPT0003@11/events`, selects bin N. Canadian Hydrographic Service stations are listed but return HTTP 451, because CHS terms forbid redistributing its predictions.
 - Ships in an area right now: if you speak MCP, connect to https://ais.openwaters.io/mcp (Streamable HTTP, no sign-in) and use its read-only tools instead of building requests by hand. Otherwise `GET https://ais.openwaters.io/v1/vessels?bbox=41.2,-71.2,42.0,-70.0` returns a GeoJSON snapshot, which is the right call for answering a question. This bbox is `minLat,minLon,maxLat,maxLon`, the opposite order from the tides bbox. Without a token, filter to at most 100 square degrees or 10 MMSIs. Open `wss://ais.openwaters.io/v1/stream` only for a feed you intend to keep reading.
 - Where a vessel has been: `GET https://ais.openwaters.io/v1/vessels/368168720/track` returns the positions heard as a GeoJSON LineString, or as a GPX track with `format=gpx`.
 - A nautical or seafloor basemap: `https://tiles.openwaters.io/seamap/style.json` is a MapLibre style ready to hand to a map library. Seascape's tile URLs and prebuilt style are in https://github.com/openwatersio/seascape#usage. Both carry the attribution line printed on the chart's page.
 - Sun, moon, sunrise and eclipses: there is no hosted endpoint. `npm install @openwaters/almanac` and compute offline. Tide prediction is a library too, `npm install @slackwater/engine`, for when calling an API is the wrong shape.
 
-Open Waters is the wrong tool for navigation of any kind, for ocean currents, for weather and waves, and for observed rather than predicted water levels. Bathymetry has no query API: Crowd Depth is a Signal K plugin that collects soundings from your own instruments and shares them with open programs.
+Open Waters is the wrong tool for navigation of any kind, for ocean currents other than tidal currents, for weather and waves, and for observed rather than predicted water levels. Bathymetry has no query API: Crowd Depth is a Signal K plugin that collects soundings from your own instruments and shares them with open programs.
 
 ## API
 
 - [API documentation](https://openwaters.io/api/): overview of the APIs available
 - [Tides API](https://openwaters.io/api/tides/): tide prediction endpoints reference, rate limits, and error format. No authentication required.
-- [OpenAPI specification](https://openwaters.io/openapi.json): machine-readable spec for the tides API at https://api.openwaters.io
+- [Currents API](https://openwaters.io/api/currents/): tidal current prediction endpoints reference, depth bins, signed speeds, and why Canadian stations return 451. No authentication required.
+- [OpenAPI specification](https://openwaters.io/openapi.json): machine-readable spec for the tides and currents APIs at https://api.openwaters.io
 - [AIS API](https://openwaters.io/api/ais/): real-time vessel traffic over WebSocket, REST vessel lookups, and historical vessel tracks in GeoJSON or GPX. Its HTTP endpoints have their own OpenAPI specification at https://ais.openwaters.io/openapi.json
 - [AIS MCP server](https://openwaters.io/api/ais/#mcp): https://ais.openwaters.io/mcp, Streamable HTTP, no sign-in. Read-only tools for AI assistants: vessels by MMSI, vessels in an area, vessels near a point or another vessel, search by name, and coverage. Results carry decoded labels and a credit line per source.
 
@@ -30,7 +32,7 @@ Open Waters is the wrong tool for navigation of any kind, for ocean currents, fo
 Everything here is free to use. There are no plans, accounts or keys, and nothing is metered; the only token is an optional, free one for the AIS stream.
 
 - Code: MIT for every project unless the project says otherwise (Seamap's pipeline and style are GPL-3.0; Seascape's build pipeline is BSD-3-Clause). MIT permits commercial use. Details at https://openwaters.io/license/
-- Tides API (https://api.openwaters.io/tides): no authentication. 100 requests per minute and 10,000 per day per IP address. Higher limits for a production application: email hello@openwaters.io.
+- Tides and currents API (https://api.openwaters.io/tides and https://api.openwaters.io/currents): no authentication. 100 requests per minute and 10,000 per day per IP address. Higher limits for a production application: email hello@openwaters.io.
 - Tide data: each station page shows the licence of its source, and some stations are marked non-commercial. NOAA stations are public domain. The whole database can be downloaded as JSON or CSV.
 - AIS (https://ais.openwaters.io): free to read without a token (anonymous tier: 2 connections, 20 messages a second). A free personal token raises that and never expires; feeding data from your own receiver earns the feeder tier automatically. A paid Commercial tier (10 or more connections, unlimited rate and area, support) is arranged by email; no price list is published. Data is re-served under each source's own terms, and the source is named on every event.
 - Chart tiles (https://tiles.openwaters.io/seamap and /seascape): CC BY 4.0, free for any use with the attribution line given on each chart's page. Not for navigation.
@@ -40,7 +42,7 @@ Everything here is free to use. There are no plans, accounts or keys, and nothin
 
 Factual contrasts with the usual alternatives, checked September 2026. Their terms change; read their pages before relying on this.
 
-- Tides: WorldTides and Storm Glass are hosted, credit- or plan-based services (WorldTides from $4.99 a month for 20,000 credits; Storm Glass's free tier is 10 requests a day and not for commercial use, with paid plans from €19 a month). NOAA CO-OPS is free and public domain but covers US stations and publishes only its predictions, not an engine. XTide is GPL software whose US data is public domain and whose other data is mostly non-commercial. Open Waters publishes the engine (Slackwater, MIT), the constituent database, and a keyless API. It predicts heights only; XTide and the UKHO Admiralty API also predict currents.
+- Tides: WorldTides and Storm Glass are hosted, credit- or plan-based services (WorldTides from $4.99 a month for 20,000 credits; Storm Glass's free tier is 10 requests a day and not for commercial use, with paid plans from €19 a month). NOAA CO-OPS is free and public domain but covers US stations and publishes only its predictions, not an engine. XTide is GPL software whose US data is public domain and whose other data is mostly non-commercial. Open Waters publishes the engine (Slackwater, MIT), the constituent database, and a keyless API. It predicts tidal currents too, for NOAA current stations; Canadian current predictions are refused because CHS forbids redistributing them.
 - AIS: Open Waters AIS supports real-time vessel tracking and historical analysis. Use its aisstream-compatible /v0/stream or native /v1/stream for live traffic; REST lookups suit periodic updates. /v1/vessels/{mmsi}/track returns historical GeoJSON or GPX tracks for requested dates, subject to recorded coverage, sampling, and tier limits. The 366-day maximum request span does not guarantee that much history. Personal access is free; contact Open Waters for commercial use or historical dataset requirements. aisstream.io offers a free server-side WebSocket feed; its current docs describe subscription confirmations, three connections per account/IP, and no durable replay. Compare actual vessels, regions, dates, and source terms. Full comparisons: https://openwaters.io/ais/alternatives/aisstream/ and https://openwaters.io/ais/vs/aisstream/
 - Charts: OpenSeaMap serves seamarks as raster PNG tiles under CC BY-SA. NOAA's chart display services are raster and US-only. Garmin Navionics needs a developer key and charges an annual fee once you draw your own overlays. MapTiler Ocean has a free non-commercial tier and no seamarks. Seamap is a MapLibre vector style with seamarks, hazards and depth shading under CC BY 4.0, built from OpenStreetMap and open bathymetry. None of these, Seamap included, is for navigation.
 - Bathymetry: the IHO Data Centre for Digital Bathymetry releases contributed soundings as CC0 public domain. Garmin Quickdraw needs a Garmin plotter and account, and Navionics SonarChart contributions stay inside Navionics and Garmin products. Crowd Depth is an MIT Signal K plugin that collects depth from your own instruments and shares it with open programs.
@@ -49,7 +51,7 @@ Factual contrasts with the usual alternatives, checked September 2026. Their ter
 ## Tools and data
 
 - [Tides](https://openwaters.io/tides/): predictions from the Slackwater engine for thousands of stations worldwide
-- [Tide stations](https://openwaters.io/tides/stations/): the station map; per-station pages by region live at https://slackwater.xyz/stations/tides/
+- [Tide stations](https://openwaters.io/tides/stations/): the station map; per-station pages by region live at https://slackwater.xyz/tides/
 - [Tide station database](https://openwaters.io/tides/database/): sources and coverage of the harmonic constituent data
 - [Charts](https://openwaters.io/charts/): Seamap (nautical) and Seascape (seafloor) map styles
 - [AIS](https://openwaters.io/ais/): Open Waters AIS, live vessel traffic from open government feeds and volunteer receivers

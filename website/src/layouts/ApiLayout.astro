@@ -22,6 +22,7 @@ const { title, description, schema, sections = [] } = Astro.props;
 const pages = [
   { href: "/api/", label: "Overview" },
   { href: "/api/tides/", label: "Tides" },
+  { href: "/api/currents/", label: "Currents" },
   { href: "/api/ais/", label: "AIS" },
 ];
 const current = Astro.url.pathname.replace(/\/?$/, "/");
