@@ -215,10 +215,15 @@ const pre =
     // volunteer copies is already the canonical one.
     $<HTMLAnchorElement>("[data-stlink]").href =
       `${stations}/station:${claims.sub}`;
+    // No -d:0. It selects SDR device index 0, which is already the default, so
+    // it adds nothing for the dongle case and hard-fails every other input with
+    // "Device Manager: device does not exist" — a serial VHF feed (-e), a
+    // network feed (-t), or a UDP feed (-x). Verified against AIS-catcher
+    // v0.70; both commands below were confirmed working without it.
     $("[data-cmd-aiscatcher]").textContent =
-      `AIS-catcher -d:0 -Q wssmqtt://x:${token}@${server.replace(/^https?:\/\//, "")}:443/v1/stream MSGFORMAT NMEA`;
+      `AIS-catcher -Q wssmqtt://x:${token}@${server.replace(/^https?:\/\//, "")}:443/v1/stream MSGFORMAT NMEA`;
     $("[data-cmd-aiscatcher-http]").textContent =
-      `AIS-catcher -d:0 -H ${server}/v1/receive USERPWD x:${token} GZIP on INTERVAL 5`;
+      `AIS-catcher -H ${server}/v1/receive USERPWD x:${token} GZIP on INTERVAL 5`;
     $("[data-cmd-ws]").textContent =
       `websocat ${server.replace(/^http/, "ws")}/v0/stream\n{"APIKey":"${token}","BoundingBoxes":[[[41,-71.5],[42.5,-69.5]]]}`;
     $("[data-out]").hidden = false;
