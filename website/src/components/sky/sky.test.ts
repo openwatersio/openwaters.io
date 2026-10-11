@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { moonPath, phaseName } from "./moonPath.ts";
+import { moonPath, moonTiltDeg, phaseName } from "./moonPath.ts";
 import { skyColor } from "./skyColor.ts";
 import { eclipseAt, eclipseShade, eclipseCoverage } from "./eclipseShade.ts";
 import {
@@ -21,6 +21,7 @@ import {
   signedBearingDeg,
 } from "./projection.ts";
 import {
+  moonOrientation,
   nextGlobalSolarEclipse,
   solarEclipseCentralLine,
   starAltAz,
@@ -71,6 +72,48 @@ test("moonPath: waning is the mirror image of waxing", () => {
       `phase ${f}`,
     );
   }
+});
+
+/** Where the lit limb (drawn pointing right) lands after the SVG rotation, y down. */
+const litLimb = (tiltDeg: number) => {
+  const t = (tiltDeg * Math.PI) / 180;
+  return { x: Math.cos(t), y: Math.sin(t) };
+};
+
+test("moonTiltDeg: maps the zenith angle onto SVG's clockwise rotation", () => {
+  const tilt = (fromZenith: number) =>
+    litLimb(
+      moonTiltDeg({ brightLimbAngleDeg: fromZenith, parallacticAngleDeg: 0 }),
+    );
+  const near = (p: { x: number; y: number }, x: number, y: number) =>
+    assert.ok(
+      Math.abs(p.x - x) < 1e-9 && Math.abs(p.y - y) < 1e-9,
+      `${p.x},${p.y}`,
+    );
+  near(tilt(0), 0, -1); // up
+  near(tilt(90), -1, 0); // counterclockwise from up is left
+  near(tilt(180), 0, 1); // down
+  near(tilt(270), 1, 0); // right: the upright waxing disc, unrotated
+  // The parallactic angle is subtracted.
+  near(
+    litLimb(moonTiltDeg({ brightLimbAngleDeg: 300, parallacticAngleDeg: 30 })),
+    1,
+    0,
+  );
+});
+
+test("moonTiltDeg: crescents at 48.5°N light the side toward the set or rising Sun", () => {
+  const salish = { latitudeDeg: 48.5, longitudeDeg: -123 };
+  // Waxing crescent low in the southwest after sunset: lit lower right.
+  const evening = litLimb(
+    moonTiltDeg(moonOrientation(new Date("2026-10-15T02:00:00Z"), salish)),
+  );
+  assert.ok(evening.x > 0 && evening.y > 0, JSON.stringify(evening));
+  // Waning crescent in the east before sunrise: lit lower left.
+  const morning = litLimb(
+    moonTiltDeg(moonOrientation(new Date("2026-10-07T13:00:00Z"), salish)),
+  );
+  assert.ok(morning.x < 0 && morning.y > 0, JSON.stringify(morning));
 });
 
 test("moonPath: fraction is clamped", () => {
