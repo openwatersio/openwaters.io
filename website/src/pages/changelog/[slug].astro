@@ -40,7 +40,9 @@ const image =
 ---
 
 <MainLayout
-  title={entry.title}
+  title={entry.type === "release" && entry.subtitle
+    ? `${entry.title}: ${entry.subtitle}`
+    : entry.title}
   description={entry.summary}
   feed={project ? `/changelog/${project}/rss.xml` : "/changelog/rss.xml"}
 >
@@ -65,6 +67,11 @@ const image =
     </nav>
 
     <h1 class="mt-10 text-4xl md:text-5xl">{entry.title}</h1>
+    {
+      entry.type === "release" && entry.subtitle && (
+        <p class="text-lead mt-3">{entry.subtitle}</p>
+      )
+    }
     <p
       class="mt-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1"
     >

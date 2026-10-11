@@ -5,6 +5,7 @@ import {
   changelogPath,
   cleanBody,
   filterTitle,
+  headline,
   isPatch,
   summarize,
   toReleases,
@@ -256,4 +257,29 @@ test("toReleases: untagged releases in a grouped repo stand alone, and same-PR c
 test("cleanBody: code blocks pass through untouched", () => {
   const body = "```sh\n# install\n* not a bullet\n```";
   assert.equal(cleanBody(body), body);
+});
+
+test("headline: a release name that says more than the version", () => {
+  assert.deepEqual(
+    [
+      ["Uranus and Neptune", "v0.8.0"],
+      ["v0.5.0 — the bundle ships", "v0.5.0"],
+      ["v0.8.0", "v0.8.0"],
+      ["Seascape v0.3.0", "v0.3.0"],
+      ["signalk-aiscast 0.6.3", "signalk-plugin-v0.6.3", "signalk-plugin-"],
+      ["1.13.0 (38)", "v1.13.0"],
+      ["neaps@0.8.0", "neaps@0.8.0"],
+      [null, "v1.0.0"],
+    ].map(([name, tag, prefix]) => headline(name, tag!, prefix ?? undefined)),
+    [
+      "Uranus and Neptune",
+      "The bundle ships",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    ],
+  );
 });

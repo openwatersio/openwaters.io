@@ -170,16 +170,29 @@ const filters = [
                     href={entryHref(entry)}
                     class="group grid grid-cols-1 gap-y-1 md:grid-cols-[6rem_1fr_11rem] md:items-baseline md:gap-x-6"
                   >
-                    <h3
-                      class={cn(
-                        "group-hover:text-accent-hover transition-colors md:col-start-2 md:row-start-1",
-                        entry.release.data.patch
-                          ? "text-fg-muted text-sm font-medium tracking-normal"
-                          : "text-fg-strong text-base font-semibold tracking-tight md:text-lg",
+                    <div class="md:col-start-2 md:row-start-1">
+                      <h3
+                        class={cn(
+                          "group-hover:text-accent-hover inline transition-colors",
+                          entry.release.data.patch
+                            ? "text-fg-muted text-sm font-medium tracking-normal"
+                            : "text-fg-strong text-base font-semibold tracking-tight md:text-lg",
+                        )}
+                      >
+                        {entry.title}
+                      </h3>
+                      {/* A patch keeps to one line, so its package follows the title. */}
+                      {entry.subtitle && (
+                        <p
+                          class={cn(
+                            "text-fg-faint text-sm",
+                            entry.release.data.patch ? "ml-2 inline" : "mt-0.5",
+                          )}
+                        >
+                          {entry.subtitle}
+                        </p>
                       )}
-                    >
-                      {entry.title}
-                    </h3>
+                    </div>
                     {entry.release.data.patch ? (
                       // Phones show a patch's date and project on one line.
                       <div class="text-fg-faint flex items-baseline gap-1.5 text-sm md:contents">

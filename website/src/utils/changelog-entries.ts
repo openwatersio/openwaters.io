@@ -14,6 +14,8 @@ export type Entry =
       id: string;
       date: Date;
       title: string;
+      /** Package and version, when the title is a headline. */
+      subtitle?: string;
       summary: string;
       projects: Project[];
       release: CollectionEntry<"releases">;
@@ -46,7 +48,8 @@ export async function getEntries({ project, type }: Filter = {}): Promise<
       type: "release" as const,
       id: release.id,
       date: release.data.date,
-      title: release.data.title,
+      title: release.data.headline ?? release.data.title,
+      subtitle: release.data.headline && release.data.title,
       summary: release.data.summary,
       projects: [release.data.project as Project],
       release,

@@ -80,6 +80,7 @@ const releases = defineCollection({
     project,
     repo: z.string(),
     title: z.string(),
+    headline: z.string().optional(),
     date: z.coerce.date(),
     body: z.string(),
     summary: z.string(),

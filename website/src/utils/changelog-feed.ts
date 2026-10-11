@@ -36,6 +36,12 @@ async function announcementHtml(
   return cover + (await container.renderToString(Content));
 }
 
+// Feed readers and email subjects lose the page's subtitle, so it joins the title.
+const feedTitle = (entry: Entry) =>
+  entry.type === "release" && entry.subtitle
+    ? `${entry.title} (${entry.subtitle})`
+    : entry.title;
+
 /**
  * RSS 2.0 for the changelog. Items carry the full entry as HTML, so feed readers and
  * RSS-to-email services can show it without a click-through.
@@ -57,7 +63,7 @@ export async function changelogFeed(site: URL, filter: Filter = {}) {
       );
       const category = entry.type === "release" ? "Release" : "Announcement";
       return `    <item>
-      <title>${escape(entry.title)}</title>
+      <title>${escape(feedTitle(entry))}</title>
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${entry.date.toUTCString()}</pubDate>
