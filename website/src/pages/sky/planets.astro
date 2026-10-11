@@ -11,7 +11,7 @@ const tonightCode = `import { planetAltAz, planetEvents, planetIllumination } fr
 const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
 const start = new Date('2026-10-10T02:00:00Z');
 const end = new Date('2026-10-10T15:00:00Z');
-for (const planet of ['mercury', 'venus', 'mars', 'jupiter', 'saturn'] as const) {
+for (const planet of ['mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune'] as const) {
   console.log(planet, planetAltAz(planet, start, observer));
   console.log(planetIllumination(planet, start).magnitude);
   console.log(planetEvents(planet, start, end, observer));
@@ -51,9 +51,9 @@ for (let day = 0; day <= 181; day++) {
       </div>
       <div class="prose prose-xl mb-10 max-w-none">
         <p>
-          Find Mercury, Venus, Mars, Jupiter, and Saturn above your horizon,
-          then step back to see why their paths sometimes reverse. Every
-          position here is Almanac running in your browser.
+          Find Mercury, Venus, Mars, Jupiter, Saturn, Uranus, and Neptune above
+          your horizon, then step back to see why their paths sometimes reverse.
+          Every position here is Almanac running in your browser.
         </p>
       </div>
       <section
@@ -65,7 +65,7 @@ for (let day = 0; day <= 181; day++) {
           <h2 id="tonight-title" class="mb-3 text-3xl font-semibold">
             Planets tonight
           </h2><p class="text-fg-muted">
-            Follow five planets from sunset to sunrise. Choose a place and
+            Follow seven planets from sunset to sunrise. Choose a place and
             evening date, select a planet, and scrub through the night to find
             its altitude and direction.
           </p>
@@ -113,8 +113,8 @@ for (let day = 0; day <= 181; day++) {
           <h2 id="solar-system-title" class="mb-3 text-3xl font-semibold">
             The solar system in motion
           </h2><p class="text-fg-muted">
-            Thirty years, six planets, one Sun. Scrub through the years or press
-            Play to watch each planet circle at its own pace.
+            Thirty years, eight planets, one Sun. Scrub through the years or
+            press Play to watch each planet circle at its own pace.
           </p>
         </div>
         <SolarSystem client:load />
@@ -126,11 +126,11 @@ for (let day = 0; day <= 181; day++) {
             code={`import { planetHeliocentricPosition } from '@openwaters/almanac';
 
 const time = new Date('2026-01-01T00:00:00Z');
-for (const planet of ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn'] as const) {
+for (const planet of ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune'] as const) {
   console.log(planet, planetHeliocentricPosition(planet, time));
 }
 // Sun-centered vectors in AU, in the fixed J2000 equatorial frame.
-// Update the date to move all six planets together.`}
+// Update the date to move all eight planets together.`}
           />
         </details>
       </section>
