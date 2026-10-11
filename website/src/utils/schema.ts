@@ -20,6 +20,19 @@ export const website = {
   url: `${SITE}/`,
 };
 
+// Callers render the same questions and answers on the page.
+export const faqPage = (path: string, items: { q: string; a: string }[]) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  url: `${SITE}${path}`,
+  publisher,
+  mainEntity: items.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+});
+
 // Emitted on every page by MainLayout. Takes the address rather than importing
 // constants.ts, which reads import.meta.env and so cannot be loaded by node --test.
 export const organization = (email: string) => ({

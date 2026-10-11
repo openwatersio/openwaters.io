@@ -5,7 +5,7 @@ import Card from "../../../components/ui/Card.astro";
 import CodeBlock from "../../../components/ui/CodeBlock.astro";
 import Icon from "../../../components/Icon.astro";
 import { CONTACT_EMAIL } from "../../../utils/constants";
-import { SITE, publisher } from "../../../utils/schema";
+import { faqPage } from "../../../utils/schema";
 
 const DESCRIPTION =
   "Compare AIS providers for real-time vessel tracking and historical analysis: streaming, vessel tracks, coverage, access, and source terms.";
@@ -309,17 +309,7 @@ const faq = [
   },
 ];
 
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  url: `${SITE}/ais/alternatives/aisstream/`,
-  publisher,
-  mainEntity: faq.map((item) => ({
-    "@type": "Question",
-    name: item.q,
-    acceptedAnswer: { "@type": "Answer", text: item.a },
-  })),
-};
+const faqSchema = faqPage("/ais/alternatives/aisstream/", faq);
 ---
 
 <MainLayout
