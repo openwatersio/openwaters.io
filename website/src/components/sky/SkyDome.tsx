@@ -3,13 +3,15 @@ import {
   moonAltAz,
   moonEvents,
   moonIllumination,
+  moonOrientation,
   sunAltAz,
   sunEvents,
   type SunEventKind,
 } from "@openwaters/almanac";
 
 import { DateTime } from "../DateTime";
-import { moonPath, phaseName } from "./moonPath";
+import { sunHours } from "./demoData";
+import { moonPath, moonTiltDeg, phaseName } from "./moonPath";
 import {
   DOME_HEIGHT,
   DOME_WIDTH,
@@ -45,6 +47,13 @@ const SUN_LABELS: Partial<Record<SunEventKind, string>> = {
   civilDusk: "Civil dusk",
   transit: "Solar noon",
 };
+
+const HOUR_LABELS = [
+  { band: "golden", morning: true, label: "Morning golden hour" },
+  { band: "golden", morning: false, label: "Evening golden hour" },
+  { band: "blue", morning: true, label: "Morning blue hour" },
+  { band: "blue", morning: false, label: "Evening blue hour" },
+] as const;
 
 /** True when the visitor has asked for less motion. */
 const stillPreferred = () =>
@@ -102,10 +111,16 @@ export default function SkyDome() {
       return {
         sun: sunEvents(dayStart, end, observer),
         moon: moonEvents(dayStart, end, observer),
+        hours: sunHours(dayStart, end, observer),
         error: false,
       };
     } catch {
-      return { sun: [], moon: [], error: true };
+      return {
+        sun: [],
+        moon: [],
+        hours: { golden: [], blue: [], transits: [] },
+        error: true,
+      };
     }
   }, [dayStart, observer]);
 
@@ -118,6 +133,7 @@ export default function SkyDome() {
       sun,
       moon,
       illum,
+      tilt: moonTiltDeg(moonOrientation(instant, observer)),
       paint: skyColor(sun.altDeg),
       // Recomputed with the rest: 288 stars is well under a millisecond.
       stars: domeStars(instant, observer),
@@ -187,6 +203,11 @@ export default function SkyDome() {
     day.sun.find((e) => e.kind === kind)?.time;
   const moonRise = day.moon.find((e) => e.kind === "rise")?.time;
   const moonSet = day.moon.find((e) => e.kind === "set")?.time;
+  const solarMidnight = day.hours.transits.find(
+    (e) => e.kind === "lower",
+  )?.time;
+  const span = (band: "golden" | "blue", morning: boolean) =>
+    day.hours[band].find((s) => s.morning === morning);
 
   const hm = { hour: "2-digit", minute: "2-digit" } as const;
 
@@ -239,7 +260,8 @@ export default function SkyDome() {
           />
           <circle cx={sunPoint.x} cy={sunPoint.y} r={17} fill="#ffd873" />
 
-          {/* Moon: faint full disc, then the lit region */}
+          {/* Moon: faint full disc, then the lit region, turned so the lit
+              limb faces the Sun as it does in this sky */}
           <circle
             cx={moonPoint.x}
             cy={moonPoint.y}
@@ -248,13 +270,8 @@ export default function SkyDome() {
             opacity={0.12}
           />
           <path
-            d={moonPath(
-              moonPoint.x,
-              moonPoint.y,
-              13,
-              sky.illum.fraction,
-              sky.illum.waxing,
-            )}
+            d={moonPath(moonPoint.x, moonPoint.y, 13, sky.illum.fraction, true)}
+            transform={`rotate(${sky.tilt} ${moonPoint.x} ${moonPoint.y})`}
             fill="#f4f4ef"
           />
 
@@ -373,6 +390,39 @@ export default function SkyDome() {
               );
             },
           )}
+          <div>
+            <dt className="text-fg-muted text-sm">Solar midnight</dt>
+            <dd className="text-lg font-semibold tabular-nums">
+              {solarMidnight ? (
+                <DateTime
+                  datetime={solarMidnight}
+                  timeZone={place.tz}
+                  {...hm}
+                />
+              ) : (
+                "—"
+              )}
+            </dd>
+          </div>
+          {HOUR_LABELS.map(({ band, morning, label }) => {
+            const s = span(band, morning);
+            return (
+              <div key={label}>
+                <dt className="text-fg-muted text-sm">{label}</dt>
+                <dd className="text-lg font-semibold tabular-nums">
+                  {s ? (
+                    <>
+                      <DateTime datetime={s.from} timeZone={place.tz} {...hm} />
+                      –
+                      <DateTime datetime={s.to} timeZone={place.tz} {...hm} />
+                    </>
+                  ) : (
+                    "—"
+                  )}
+                </dd>
+              </div>
+            );
+          })}
           <div>
             <dt className="text-fg-muted text-sm">Moonrise</dt>
             <dd className="text-lg font-semibold tabular-nums">
