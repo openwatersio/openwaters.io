@@ -96,30 +96,30 @@ const alternatives: {
   {
     name: "AISHub",
     intro:
-      "The reciprocal exchange: run a receiver, feed it, get the aggregate.",
+      "A community AIS network built by receiver operators. Contribute your station’s receptions and get access to the combined data. Open Waters AIS contributes to AISHub and uses its aggregate for much of our worldwide terrestrial coverage.",
     bullets: [
       {
         label: "Protocol",
-        html: "REST snapshot (JSON, XML, CSV) polled at most once a minute. No push. The worldwide snapshot regenerates about once a minute, so positions run about a minute behind.",
+        html: "a REST API with snapshots in JSON, XML, or CSV, queried at most once a minute. The worldwide snapshot refreshes about once a minute, so positions are typically about a minute behind.",
       },
       {
         label: "Coverage",
-        html: "the largest volunteer network with published numbers: 1,600+ stations in 83 countries, ~98,000 vessels a day.",
+        html: "worldwide terrestrial coverage contributed by receiver operators. Their shared receptions are an important part of the coverage available through Open Waters AIS.",
       },
       {
         label: "Price",
-        html: "free, but only if your receiver meets the bar (10+ vessels average, 90% uptime, 60 s max downsampling, 10 s max delay). No receiver, no API.",
+        html: "free API access for contributors whose stations meet the published requirements: a seven-day average of at least 10 vessels and 90% uptime, with at most 60 seconds downsampling and 10 seconds message delay. <a href='https://www.aishub.net/join-us'>See how to join AISHub</a>.",
       },
       {
         label: "License",
-        html: "no written terms document. AISHub confirmed to us in writing (22 August 2026) that use, commercial use, and redistribution are unrestricted. The key is revocable at will.",
+        html: "AISHub publishes <a href='https://www.aishub.net/join-us'>terms for contributors and data use</a>. Credit AISHub contributors and check the terms for your project, including any redistribution.",
       },
       {
         label: "Honest limits",
-        html: "polling only, about a minute old, and the gate is a working station.",
+        html: "the API provides periodic snapshots rather than a push stream. API access requires an operational receiver meeting the contribution requirements. AIS data is not for safety of navigation.",
       },
     ],
-    best: "station operators who want a global “who is out there” view. Not for close-quarters use or anyone without a receiver.",
+    best: "receiver operators who want a worldwide view of vessel traffic while contributing to a shared community network.",
   },
   {
     name: "Open government feeds directly (Digitraffic, Kystverket, BarentsWatch, EuRIS)",
@@ -248,9 +248,9 @@ const glanceRows: [string, ...string[]][] = [
     "AISHub",
     "no (≤1/min)",
     "current positions, not an archive",
-    "global, 1,600+ stations, ~1 min behind",
+    "worldwide terrestrial, ~1 min behind",
     "contributors only",
-    "yes, confirmed by email",
+    "check AISHub terms",
     "no",
   ],
   [
@@ -298,7 +298,7 @@ const which: { when: string; then: string }[] = [
   },
   {
     when: "You run a receiver and want the world:",
-    then: "Compare AISHub’s reciprocal access with Open Waters AIS contributor access. Choose based on coverage, latency, and how you use the data.",
+    then: "AISHub offers aggregate access to qualifying receiver operators. Open Waters AIS contributes to that network and combines its coverage with other sources through streaming and snapshot APIs. You can contribute to both; choose the access that fits your project.",
   },
   {
     when: "Finland or Norway only:",
