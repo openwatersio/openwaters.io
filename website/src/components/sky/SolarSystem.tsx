@@ -81,7 +81,7 @@ export default function SolarSystem() {
         </p>
         {parade && (
           <p className="text-fg-muted text-sm" role="status">
-            {parade.planets} Uranus and Neptune are not drawn in this demo.{" "}
+            {parade.planets}{" "}
             <a href={parade.source} className="text-accent hover:underline">
               Viewing guide
             </a>
@@ -90,9 +90,10 @@ export default function SolarSystem() {
         )}
       </div>
       <svg
-        viewBox="0 0 660 660"
+        // Padded past the 660 square so Neptune's label clears the edge.
+        viewBox="-15 -15 690 690"
         role="img"
-        aria-label={`Solar system on ${time.toISOString().slice(0, 10)}. Mercury, Venus, Earth, Mars, Jupiter, and Saturn orbit the Sun at different rates. Orbit spacing and body sizes are schematic.`}
+        aria-label={`Solar system on ${time.toISOString().slice(0, 10)}. Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune orbit the Sun at different rates. Orbit spacing and body sizes are schematic.`}
         className="border-line mx-auto block w-full max-w-2xl rounded-xl border"
       >
         {SOLAR_PLANETS.map((p) => (
@@ -124,12 +125,7 @@ export default function SolarSystem() {
                 transform={`rotate(-25 ${330 + p.x} ${330 - p.y})`}
               />
             )}
-            <circle
-              cx={330 + p.x}
-              cy={330 - p.y}
-              r={p.id === "jupiter" ? 10 : p.id === "saturn" ? 8 : 5}
-              fill={p.color}
-            />
+            <circle cx={330 + p.x} cy={330 - p.y} r={p.size} fill={p.color} />
             <text
               x={330 + p.x}
               y={330 - p.y + (p.y >= 0 ? -18 : 26)}
@@ -198,9 +194,11 @@ export default function SolarSystem() {
         and orbital directions come from Almanac; orbit spacing and body sizes
         are schematic so the inner planets stay readable. Playback advances one
         year every ten seconds. Mercury laps the Sun many times while Saturn
-        takes almost thirty years to circle once.
+        takes almost thirty years to circle once, Uranus 84, and Neptune 165, so
+        across these thirty years Neptune moves less than a fifth of the way
+        round.
       </p>
-      <dl className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+      <dl className="grid grid-cols-4 gap-4 sm:grid-cols-8">
         {positions.map((p) => (
           <div key={p.id}>
             <dt className="font-medium">{p.name}</dt>
