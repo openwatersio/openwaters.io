@@ -20,7 +20,12 @@ const installMac = [
   "make",
   "sudo make install",
 ].join("\n");
-const sharingUrl = "wssmqtt://x:YOUR_TOKEN@ais.openwaters.io:443/v1/stream";
+const installConfig = [
+  "sudo systemctl stop ais-catcher",
+  "sudo install -b -o aiscatcher -g aiscatcher -m 600 ~/Downloads/aiscatcher.json /etc/AIS-catcher/aiscatcher.json",
+  "sudo chmod 700 /etc/AIS-catcher",
+  "sudo systemctl restart ais-catcher",
+].join("\n");
 const troubleshooting = [
   {
     symptom: "The receiver does not appear",
@@ -35,7 +40,7 @@ const troubleshooting = [
   {
     symptom: "Local ships appear, but your Open Waters station is quiet",
     action:
-      "Check your internet connection and the output URL. Make sure you replaced YOUR_TOKEN, chose NMEA as the message format, enabled the output, then saved and restarted the receiver.",
+      "Check your internet connection. Under Output → MQTT, confirm the Open Waters output is active. If you regenerated your token, update the output URL with the current token, save, and restart the receiver.",
   },
   {
     symptom: "Reception stops when your computer sleeps",
@@ -226,8 +231,46 @@ const troubleshooting = [
           </p>
         </section>
 
+        <section id="token" class="mb-12 scroll-mt-24">
+          <h3 class="mb-4">2. Get your token and download the config</h3>
+          <ol class="text-fg-muted list-decimal space-y-3 pl-6">
+            <li>
+              Open <a
+                href="/ais/token/"
+                target="_blank"
+                rel="noopener noreferrer">the token page in a new tab</a
+              >. Optionally give your station a public name, accept the
+              contributor agreement, and generate your token. Leave the
+              network-address binding option unchecked.
+            </li>
+            <li>
+              Under AIS-catcher, choose <strong
+                >Download AIS-catcher config</strong
+              >. Save <code>aiscatcher.json</code> in your Downloads folder. If your
+              browser adds a number to the filename, rename it to <code
+                >aiscatcher.json</code
+              >.
+            </li>
+            <li>
+              Keep the token tab open: it contains your station link for the
+              final check.
+            </li>
+          </ol>
+          <p class="text-fg-muted mt-4">
+            The file already contains your private token, the RTL-SDR input, and
+            the Open Waters output. Keep it private, just like a password. Your
+            station name and shared receptions are public.
+          </p>
+          <p class="text-fg-muted mt-3 text-sm">
+            This config is for a new receiver setup. Don't replace an existing
+            receiver's config with it. Receiving starts when you press Start;
+            then your receptions are shared with Open Waters under the agreement
+            you accepted. AIS-catcher's separate community sharing is disabled.
+          </p>
+        </section>
+
         <section id="install" class="mb-12 scroll-mt-24">
-          <h3 class="mb-4">2. Install AIS-catcher on your computer</h3>
+          <h3 class="mb-4">3. Install AIS-catcher and load your config</h3>
           <p class="text-fg-muted mb-5">
             AIS-catcher is free software that receives ships and gives you a
             dashboard in your browser. Follow the instructions for your
@@ -266,11 +309,17 @@ const troubleshooting = [
                 device. This is a one-time step.
               </li>
               <li>
-                In the extracted AIS-catcher folder, double-click <code
-                  >start-GUI.bat</code
-                >. Leave its window open while receiving.
+                Copy the downloaded <code>aiscatcher.json</code> into the extracted
+                AIS-catcher folder. In File Explorer, open that folder, type <code
+                  >powershell</code
+                > in the address bar, and press Enter. Run the command below, and
+                leave the window open while receiving.
               </li>
             </ol>
+            <CodeBlock
+              code=".\AIS-catcher.exe -E .\aiscatcher.json 127.0.0.1:8118"
+              class="mt-4"
+            />
             <p class="text-fg-muted mt-4 text-sm">
               If it won't launch, the <a href={`${DOCS}/installation/windows/`}
                 >Windows guide</a
@@ -297,9 +346,12 @@ const troubleshooting = [
             <CodeBlock code={installMac} class="mb-4" />
             <p class="text-fg-muted mb-3">
               The last command asks for your Mac login password; Terminal
-              doesn't show it as you type. Then start the dashboard:
+              doesn't show it as you type. Then start the dashboard using your
+              downloaded config:
             </p>
-            <CodeBlock code="AIS-catcher -E ~/aiscatcher.json 127.0.0.1:8118" />
+            <CodeBlock
+              code="AIS-catcher -E ~/Downloads/aiscatcher.json 127.0.0.1:8118"
+            />
             <p class="text-fg-muted mt-4 text-sm">
               Leave Terminal running while receiving. If a command fails, use
               the <a href={`${DOCS}/installation/macos/`}
@@ -320,6 +372,13 @@ const troubleshooting = [
               password if asked.
             </p>
             <CodeBlock code={installLinux} class="mb-4" />
+            <p class="text-fg-muted mb-3">
+              For this new installation, load your downloaded config into the
+              service, then restart it. These commands save a backup of the
+              previous config and keep the token readable only by the service
+              user.
+            </p>
+            <CodeBlock code={installConfig} class="mb-4" />
             <p class="text-fg-muted text-sm">
               If curl is missing, run <code>sudo apt install curl</code> first. For
               another distribution, follow the <a
@@ -331,7 +390,7 @@ const troubleshooting = [
         </section>
 
         <section id="first-ships" class="mb-12 scroll-mt-24">
-          <h3 class="mb-4">3. See the ships your antenna hears</h3>
+          <h3 class="mb-4">4. Start receiving and sharing</h3>
           <ol class="text-fg-muted list-decimal space-y-3 pl-6">
             <li>
               On the same computer, open <a href="http://localhost:8118/"
@@ -339,19 +398,14 @@ const troubleshooting = [
               > in your browser. This is your receiver's dashboard.
             </li>
             <li>
-              If asked, set a dashboard admin password. Follow the setup wizard
-              and select your RTL-SDR USB receiver as the input.
+              Set a dashboard admin password when asked. The downloaded config
+              has already selected your RTL-SDR and Open Waters output, so you
+              don't need the setup wizard.
             </li>
             <li>
-              Skip the optional sharing outputs for now. Choose <strong
-                >Save &amp; Close</strong
-              > with <strong>Start the receiver after saving</strong> unchecked.
-            </li>
-            <li>
-              Under <strong>Output → Community</strong>, turn{" "}
-              <strong>Enable Sharing</strong> off. Skipping the wizard's community
-              step alone leaves sharing enabled. Save, then press{" "}
-              <strong>Start</strong>. You can choose to share later.
+              Press <strong>Start</strong>. This starts local reception and
+              shares your ship messages with Open Waters over an encrypted
+              connection.
             </li>
             <li>
               Look at the dashboard's local map and received-message count. With
@@ -370,62 +424,6 @@ const troubleshooting = [
             Keep your computer awake while receiving. You can close the browser
             tab; AIS-catcher itself must stay running. Keep the dashboard on
             your home network and don't forward its port through your router.
-          </p>
-        </section>
-
-        <section id="share" class="mb-12 scroll-mt-24">
-          <h3 class="mb-4">4. Share your receptions with Open Waters</h3>
-          <p class="text-fg-muted mb-4">
-            Once you can see local ships, add Open Waters as an output in
-            AIS-catcher. You'll use a private sharing key, called a token. No
-            account or router changes are needed.
-          </p>
-          <ol class="text-fg-muted mb-5 list-decimal space-y-3 pl-6">
-            <li>
-              Open <a
-                href="/ais/token/"
-                target="_blank"
-                rel="noopener noreferrer">the token page in a new tab</a
-              >. Optionally give your station a public name, accept the
-              contributor agreement, and generate your token. Leave the
-              network-address binding option unchecked.
-            </li>
-            <li>
-              Copy your token. In the receiver dashboard, open <strong
-                >Output</strong
-              >, select <strong>MQTT</strong>, and add an output.
-            </li>
-            <li>
-              Set the fields below. In the URL, replace <code>YOUR_TOKEN</code> with
-              the token you copied. Expand <strong>Advanced settings</strong>,
-              then find <strong>Message Format</strong> under{" "}
-              <strong>Format</strong> and choose <strong>NMEA</strong>. Leave
-              the other settings at their defaults.
-            </li>
-          </ol>
-          <CodeBlock code={sharingUrl} class="mb-4" />
-          <dl class="mb-5">
-            <dt>URL</dt><dd class="min-w-0">
-              The full address above, with your token
-            </dd>
-            <dt>Message Format</dt><dd>NMEA</dd>
-            <dt>Active</dt><dd>On</dd>
-            <dt>Topic</dt><dd><code>ais/data</code> (the default)</dd>
-          </dl>
-          <p class="text-fg-muted mb-4">
-            Press <strong>Save</strong>, then restart the receiver in the
-            dashboard to apply the output. This sends the ship messages your
-            antenna hears over an encrypted connection.
-          </p>
-          <p class="text-fg-muted text-sm">
-            Treat your token like a password; don't post it or include it in
-            screenshots. Your station name and shared receptions are public. The <a
-              href="https://github.com/openwatersio/aiscast/blob/main/docs/contributor-agreement.md"
-              >contributor agreement</a
-            >
-            dedicates your receptions to the public domain (CC0), and the aggregate
-            database is published under ODbL. AIS-catcher's separate community feed
-            is optional; review it under Output → Community.
           </p>
         </section>
 
@@ -554,13 +552,38 @@ const troubleshooting = [
             <li>In that SSH session, run the installer below.</li>
           </ol>
           <CodeBlock code={installLinux} class="mb-4" />
+          <p class="text-fg-muted mb-3">
+            From a second Terminal or PowerShell window on your normal computer,
+            copy the original downloaded config to the Pi. Replace <code
+              >YOUR_USERNAME</code
+            > with the Pi username:
+          </p>
+          <CodeBlock
+            code="scp $HOME/Downloads/aiscatcher.json YOUR_USERNAME@aisreceiver.local:aiscatcher.json"
+            class="mb-4"
+          />
+          <p class="text-fg-muted mb-3">
+            Back in the Pi's SSH session, load it into this fresh installation.
+            It uses the same token, keeping your station identity. Don't run
+            this on a Pi with an existing receiver configuration you want to
+            keep.
+          </p>
+          <CodeBlock
+            code={installConfig.replace(
+              "~/Downloads/aiscatcher.json",
+              "~/aiscatcher.json",
+            )}
+            class="mb-4"
+          />
           <p class="text-fg-muted mb-4">
             From your normal computer, open <a
               href="http://aisreceiver.local:8118/"
               >http://aisreceiver.local:8118</a
-            >. Follow <a href="#first-ships">the local reception steps</a>, then
-            repeat <a href="#share">the sharing step</a> using your existing token.
-            Don't generate a new token on the Pi; reusing it keeps your station identity.
+            >. Set the new dashboard password, then follow <a
+              href="#first-ships">the Start and reception steps</a
+            >. If you deleted the original download, return to the same
+            browser's token page to download it again; don't generate a new
+            station on the Pi.
           </p>
           <p class="text-fg-muted">
             The installer sets up a background service. In the SSH session, run <code

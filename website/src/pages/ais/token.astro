@@ -124,8 +124,29 @@ const pre =
         <Card>
           <h2 class="mb-4 text-xl font-semibold">Send your receiver's data</h2>
           <h3 class="mb-1 text-base font-semibold">AIS-catcher</h3>
+          <p class="text-fg-muted mb-3 text-sm">
+            Starting with a USB RTL-SDR? Download a config with your token,
+            receiver input, and Open Waters output already filled in. Follow the{
+              " "
+            }
+            <a href="/ais/getting-started/ashore/#install">shore setup guide</a
+            >{" "}
+            to install and launch it, then press Start in the dashboard.
+          </p>
+          <a
+            data-config-download
+            download="aiscatcher.json"
+            class="btn btn-primary mb-3"
+          >
+            Download AIS-catcher config
+          </a>
+          <p class="text-fg-muted mb-5 text-sm">
+            This file contains your private token. Keep it private. It is for a
+            new RTL-SDR setup; don't replace an existing receiver's config.
+            AIS-catcher's separate community sharing is disabled.
+          </p>
           <p class="text-fg-muted mb-2 text-sm">
-            Realtime over MQTT, authenticated, works behind any NAT:
+            Already have a receiver setup? Its command-line MQTT output:
           </p>
           <pre data-cmd-aiscatcher class={`${pre} mb-3`}></pre>
           <p class="text-fg-muted mb-2 text-sm">
@@ -174,6 +195,8 @@ const pre =
 </MainLayout>
 
 <script>
+  import { aiscatcherConfig } from "../../utils/aiscatcher-config";
+
   const root = document.querySelector<HTMLElement>("[data-token-page]")!;
   const server = root.dataset.server!;
   const stations = root.dataset.stations!;
@@ -204,7 +227,15 @@ const pre =
     return dev;
   }
 
+  let configUrl: string | undefined;
   function show(token: string, claims: Claims) {
+    if (configUrl) URL.revokeObjectURL(configUrl);
+    configUrl = URL.createObjectURL(
+      new Blob([aiscatcherConfig(token)], {
+        type: "application/json",
+      }),
+    );
+    $<HTMLAnchorElement>("[data-config-download]").href = configUrl;
     $("[data-token]").textContent = token;
     $("[data-sub]").textContent = claims.sub;
     $("[data-exp]").textContent = claims.exp
