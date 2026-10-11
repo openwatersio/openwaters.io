@@ -1,9 +1,8 @@
 ---
 title: Sample AIS announcement
 date: 2026-07-20
-summary: Placeholder for the dev preview, tagged for AIS only. Drafts never build.
+summary: Placeholder for the PR preview, tagged for AIS only.
 projects: [ais]
-draft: true
 ---
 
-_Placeholder for the dev preview._
+_Placeholder for the PR preview._
