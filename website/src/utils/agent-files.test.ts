@@ -329,3 +329,24 @@ test(
     }
   },
 );
+
+test(
+  "every site image in the changelog pages and feeds was built",
+  { skip },
+  () => {
+    const files = globSync("changelog/**/{index.html,rss.xml}", { cwd: dist });
+    assert.ok(files.length > 10, `only ${files.length} changelog files`);
+    for (const file of files) {
+      // Feeds escape their HTML, so match the escaped quote too.
+      const text = read(file).replace(/&quot;/g, '"');
+      for (const [, src] of text.matchAll(/<img[^>]*?src="([^"]+)"/g)) {
+        const path = src.replace(/^https:\/\/openwaters\.io/, "");
+        if (!path.startsWith("/")) continue; // external image
+        assert.ok(
+          existsSync(new URL(`.${path.split("?")[0]}`, dist)),
+          `${file}: missing image ${src}`,
+        );
+      }
+    }
+  },
+);

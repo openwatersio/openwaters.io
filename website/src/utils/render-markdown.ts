@@ -10,8 +10,8 @@ const escape = (text: string) =>
 const safeUrl = (href: string) =>
   /^(https?:|mailto:|\/(?![\/\\])|#)/i.test(href.trim()) ? href.trim() : null;
 
-// The AIS spec is fetched over the network, so its markdown is data, not
-// trusted HTML: raw tags are shown as text and links keep to http(s), mailto,
+// The AIS spec and GitHub release notes are fetched over the network, so their
+// markdown is data, not trusted HTML: raw tags are shown as text and links keep to http(s), mailto,
 // and same-site paths. Browsers read "/\host" as "//host", hence the backslash.
 marked.use({
   renderer: {
@@ -34,7 +34,7 @@ marked.use({
   },
 });
 
-/** Render a markdown string (OpenAPI summaries and descriptions) to HTML. */
+/** Render untrusted markdown (OpenAPI text, release notes) to HTML. */
 export function md(text: string): string {
   return marked.parse(text, { async: false });
 }

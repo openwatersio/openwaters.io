@@ -13,6 +13,8 @@ interface Props {
   fullscreen?: boolean;
   /** Page-specific JSON-LD. Organization is emitted on every page regardless. */
   schema?: unknown;
+  /** An RSS feed for this page, advertised to feed readers. */
+  feed?: string;
 }
 
 const {
@@ -21,6 +23,7 @@ const {
   image = "/og/openwaters.png",
   fullscreen = false,
   schema,
+  feed,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -46,6 +49,7 @@ const fullTitle =
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+    {feed && <link rel="alternate" type="application/rss+xml" href={feed} />}
 
     <!-- Open Graph -->
     <meta property="og:title" content={fullTitle} />
