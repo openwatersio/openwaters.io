@@ -2,7 +2,7 @@
 import MainLayout from "../../../layouts/MainLayout.astro";
 import Container from "../../../components/ui/Container.astro";
 import Card from "../../../components/ui/Card.astro";
-import type { Station } from "@neaps/tide-database";
+import type { Station } from "@slackwater/database";
 import { TideStationIsland } from "../../../components/tides/TideStationIsland";
 import { NearbyStationsIsland } from "../../../components/tides/NearbyStations";
 import Icon from "../../../components/Icon.astro";
@@ -13,7 +13,7 @@ import {
   prefetchTideStation,
   prefetchNearbyStations,
   dehydrate,
-} from "@neaps/react";
+} from "@slackwater/react";
 
 // Enable server-side rendering for this route
 export const prerender = false;
@@ -278,15 +278,15 @@ const dehydratedState = dehydrate(queryClient);
               <div>
                 <h3 class="text-xl">JavaScript</h3>
                 <p class="text-sm">
-                  Use the <a href="/tides/neaps/">neaps</a>
+                  Use the <a href="/tides/slackwater/">slackwater</a>
                   npm library to compute tide predictions locally.
                 </p>
               </div>
               <a
-                href="/tides/neaps/"
+                href="/tides/slackwater/"
                 class="btn inline-flex items-center gap-2"
               >
-                Neaps Docs
+                Slackwater Docs
                 <Icon name="mdi:chevron-right" class="h-4 w-4" />
               </a>
             </div>
@@ -297,7 +297,7 @@ const dehydratedState = dehydrate(queryClient);
                   Install
                 </h4>
                 <pre
-                  class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4 text-sm"><code>npm install neaps</code></pre>
+                  class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4 text-sm"><code>npm install slackwater</code></pre>
               </div>
 
               <div>
@@ -305,7 +305,7 @@ const dehydratedState = dehydrate(queryClient);
                   Get tide predictions
                 </h4>
                 <pre
-                  class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4 text-sm"><code>{`import { findStation } from "neaps";
+                  class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4 text-sm"><code>{`import { findStation } from "slackwater";
 
 const station = findStation("${station.id}");
 

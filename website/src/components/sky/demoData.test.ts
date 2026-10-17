@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { moonMonth, twilightDay, sunYear } from "./demoData.ts";
+import { sunAltAz } from "@openwaters/almanac";
+import { moonMonth, sunHours, twilightDay, sunYear } from "./demoData.ts";
 
 test("Moon filmstrip respects month lengths, phase instants and supported dates", () => {
   const leap = moonMonth("2028-02");
@@ -57,4 +58,51 @@ test("Twilight bands cover the day without gaps, including polar day and night",
     new Set(twilightDay(0, 6).bands.map((band) => band.stage)).size,
     5,
   );
+});
+
+test("golden and blue hour sit at their altitudes, morning and evening", () => {
+  const salish = { latitudeDeg: 48.5, longitudeDeg: -123 };
+  const start = new Date("2026-06-21T07:00:00Z");
+  const end = new Date("2026-06-22T07:00:00Z");
+  const { golden, blue, transits } = sunHours(start, end, salish);
+  assert.deepEqual(
+    golden.map((s) => s.morning),
+    [true, false],
+  );
+  assert.deepEqual(
+    blue.map((s) => s.morning),
+    [true, false],
+  );
+  const alt = (t: Date) => sunAltAz(t, salish).altDeg;
+  // sunAltAz is refracted; the crossings are geometric, so allow refraction.
+  for (const s of golden) {
+    const mid = new Date((s.from.getTime() + s.to.getTime()) / 2);
+    assert.ok(alt(mid) > 0 && alt(mid) < 6.5, `${alt(mid)}`);
+    assert.ok(s.to.getTime() - s.from.getTime() < 60 * 60_000);
+  }
+  for (const s of blue) {
+    const mid = new Date((s.from.getTime() + s.to.getTime()) / 2);
+    assert.ok(alt(mid) < -3.8 && alt(mid) > -8, `${alt(mid)}`);
+  }
+  // Morning blue hour comes before morning golden hour, evening after.
+  assert.ok(blue[0]!.to < golden[0]!.from);
+  assert.ok(blue[1]!.from > golden[1]!.to);
+  assert.deepEqual(
+    transits.map((t) => t.kind),
+    ["lower", "upper"],
+  );
+});
+
+test("the ribbon's golden hour clips at midnight under the midnight Sun", () => {
+  // Tromsø: the Sun dips to about +3° at midnight, inside golden hour.
+  const { golden, blue, bands } = twilightDay(69.65, 6, 18.96, "Europe/Oslo");
+  assert.deepEqual(bands, [{ from: 0, to: 24, stage: 0 }]);
+  assert.equal(blue.length, 0);
+  assert.equal(golden[0]!.from, 0);
+  assert.equal(golden.at(-1)!.to, 24);
+  assert.ok(golden[0]!.morning && !golden.at(-1)!.morning);
+  // Polar night: no golden hour at all, blue hour around noon.
+  const winter = twilightDay(69.65, 12, 18.96, "Europe/Oslo");
+  assert.equal(winter.golden.length, 0);
+  assert.equal(winter.blue.length, 2);
 });

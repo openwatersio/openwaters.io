@@ -8,7 +8,7 @@ import SunYear from "../../components/sky/SunYear";
 import SolarEclipseDemo from "../../components/sky/SolarEclipseDemo";
 import GlobalSolarEclipseDemo from "../../components/sky/GlobalSolarEclipseDemo";
 
-const twilightCode = `import { sunEvents, sunAltAz } from '@openwaters/almanac';
+const twilightCode = `import { sunEvents, sunAltAz, sunAltitudeEvents, sunTransits } from '@openwaters/almanac';
 
 const observer = { latitudeDeg: 70, longitudeDeg: 0 };
 const start = new Date('2026-06-21T00:00:00Z');
@@ -19,7 +19,17 @@ const crossings = sunEvents(start, end, observer)
 // Use each crossing time as a color boundary in the 24-hour ribbon.
 // Dawn enters a lighter band; dusk enters a darker one.
 // No crossings? Check altitude: midnight Sun is not a missing result.
-console.log(crossings, sunAltAz(start, observer).altDeg);`;
+console.log(crossings, sunAltAz(start, observer).altDeg);
+
+// Golden hour is the Sun from the horizon to +6°: sunrise until the +6°
+// 'rising' crossing, and the +6° 'falling' crossing until sunset.
+// Blue hour is −4° to −8°, the same way.
+const golden = sunAltitudeEvents(start, end, observer, 6);
+const blue = [-4, -8].map(deg => sunAltitudeEvents(start, end, observer, deg));
+
+// Solar noon is the upper transit, solar midnight the lower one.
+const transits = sunTransits(start, end, observer);
+console.log(golden, blue, transits);`;
 const solarCode = `import { solarEclipses, solarObscuration } from '@openwaters/almanac';
 
 const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
@@ -95,7 +105,8 @@ for (const eclipse of globalSolarEclipses(start, end)) {
           </h2>
           <p class="text-fg-muted">
             A full day, from sunlight through civil, nautical and astronomical
-            twilight into night. Change latitude and season to find the midnight
+            twilight into night, with golden hour, blue hour, and solar noon and
+            midnight marked. Change latitude and season to find the midnight
             Sun—or a day when the Sun never rises.
           </p>
         </div>
