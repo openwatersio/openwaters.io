@@ -209,6 +209,7 @@ const tokenPre = pre.replace("text-sm", "text-xs");
 
 <script>
   import { stationStatus } from "../../utils/station-status";
+  import { track } from "../../utils/analytics";
 
   const root = document.querySelector<HTMLElement>("[data-token-page]")!;
   const server = root.dataset.server!;
@@ -217,6 +218,47 @@ const tokenPre = pre.replace("text-sm", "text-xs");
   const form = $("[data-form]");
 
   type Claims = { sub: string; exp?: number };
+  function usableToken(
+    value: unknown,
+  ): value is { token: string; claims: Claims; name_error?: string } {
+    if (!value || typeof value !== "object") return false;
+    const { token, claims } = value as { token?: unknown; claims?: Claims };
+    if (
+      typeof token !== "string" ||
+      !/^ak1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{86}$/.test(token) ||
+      !claims ||
+      typeof claims.sub !== "string" ||
+      !/^ed25519:[A-Za-z0-9_-]{43}$/.test(claims.sub) ||
+      (claims.exp !== undefined &&
+        (typeof claims.exp !== "number" ||
+          !Number.isFinite(claims.exp) ||
+          (claims.exp !== 0 && claims.exp * 1000 <= Date.now())))
+    )
+      return false;
+    try {
+      const body = JSON.parse(
+        atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")),
+      );
+      return (
+        body.sub === claims.sub &&
+        body.exp === (claims.exp ?? 0) &&
+        body.role === "personal"
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  function storedToken() {
+    try {
+      const value: unknown = JSON.parse(
+        localStorage.getItem("aiscast.token") ?? "null",
+      );
+      return usableToken(value) ? value : null;
+    } catch {
+      return null;
+    }
+  }
   const b64url = (buf: ArrayBuffer) =>
     btoa(String.fromCharCode(...new Uint8Array(buf)))
       .replace(/\+/g, "-")
@@ -275,6 +317,7 @@ const tokenPre = pre.replace("text-sm", "text-xs");
   // a poll waits for the check in flight, and only the latest check may write.
   let rxSeq = 0;
   let rxBusy = false;
+  let receivingObserved = false;
 
   async function checkReceiving(sub: string, poll = false) {
     if (poll && rxBusy) return;
@@ -303,6 +346,10 @@ const tokenPre = pre.replace("text-sm", "text-xs");
       light(
         receiving ? "bg-cta" : lastAge == null ? "bg-fg-faint" : "bg-highlight",
       );
+      if (receiving && !receivingObserved) {
+        receivingObserved = true;
+        track("ais_station_receiving_observed");
+      }
     } catch {
       if (seq !== rxSeq) return;
       say("Couldn't check station status");
@@ -368,6 +415,7 @@ const tokenPre = pre.replace("text-sm", "text-xs");
     go.disabled = true; // one request at a time
     status.textContent = "…";
     try {
+      const operation = storedToken() ? "reissue" : "initial";
       if (!crypto?.subtle) throw new Error("this browser has no WebCrypto");
       const dev = await deviceKey();
       const bind = $<HTMLInputElement>("[data-bind]").checked;
@@ -385,10 +433,13 @@ const tokenPre = pre.replace("text-sm", "text-xs");
         }),
       });
       if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-      const { token, claims, name_error } = await res.json();
+      const response: unknown = await res.json();
+      if (!usableToken(response)) throw new Error("Invalid token response");
+      const { token, claims, name_error } = response;
       localStorage.setItem("aiscast.token", JSON.stringify({ token, claims }));
       if (!name_error) localStorage.setItem("aiscast.name", name);
       show(token, claims);
+      track("ais_token_issued", { operation });
       $("[data-go-label]").textContent = "Regenerate token";
       status.textContent = name_error
         ? `Token ready, but the name was not saved: ${name_error}.`
@@ -421,15 +472,9 @@ const tokenPre = pre.replace("text-sm", "text-xs");
     nameInput.focus({ preventScroll: true });
   });
 
-  const prev = localStorage.getItem("aiscast.token");
+  const prev = storedToken();
   if (prev) {
-    const { token, claims } = JSON.parse(prev) as {
-      token: string;
-      claims: Claims;
-    };
-    if (!claims.exp || claims.exp * 1000 > Date.now()) {
-      show(token, claims);
-      $("[data-go-label]").textContent = "Regenerate token";
-    }
+    show(prev.token, prev.claims);
+    $("[data-go-label]").textContent = "Regenerate token";
   }
 </script>
