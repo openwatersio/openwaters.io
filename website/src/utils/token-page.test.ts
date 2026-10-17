@@ -116,7 +116,8 @@ function page(
     localStorage: {
       getItem: (key: string) => saved.get(key) ?? null,
       setItem: (key: string, value: string) => {
-        if (options.storageError) throw Error("storage denied");
+        if (options.storageError && key === "aiscast.token")
+          throw Error("storage denied");
         saved.set(key, value);
         if (key === "aiscast.token") order.push("save");
       },
