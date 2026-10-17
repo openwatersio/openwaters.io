@@ -4,6 +4,7 @@ import Container from "../../../components/ui/Container.astro";
 import Card from "../../../components/ui/Card.astro";
 import CodeBlock from "../../../components/ui/CodeBlock.astro";
 import Icon from "../../../components/Icon.astro";
+import AisNav from "../../../components/ais/AisNav.astro";
 import { CONTACT_EMAIL } from "../../../utils/constants";
 
 const DOCS = "https://jvde-github.github.io/AIS-catcher-docs";
@@ -57,8 +58,12 @@ const troubleshooting = [
 >
   <Container class="py-12 lg:py-20">
     <div class="mx-auto max-w-3xl">
-      <a href="/ais/" class="mb-6 inline-flex items-center gap-2 text-sm">
-        <Icon name="mdi:arrow-left" class="size-4" /> Open Waters AIS
+      <AisNav class="mb-8" />
+      <a
+        href="/ais/contribute/"
+        class="mb-6 inline-flex items-center gap-2 text-sm"
+      >
+        <Icon name="mdi:arrow-left" class="size-4" /> Contribute to Open Waters AIS
       </a>
       <h1 class="mb-6">Hear the ships outside your window.</h1>
       <p class="text-lead mb-6">
@@ -68,9 +73,10 @@ const troubleshooting = [
       </p>
       <p class="text-fg-muted mb-8">
         Start at home, with the computer you already own. You don't need a boat
-        or a permanent outdoor installation. Already using Signal K aboard? See <a
-          href="/ais/signalk/">AIS for Signal K</a
-        >.
+        or a permanent outdoor installation. Already receiving AIS? Follow the{
+          " "
+        }
+        <a href="/ais/contribute/#connect">existing receiver setup guide</a> instead.
       </p>
       <nav aria-label="Guide sections" class="mb-10 flex flex-wrap gap-3">
         <a href="#get-started" class="btn btn-primary">Get started fast</a>
@@ -443,6 +449,15 @@ const troubleshooting = [
               the receiver. You can keep receiving locally.
             </p>
           </Card>
+          <p class="text-fg-muted mt-4">
+            Your receptions are shared under CC0 and the volunteer database
+            under ODbL. <a href="/ais/contribute/#access"
+              >See how contributor access works</a
+            >
+            and <a href="/ais/#contribute"
+              >how the open network shares your data</a
+            >.
+          </p>
         </section>
 
         <section id="help" class="mb-16 scroll-mt-24">

@@ -47,15 +47,45 @@ const methods = [
       <div class="max-w-3xl">
         <h1 class="mb-5">Share your AIS receiver with Open Waters.</h1>
         <p class="text-lead mb-5">
-          Add the vessels you hear to aiscast, the Open Waters AIS network. Keep
-          your existing feeds, help fill gaps in coverage, and earn higher
-          limits for reading the network back.
+          Add the vessels you hear to Open Waters AIS. Keep your existing feeds,
+          help fill gaps in coverage, and earn higher limits for reading the
+          network back.
         </p>
         <p class="text-fg-muted">
-          This guide starts with a receiver that already hears AIS traffic.
-          Choose your software, connect it, then check that your station is
-          sending.
+          Choose the path that matches where you are starting.
         </p>
+      </div>
+      <div class="mt-8 grid gap-4 md:grid-cols-2">
+        <a
+          href="#connect"
+          class="card hover:border-accent flex items-start gap-4"
+        >
+          <Icon name="mdi:radio-tower" class="text-accent size-7 shrink-0" />
+          <div>
+            <span class="text-fg-strong mb-2 block text-lg font-semibold"
+              >Already receiving AIS?</span
+            >
+            <span class="text-fg-muted block"
+              >Connect your receiver software, then check your station is
+              sending.</span
+            >
+          </div>
+        </a>
+        <a
+          href="/ais/getting-started/ashore/"
+          class="card hover:border-accent flex items-start gap-4"
+        >
+          <Icon name="mdi:usb" class="text-accent size-7 shrink-0" />
+          <div>
+            <span class="text-fg-strong mb-2 block text-lg font-semibold"
+              >No receiver yet?</span
+            >
+            <span class="text-fg-muted block"
+              >Get started from shore with an antenna, a USB receiver, and your
+              computer.</span
+            >
+          </div>
+        </a>
       </div>
       <nav
         aria-label="Setup steps"
