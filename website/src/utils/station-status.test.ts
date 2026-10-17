@@ -28,3 +28,12 @@ test("an unknown station is not said to have never sent data", () => {
   assert.equal(receiving, false);
   assert.doesNotMatch(message, /yet|never/i);
 });
+
+test("invalid station ages cannot claim a station is receiving", () => {
+  for (const age of [-1, NaN, Infinity, "1", undefined]) {
+    assert.deepEqual(stationStatus(age as number), {
+      receiving: false,
+      message: "Couldn't check station status",
+    });
+  }
+});

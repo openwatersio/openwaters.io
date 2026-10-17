@@ -18,11 +18,17 @@ function ago(s: number) {
 // stations heard since it last started, so that means "no recent data", not
 // "never sent any".
 export function stationStatus(lastAgeS: number | null): StationStatus {
-  if (lastAgeS == null)
+  if (lastAgeS === null)
     return {
       receiving: false,
       message: "No recent data sent with this token.",
     };
+  if (
+    typeof lastAgeS !== "number" ||
+    !Number.isFinite(lastAgeS) ||
+    lastAgeS < 0
+  )
+    return { receiving: false, message: "Couldn't check station status" };
   if (lastAgeS < ACTIVE_S)
     return { receiving: true, message: "Receiving data sent with this token" };
   return {
