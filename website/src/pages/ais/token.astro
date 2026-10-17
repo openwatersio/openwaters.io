@@ -12,6 +12,7 @@ const MAP = "/ais/vessels";
 const STATIONS = "/ais/stations";
 const pre =
   "bg-well overflow-x-auto rounded-lg p-4 text-sm break-all whitespace-pre-wrap text-fg-strong";
+const tokenPre = pre.replace("text-sm", "text-xs");
 ---
 
 <MainLayout
@@ -44,7 +45,7 @@ const pre =
       data-server={SERVER}
       data-stations={STATIONS}
     >
-      <Card>
+      <Card data-form>
         <p class="text-fg-muted mb-5">
           Your token and station are tied to this browser. Come back any time to
           get the same station id or to rename it. Clearing this browser's data
@@ -102,30 +103,56 @@ const pre =
 
       <div data-out hidden class="space-y-8">
         <Card>
-          <div class="mb-3 flex items-center justify-between gap-3">
-            <h2 class="text-xl font-semibold">Your token</h2>
+          <div class="mb-5 flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h2 class="text-xl font-semibold">Your station</h2>
+              <p data-sub class="text-fg-faint truncate font-mono text-sm"></p>
+            </div>
+            <a
+              data-stlink
+              href={MAP}
+              class="btn btn-secondary shrink-0 text-sm"
+            >
+              View station
+              <Icon name="mdi:chevron-right" class="size-4" />
+            </a>
+          </div>
+          <div class="bg-well mb-5 flex items-center gap-3 rounded-lg p-4">
+            <span class="relative flex size-3 shrink-0">
+              <span
+                data-rx-ping
+                hidden
+                class="bg-cta absolute inline-flex size-full animate-ping rounded-full opacity-75"
+              ></span>
+              <span data-rx-dot class="bg-fg-faint relative size-3 rounded-full"
+              ></span>
+            </span>
+            <div>
+              <p
+                class="text-fg-faint text-xs font-medium tracking-wide uppercase"
+              >
+                Live status
+              </p>
+              <p data-rx role="status" class="text-fg-strong font-medium">
+                Checking for data…
+              </p>
+            </div>
+          </div>
+          <h3 class="mb-2 text-base font-semibold">Token</h3>
+          <pre data-token class={tokenPre}></pre>
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
             <button type="button" data-copy class="btn btn-secondary text-sm">
               <Icon name="mdi:content-copy" class="size-4" />
               <span data-copy-label>Copy</span>
             </button>
-          </div>
-          <pre data-token class={pre}></pre>
-          <p class="text-fg-muted mt-3 text-sm">
-            Station id <code class="bg-surface rounded px-1" data-sub></code>,
-            expires <span data-exp></span>. Your data appears as <code
-              class="bg-surface rounded px-1"
-              >source: station:&lt;station id&gt;</code
-            >; see it on <a data-stlink href={MAP}>your station page</a>.
-          </p>
-          <p class="mt-3 flex items-center gap-2 text-sm">
-            <span data-rx-dot class="bg-fg-faint size-2.5 rounded-full"></span>
-            <span data-rx role="status" class="text-fg-muted"
-              >Checking for data…</span
+            <button
+              type="button"
+              data-regen
+              class="text-fg-muted hover:text-accent-hover cursor-pointer text-sm underline-offset-4 hover:underline"
             >
-          </p>
-          <p class="text-fg-faint mt-1 text-sm">
-            UDP and Signal K feeds show under their own station ids, not here.
-          </p>
+              Regenerate token
+            </button>
+          </div>
         </Card>
 
         <Card>
@@ -187,6 +214,7 @@ const pre =
   const server = root.dataset.server!;
   const stations = root.dataset.stations!;
   const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+  const form = $("[data-form]");
 
   type Claims = { sub: string; exp?: number };
   const b64url = (buf: ArrayBuffer) =>
@@ -215,10 +243,9 @@ const pre =
 
   function show(token: string, claims: Claims) {
     $("[data-token]").textContent = token;
-    $("[data-sub]").textContent = claims.sub;
-    $("[data-exp]").textContent = claims.exp
-      ? new Date(claims.exp * 1000).toISOString().slice(0, 10)
-      : "never";
+    const subEl = $("[data-sub]");
+    subEl.textContent = abbreviate(claims.sub);
+    subEl.title = claims.sub;
     // Left unencoded: the id's colons and slashes are legal in a path, the route is a
     // splat, and this is the address /ais/vessels?station= redirects to, so the link a
     // volunteer copies is already the canonical one.
@@ -231,9 +258,19 @@ const pre =
     $("[data-cmd-ws]").textContent =
       `websocat ${server.replace(/^http/, "ws")}/v0/stream\n{"APIKey":"${token}","BoundingBoxes":[[[41,-71.5],[42.5,-69.5]]]}`;
     $("[data-out]").hidden = false;
+    form.hidden = true;
     clearInterval(rxTimer);
     checkReceiving(claims.sub);
     rxTimer = setInterval(() => checkReceiving(claims.sub, true), 60_000);
+  }
+
+  // ed25519:FtsAVnQJaoWPFk3G… → ed25519:FtsAVn…Dkb4o
+  function abbreviate(sub: string) {
+    const i = sub.indexOf(":") + 1;
+    const key = sub.slice(i);
+    return key.length > 14
+      ? `${sub.slice(0, i)}${key.slice(0, 6)}…${key.slice(-5)}`
+      : sub;
   }
 
   let rxTimer: ReturnType<typeof setInterval> | undefined;
@@ -248,6 +285,11 @@ const pre =
     rxBusy = true;
     const text = $("[data-rx]");
     const dot = $("[data-rx-dot]");
+    const ping = $("[data-rx-ping]");
+    const light = (color: string) => {
+      dot.className = `relative size-3 rounded-full ${color}`;
+      ping.hidden = color !== "bg-cta";
+    };
     // Rewriting the same text makes some screen readers announce it again.
     const say = (msg: string) => {
       if (text.textContent !== msg) text.textContent = msg;
@@ -261,13 +303,13 @@ const pre =
       if (seq !== rxSeq) return;
       const { receiving, message } = stationStatus(lastAge);
       say(message);
-      dot.className = `size-2.5 rounded-full ${
-        receiving ? "bg-cta" : lastAge == null ? "bg-fg-faint" : "bg-highlight"
-      }`;
+      light(
+        receiving ? "bg-cta" : lastAge == null ? "bg-fg-faint" : "bg-highlight",
+      );
     } catch {
       if (seq !== rxSeq) return;
       say("Couldn't check station status");
-      dot.className = "size-2.5 rounded-full bg-fg-faint";
+      light("bg-fg-faint");
     } finally {
       if (seq === rxSeq) rxBusy = false;
     }
@@ -354,6 +396,7 @@ const pre =
       status.textContent = name_error
         ? `Token ready, but the name was not saved: ${name_error}.`
         : "";
+      form.hidden = !name_error;
     } catch (e) {
       const msg = String((e as Error).message || e);
       status.textContent =
@@ -373,6 +416,14 @@ const pre =
     setTimeout(() => (label.textContent = "Copy"), 1500);
   });
 
+  // Reopens the form rather than regenerating at once, so the name and
+  // address binding can change with it.
+  $("[data-regen]").addEventListener("click", () => {
+    form.hidden = false;
+    form.scrollIntoView({ behavior: "smooth", block: "start" });
+    nameInput.focus({ preventScroll: true });
+  });
+
   const prev = localStorage.getItem("aiscast.token");
   if (prev) {
     const { token, claims } = JSON.parse(prev) as {
@@ -382,7 +433,6 @@ const pre =
     if (!claims.exp || claims.exp * 1000 > Date.now()) {
       show(token, claims);
       $("[data-go-label]").textContent = "Regenerate token";
-      status.textContent = `existing token for station ${claims.sub}`;
     }
   }
 </script>
