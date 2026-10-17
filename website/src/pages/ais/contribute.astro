@@ -165,7 +165,14 @@ const methods = [
               </ol>
               <CodeBlock
                 code="AIS-catcher -Q wssmqtt://x:<token>@ais.openwaters.io:443/v1/stream MSGFORMAT NMEA"
+                token
               />
+              <p class="text-fg-muted">
+                Keep <code>:443</code> in the MQTT address: AIS-catcher does not choose
+                that port automatically. <code>MSGFORMAT NMEA_TAG</code>
+                is also supported when you want each reception’s timestamp in a NMEA
+                TAG block.
+              </p>
               <p class="text-fg-muted">
                 Save the updated startup command and restart AIS-catcher or its
                 service. Use your existing receiver process; you do not need a
@@ -178,6 +185,12 @@ const methods = [
                 an HTTP alternative, use its HTTP output example. <a
                   href="#check">Next: check reception.</a
                 >
+              </p>
+              <p class="text-sm">
+                <a href="/ais/ais-catcher/"
+                  >AIS-catcher output options and network viewer guide</a
+                >: compare MQTT, HTTP, and UDP, or read the network back into a
+                separate viewer.
               </p>
             </div>
           </div>

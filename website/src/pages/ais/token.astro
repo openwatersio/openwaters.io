@@ -180,21 +180,43 @@ const tokenPre = pre.replace("text-sm", "text-xs");
             AIS-catcher's separate community sharing is disabled.
           </p>
           <p class="text-fg-muted mb-2 text-sm">
-            Already have a receiver setup? Its command-line MQTT output:
+            Already have a receiver setup? Append the options starting at
+            <code>-Q</code> to its existing command, keeping your input settings and
+            other outputs. The full MQTT example:
           </p>
           <pre data-cmd-aiscatcher class={`${pre} mb-3`}></pre>
           <p class="text-fg-muted mb-2 text-sm">
-            Or its HTTP output, one batch every five seconds:
+            Or append the HTTP output options starting at <code>-H</code>,
+            sending one batch every five seconds:
           </p>
           <pre data-cmd-aiscatcher-http class={`${pre} mb-5`}></pre>
+          <p class="text-fg-muted mb-5 text-sm">
+            MQTT requires the explicit <code>:443</code> port and{" "}
+            <code>MSGFORMAT NMEA</code> (or <code>NMEA_TAG</code> for receive timestamps).
+            To read network traffic into AIS-catcher, follow the{" "}
+            <a href="/ais/ais-catcher/#readback"
+              >separate network viewer guide</a
+            >; keep that traffic out of your receiver’s sharing outputs.
+          </p>
           <h3 class="mb-1 text-base font-semibold">Signal K</h3>
           <p class="text-fg-muted mb-5 text-sm">
             Install <code class="bg-surface rounded px-1">signalk-aiscast</code> from
             the App Store. It creates its own token; nothing to paste.
           </p>
+          <h3 class="mb-1 text-base font-semibold">docker-shipfeeder</h3>
+          <p class="text-fg-muted mb-5 text-sm">
+            Update to the latest image and enable{" "}
+            <code>OPENWATERS_SHAREDATA=true</code>. It creates and saves its own
+            token for MQTT. You can instead set <code
+              >OPENWATERS_FEEDER_KEY</code
+            >
+            to the token above to reuse this station. Follow the{" "}
+            <a href="/ais/contribute/#docker">shipfeeder setup guide</a> for the Compose
+            settings and UDP fallback behavior.
+          </p>
           <h3 class="mb-1 text-base font-semibold">UDP</h3>
           <p class="text-fg-muted text-sm">
-            docker-shipfeeder or any forwarder: host <code
+            For a NMEA forwarder using UDP: host <code
               class="bg-surface rounded px-1">udp.ais.openwaters.io</code
             >, port <code class="bg-surface rounded px-1">10110</code>, no
             token. The station appears as an anonymous <code
@@ -323,10 +345,15 @@ const tokenPre = pre.replace("text-sm", "text-xs");
     // volunteer copies is already the canonical one.
     $<HTMLAnchorElement>("[data-stlink]").href =
       `${stations}/station:${claims.sub}`;
+    // No -d:0. It selects SDR device index 0, which is already the default, so
+    // it adds nothing for the dongle case and hard-fails every other input with
+    // "Device Manager: device does not exist" — a serial VHF feed (-e), a
+    // network feed (-t), or a UDP feed (-x). Verified against AIS-catcher
+    // v0.70; both commands below were confirmed working without it.
     $("[data-cmd-aiscatcher]").textContent =
-      `AIS-catcher -d:0 -Q wssmqtt://x:${token}@${server.replace(/^https?:\/\//, "")}:443/v1/stream MSGFORMAT NMEA`;
+      `AIS-catcher -Q wssmqtt://x:${token}@${server.replace(/^https?:\/\//, "")}:443/v1/stream MSGFORMAT NMEA`;
     $("[data-cmd-aiscatcher-http]").textContent =
-      `AIS-catcher -d:0 -H ${server}/v1/receive USERPWD x:${token} GZIP on INTERVAL 5`;
+      `AIS-catcher -H ${server}/v1/receive USERPWD x:${token} GZIP on INTERVAL 5`;
     $("[data-cmd-ws]").textContent =
       `websocat ${server.replace(/^http/, "ws")}/v0/stream\n{"APIKey":"${token}","BoundingBoxes":[[[41,-71.5],[42.5,-69.5]]]}`;
     $("[data-out]").hidden = false;

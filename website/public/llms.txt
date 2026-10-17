@@ -57,6 +57,7 @@ Factual contrasts with the usual alternatives, checked September 2026. Their ter
 - [AIS](https://openwaters.io/ais/): Open Waters AIS, live vessel traffic from open government feeds and volunteer receivers
 - [Contribute to Open Waters AIS](https://openwaters.io/ais/contribute/): connect a receiver with AIS-catcher, Signal K, docker-shipfeeder, or UDP
 - [Start receiving AIS from shore](https://openwaters.io/ais/getting-started/ashore/): choose a USB receiver and antenna, install AIS-catcher, download a token-filled config, and confirm your station’s receptions
+- [AIS for AIS-catcher](https://openwaters.io/ais/ais-catcher/): output commands with token substitution, station checks, and a separate viewer for the contributor NMEA feed
 - [AIS for Signal K](https://openwaters.io/ais/signalk/): the signalk-aiscast plugin, which shows worldwide AIS traffic on a boat with no AIS receiver, relays it to a chartplotter over NMEA 0183, and shares what the boat's receiver hears
 - [Sky](https://openwaters.io/sky/): sunrise, moon phase, and eclipses computed offline by the Almanac engine
 - [Bathymetry](https://openwaters.io/bathymetry/): collect and share depth data from your vessel
