@@ -6,7 +6,7 @@ import { sitemapXml, toUrlPath } from "./sitemap.ts";
 test("toUrlPath: index pages collapse to their directory", () => {
   assert.equal(toUrlPath("./index.astro"), "/");
   assert.equal(toUrlPath("./tides/index.astro"), "/tides/");
-  assert.equal(toUrlPath("./tides/stations/index.astro"), "/tides/stations/");
+  assert.equal(toUrlPath("./api/index.astro"), "/api/");
 });
 
 test("toUrlPath: named pages keep their name and gain a trailing slash", () => {
@@ -24,16 +24,13 @@ test("toUrlPath: 'index' inside a name is not a directory index", () => {
 test("sitemapXml: absolute URLs against the site origin", () => {
   const xml = sitemapXml(new URL("https://openwaters.io"), [
     "/",
-    "/tides/stations/noaa/1612340/",
+    "/tides/harmonics/",
   ]);
   assert.match(xml, /<loc>https:\/\/openwaters\.io\/<\/loc>/);
-  assert.match(
-    xml,
-    /<loc>https:\/\/openwaters\.io\/tides\/stations\/noaa\/1612340\/<\/loc>/,
-  );
+  assert.match(xml, /<loc>https:\/\/openwaters\.io\/tides\/harmonics\/<\/loc>/);
 });
 
-test("sitemapXml: station ids from the API cannot break the document", () => {
+test("sitemapXml: a path cannot break the document", () => {
   const xml = sitemapXml(new URL("https://openwaters.io"), ["/a&b<c/"]);
   // `&` is escaped, `<` is percent-encoded by URL itself; neither survives raw.
   assert.match(xml, /<loc>https:\/\/openwaters\.io\/a&amp;b%3Cc\/<\/loc>/);

@@ -86,7 +86,7 @@ test("serve: Vary is appended to an existing value, once", async () => {
 
 test("serve: a page without Markdown falls back to HTML when acceptable", async () => {
   const res = await serve(
-    get("/tides/stations/noaa/1/", "text/markdown, */*;q=0.5"),
+    get("/on-demand/", "text/markdown, */*;q=0.5"),
     async () => html(),
     assets,
   );
@@ -108,7 +108,7 @@ test("serve: 406 when nothing we have is acceptable", async () => {
   }
   // Markdown only, and this page has none.
   const res = await serve(
-    get("/tides/stations/noaa/1/", "text/markdown"),
+    get("/on-demand/", "text/markdown"),
     async () => html(),
     assets,
   );

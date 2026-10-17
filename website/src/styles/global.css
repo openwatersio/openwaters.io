@@ -4,9 +4,6 @@
 
 @plugin "@tailwindcss/typography";
 
-/* Scan @slackwater/react source so Tailwind generates its utility classes */
-@source "../../../node_modules/@slackwater/react/dist/index.js";
-
 /*
  * The site is always dark. Ground and ink are Slackwater's palette; the accents
  * are the Slackwater chart colors, each with one job:
@@ -63,23 +60,6 @@
 
 :root {
   color-scheme: dark;
-}
-
-/* @slackwater/react ships its own :root defaults and loads after this file, so these
-   sit on body and win by inheritance. Its light-dark() values follow color-scheme. */
-body {
-  color-scheme: dark;
-  --slackwater-primary: var(--color-accent);
-  --slackwater-bg: var(--color-canvas);
-  --slackwater-bg-subtle: var(--color-well);
-  --slackwater-text: var(--color-fg);
-  --slackwater-text-muted: var(--color-fg-muted);
-  --slackwater-border: var(--color-line-strong);
-  --slackwater-night: color-mix(in srgb, var(--color-black) 45%, transparent);
-
-  /* Map overlay colors; the satellite base is always dark */
-  --slackwater-map-text: #ffffff;
-  --slackwater-map-bg: #000000;
 }
 
 @layer base {

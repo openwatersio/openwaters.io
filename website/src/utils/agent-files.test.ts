@@ -29,6 +29,16 @@ test("the 404 page is not listed in the sitemap", { skip }, () => {
   assert.doesNotMatch(read("sitemap.xml"), /404/);
 });
 
+test("station pages live on slackwater.xyz, not here", { skip }, () => {
+  assert.doesNotMatch(read("sitemap.xml"), /\/tides\/stations\//);
+  assert.ok(!existsSync(new URL("tides/stations/", dist)));
+  for (const page of ["tides/", "tides/slackwater/", "tides/database/"]) {
+    const md = read(`${page}index.md`);
+    assert.match(md, /https:\/\/slackwater\.xyz\/tides\//, page);
+    assert.match(md, /https:\/\/slackwater\.xyz\/\)/, `${page}: app link`);
+  }
+});
+
 test(
   "openapi.json is an OpenAPI 3 document served from the site root",
   { skip },
@@ -107,9 +117,6 @@ test(
         `${page}: text runs into a link, bold or code span without a space`,
       );
     }
-    const stations = read("tides/stations/index.md");
-    assert.match(stations, /slackwater\.xyz\/tides\//);
-    assert.match(stations, /api\.openwaters\.io\/tides\/stations\?query=/);
   },
 );
 
