@@ -264,13 +264,10 @@ const tokenPre = pre.replace("text-sm", "text-xs");
     rxTimer = setInterval(() => checkReceiving(claims.sub, true), 60_000);
   }
 
-  // ed25519:FtsAVnQJaoWPFk3G… → ed25519:FtsAVn…Dkb4o
+  // ed25519:FtsAVnQJaoWPFk3G… → FtsAVn…Dkb4o; the title keeps the full id.
   function abbreviate(sub: string) {
-    const i = sub.indexOf(":") + 1;
-    const key = sub.slice(i);
-    return key.length > 14
-      ? `${sub.slice(0, i)}${key.slice(0, 6)}…${key.slice(-5)}`
-      : sub;
+    const key = sub.slice(sub.indexOf(":") + 1);
+    return key.length > 14 ? `${key.slice(0, 6)}…${key.slice(-5)}` : key;
   }
 
   let rxTimer: ReturnType<typeof setInterval> | undefined;
