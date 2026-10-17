@@ -6,6 +6,7 @@ import { webcrypto } from "node:crypto";
 import { stripTypeScriptTypes } from "node:module";
 import { stationStatus } from "./station-status.ts";
 import { track } from "./analytics.ts";
+import { aiscatcherConfig } from "./aiscatcher-config.ts";
 
 const source = readFileSync(
   new URL("../pages/ais/token.astro", import.meta.url),
@@ -39,6 +40,8 @@ function page(
   } = {},
 ) {
   const events: unknown[] = [];
+  const downloads = new Map<string, Blob>();
+  const revoked: string[] = [];
   const saved = new Map<string, string>(
     options.cache ? [["aiscast.token", options.cache]] : [],
   );
@@ -49,6 +52,7 @@ function page(
   for (const selector of [
     "data-form",
     "data-token",
+    "data-config-download",
     "data-sub",
     "data-stlink",
     "data-cmd-aiscatcher",
@@ -111,7 +115,9 @@ function page(
         ? { stationStatus }
         : name.includes("analytics")
           ? { track }
-          : null,
+          : name.includes("aiscatcher-config")
+            ? { aiscatcherConfig }
+            : null,
     document: { querySelector: () => root },
     localStorage: {
       getItem: (key: string) => saved.get(key) ?? null,
@@ -120,6 +126,17 @@ function page(
           throw Error("storage denied");
         saved.set(key, value);
         if (key === "aiscast.token") order.push("save");
+      },
+    },
+    Blob,
+    URL: {
+      createObjectURL(blob: Blob) {
+        const url = `blob:test-${downloads.size}`;
+        downloads.set(url, blob);
+        return url;
+      },
+      revokeObjectURL(url: string) {
+        revoked.push(url);
       },
     },
     crypto: webcrypto,
@@ -155,6 +172,8 @@ function page(
   runInContext(script, context);
   return {
     events,
+    downloads,
+    revoked,
     saved,
     order,
     elements,
@@ -278,4 +297,17 @@ test("blocked analytics cannot break a saved displayed token", async () => {
   assert.equal(p.elements.get("[data-out]").hidden, false);
   assert.equal(p.saved.get("aiscast.token"), JSON.stringify(issued));
   assert.equal(p.elements.get("[data-status]").textContent, "");
+});
+
+test("restored and regenerated tokens have a downloadable config without retaining the old URL", async () => {
+  const p = page({ cache: JSON.stringify(issued) });
+  const firstUrl = p.elements.get("[data-config-download]").href;
+  const firstConfig = p.downloads.get(firstUrl)!;
+  assert.equal(firstConfig.type, "application/json");
+  assert.equal(await firstConfig.text(), aiscatcherConfig(token));
+  await p.generate();
+  const nextUrl = p.elements.get("[data-config-download]").href;
+  assert.notEqual(nextUrl, firstUrl);
+  assert.deepEqual(p.revoked, [firstUrl]);
+  assert.equal(await p.downloads.get(nextUrl)!.text(), aiscatcherConfig(token));
 });
