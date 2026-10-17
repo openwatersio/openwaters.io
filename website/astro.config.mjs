@@ -125,6 +125,8 @@ export default defineConfig({
       ],
     },
   },
-  adapter: cloudflare(),
+  // Images are optimized at build time into static files, so they don't depend on the
+  // Cloudflare Images binding at request time; every page is prerendered anyway.
+  adapter: cloudflare({ imageService: "compile" }),
   output: "static",
 });

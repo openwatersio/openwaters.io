@@ -1,0 +1,27 @@
+name: Changelog rebuild
+
+# The changelog reads GitHub Releases from other repos at build time, and a release
+# there doesn't push here, so production is rebuilt every six hours to pick them up.
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    environment: deploy
+    steps:
+      # A Workers Builds deploy hook for main (Settings > Builds > Deploy Hooks). The
+      # URL is its own credential, so it lives in a secret.
+      - name: Trigger a production build
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$DEPLOY_HOOK_URL" ]; then
+            echo "::error::CLOUDFLARE_DEPLOY_HOOK_URL is not set"
+            exit 1
+          fi
+          curl --fail-with-body -sS -X POST "$DEPLOY_HOOK_URL"

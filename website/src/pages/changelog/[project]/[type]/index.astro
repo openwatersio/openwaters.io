@@ -1,0 +1,20 @@
+---
+import type { GetStaticPaths } from "astro";
+
+import ChangelogIndex from "../../../../components/changelog/ChangelogIndex.astro";
+import {
+  PROJECT_KEYS,
+  TYPE_KEYS,
+  type Project,
+  type TypeKey,
+} from "../../../../utils/changelog";
+
+export const getStaticPaths = (() =>
+  PROJECT_KEYS.flatMap((project) =>
+    TYPE_KEYS.map((type) => ({ params: { project, type } })),
+  )) satisfies GetStaticPaths;
+
+const { project, type } = Astro.params as { project: Project; type: TypeKey };
+---
+
+<ChangelogIndex project={project} type={type} />
