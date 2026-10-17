@@ -1,10 +1,26 @@
+import type { MoonOrientation } from "@openwaters/almanac";
+
 /**
  * The Moon's lit region as a single SVG path.
  *
- * Almanac reports `fraction` and `waxing` but no limb position angle, so the
- * disc uses the conventional upright terminator — lit on the right while
- * waxing. The page does not invent an orientation the library does not compute.
+ * `moonPath` draws the upright calendar disc, lit on the right while waxing.
+ * To draw the Moon as it sits in the observer's sky, draw it waxing and
+ * rotate it by `moonTiltDeg`.
  */
+
+/**
+ * The SVG rotation, in degrees, that turns a disc drawn with
+ * `moonPath(…, waxing = true)` (lit limb pointing right) so its lit limb
+ * points where Almanac's `moonOrientation` puts it.
+ *
+ * Bright limb minus parallactic angle is the lit limb's direction from the
+ * zenith, counterclockwise as the observer sees the sky. SVG rotates
+ * clockwise in a y-down viewBox, so the angle is negated; the extra −90°
+ * accounts for the disc starting lit on the right rather than at the top.
+ */
+export function moonTiltDeg(o: MoonOrientation): number {
+  return -(o.brightLimbAngleDeg - o.parallacticAngleDeg) - 90;
+}
 
 /**
  * The terminator is a half-ellipse sharing the limb's vertical axis. Its

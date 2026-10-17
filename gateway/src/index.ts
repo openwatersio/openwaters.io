@@ -7,7 +7,13 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
 
-    if (pathname === "/tides" || pathname.startsWith("/tides/")) {
+    // The TIDES worker serves both slackwater route groups: tides and currents.
+    if (
+      pathname === "/tides" ||
+      pathname.startsWith("/tides/") ||
+      pathname === "/currents" ||
+      pathname.startsWith("/currents/")
+    ) {
       return env.TIDES.fetch(request);
     }
 

@@ -1,7 +1,11 @@
 import { Component, type ReactNode, useMemo } from "react";
-import { NeapsProvider, TideStation, createQueryClient } from "@neaps/react";
+import {
+  SlackwaterProvider,
+  TideStation,
+  createQueryClient,
+} from "@slackwater/react";
 import { hydrate, type DehydratedState } from "@tanstack/react-query";
-import "@neaps/react/styles.css";
+import "@slackwater/react/styles.css";
 import { API_HOST } from "../../utils/constants";
 
 class ErrorBoundary extends Component<
@@ -41,9 +45,9 @@ export function TideStationIsland({ id, dehydratedState }: Props) {
 
   return (
     <ErrorBoundary>
-      <NeapsProvider baseUrl={API_HOST} queryClient={queryClient}>
+      <SlackwaterProvider baseUrl={API_HOST} queryClient={queryClient}>
         <TideStation id={id} />
-      </NeapsProvider>
+      </SlackwaterProvider>
     </ErrorBoundary>
   );
 }

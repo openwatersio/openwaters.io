@@ -1,6 +1,6 @@
 # openwaters.io
 
-The source for [openwaters.io](https://openwaters.io), including the Astro website, tides API, and API gateway. All three run on Cloudflare Workers.
+The source for [openwaters.io](https://openwaters.io), including the Astro website, tides and currents API, and API gateway. All three run on Cloudflare Workers.
 
 ## Development
 

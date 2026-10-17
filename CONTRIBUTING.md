@@ -5,8 +5,8 @@ This repository contains the Open Waters website and the workers behind its publ
 ## Layout
 
 - `website/` contains the Astro site and its React islands. Astro pages live in `website/src/pages/`, shared components in `website/src/components/`, and global styles in `website/src/styles/global.css`.
-- `api/` contains the Express tides API and its Cloudflare Worker entry point.
-- `gateway/` owns `api.openwaters.io` and routes `/tides` and `/bathymetry` requests to service-bound workers.
+- `api/` contains the Express tides and currents API and its Cloudflare Worker entry point.
+- `gateway/` owns `api.openwaters.io` and routes `/tides`, `/currents`, and `/bathymetry` requests to service-bound workers.
 
 ## Setup and development
 
@@ -39,7 +39,7 @@ Use `.astro` components for static content and layout. Use React only for intera
 
 Use Tailwind classes and the semantic tokens defined in `website/src/styles/global.css`. The site has no light mode, so do not add `dark:` variants. Use `cn()` when classes are conditional or supplied by callers. Avoid inline styles.
 
-Landing pages for Open Waters libraries live in this repository. A library that owns a section uses that section's index, such as `aiscast` at `website/src/pages/ais/index.astro` and `almanac` at `website/src/pages/sky/index.astro`. Other libraries use a page within their section, such as `neaps` at `website/src/pages/tides/neaps.astro`.
+Landing pages for Open Waters libraries live in this repository. A library that owns a section uses that section's index, such as `aiscast` at `website/src/pages/ais/index.astro` and `almanac` at `website/src/pages/sky/index.astro`. Other libraries use a page within their section, such as `slackwater` at `website/src/pages/tides/slackwater.astro`.
 
 The AIS service is "Open Waters AIS" in prose, titles, and metadata. `aiscast` names the open-source server, its repository, CLI, and packages; use it only when the text is about the software. "AIS" remains the navigation label and section name, and the hostname remains `ais.openwaters.io`.
 
@@ -53,7 +53,7 @@ Before adding an Astro integration, check its Astro 7 peer dependency and licens
 
 ## Deployment
 
-Cloudflare Workers Builds creates preview versions for pull requests and deploys `main`. Each worker has its own Wrangler configuration:
+Cloudflare Workers Builds creates preview versions for pull requests and deploys `main` for all three workers, each when its own directory changes. Each worker has its own Wrangler configuration:
 
 - `website/wrangler.jsonc` deploys `openwaters-io` for `openwaters.io` and `www.openwaters.io`.
 - `api/wrangler.jsonc` deploys `openwaters-api` without a public route. The gateway reaches it through a service binding.
