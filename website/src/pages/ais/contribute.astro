@@ -1,243 +1,477 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
-import Card from "../../components/ui/Card.astro";
 import CodeBlock from "../../components/ui/CodeBlock.astro";
 import Icon from "../../components/Icon.astro";
 import AisNav from "../../components/ais/AisNav.astro";
 import { CONTACT_EMAIL } from "../../utils/constants";
 
-const SERVER = "ais.openwaters.io";
-const UDP_HOST = `udp.${SERVER}`;
 const REPO = "https://github.com/openwatersio/aiscast";
 const AGREEMENT = `${REPO}/blob/main/docs/contributor-agreement.md`;
-const TOKEN_PAGE = "/ais/token/";
-const LIMITS = "/api/ais/#limits";
-
-const setups = [
+const methods = [
   {
+    id: "ais-catcher",
     icon: "mdi:radio-tower",
     title: "AIS-catcher",
-    text: "Realtime over MQTT, authenticated, works behind any NAT. Get a token in your browser, add one flag.",
-    code: `AIS-catcher -Q wssmqtt://x:<token>@${SERVER}:443/v1/stream MSGFORMAT NMEA`,
-    links: [
-      { label: "Get a token", href: TOKEN_PAGE },
-      {
-        label: "AIS-catcher",
-        href: "https://github.com/jvde-github/AIS-catcher",
-      },
-    ],
+    text: "Add an authenticated output to your existing receiver.",
   },
   {
+    id: "signal-k",
     icon: "mdi:sail-boat",
     title: "Signal K",
-    text: "Both directions: shares what your receiver hears and your own position, each behind its own switch, and shows AIS traffic when it hears none, on your chartplotter too. Enable it in Plugin Config after installing. No account; it creates its own token. Not for safety of navigation.",
-    code: "cd ~/.signalk && npm install signalk-aiscast",
-    links: [
-      { label: "AIS for Signal K", href: "/ais/signalk/" },
-      { label: "npm", href: "https://www.npmjs.com/package/signalk-aiscast" },
-      { label: "README", href: `${REPO}/tree/main/signalk-plugin#readme` },
-    ],
+    text: "Install a plugin. It handles the connection and token.",
   },
   {
+    id: "docker",
     icon: "mdi:docker",
     title: "docker-shipfeeder",
-    text: "Already sending to other networks from a container? Add one more UDP destination.",
-    code: `host ${UDP_HOST}, port 10110`,
-    links: [
-      {
-        label: "docker-shipfeeder",
-        href: "https://github.com/sdr-enthusiasts/docker-shipfeeder",
-      },
-    ],
+    text: "Enable the built-in Open Waters feed.",
   },
   {
+    id: "udp",
     icon: "mdi:lan-connect",
-    title: "Any NMEA forwarder",
-    text: "Plain !AIVDM sentences over UDP, no token. Your station is a keyed hash of your address, never the address itself, or your vessel's MMSI once it sends its own position.",
-    code: `AIS-catcher -u ${UDP_HOST} 10110`,
-    links: [
-      {
-        label: "ais-forwarder",
-        href: "https://github.com/hkapanen/ais-forwarder",
-      },
-    ],
-  },
-];
-
-// Rendered with set:html; static strings, no user input.
-const steps = [
-  "Choose your receiver software or forwarding method above.",
-  `Read the <a href="${AGREEMENT}">contributor agreement</a>, then get a token. UDP needs none to send, so bind the address on the <a href="/ais/token/">token page</a> from the network your receiver sends from, and the station counts toward your token.`,
-  "Add the destination to your receiver's configuration.",
-  "Confirm reception on your station page.",
-];
-
-const questions = [
-  {
-    q: "What do I get for contributing?",
-    a: `The whole network back at contributor limits, free, including commercial use within those limits, plus a station page that takes your token's name. Once your station has delivered 1,000 messages in 24 hours that the network had not already heard, your token moves to the contributor tier on its own, and stays there as long as you keep contributing. UDP stations earn credit once the receiver's address is bound to a token, created from that address on the token page.`,
-    link: { label: "Contributor limits", href: LIMITS },
-  },
-  {
-    q: "Can I keep contributing elsewhere?",
-    a: "Yes, and please do. AIS-catcher and docker-shipfeeder fan out to as many destinations as you configure; this is one more line in the config.",
-  },
-  {
-    q: "Does another receiver help in an area already covered?",
-    a: "Usually yes: a second station means fresher positions, fewer gaps behind buildings and headlands, and a source that keeps working when the other one drops. Your station page shows what yours adds.",
+    title: "Another NMEA forwarder",
+    text: "Send your receiver’s NMEA sentences over UDP.",
   },
 ];
 ---
 
 <MainLayout
-  title="Contribute to Open Waters AIS"
+  title="Connect your AIS receiver to Open Waters"
   image="/og/ais.png"
-  description="Help others see what your AIS receiver hears. Add one output line to the software you already run and get the whole network back."
+  description="Connect AIS-catcher, Signal K, docker-shipfeeder, or a NMEA forwarder to Open Waters. Check your station is sending and learn how contributor access works."
 >
   <section class="py-12 lg:py-16">
     <Container>
       <AisNav class="mb-8" />
-      <div class="max-w-2xl">
-        <h1 class="mb-5">Help others see what your receiver hears.</h1>
+      <div class="max-w-3xl">
+        <h1 class="mb-5">Share your AIS receiver with Open Waters.</h1>
         <p class="text-lead mb-5">
-          Whatever your antenna picks up joins the network, deduplicated against
-          every other station, and turns up in what other people track, monitor,
-          and analyze.
+          Add the vessels you hear to aiscast, the Open Waters AIS network. Keep
+          your existing feeds, help fill gaps in coverage, and earn higher
+          limits for reading the network back.
         </p>
-        <p class="text-fg-muted mb-8 text-lg">
-          You get the whole feed back: every source, every station, on one
-          WebSocket. Add one more output line to the software you already run
-          and keep contributing everywhere else you contribute today.
+        <p class="text-fg-muted">
+          This guide starts with a receiver that already hears AIS traffic.
+          Choose your software, connect it, then check that your station is
+          sending.
         </p>
-        <a href="#connect" class="btn btn-primary">
-          Connect your receiver
-          <Icon name="mdi:arrow-down" class="size-4" />
-        </a>
       </div>
-    </Container>
-  </section>
-
-  <section id="connect" class="scroll-mt-24 py-12 lg:py-16">
-    <Container>
-      <div
-        class="grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
+      <nav
+        aria-label="Setup steps"
+        class="border-line mt-8 flex flex-wrap gap-x-6 gap-y-3 border-y py-4 text-sm"
       >
-        <div>
-          <h2 class="mb-5">Connect your receiver.</h2>
-          <p class="text-fg-muted mb-8 text-lg">
-            Every path is one line. Pick the one that matches what you already
-            run.
-          </p>
-          <ol class="text-fg-muted list-decimal space-y-3 pl-5">
-            {steps.map((s) => <li set:html={s} />)}
-          </ol>
-          <p class="text-fg-faint mt-8 text-sm">
-            Your station gets a page under <a href="/ais/stations"
-              >/ais/stations</a
-            > as soon as it is heard. It shows vessels heard, coverage extent, and
-            message counts; <code class="text-fg-muted"
-              >GET /v1/stations/&#123;id&#125;</code
-            > returns the same numbers. Named stations with higher limits, and anything
-            else: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
-          </p>
-        </div>
-        <div class="grid gap-5">
-          {
-            setups.map((c) => (
-              <Card class="flex min-w-0 flex-col gap-3">
-                <div class="flex items-center gap-3">
-                  <Icon name={c.icon} class="text-accent size-6" />
-                  <h3 class="text-lg font-semibold tracking-normal">
-                    {c.title}
-                  </h3>
-                </div>
-                <p class="text-fg-muted text-sm">{c.text}</p>
-                <CodeBlock class="text-xs" code={c.code} />
-                <div class="mt-auto flex flex-wrap gap-4 text-sm font-medium">
-                  {c.links.map((l) => (
-                    // Only the off-site links open a new tab; this list also
-                    // holds same-site pages, which should navigate in place.
-                    <a
-                      href={l.href}
-                      {...(l.href.startsWith("http")
-                        ? { target: "_blank", rel: "noopener noreferrer" }
-                        : {})}
-                    >
-                      {l.label}
-                    </a>
-                  ))}
-                </div>
-              </Card>
-            ))
-          }
-        </div>
-      </div>
+        <a href="#connect">1. Connect your receiver</a>
+        <a href="#check">2. Check reception</a>
+        <a href="#access">3. Use contributor access</a>
+      </nav>
     </Container>
   </section>
 
-  <section class="py-12 lg:py-16">
+  <section id="connect" class="scroll-mt-24 pb-12 lg:pb-16">
     <Container>
-      <div class="max-w-2xl">
-        <h2 class="mb-5">What happens to your contribution.</h2>
-        <p class="text-fg-muted mb-4 text-lg">
-          Volunteer receptions are shared under CC0 and the volunteer aggregate
-          under ODbL, so others can reuse and build on them. Data shared under
-          those licenses stays reusable under them.
-        </p>
-        <p class="text-fg-faint text-sm">
-          The <a href={AGREEMENT}>contributor agreement</a> is written in plain language
-          and changes only by public pull request. Partner data and the <code
-            class="text-fg-muted">aiscast</code
-          > server code carry their own licenses; the <a href="/ais/#license"
-            >licensing table</a
-          > keeps them apart.
-        </p>
+      <h2 class="mb-5">1. What are you running?</h2>
+      <p class="text-fg-muted mb-6 max-w-2xl">
+        Follow one of these paths. You only need a browser-generated token for
+        AIS-catcher, or to name and claim credit for a UDP station.
+      </p>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          methods.map((method) => (
+            <a
+              href={`#${method.id}`}
+              class="border-line hover:border-accent rounded-xl border p-5"
+            >
+              <Icon name={method.icon} class="text-accent mb-3 size-6" />
+              <span class="mb-2 block font-semibold">{method.title}</span>
+              <span class="text-fg-muted block text-sm">{method.text}</span>
+            </a>
+          ))
+        }
+      </div>
+      <p class="text-fg-muted mt-6 max-w-3xl text-sm">
+        Before sending, read the <a href={AGREEMENT}>contributor agreement</a>.
+        Share your own receiver’s traffic, rather than relaying another
+        network’s feed. Your receptions become public open data. If you forward
+        your own vessel’s position, that position becomes public too.
+      </p>
+
+      <div class="mt-12 space-y-12 lg:mt-16 lg:space-y-16">
+        <article id="ais-catcher" class="card scroll-mt-24 lg:p-8">
+          <div
+            class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12"
+          >
+            <div>
+              <div class="mb-3 flex items-center gap-3">
+                <Icon
+                  name="mdi:radio-tower"
+                  class="text-accent size-7 shrink-0"
+                />
+                <h3>AIS-catcher</h3>
+              </div>
+              <p class="text-fg-muted">
+                Use MQTT to send each message as your receiver decodes it.
+              </p>
+            </div>
+            <div class="min-w-0 space-y-5">
+              <ol class="text-fg-muted list-decimal space-y-3 pl-5">
+                <li>
+                  <a
+                    href="/ais/token/"
+                    target="_blank"
+                    rel="noopener noreferrer">Generate a token</a
+                  >, optionally name your station, and copy the token. Leave
+                  network-address binding unchecked for this method.
+                </li>
+                <li>
+                  The example below shows AIS-catcher with an Open Waters
+                  output. Replace <code>&lt;token&gt;</code> with your token. If you
+                  already run AIS-catcher, append the options starting at <code
+                    >-Q</code
+                  >
+                  to your existing command, keeping your receiver settings and other
+                  outputs.
+                </li>
+              </ol>
+              <CodeBlock
+                code="AIS-catcher -Q wssmqtt://x:<token>@ais.openwaters.io:443/v1/stream MSGFORMAT NMEA"
+              />
+              <p class="text-fg-muted">
+                Save the updated startup command and restart AIS-catcher or its
+                service. Use your existing receiver process; you do not need a
+                second copy competing for the same device.
+              </p>
+              <p class="text-sm">
+                <a href="/ais/token/" target="_blank" rel="noopener noreferrer"
+                  >The token page</a
+                > also gives you a complete command with your token filled in. For
+                an HTTP alternative, use its HTTP output example. <a
+                  href="#check">Next: check reception.</a
+                >
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article id="signal-k" class="card scroll-mt-24 lg:p-8">
+          <div
+            class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12"
+          >
+            <div>
+              <div class="mb-3 flex items-center gap-3">
+                <Icon
+                  name="mdi:sail-boat"
+                  class="text-accent size-7 shrink-0"
+                />
+                <h3>Signal K</h3>
+              </div>
+              <p class="text-fg-muted">
+                The plugin creates its own token. There is nothing to generate
+                or paste here.
+              </p>
+            </div>
+            <div class="space-y-5">
+              <ol class="text-fg-muted list-decimal space-y-3 pl-5">
+                <li>
+                  In the Signal K App Store, install <code>signalk-aiscast</code
+                  >. Restart Signal K if prompted.
+                </li>
+                <li>
+                  Open Plugin Config and enable the plugin. Keep <strong
+                    >Share → AIS targets I receive</strong
+                  > enabled to contribute your receiver’s traffic.
+                </li>
+                <li>
+                  Review the separate own-position switches before saving.
+                  Transponder sharing and fallback self-reported position are on
+                  by default; turn them off if you do not want to publish your
+                  own position.
+                </li>
+                <li>
+                  Save and check the plugin’s status line for the connection
+                  state, send rate, and queue depth.
+                </li>
+              </ol>
+              <p class="text-fg-muted">
+                The plugin can also show network traffic in Signal K and on
+                connected chartplotters. This internet feed is not for safety of
+                navigation.
+              </p>
+              <p class="text-sm">
+                <a href="/ais/signalk/">Signal K guide</a> · <a
+                  href={`${REPO}/tree/main/signalk-plugin#readme`}
+                  >Plugin settings and troubleshooting</a
+                > · <a href="#check">Next: check reception</a>
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article id="docker" class="card scroll-mt-24 lg:p-8">
+          <div
+            class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12"
+          >
+            <div>
+              <div class="mb-3 flex items-center gap-3">
+                <Icon name="mdi:docker" class="text-accent size-7 shrink-0" />
+                <h3>docker-shipfeeder</h3>
+              </div>
+              <p class="text-fg-muted">
+                Open Waters is built in. The container creates its own station
+                token and feeds in real time over MQTT.
+              </p>
+            </div>
+            <div class="min-w-0 space-y-5">
+              <ol class="text-fg-muted list-decimal space-y-3 pl-5">
+                <li>
+                  Update to the latest docker-shipfeeder image. If your Compose
+                  file pins an older tag, update it to a version that includes
+                  Open Waters support, or use the <code>latest</code> tag.
+                </li>
+                <li>
+                  Add the setting below to your shipfeeder service’s <code
+                    >environment</code
+                  > list. Keep your other feeds enabled.
+                </li>
+              </ol>
+              <CodeBlock code="- OPENWATERS_SHAREDATA=true" />
+              <p class="text-fg-muted">
+                If you manage settings through an <code>.env</code> file, set <code
+                  >OPENWATERS_SHAREDATA=true</code
+                > there and add <code class="break-all"
+                  >OPENWATERS_SHAREDATA=$&#123;OPENWATERS_SHAREDATA&#125;</code
+                > to the service’s environment list. Then pull the updated image and
+                recreate the container from your Compose directory:
+              </p>
+              <CodeBlock
+                code={`docker compose pull
+docker compose up -d`}
+              />
+              <p class="text-fg-muted">
+                Keep <code>/data</code> on a persistent volume. The container saves
+                its station key and token in <code>/data/openwater-creds</code> and
+                prints the token in the log on first use. Save it privately if you
+                want to reuse this identity in another deployment. No browser-generated
+                token or UDP address binding is needed for the normal MQTT path.
+              </p>
+              <p class="text-fg-muted">
+                Already have a station token? Set <code
+                  >OPENWATERS_FEEDER_KEY</code
+                > to that token to reuse it; an explicit token takes precedence. If
+                you previously added Open Waters to <code>UDP_FEEDS</code>,
+                remove that destination when enabling the built-in feed so you
+                send only once.
+              </p>
+              <p class="text-fg-muted">
+                Check the container logs for Open Waters messages. If it cannot
+                obtain a token at startup, it warns and falls back to anonymous
+                UDP. That fallback can send data, but needs <a
+                  href="#udp-credit">UDP address binding</a
+                > to earn contributor credit.
+              </p>
+              <p class="text-sm">
+                <a
+                  href="https://github.com/sdr-enthusiasts/docker-shipfeeder#feeding-ais-aggregator-services"
+                  >Upstream configuration guide</a
+                > · <a href="#check">Next: check reception</a>
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article id="udp" class="card scroll-mt-24 lg:p-8">
+          <div
+            class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12"
+          >
+            <div>
+              <div class="mb-3 flex items-center gap-3">
+                <Icon
+                  name="mdi:lan-connect"
+                  class="text-accent size-7 shrink-0"
+                />
+                <h3>Another NMEA forwarder</h3>
+              </div>
+              <p class="text-fg-muted">
+                Use this when your receiver or software can send NMEA sentences
+                over UDP.
+              </p>
+            </div>
+            <div class="space-y-5">
+              <dl class="text-base">
+                <dt>Protocol</dt><dd>UDP</dd>
+                <dt>Host</dt><dd><code>udp.ais.openwaters.io</code></dd>
+                <dt>Port</dt><dd><code>10110</code></dd>
+                <dt>Format</dt><dd>
+                  Raw AIS NMEA sentences, such as <code>!AIVDM</code>
+                </dd>
+                <dt>Token</dt><dd>Not required to send</dd>
+              </dl>
+              <p class="text-fg-muted">
+                Add this as an output destination in your forwarder, save, and
+                apply or restart it. Keep your existing destinations. If you do
+                not want your own position published, exclude own-vessel <code
+                  >!AIVDO</code
+                > sentences.
+              </p>
+              <p class="text-sm"><a href="#check">Next: check reception.</a></p>
+            </div>
+          </div>
+        </article>
+
+        <aside
+          id="udp-credit"
+          class="bg-well scroll-mt-24 rounded-xl p-6 lg:p-8"
+        >
+          <h3 class="mb-4 text-xl">Claim your UDP station</h3>
+          <div class="text-fg-muted max-w-3xl space-y-4">
+            <p>
+              From the same internet connection your receiver sends through,
+              open the <a
+                href="/ais/token/"
+                target="_blank"
+                rel="noopener noreferrer">token page</a
+              >. Enter an optional public station name, accept the agreement,
+              and check <strong>Also bind this network address</strong> before generating
+              the token.
+            </p>
+            <p>
+              The binding lets UDP traffic from that address count toward the
+              token’s contributor access. It also restricts that token to that
+              address. A phone on mobile data or a different VPN connection will
+              bind the wrong address.
+            </p>
+            <p>
+              If your public address changes, return from the receiver’s network
+              and regenerate with binding enabled. Token-authenticated
+              AIS-catcher is a better fit when you need a stable station
+              identity across address changes.
+            </p>
+          </div>
+        </aside>
       </div>
     </Container>
   </section>
 
-  <section class="py-12 lg:py-16">
+  <section id="check" class="border-line scroll-mt-24 border-t py-12 lg:py-16">
     <Container>
       <div class="max-w-3xl">
-        <h2 class="mb-8">Questions</h2>
-        <ul class="space-y-6">
-          {
-            questions.map((item) => (
-              <li>
-                <h3 class="text-fg-strong mb-1 text-lg font-semibold tracking-normal">
-                  {item.q}
-                </h3>
-                <p class="text-fg-muted">
-                  {item.a}{" "}
-                  {item.link && (
-                    <a href={item.link.href} class="ml-1 font-medium">
-                      {item.link.label} →
-                    </a>
-                  )}
-                </p>
-              </li>
-            ))
-          }
+        <h2 class="mb-6">2. Check that we’re receiving your data.</h2>
+        <ol class="text-fg-muted list-decimal space-y-4 pl-5">
+          <li>
+            <strong>Check local reception first.</strong> Your receiver should be
+            decoding nearby vessels. A working connection with no local AIS traffic
+            has nothing to send.
+          </li>
+          <li>
+            <strong>Find your station.</strong> For token-authenticated AIS-catcher,
+            return to the token page and follow the station link beneath your token.
+            For Signal K, use the key prefix in Plugin Config to help identify your
+            station in the <a href="/ais/stations">station list</a>. For UDP,
+            look for your bound station name; unclaimed stations use an
+            anonymous identifier, or your MMSI if you send your own position.
+          </li>
+          <li>
+            <strong>Look for fresh activity.</strong> As your receiver hears vessels,
+            check your station page’s last-heard time, message counts, and vessels
+            heard. A recent reception is the success check; you do not need to wait
+            for contributor access.
+          </li>
+        </ol>
+        <h3 class="mt-10 mb-5 text-xl">Nothing showing up?</h3>
+        <ul class="text-fg-muted list-disc space-y-3 pl-5">
+          <li>
+            <strong>No traffic locally:</strong> check the receiver and antenna before
+            changing network settings.
+          </li>
+          <li>
+            <strong>AIS-catcher:</strong> check startup logs for connection or authentication
+            errors. Verify that you replaced the whole <code>&lt;token&gt;</code
+            > placeholder and restarted the process with the new output enabled.
+          </li>
+          <li>
+            <strong>Signal K:</strong> check that sharing is enabled and inspect the
+            plugin’s link state and queue. A growing queue means receptions are waiting
+            to be delivered.
+          </li>
+          <li>
+            <strong>docker-shipfeeder:</strong> check that the updated container has
+            Open Waters enabled. Look in its logs for token errors or a warning about
+            falling back to UDP; confirm that <code>/data</code> is writable and persists
+            across container updates.
+          </li>
+          <li>
+            <strong>UDP:</strong> check the hostname, port, and outbound UDP rules.
+            If your station sends but your token gets no credit, check that you bound
+            the receiver’s public address.
+          </li>
         </ul>
+        <p class="text-fg-muted mt-6">
+          Still stuck? <a href={`mailto:${CONTACT_EMAIL}`}>Contact us</a> with your
+          software, public station name or ID, and the error message. Keep your token
+          out of messages and screenshots.
+        </p>
       </div>
     </Container>
   </section>
 
-  <section class="pb-24">
+  <section id="access" class="border-line scroll-mt-24 border-t py-12 lg:py-16">
     <Container>
-      <div
-        class="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-12"
-      >
-        <div>
-          <h2 class="mb-2">One more output line.</h2>
-          <p class="text-fg-muted text-lg">
-            Then start reading the network you just joined.
+      <div class="max-w-3xl space-y-5">
+        <h2>3. Use your contributor access.</h2>
+        <p class="text-fg-muted">
+          Once your station delivers 1,000 messages in a rolling 24 hours that
+          the network had not already heard, your token automatically gets
+          contributor limits: five streams, up to 200 messages a second per
+          stream, any subscribed area, and the raw NMEA feed. UDP traffic must
+          be bound to your token to count.
+        </p>
+        <p class="text-fg-muted">
+          Use the same token to <a href="/api/ais/">read the API</a>.
+          Contributor access follows your recent contribution; it lapses as
+          qualifying traffic falls out of the 24-hour window and returns when
+          you qualify again. <a href="/api/ais/#limits"
+            >Full limits and access details</a
+          >.
+        </p>
+        <p class="text-fg-muted">
+          Already feeding another network? Keep doing so. Open Waters is another
+          destination, and overlapping coverage helps keep the network useful
+          when a receiver goes offline. The contributor threshold counts new
+          messages, so reception alone does not guarantee the higher tier.
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <section class="pb-20 lg:pb-24">
+    <Container>
+      <div class="border-line border-t pt-8">
+        <div class="max-w-3xl space-y-4">
+          <h2>Your contribution stays open.</h2>
+          <p class="text-fg-muted">
+            Your individual receptions are dedicated to the public domain under <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a
+            >. You can keep using and sharing them, and so can everyone else.
+            Open Waters gets no exclusive rights.
           </p>
-        </div>
-        <div class="flex shrink-0 flex-wrap gap-3">
-          <a href="#connect" class="btn btn-primary">Connect your receiver</a>
-          <a href="/api/ais/" class="btn btn-secondary">Read the API docs</a>
+          <p class="text-fg-muted">
+            The combined volunteer database is published under <a
+              href="https://opendatacommons.org/licenses/odbl/summary/">ODbL</a
+            >: it can be copied, reused, and redistributed, with attribution and
+            share-alike obligations for publicly used adapted databases. Partner
+            feeds keep their own licenses.
+          </p>
+          <p class="text-fg-muted">
+            You can stop sending at any time; data already released stays open.
+            Federation lets independently run nodes exchange data. You can read
+            and save the live feed within your token’s limits today; public bulk
+            archive downloads are coming soon.
+          </p>
+          <p>
+            <a href="/ais/#contribute">How the open network works</a> · <a
+              href={AGREEMENT}>Read the contributor agreement</a
+            >
+          </p>
         </div>
       </div>
     </Container>

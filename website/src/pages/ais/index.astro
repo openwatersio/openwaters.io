@@ -1,8 +1,6 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
-import Card from "../../components/ui/Card.astro";
-import CodeBlock from "../../components/ui/CodeBlock.astro";
 import Icon from "../../components/Icon.astro";
 import AisMap from "../../components/ais/AisMap.astro";
 import AisStats from "../../components/ais/AisStats.astro";
@@ -11,7 +9,6 @@ import { CONTACT_EMAIL } from "../../utils/constants";
 import { highlight, SNIPPET_LANGS } from "../../utils/shiki";
 
 const SERVER = "ais.openwaters.io";
-const UDP_HOST = `udp.${SERVER}`;
 const REPO = "https://github.com/openwatersio/aiscast";
 const TOKEN_PAGE = "/ais/token/";
 
@@ -141,7 +138,7 @@ const tiers = [
   {
     name: "Contributor",
     text: "Awarded to a station that contributes data.",
-    cta: { label: "Start contributing", href: "#contribute" },
+    cta: { label: "Start contributing", href: "/ais/contribute/" },
   },
   {
     name: "Commercial",
@@ -161,57 +158,6 @@ const rows: [string, ...(boolean | string)[]][] = [
   ["Vessels followed by MMSI", "10", "50", "200", "As agreed"],
   ["Sending data", false, true, true, true],
   ["Raw NMEA feed", false, false, true, true],
-];
-
-const contribute = [
-  {
-    icon: "mdi:radio-tower",
-    title: "AIS-catcher",
-    text: "Realtime over MQTT, authenticated, works behind any NAT. Get a token in your browser, add one flag.",
-    code: `AIS-catcher -Q wssmqtt://x:<token>@${SERVER}:443/v1/stream MSGFORMAT NMEA`,
-    links: [
-      { label: "Get a token", href: TOKEN_PAGE },
-      {
-        label: "AIS-catcher",
-        href: "https://github.com/jvde-github/AIS-catcher",
-      },
-    ],
-  },
-  {
-    icon: "mdi:sail-boat",
-    title: "Signal K",
-    text: "One plugin, both directions: shares what your receiver hears and shows AIS traffic when it hears none, on your chartplotter too. No account; it creates its own token.",
-    code: "npm install signalk-aiscast",
-    links: [
-      { label: "AIS for Signal K", href: "/ais/signalk/" },
-      { label: "npm", href: "https://www.npmjs.com/package/signalk-aiscast" },
-      { label: "README", href: `${REPO}/tree/main/signalk-plugin#readme` },
-    ],
-  },
-  {
-    icon: "mdi:docker",
-    title: "docker-shipfeeder",
-    text: "Already sending to the aggregators from a container? Add one more UDP destination.",
-    code: `host ${UDP_HOST}, port 10110`,
-    links: [
-      {
-        label: "docker-shipfeeder",
-        href: "https://github.com/sdr-enthusiasts/docker-shipfeeder",
-      },
-    ],
-  },
-  {
-    icon: "mdi:lan-connect",
-    title: "Any NMEA forwarder",
-    text: "Plain !AIVDM sentences over UDP, no token. Your station is a keyed hash of your address, never the address itself.",
-    code: `AIS-catcher -u ${UDP_HOST} 10110`,
-    links: [
-      {
-        label: "ais-forwarder",
-        href: "https://github.com/hkapanen/ais-forwarder",
-      },
-    ],
-  },
 ];
 
 // Live numbers come from /v1/stats; `ids` are the `source` prefixes each row sums.
@@ -556,61 +502,142 @@ const licenses = [
     <Container>
       <SectionDivider index={3} total={4} label="Contribute" id="contribute" />
       <div
-        class="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
+        class="mt-12 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
       >
         <div>
-          <h2 class="mb-5">Put your receiver on the map.</h2>
-          <p class="text-fg-muted mb-6 text-lg">
-            Whatever your antenna hears is re-served to everyone, and
-            deduplicated against every other station. Contribute 1,000 messages
-            a day and your token moves to the Contributor tier on its own.
+          <h2 class="mb-5">
+            A network you can contribute to. Data you can take with you.
+          </h2>
+          <p class="text-fg-muted mb-5 text-lg">
+            Your receiver fills in part of the coast. Other receivers fill in
+            theirs. aiscast, the Open Waters AIS network, brings those
+            receptions together with public feeds so everyone can see more.
           </p>
-          <p class="mb-6 font-medium">
-            <a href="/ais/contribute/">Step-by-step setup guide →</a>
+          <p class="text-fg-muted mb-8">
+            Share what you hear without giving Open Waters exclusive control.
+            Keep feeding other networks, keep a copy, and build on the data
+            yourself.
           </p>
-          <p class="text-fg-faint text-sm">
-            Watch your station arrive at <code class="text-fg-muted"
-              >GET /v1/stations</code
-            >. Named stations with higher limits, and anything else: <a
-              href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a
-            >. Developers: <a
-              href={`${REPO}/blob/main/CONTRIBUTING.md`}
-              target="_blank"
-              rel="noopener noreferrer">CONTRIBUTING.md</a
-            >.
+          <a href="/ais/contribute/" class="btn btn-primary"
+            >Connect your receiver <Icon
+              name="mdi:arrow-right"
+              class="size-4"
+            /></a
+          >
+        </div>
+        <figure
+          aria-label="How AIS data moves through Open Waters"
+          class="bg-well min-w-0 rounded-2xl p-6 lg:p-8"
+        >
+          <div
+            class="grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr_auto_1fr]"
+          >
+            <div class="space-y-3">
+              <div class="border-line-strong rounded-lg border p-3">
+                <Icon name="mdi:radio-tower" class="text-accent mb-2 size-6" />
+                <p class="font-semibold">Your receiver</p>
+                <p class="text-fg-muted text-sm">And other volunteers</p>
+              </div>
+              <div class="border-line-strong rounded-lg border p-3">
+                <p class="font-semibold">Public feeds</p>
+                <p class="text-fg-muted text-sm">Each with its own license</p>
+              </div>
+            </div>
+            <span
+              aria-hidden="true"
+              class="text-accent justify-self-center text-2xl"
+              ><span class="sm:hidden">↓</span><span class="hidden sm:inline"
+                >→</span
+              ></span
+            >
+            <div class="border-accent rounded-lg border p-3">
+              <Icon name="mdi:vector-combine" class="text-accent mb-2 size-6" />
+              <p class="font-semibold">Open Waters</p>
+              <p class="text-fg-muted mt-1 text-sm">
+                Combine receptions. Remove duplicates. Keep the source.
+              </p>
+            </div>
+            <span
+              aria-hidden="true"
+              class="text-accent justify-self-center text-2xl"
+              ><span class="sm:hidden">↓</span><span class="hidden sm:inline"
+                >→</span
+              ></span
+            >
+            <div class="border-line-strong rounded-lg border p-3">
+              <Icon name="mdi:map-outline" class="text-accent mb-2 size-6" />
+              <p class="font-semibold">You and everyone else</p>
+              <p class="text-fg-muted mt-1 text-sm">
+                Live map, apps, research, and your own saved feed
+              </p>
+            </div>
+          </div>
+          <div class="border-line-strong mt-6 border-t pt-5">
+            <p class="mb-3 text-sm font-semibold">
+              Federation between independent nodes
+            </p>
+            <div
+              class="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2 text-center text-sm"
+            >
+              <div class="border-line-strong rounded-lg border p-2">
+                Community node
+              </div>
+              <span aria-hidden="true" class="text-accent">↔</span>
+              <div class="border-line-strong rounded-lg border p-2">
+                Open Waters
+              </div>
+              <span aria-hidden="true" class="text-accent">↔</span>
+              <div class="border-line-strong rounded-lg border p-2">
+                Another node
+              </div>
+            </div>
+          </div>
+          <figcaption class="text-fg-muted mt-4 text-sm">
+            Receivers and public feeds send to Open Waters, which serves the
+            live data. Independently operated nodes exchange data through
+            federation while preserving its source and license.
+          </figcaption>
+        </figure>
+      </div>
+      <div class="border-line mt-12 grid gap-8 border-t pt-8 md:grid-cols-3">
+        <div>
+          <h3 class="mb-3 text-xl">Your receptions: CC0</h3>
+          <p class="text-fg-muted">
+            Individual volunteer receptions enter the public domain under <a
+              href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a
+            >. You can copy, reuse, and share them, including commercially. We
+            have the same rights as everyone else.
           </p>
         </div>
-        <div class="grid gap-5">
-          {
-            contribute.map((c) => (
-              <Card class="flex min-w-0 flex-col gap-3">
-                <div class="flex items-center gap-3">
-                  <Icon name={c.icon} class="text-accent size-6" />
-                  <h3 class="text-lg font-semibold tracking-normal">
-                    {c.title}
-                  </h3>
-                </div>
-                <p class="text-fg-muted text-sm">{c.text}</p>
-                <CodeBlock class="text-xs" code={c.code} />
-                <div class="mt-auto flex flex-wrap gap-4 text-sm font-medium">
-                  {c.links.map((l) => (
-                    // Only the off-site links open a new tab; this list also holds
-                    // same-site pages now, which should navigate in place.
-                    <a
-                      href={l.href}
-                      {...(l.href.startsWith("http")
-                        ? { target: "_blank", rel: "noopener noreferrer" }
-                        : {})}
-                    >
-                      {l.label}
-                    </a>
-                  ))}
-                </div>
-              </Card>
-            ))
-          }
+        <div>
+          <h3 class="mb-3 text-xl">The volunteer database: ODbL</h3>
+          <p class="text-fg-muted">
+            The combined volunteer database stays open under <a
+              href="https://opendatacommons.org/licenses/odbl/summary/">ODbL</a
+            >. Reuse and redistribute it with attribution; publicly used adapted
+            databases must also be offered under ODbL. Partner feeds retain
+            their own terms.
+          </p>
+        </div>
+        <div>
+          <h3 class="mb-3 text-xl">Built to outlive one operator</h3>
+          <p class="text-fg-muted">
+            Save the live feed today, within your access limits. Public archive
+            downloads are coming, so you will be able to retrieve historical
+            data too. Federation already lets independently operated nodes
+            exchange data; the open licenses let others build on it and continue
+            operating the network.
+          </p>
         </div>
       </div>
+      <p class="text-fg-muted mt-8 max-w-3xl text-sm">
+        You can stop contributing whenever you want. Receptions already released
+        remain open; Open Waters gets no exclusive license, even if the project
+        changes hands. Read the <a
+          href={`${REPO}/blob/main/docs/contributor-agreement.md`}
+          >contributor agreement</a
+        > for the commitment behind this.
+      </p>
     </Container>
   </section>
 
