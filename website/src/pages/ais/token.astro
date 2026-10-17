@@ -115,9 +115,16 @@ const pre =
             expires <span data-exp></span>. Your data appears as <code
               class="bg-surface rounded px-1"
               >source: station:&lt;station id&gt;</code
-            >; see it on <a data-stlink href={MAP}>the live map</a> or at <code
-              class="bg-surface rounded px-1">/v1/stations</code
-            >.
+            >; see it on <a data-stlink href={MAP}>your station page</a>.
+          </p>
+          <p class="mt-3 flex items-center gap-2 text-sm">
+            <span data-rx-dot class="bg-fg-faint size-2.5 rounded-full"></span>
+            <span data-rx role="status" class="text-fg-muted"
+              >Checking for data…</span
+            >
+          </p>
+          <p class="text-fg-faint mt-1 text-sm">
+            UDP and Signal K feeds show under their own station ids, not here.
           </p>
         </Card>
 
@@ -174,6 +181,8 @@ const pre =
 </MainLayout>
 
 <script>
+  import { stationStatus } from "../../utils/station-status";
+
   const root = document.querySelector<HTMLElement>("[data-token-page]")!;
   const server = root.dataset.server!;
   const stations = root.dataset.stations!;
@@ -222,6 +231,35 @@ const pre =
     $("[data-cmd-ws]").textContent =
       `websocat ${server.replace(/^http/, "ws")}/v0/stream\n{"APIKey":"${token}","BoundingBoxes":[[[41,-71.5],[42.5,-69.5]]]}`;
     $("[data-out]").hidden = false;
+    clearInterval(rxTimer);
+    checkReceiving(claims.sub);
+    rxTimer = setInterval(() => checkReceiving(claims.sub), 60_000);
+  }
+
+  let rxTimer: ReturnType<typeof setInterval> | undefined;
+
+  async function checkReceiving(sub: string) {
+    const text = $("[data-rx]");
+    const dot = $("[data-rx-dot]");
+    // Rewriting the same text makes some screen readers announce it again.
+    const say = (msg: string) => {
+      if (text.textContent !== msg) text.textContent = msg;
+    };
+    try {
+      const res = await fetch(`${server}/v1/stations/station:${sub}`);
+      if (!res.ok && res.status !== 404) throw new Error(String(res.status));
+      const lastAge: number | null = res.ok
+        ? (await res.json()).station.last_age_s
+        : null;
+      const { receiving, message } = stationStatus(lastAge);
+      say(message);
+      dot.className = `size-2.5 rounded-full ${
+        receiving ? "bg-cta" : lastAge == null ? "bg-fg-faint" : "bg-highlight"
+      }`;
+    } catch {
+      say("Couldn't check station status");
+      dot.className = "size-2.5 rounded-full bg-fg-faint";
+    }
   }
 
   // The lines a token request signs, as the server checks them: no newline at
