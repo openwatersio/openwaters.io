@@ -106,6 +106,10 @@ test(
         !/[a-z,.:](\[[^\]]+\]\(|\*\*[A-Za-z]|`[A-Za-z])/.test(md),
         `${page}: text runs into a link, bold or code span without a space`,
       );
+      assert.ok(
+        !/\]\([^\n)]+\)[A-Za-z]/.test(md),
+        `${page}: link runs into the following word without a space`,
+      );
     }
     const stations = read("tides/stations/index.md");
     assert.match(stations, /slackwater\.xyz\/tides\//);

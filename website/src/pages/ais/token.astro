@@ -180,21 +180,43 @@ const tokenPre = pre.replace("text-sm", "text-xs");
             AIS-catcher's separate community sharing is disabled.
           </p>
           <p class="text-fg-muted mb-2 text-sm">
-            Already have a receiver setup? Its command-line MQTT output:
+            Already have a receiver setup? Append the options starting at
+            <code>-Q</code> to its existing command, keeping your input settings and
+            other outputs. The full MQTT example:
           </p>
           <pre data-cmd-aiscatcher class={`${pre} mb-3`}></pre>
           <p class="text-fg-muted mb-2 text-sm">
-            Or its HTTP output, one batch every five seconds:
+            Or append the HTTP output options starting at <code>-H</code>,
+            sending one batch every five seconds:
           </p>
           <pre data-cmd-aiscatcher-http class={`${pre} mb-5`}></pre>
+          <p class="text-fg-muted mb-5 text-sm">
+            MQTT requires the explicit <code>:443</code> port and{" "}
+            <code>MSGFORMAT NMEA</code> (or <code>NMEA_TAG</code> for receive timestamps).
+            To read network traffic into AIS-catcher, follow the{" "}
+            <a href="/ais/ais-catcher/#readback"
+              >separate network viewer guide</a
+            >; keep that traffic out of your receiver’s sharing outputs.
+          </p>
           <h3 class="mb-1 text-base font-semibold">Signal K</h3>
           <p class="text-fg-muted mb-5 text-sm">
             Install <code class="bg-surface rounded px-1">signalk-aiscast</code> from
             the App Store. It creates its own token; nothing to paste.
           </p>
+          <h3 class="mb-1 text-base font-semibold">docker-shipfeeder</h3>
+          <p class="text-fg-muted mb-5 text-sm">
+            Update to the latest image and enable{" "}
+            <code>OPENWATERS_SHAREDATA=true</code>. It creates and saves its own
+            token for MQTT. You can instead set <code
+              >OPENWATERS_FEEDER_KEY</code
+            >
+            to the token above to reuse this station. Follow the{" "}
+            <a href="/ais/contribute/#docker">shipfeeder setup guide</a> for the Compose
+            settings and UDP fallback behavior.
+          </p>
           <h3 class="mb-1 text-base font-semibold">UDP</h3>
           <p class="text-fg-muted text-sm">
-            docker-shipfeeder or any forwarder: host <code
+            For a NMEA forwarder using UDP: host <code
               class="bg-surface rounded px-1">udp.ais.openwaters.io</code
             >, port <code class="bg-surface rounded px-1">10110</code>, no
             token. The station appears as an anonymous <code

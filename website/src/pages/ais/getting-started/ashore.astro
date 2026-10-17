@@ -231,7 +231,7 @@ const troubleshooting = [
             That's all the hardware for this setup. The <a
               href="https://www.rtl-sdr.com/using-our-new-dipole-antenna-kit/"
               >manufacturer's illustrated antenna guide</a
-            >
+            >{" "}
             shows the mounts and element lengths. Keep this antenna indoors for ongoing
             use.
           </p>
@@ -423,7 +423,7 @@ const troubleshooting = [
             time to hear passing traffic; some ship details arrive less often
             than positions. If nothing arrives, <a href="#help"
               >check these fixes</a
-            >
+            >{" "}
             before buying more equipment.
           </p>
           <p class="text-fg-muted mt-3 text-sm">
@@ -453,10 +453,17 @@ const troubleshooting = [
             Your receptions are shared under CC0 and the volunteer database
             under ODbL. <a href="/ais/contribute/#access"
               >See how contributor access works</a
-            >
+            >{" "}
             and <a href="/ais/#contribute"
               >how the open network shares your data</a
             >.
+          </p>
+          <p class="text-fg-muted mt-4">
+            Once your token earns contributor access, you can also{" "}
+            <a href="/ais/ais-catcher/#readback"
+              >read the network in a separate AIS-catcher viewer</a
+            >. Keep that viewer separate from this receiver’s sharing output so
+            network traffic is not sent back as your own reception.
           </p>
         </section>
 
@@ -624,7 +631,7 @@ const troubleshooting = [
             The kit's telescopic antenna isn't made for permanent outdoor use.
             Before purchasing, follow the <a href={`${DOCS}/what-you-need/`}
               >AIS-catcher equipment guidance</a
-            >
+            >{" "}
             and your antenna manufacturer's mounting and grounding instructions. This
             is an advanced installation, optional for contributing.
           </p>

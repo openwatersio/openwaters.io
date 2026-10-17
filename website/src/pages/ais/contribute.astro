@@ -168,6 +168,12 @@ const methods = [
                 token
               />
               <p class="text-fg-muted">
+                Keep <code>:443</code> in the MQTT address: AIS-catcher does not choose
+                that port automatically. <code>MSGFORMAT NMEA_TAG</code>
+                is also supported when you want each reception’s timestamp in a NMEA
+                TAG block.
+              </p>
+              <p class="text-fg-muted">
                 Save the updated startup command and restart AIS-catcher or its
                 service. Use your existing receiver process; you do not need a
                 second copy competing for the same device.
