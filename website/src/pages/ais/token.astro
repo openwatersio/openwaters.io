@@ -233,12 +233,19 @@ const pre =
     $("[data-out]").hidden = false;
     clearInterval(rxTimer);
     checkReceiving(claims.sub);
-    rxTimer = setInterval(() => checkReceiving(claims.sub), 60_000);
+    rxTimer = setInterval(() => checkReceiving(claims.sub, true), 60_000);
   }
 
   let rxTimer: ReturnType<typeof setInterval> | undefined;
+  // A slow check could finish after a newer one and show an older status, so
+  // a poll waits for the check in flight, and only the latest check may write.
+  let rxSeq = 0;
+  let rxBusy = false;
 
-  async function checkReceiving(sub: string) {
+  async function checkReceiving(sub: string, poll = false) {
+    if (poll && rxBusy) return;
+    const seq = ++rxSeq;
+    rxBusy = true;
     const text = $("[data-rx]");
     const dot = $("[data-rx-dot]");
     // Rewriting the same text makes some screen readers announce it again.
@@ -251,14 +258,18 @@ const pre =
       const lastAge: number | null = res.ok
         ? (await res.json()).station.last_age_s
         : null;
+      if (seq !== rxSeq) return;
       const { receiving, message } = stationStatus(lastAge);
       say(message);
       dot.className = `size-2.5 rounded-full ${
         receiving ? "bg-cta" : lastAge == null ? "bg-fg-faint" : "bg-highlight"
       }`;
     } catch {
+      if (seq !== rxSeq) return;
       say("Couldn't check station status");
       dot.className = "size-2.5 rounded-full bg-fg-faint";
+    } finally {
+      if (seq === rxSeq) rxBusy = false;
     }
   }
 
