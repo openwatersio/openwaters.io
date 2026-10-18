@@ -8,10 +8,10 @@ import EntryLabel from "../../components/changelog/EntryLabel.astro";
 import {
   formatDate,
   getEntries,
+  releaseHtml,
   type Entry,
 } from "../../utils/changelog-entries";
 import { PROJECTS } from "../../utils/changelog";
-import { md } from "../../utils/render-markdown";
 
 export async function getStaticPaths() {
   const entries = await getEntries();
@@ -35,6 +35,7 @@ const { Content } =
     ? await render(entry.announcement)
     : { Content: undefined };
 const release = entry.type === "release" ? entry.release.data : undefined;
+const notes = release && (await releaseHtml(release.body));
 const image =
   entry.type === "announcement" ? entry.announcement.data.image : undefined;
 ---
@@ -120,7 +121,7 @@ const image =
     }
 
     <div class="prose prose-lg mt-10 max-w-none">
-      {Content ? <Content /> : <Fragment set:html={md(release!.body)} />}
+      {Content ? <Content /> : <Fragment set:html={notes} />}
     </div>
 
     {

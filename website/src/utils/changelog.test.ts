@@ -7,6 +7,7 @@ import {
   filterTitle,
   headline,
   isPatch,
+  localizeImages,
   summarize,
   toReleases,
   type GitHubRelease,
@@ -260,26 +261,118 @@ test("cleanBody: code blocks pass through untouched", () => {
 });
 
 test("headline: a release name that says more than the version", () => {
+  const cases: [string | null, string, string, string[], string | undefined][] =
+    [
+      ["Uranus and Neptune", "v0.8.0", "", ["Almanac"], "Uranus and Neptune"],
+      ["v0.5.0 — the bundle ships", "v0.5.0", "", [], "The bundle ships"],
+      ["Currents", "v1.0.0", "", ["Slackwater"], "Currents"],
+      ["v1.2.0 — bugfixes", "v1.2.0", "", ["Almanac"], "Bugfixes"],
+      ["Almanac 0.8.0: Uranus", "v0.8.0", "", ["Almanac"], "Uranus"],
+      ["Release v1.2.0", "v1.2.0", "", ["Almanac"], undefined],
+      ["v0.8.0", "v0.8.0", "", ["Almanac"], undefined],
+      ["Seascape v0.3.0", "v0.3.0", "v", ["Seascape"], undefined],
+      ["Style v0.4.0", "style-v0.4.0", "style-", ["Seascape style"], undefined],
+      [
+        "Signal K tides plugin 2.2.0",
+        "v2.2.0",
+        "",
+        ["Signal K tides plugin"],
+        undefined,
+      ],
+      [
+        "signalk-aiscast 0.6.3",
+        "signalk-plugin-v0.6.3",
+        "signalk-plugin-",
+        ["Signal K AIS plugin"],
+        undefined,
+      ],
+      ["1.13.0 (38)", "v1.13.0", "", ["Slackwater for iOS"], undefined],
+      [
+        "neaps@0.8.0",
+        "neaps@0.8.0",
+        "",
+        ["Neaps", "neaps", "0.8.0"],
+        undefined,
+      ],
+      [null, "v1.0.0", "", [], undefined],
+    ];
+  for (const [name, tag, prefix, names, expected] of cases)
+    assert.equal(headline(name, tag, prefix, names), expected, String(name));
+});
+
+test("toReleases: a beta version is skipped even when GitHub doesn't flag it", () => {
+  const out = toReleases(source, [
+    release({ tag_name: "v1.0.0-beta.3" }),
+    release({ tag_name: "v0.9.0" }),
+  ]);
   assert.deepEqual(
+    out.map((r) => r.title),
+    ["Almanac 0.9.0"],
+  );
+});
+
+test("cleanBody: GitHub's HTML screenshots become images, and a PR link stays out of code fences", () => {
+  assert.equal(
+    cleanBody(
+      '<img width="800" alt="Image" src="https://github.com/user-attachments/assets/a">',
+    ),
+    "![Screenshot](https://github.com/user-attachments/assets/a)",
+  );
+  const body = [
+    "- [#12](https://x/pull/12) [`abc1234`](https://x/c) Thanks [@b](https://x/b)! - Add a flag",
+    "  ```sh",
+    "  tool --flag",
+    "  ```",
+  ].join("\n");
+  assert.equal(
+    cleanBody(body),
     [
-      ["Uranus and Neptune", "v0.8.0"],
-      ["v0.5.0 — the bundle ships", "v0.5.0"],
-      ["v0.8.0", "v0.8.0"],
-      ["Seascape v0.3.0", "v0.3.0"],
-      ["signalk-aiscast 0.6.3", "signalk-plugin-v0.6.3", "signalk-plugin-"],
-      ["1.13.0 (38)", "v1.13.0"],
-      ["neaps@0.8.0", "neaps@0.8.0"],
-      [null, "v1.0.0"],
-    ].map(([name, tag, prefix]) => headline(name, tag!, prefix ?? undefined)),
-    [
-      "Uranus and Neptune",
-      "The bundle ships",
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    ],
+      "- Add a flag ([#12](https://x/pull/12))",
+      "  ```sh",
+      "  tool --flag",
+      "  ```",
+    ].join("\n"),
+  );
+});
+
+test("toReleases: a hyphen outside a semver prerelease doesn't hide a release", () => {
+  assert.deepEqual(
+    toReleases(source, [
+      release({ tag_name: "v2026-08-17" }),
+      release({ tag_name: "v1.2.3-rc.1" }),
+    ]).map((r) => r.title),
+    ["Almanac 2026-08-17"],
+  );
+});
+
+test("cleanBody leaves images in code blocks alone, and summarize skips a screenshot line", () => {
+  const fenced = '```md\n![](x.png)\n<img src="https://x/a.png">\n```';
+  assert.equal(cleanBody(fenced), fenced);
+  assert.equal(
+    summarize(cleanBody('<img src="https://x/a.png">\n\nAdds a tide widget')),
+    "Adds a tide widget",
+  );
+});
+
+test("localizeImages: local copies replace remote images; the rest become links", async () => {
+  const html =
+    '<p><img src="https://github.com/a.png" alt="Map"></p>' +
+    '<p><img src="https://tracker.example/p.gif" alt=""></p>' +
+    '<p><img src="/_astro/b.webp" alt="Local"></p>';
+  const out = await localizeImages(html, async (src) =>
+    src.startsWith("https://github.com/") ? "/_astro/a.webp" : src,
+  );
+  assert.equal(
+    out,
+    '<p><img src="/_astro/a.webp" alt="Map"></p>' +
+      '<p><a href="https://tracker.example/p.gif">Image</a></p>' +
+      '<p><img src="/_astro/b.webp" alt="Local"></p>',
+  );
+  // A failed download links to the original.
+  assert.equal(
+    await localizeImages('<img src="https://github.com/a.png" alt="Map">', () =>
+      Promise.reject(new Error("offline")),
+    ),
+    '<a href="https://github.com/a.png">Map</a>',
   );
 });

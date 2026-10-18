@@ -1,12 +1,15 @@
+import { getImage } from "astro:assets";
 import { getCollection, type CollectionEntry } from "astro:content";
 
 import {
+  localizeImages,
   PROJECT_KEYS,
   TYPE_KEYS,
   TYPES,
   type Filter,
   type Project,
 } from "./changelog";
+import { md } from "./render-markdown";
 
 export type Entry =
   | {
@@ -90,3 +93,14 @@ export const entryHref = (entry: Pick<Entry, "id">) =>
 
 export const formatDate = (date: Date, options: Intl.DateTimeFormatOptions) =>
   date.toLocaleDateString("en-US", { timeZone: "UTC", ...options });
+
+/**
+ * A release's notes as HTML, with its images downloaded into the build. The hosts
+ * allowed are `image.domains` in astro.config.mjs; getImage leaves any other URL as
+ * it is, and localizeImages turns that into a link.
+ */
+export const releaseHtml = (body: string) =>
+  localizeImages(
+    md(body),
+    async (src) => (await getImage({ src, inferSize: true })).src,
+  );

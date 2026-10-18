@@ -34,9 +34,13 @@ async function fetchReleases(repo: string): Promise<GitHubRelease[]> {
     if (!res.ok)
       throw new Error(
         `changelog: ${repo} releases: HTTP ${res.status}` +
-          ([403, 429].includes(res.status) && !process.env.GITHUB_TOKEN
-            ? " (GitHub's anonymous rate limit; set GITHUB_TOKEN)"
-            : ""),
+          (res.status === 401
+            ? " (GITHUB_TOKEN is invalid or expired)"
+            : [403, 429].includes(res.status) && !process.env.GITHUB_TOKEN
+              ? " (GitHub's anonymous rate limit; set GITHUB_TOKEN)"
+              : res.status === 404
+                ? " (renamed, private, or deleted; update SOURCES)"
+                : ""),
       );
     releases.push(...((await res.json()) as GitHubRelease[]));
     url = /<([^>]+)>; rel="next"/.exec(res.headers.get("link") ?? "")?.[1];
@@ -70,7 +74,10 @@ const githubReleases: Loader = {
         });
       }
     }
-    logger.info(`loaded ${store.keys().length} releases`);
+    logger.info(
+      `loaded ${store.keys().length} releases` +
+        (process.env.GITHUB_TOKEN ? " with GITHUB_TOKEN" : " anonymously"),
+    );
   },
 };
 

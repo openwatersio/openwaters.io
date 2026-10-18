@@ -2,17 +2,24 @@ import { getImage } from "astro:assets";
 import { render } from "astro:content";
 import { experimental_AstroContainer } from "astro/container";
 
-import { entryHref, getEntries, type Entry } from "./changelog-entries";
+import {
+  entryHref,
+  getEntries,
+  releaseHtml,
+  type Entry,
+} from "./changelog-entries";
 import {
   changelogPath,
   filterDescription,
   filterTitle,
   type Filter,
 } from "./changelog";
-import { md } from "./render-markdown";
 
+// XML 1.0 forbids most control characters, and one in pasted release notes would
+// make a strict reader reject the whole feed.
 const escape = (s: string) =>
   s
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -57,7 +64,7 @@ export async function changelogFeed(site: URL, filter: Filter = {}) {
       const url = new URL(entryHref(entry), site).href;
       const html = absolute(
         entry.type === "release"
-          ? md(entry.release.data.body)
+          ? await releaseHtml(entry.release.data.body)
           : await announcementHtml(entry, container),
         site,
       );

@@ -83,6 +83,18 @@ const markdownPages = {
 // https://astro.build/config
 export default defineConfig({
   site: "https://openwaters.io",
+  // Images in GitHub release notes are downloaded at build time and served from this
+  // site (see releaseHtml in src/utils/changelog-entries.ts). Uploads on github.com
+  // redirect to GitHub's S3 bucket, and Astro checks the redirect's host too.
+  image: {
+    domains: [
+      "github.com",
+      "github-production-user-asset-6210df.s3.amazonaws.com",
+      "private-user-images.githubusercontent.com",
+      "user-images.githubusercontent.com",
+      "raw.githubusercontent.com",
+    ],
+  },
   redirects: {
     // The engine docs page followed the Neaps → Slackwater rename.
     // Slash form: the worker canonicalizes extensionless URLs to a trailing
@@ -126,7 +138,8 @@ export default defineConfig({
     },
   },
   // Images are optimized at build time into static files, so they don't depend on the
-  // Cloudflare Images binding at request time; every page is prerendered anyway.
+  // Cloudflare Images binding at request time. Only prerendered pages get optimized
+  // images; an <Image> on an on-demand route would not be.
   adapter: cloudflare({ imageService: "compile" }),
   output: "static",
 });

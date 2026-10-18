@@ -97,7 +97,13 @@ export const SOURCES: Source[] = [
     name: "CHS constituents",
   },
   { repo: "seamap", project: "charts", name: "Seamap" },
-  { repo: "seascape", project: "charts", name: "Seascape" },
+  { repo: "seascape", project: "charts", name: "Seascape", prefix: "v" },
+  {
+    repo: "seascape",
+    project: "charts",
+    name: "Seascape style",
+    prefix: "style-",
+  },
   { repo: "tile57", project: "charts", name: "tile57" },
   { repo: "crowd-depth", project: "charts", name: "Crowd depth" },
   { repo: "maritime-zones", project: "charts", name: "Maritime zones" },
@@ -162,7 +168,11 @@ export function cleanBody(body: string, source?: Source): string {
   let fenced = false;
   for (let line of text.split("\n")) {
     // Code blocks pass through untouched.
-    if (/^\s*```/.test(line)) fenced = !fenced;
+    if (/^\s*```/.test(line)) {
+      // A pending PR link belongs to the text before the block, not its fence.
+      if (!fenced) flush();
+      fenced = !fenced;
+    }
     if (fenced || /^\s*```/.test(line)) {
       out.push(line);
       continue;
@@ -178,7 +188,7 @@ export function cleanBody(body: string, source?: Source): string {
     if (/^\*\*Full Changelog\*\*/.test(line)) continue;
 
     // "· " is the iOS App Store notes' bullet; older changesets pad with "-   ".
-    line = line.replace(/^[-*·]\s+/, "- ");
+    line = images(line.replace(/^[-*·]\s+/, "- "));
     if (/^- /.test(line)) {
       flush();
       skipping = BOTS.test(line) || /^- Updated dependencies/.test(line);
@@ -195,14 +205,10 @@ export function cleanBody(body: string, source?: Source): string {
   }
   flush();
 
-  return (
-    out
-      .join("\n")
-      // ponytail: GitHub uploads have no alt text and nearly all are screenshots.
-      .replace(/!\[\]\(/g, "![Screenshot](")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim()
-  );
+  return out
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 // "- [#347](…/pull/347) [`d5f2c5e`](…) Thanks [@bkeepers](…)! - Add currents"
@@ -226,11 +232,27 @@ function tidyItem(line: string): [string, string] {
   return [generated, ""];
 }
 
+// GitHub's editor pastes screenshots as HTML, which md() shows as text, and its
+// uploads have no alt text.
+const images = (line: string) =>
+  line
+    .replace(
+      /<img\b[^>]*?\bsrc="(https:[^"]+)"[^>]*>/g,
+      (tag, src) => `![${/\balt="([^"]*)"/.exec(tag)?.[1] ?? ""}](${src})`,
+    )
+    // ponytail: nearly all of GitHub's release-note images are screenshots.
+    .replace(/!\[(?:Image)?\]\(/g, "![Screenshot](");
+
 /** The first paragraph or list item of a body, as plain text, for the timeline row. */
 export function summarize(body: string, max = 200): string {
   const lines = body.split("\n").map((l) => l.trim());
   const start = lines.findIndex(
-    (l) => l && !/^[#|]/.test(l) && !l.endsWith(":"),
+    // Headings, tables, labels ("Chores:"), and image-only lines don't summarize.
+    (l) =>
+      l &&
+      !/^[#|]/.test(l) &&
+      !l.endsWith(":") &&
+      !/^!\[[^\]]*\]\([^)]*\)$/.test(l),
   );
   if (start < 0) return "";
   // Hard-wrapped notes continue on the next lines until a blank line or new item.
@@ -248,6 +270,32 @@ export function summarize(body: string, max = 200): string {
 
 // No dots: wrangler.jsonc serves any path with a dot straight from assets, so
 // /changelog/almanac-0.8.0/ would never reach the page.
+/**
+ * Swaps each remote image in rendered release notes for the local copy `localize`
+ * returns, so visitors never load images from another host. An image it can't
+ * localize (an unlisted host, a failed download) becomes a link to the original.
+ */
+export async function localizeImages(
+  html: string,
+  localize: (src: string) => Promise<string>,
+) {
+  let out = html;
+  for (const [tag] of html.matchAll(/<img\b[^>]*>/g)) {
+    const src = /\bsrc="([^"]+)"/.exec(tag)?.[1];
+    if (!src || src.startsWith("/")) continue;
+    const url = src.replace(/&amp;/g, "&");
+    const local = await localize(url).catch(() => url);
+    const alt = /\balt="([^"]*)"/.exec(tag)?.[1] || "Image";
+    out = out.replace(
+      tag,
+      local.startsWith("/")
+        ? tag.replace(`src="${src}"`, `src="${local}"`)
+        : `<a href="${src}">${alt}</a>`,
+    );
+  }
+  return out;
+}
+
 export const slugify = (text: string) =>
   text
     .toLowerCase()
@@ -260,107 +308,35 @@ export const isPatch = (v: string) => {
   return !!m && +m[1] < 1000 && +m[3] > 0 && +m[3] < 1000;
 };
 
-// TEMPORARY: draft headlines for the website preview, keyed by "repo tag". They
-// override the release names; delete this once they are applied on GitHub.
-const PREVIEW_HEADLINES: Record<string, string> = {
-  "almanac v0.8.0":
-    "Uranus and Neptune, plus guides for moving from SunCalc and Solar",
-  "almanac v0.7.0": "Horizon dip and planetary motion",
-  "almanac v0.6.0": "Where each solar eclipse is greatest",
-  "almanac v0.5.0": "Solar eclipses anywhere on Earth, with central lines",
-  "almanac v0.4.2": "Faster sunrise, sunset, and twilight searches",
-  "almanac v0.4.1": "Faster Moon positions and Moon events",
-  "almanac v0.4.0": "Solar eclipses visible from a location",
-  "almanac v0.3.0": "Positions of fixed stars",
-  "almanac v0.2.1": "Faster Moon, Sun, and eclipse calculations",
-  "almanac v0.2.0": "Search past lunar eclipses and date ranges",
-  "almanac v0.1.0": "Offline Sun and Moon astronomy for TypeScript and Swift",
-  "aiscast signalk-plugin-v0.6.3":
-    "App Store screenshots in Navionics and Aqua Map",
-  "aiscast signalk-plugin-v0.6.2":
-    "Accurate course, heading, and turn rate from NMEA 2000 receivers",
-  "aiscast signalk-plugin-v0.6.1": "Renamed to Open Waters AIS",
-  "aiscast signalk-plugin-v0.6.0":
-    "Stations named after your boat, and signed token requests",
-  "aiscast signalk-plugin-v0.5.2":
-    "Works with the new contributor station names",
-  "aiscast signalk-plugin-v0.5.1":
-    "Names, call signs, and dimensions on chartplotters",
-  "aiscast signalk-plugin-v0.5.0":
-    "Open Waters AIS traffic on NMEA 0183 chartplotters",
-  "aiscast signalk-plugin-v0.4.0": "Fewer SD card writes while offline",
-  "aiscast signalk-plugin-v0.3.1":
-    "Offline backlog uploads in full after reconnecting",
-  "aiscast signalk-plugin-v0.3.0": "Follow buddy boats beyond VHF range",
-  "aiscast signalk-plugin-v0.2.0":
-    "Share your position from GPS when there's no AIS transponder",
-  "aiscast signalk-plugin-v0.1.4": "Tokens no longer expire",
-  "aiscast signalk-plugin-v0.1.3":
-    "Connects over Starlink, satellite, and slow cellular links",
-  "aiscast signalk-plugin-v0.1.2":
-    'Dashboard clears the "No token" error once connected',
-  "aiscast signalk-plugin-v0.1.1": "Starts sharing once the network comes up",
-  "slackwater-ios v1.13.0":
-    "Nearby stations on every station page, and how the Moon shapes tides",
-  "slackwater-ios v1.12.0":
-    "Nearest tide and current stations, an endless timeline, and sharing",
-  "slackwater neaps@0.8.0":
-    "ESM-only packages, lower memory use, and edge runtime support",
-  "slackwater-database v0.10.20260924":
-    "Permanent station slugs, Alaska panhandle gauges, and Dutch tide fits",
-  "slackwater-database v0.9.20260923":
-    "Swift package by URL and cleaner station names",
-  "slackwater-database v0.9.20260921":
-    "One-file database with a Swift reader and current stations",
-  "slackwater-database v0.9.20260907":
-    "LAT and HAT for NOAA stations that don't publish them",
-  "slackwater-database v0.9.20260728":
-    "Station data read per record from a pack file",
-  "slackwater-database v0.8.20260722":
-    "Chart datums by country, and the Baltic split by region",
-  "slackwater-database v0.8.20260719":
-    "Dutch tide phases corrected for daylight saving time",
-  "signalk-tides v2.2.0": "Tide widget for chart plotters",
-  "chs-constituents v0.3.1": "Published from CI with provenance",
-  "chs-constituents v0.2.2": "Repository moves to Open Waters",
-  "chs-constituents v0.2.1": "No drift warning for the derived Malibu gate",
-  "chs-constituents v0.2.0": "Tide ports and derived slack gates",
-  "chs-constituents v0.1.2": "Skipped stations listed in the bundle",
-  "chs-constituents v0.1.1": "Station counter in build progress",
-  "seamap v0.3.1": "Water body names and boat rentals",
-  "seamap v0.3.0": "Dock fuel, wreck buoys, and cleaner zoomed-out charts",
-  "seamap v0.2.0": "Lights, buoys, and many more charted features",
-  "seascape v2026.08.17": "Unknown-depth water without seams or gaps",
-  "seascape v2026.08.16":
-    "Six new high-resolution depth sources in four countries",
-  "seascape v2026.08.10": "US coastal depths referenced to chart datum",
-  "seascape v0.3.0":
-    "Every source at its native resolution, and depth areas return",
-  "seascape v0.2.0": "Chart-style deep water and sharper shallows",
-  "crowd-depth v1.2.6": "New icon and App Store listing",
-  "crowd-depth v1.2.5": "Readable device names in the source menus",
-  "crowd-depth v1.2.4": "Reports continue after scans with no new data",
-  "crowd-depth v1.2.3": "Reports go through during NOAA outages",
-  "crowd-depth v1.2.2": "Clearer errors when a report fails",
-  "crowd-depth v1.2.1": "Less SD card wear",
-  "crowd-depth v1.2.0": "ISO 8601 timestamps in the plugin status",
-  "maritime-zones v0.2.0": "Tiles at half the size, with land areas",
-  "maritime-zones v0.1.0": "First maritime zone tiles",
-};
-
-// "v0.5.0 — the bundle ships" -> "The bundle ships". A name that is only a version,
-// or a version with a package or build number ("v0.8.0", "Seascape v0.3.0",
-// "signalk-aiscast 0.6.3", "1.13.0 (38)"), has no headline.
-export function headline(name: string | null, tag: string, prefix = "") {
+// "v0.5.0 — the bundle ships" -> "The bundle ships"; "Currents" -> "Currents". A
+// name that only repeats the version, the product or package name, or a build
+// number ("v0.8.0", "Seascape v0.3.0", "signalk-aiscast 0.6.3", "1.13.0 (38)") has
+// no headline.
+export function headline(
+  name: string | null,
+  tag: string,
+  prefix = "",
+  names: string[] = [],
+) {
   if (!name) return undefined;
   const v = version(tag, prefix).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const rest = name
-    .replace(tag, "")
-    .replace(new RegExp(`v?${v}`), "")
-    .replace(/^[\s—–:·|-]+|[\s—–:·|-]+$/g, "");
-  return /\s/.test(rest)
-    ? rest.charAt(0).toUpperCase() + rest.slice(1)
-    : undefined;
+  const trim = (s: string) => s.replace(/^[\s—–:·|-]+|[\s—–:·|-]+$/g, "");
+  let rest = trim(name.replace(tag, "").replace(new RegExp(`v?${v}`), ""));
+  // "Almanac 0.8.0: Uranus" -> "Uranus"
+  for (const n of names.filter((n) => n.length > 1))
+    if (rest.toLowerCase().startsWith(n.toLowerCase()))
+      rest = trim(rest.slice(n.length));
+  const known = new Set(names.join(" ").toLowerCase().split(/\s+/));
+  const words = rest.toLowerCase().split(/\s+/);
+  if (
+    !/[a-z]/i.test(rest) ||
+    words.every((w) => known.has(w)) ||
+    /^(release|version|update)$/i.test(rest) ||
+    // A lone package id such as signalk-aiscast or @neaps/api.
+    /^[a-z0-9_]*[@/.-][a-z0-9@/._-]*$/.test(rest)
+  )
+    return undefined;
+  return rest.charAt(0).toUpperCase() + rest.slice(1);
 }
 
 const version = (tag: string, prefix = "") =>
@@ -381,6 +357,13 @@ export function toReleases(
 ): Release[] {
   const published = releases
     .filter((r) => !r.draft && !r.prerelease && r.published_at)
+    // A beta that wasn't marked as a prerelease on GitHub is still one.
+    .filter(
+      (r) =>
+        !/^\d+\.\d+\.\d+-/.test(
+          packageTag(r.tag_name)?.[1] ?? version(r.tag_name, source.prefix),
+        ),
+    )
     .filter((r) => !source.prefix || r.tag_name.startsWith(source.prefix))
     .sort((a, b) => Date.parse(b.published_at!) - Date.parse(a.published_at!));
 
@@ -408,9 +391,7 @@ function fromSingle(source: Source, r: GitHubRelease): Release {
     project: source.project,
     repo: source.repo,
     title,
-    headline:
-      PREVIEW_HEADLINES[`${source.repo} ${r.tag_name}`] ??
-      headline(r.name, r.tag_name, source.prefix),
+    headline: headline(r.name, r.tag_name, source.prefix, [source.name]),
     date: new Date(r.published_at!),
     body,
     summary: summarize(body),
@@ -479,9 +460,11 @@ function fromGroup(source: Source, group: GitHubRelease[]): Release {
     project: source.project,
     repo: source.repo,
     title,
-    headline:
-      PREVIEW_HEADLINES[`${source.repo} ${leadRelease.tag_name}`] ??
-      headline(leadRelease.name, leadRelease.tag_name),
+    headline: headline(leadRelease.name, leadRelease.tag_name, "", [
+      source.name,
+      lead.name,
+      lead.version,
+    ]),
     date,
     body,
     summary: summarize(body),
