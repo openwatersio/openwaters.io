@@ -2,9 +2,13 @@ import assert from "node:assert/strict";
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 
-// Checks the built site, so it only runs after `npm run build`.
+// Checks the built site, so it only runs after `npm run build`. CI never
+// skips, so a build that stops writing dist/client fails instead of passing.
 const dist = new URL("../../dist/client/", import.meta.url);
-const skip = !existsSync(dist) && "no dist/ (run npm run build first)";
+const skip =
+  process.env.CI !== "true" &&
+  !existsSync(dist) &&
+  "no dist/ (run npm run build first)";
 const read = (file: string) => readFileSync(new URL(file, dist), "utf8");
 const readBuffer = (file: string) => readFileSync(new URL(file, dist));
 
