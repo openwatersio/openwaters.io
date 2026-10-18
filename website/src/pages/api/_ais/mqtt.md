@@ -4,6 +4,8 @@ The realtime path for a receiver. AIS-catcher's MQTT output publishes each messa
 AIS-catcher -Q wssmqtt://x:<token>@ais.openwaters.io:443/v1/stream MSGFORMAT NMEA
 ```
 
+For an existing AIS-catcher setup, append the options starting at `-Q` to its startup command, preserving the receiver input and other outputs. Restart that receiver process rather than launching another process against the same device.
+
 The port is required: AIS-catcher does not default it for `wssmqtt://`. `MSGFORMAT NMEA_TAG` also works and carries the receive time in a TAG block.
 
 The same address as the [JSON stream](#stream-v1): a socket that negotiates the `mqtt` WebSocket subprotocol (binary frames) gets a receive-only MQTT 3.1.1 session instead of JSON frames. Any MQTT client that speaks WebSocket can publish to it:
@@ -15,3 +17,5 @@ The same address as the [JSON stream](#stream-v1): a socket that negotiates the 
 - Connects are limited per token, 20 a minute, applied once `CONNECT` has named the token. Over the limit, `CONNACK` answers `0x03` (server unavailable) and the connection closes.
 
 Your station is your token's `sub`, and your messages appear with `source: station:<sub>` on the map, in the streams, and at `/v1/stations`, the same station as the HTTP and WebSocket paths. 6,000 sentences a minute per token, 1 MB per packet. Publishing is acceptance of the [contributor agreement](https://github.com/openwatersio/aiscast/blob/main/docs/contributor-agreement.md), linked from the upgrade response's `Link: rel="terms-of-service"` header.
+
+See the [AIS-catcher guide](/ais/ais-catcher/) for the HTTP and UDP alternatives, station checks, and a separate viewer for reading the network feed. Never forward network-received traffic back as your own reception.

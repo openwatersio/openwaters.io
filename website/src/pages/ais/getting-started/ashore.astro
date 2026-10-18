@@ -1,0 +1,651 @@
+---
+import MainLayout from "../../../layouts/MainLayout.astro";
+import Container from "../../../components/ui/Container.astro";
+import Card from "../../../components/ui/Card.astro";
+import CodeBlock from "../../../components/ui/CodeBlock.astro";
+import Icon from "../../../components/Icon.astro";
+import AisNav from "../../../components/ais/AisNav.astro";
+import { CONTACT_EMAIL } from "../../../utils/constants";
+
+const DOCS = "https://jvde-github.github.io/AIS-catcher-docs";
+const STORE = "https://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/";
+const installLinux =
+  'sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/jvde-github/AIS-catcher/main/scripts/aiscatcher-install) -p -M"';
+const installMac = [
+  "brew install git make gcc cmake pkg-config sqlite3 librtlsdr openssl@3",
+  "git clone https://github.com/jvde-github/AIS-catcher.git --depth 1",
+  "cd AIS-catcher",
+  "mkdir build",
+  "cd build",
+  'cmake .. -DCMAKE_PREFIX_PATH="$(brew --prefix openssl@3)"',
+  "make",
+  "sudo make install",
+].join("\n");
+const installConfig = [
+  "sudo systemctl stop ais-catcher",
+  "sudo install -b -o aiscatcher -g aiscatcher -m 600 ~/Downloads/aiscatcher.json /etc/AIS-catcher/aiscatcher.json",
+  "sudo chmod 700 /etc/AIS-catcher",
+  "sudo systemctl restart ais-catcher",
+].join("\n");
+const troubleshooting = [
+  {
+    symptom: "The receiver does not appear",
+    action:
+      "Check the USB connection and adapter. Close other radio software: only one program can use the dongle at a time. On Windows, check that WinUSB was installed for the RTL-SDR device.",
+  },
+  {
+    symptom: "The receiver appears, but no ships arrive",
+    action:
+      "Check the antenna cable, both long elements, and their vertical orientation. Try a higher window facing the water, away from your computer and other electronics. Hills, buildings, coated window glass, or a quiet shipping lane can limit reception.",
+  },
+  {
+    symptom: "Local ships appear, but your Open Waters station is quiet",
+    action:
+      "Check your internet connection. Under Output → MQTT, confirm the Open Waters output is active. If you regenerated your token, update the output URL with the current token, save, and restart the receiver.",
+  },
+  {
+    symptom: "Reception stops when your computer sleeps",
+    action:
+      "Keep the computer awake and AIS-catcher running while you want to receive. Start it again after restarting your computer. A dedicated Raspberry Pi is an optional way to keep sharing.",
+  },
+];
+---
+
+<MainLayout
+  title="Hear the ships outside your window"
+  description="Start receiving AIS from shore with one antenna and USB radio kit and your own computer. See nearby ships, share with Open Waters AIS, then optionally make it permanent."
+  image="/og/ais.png"
+>
+  <Container class="py-12 lg:py-20">
+    <div class="mx-auto max-w-3xl">
+      <AisNav class="mb-8" />
+      <a
+        href="/ais/contribute/"
+        class="mb-6 inline-flex items-center gap-2 text-sm"
+      >
+        <Icon name="mdi:arrow-left" class="size-4" /> Contribute to Open Waters AIS
+      </a>
+      <h1 class="mb-6">Hear the ships outside your window.</h1>
+      <p class="text-lead mb-6">
+        Ships broadcast their name and position by radio. An antenna and a small
+        USB receiver let your computer hear nearby ships and share them with
+        Open Waters AIS.
+      </p>
+      <p class="text-fg-muted mb-8">
+        Start at home, with the computer you already own. You don't need a boat
+        or a permanent outdoor installation. Already receiving AIS? Follow the{
+          " "
+        }
+        <a href="/ais/contribute/#connect">existing receiver setup guide</a> instead.
+      </p>
+      <nav aria-label="Guide sections" class="mb-10 flex flex-wrap gap-3">
+        <a href="#get-started" class="btn btn-primary">Get started fast</a>
+        <a href="#permanent" class="btn btn-secondary"
+          >Make it permanent later</a
+        >
+      </nav>
+
+      <figure class="border-line bg-well mb-12 rounded-2xl border p-5 sm:p-8">
+        <ol
+          class="grid gap-6 sm:grid-cols-3"
+          aria-label="Connect the antenna to the USB receiver, then the receiver to your computer"
+        >
+          <li class="flex items-center gap-4 sm:flex-col sm:items-start">
+            <svg
+              viewBox="0 0 100 100"
+              class="text-accent size-20 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              aria-hidden="true"
+            >
+              <path d="M35 5v36m0 18v36"></path>
+              <rect x="27" y="41" width="16" height="18" rx="3"></rect>
+              <path d="M43 50h20q15 0 15 15v15h17"></path>
+            </svg>
+            <div>
+              <p class="font-semibold">1. Antenna</p><p
+                class="text-fg-muted text-sm"
+              >
+                By a window facing the water
+              </p>
+            </div>
+          </li>
+          <li class="flex items-center gap-4 sm:flex-col sm:items-start">
+            <svg
+              viewBox="0 0 100 100"
+              class="text-accent size-20 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              aria-hidden="true"
+            >
+              <path d="M4 50h18m55 0h18"></path>
+              <rect x="22" y="32" width="55" height="36" rx="5"></rect>
+              <path d="M27 44h13m-13 12h26m29-17h12v22H82"></path>
+            </svg>
+            <div>
+              <p class="font-semibold">2. USB receiver</p><p
+                class="text-fg-muted text-sm"
+              >
+                Antenna cable screws into it
+              </p>
+            </div>
+          </li>
+          <li class="flex items-center gap-4 sm:flex-col sm:items-start">
+            <svg
+              viewBox="0 0 100 100"
+              class="text-accent size-20 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              aria-hidden="true"
+            >
+              <rect x="15" y="15" width="70" height="50" rx="4"></rect>
+              <path d="m15 65-9 15h88L85 65M29 49l12-10 13 5 19-17"></path>
+            </svg>
+            <div>
+              <p class="font-semibold">3. Your computer</p><p
+                class="text-fg-muted text-sm"
+              >
+                Receiver plugs into USB
+              </p>
+            </div>
+          </li>
+        </ol>
+        <figcaption
+          class="text-fg-muted border-line mt-6 border-t pt-4 text-sm"
+        >
+          The antenna hears ships. AIS-catcher software turns those signals into
+          a local map. Your internet connection shares the receptions with Open
+          Waters.
+        </figcaption>
+      </figure>
+
+      <section id="get-started" class="scroll-mt-24">
+        <h2 class="mb-4">Get started fast</h2>
+        <p class="text-fg-muted mb-8">
+          Before buying, check your spot: can you put an antenna near a window
+          overlooking a harbor, anchorage, or shipping lane? Hills and buildings
+          can block radio signals. A ship on the Open Waters map may be heard by
+          another station; it doesn't guarantee you'll hear it from home.
+        </p>
+
+        <Card class="mb-12">
+          <h3 class="mb-3 text-2xl">Buy this antenna and receiver kit</h3>
+          <p class="mb-3 font-semibold">
+            RTL-SDR Blog V3 with Dipole Antenna Kit
+          </p>
+          <p class="text-fg-muted mb-4">
+            Choose the USB-A V3 <em>with the antenna kit</em>, rather than the
+            dongle-only option. An SDR is a radio receiver that uses your
+            computer to decode the signals.
+          </p>
+          <ul class="text-fg-muted mb-5 list-disc space-y-2 pl-5">
+            <li>
+              USB receiver and a matching antenna with two long telescopic
+              elements
+            </li>
+            <li>
+              Antenna cable, 3 m extension cable, window mount, and small tripod
+            </li>
+            <li>
+              Only extra: a USB-C to USB-A data adapter if your computer has no
+              USB-A port
+            </li>
+          </ul>
+          <p class="mb-5 text-sm">
+            Kit price: US$44.95–49.95 on the manufacturer's store, checked
+            October 11, 2026. Tax, delivery, and any USB adapter are extra;
+            local prices vary.
+          </p>
+          <a href={STORE} class="btn btn-primary">Find the V3 antenna kit</a>
+          <p class="text-fg-muted mt-4 text-sm">
+            The store lists its official regional sellers. The kit's antenna
+            connector already fits the receiver. Use your existing Windows, Mac,
+            or Linux computer and internet connection.
+          </p>
+        </Card>
+
+        <section id="connect" class="mb-12 scroll-mt-24">
+          <h3 class="mb-4">1. Connect the antenna and receiver</h3>
+          <ol class="text-fg-muted list-decimal space-y-3 pl-6">
+            <li>
+              Screw the two longer telescopic elements into the antenna base.
+              Extend each to about 42 cm of exposed length.
+            </li>
+            <li>
+              Mount the antenna indoors at your best window, with one element
+              pointing up and the other down.
+            </li>
+            <li>
+              Screw the antenna cable's small metal connector into the receiver.
+              Use the included extension if needed to reach the window.
+            </li>
+            <li>
+              Plug the receiver into your computer's USB port, using a data
+              adapter if needed.
+            </li>
+          </ol>
+          <p class="text-fg-muted mt-4 text-sm">
+            That's all the hardware for this setup. The <a
+              href="https://www.rtl-sdr.com/using-our-new-dipole-antenna-kit/"
+              >manufacturer's illustrated antenna guide</a
+            >{" "}
+            shows the mounts and element lengths. Keep this antenna indoors for ongoing
+            use.
+          </p>
+        </section>
+
+        <section id="token" class="mb-12 scroll-mt-24">
+          <h3 class="mb-4">2. Get your token and download the config</h3>
+          <ol class="text-fg-muted list-decimal space-y-3 pl-6">
+            <li>
+              Open <a
+                href="/ais/token/"
+                target="_blank"
+                rel="noopener noreferrer">the token page in a new tab</a
+              >. Optionally give your station a public name, accept the
+              contributor agreement, and generate your token. Leave the
+              network-address binding option unchecked.
+            </li>
+            <li>
+              Under AIS-catcher, choose <strong
+                >Download AIS-catcher config</strong
+              >. Save <code>aiscatcher.json</code> in your Downloads folder. If your
+              browser adds a number to the filename, rename it to <code
+                >aiscatcher.json</code
+              >.
+            </li>
+            <li>
+              Keep the token tab open: it contains your station link for the
+              final check.
+            </li>
+          </ol>
+          <p class="text-fg-muted mt-4">
+            The file already contains your private token, the RTL-SDR input, and
+            the Open Waters output. Keep it private, just like a password. Your
+            station name and shared receptions are public.
+          </p>
+          <p class="text-fg-muted mt-3 text-sm">
+            This config is for a new receiver setup. Don't replace an existing
+            receiver's config with it. Receiving starts when you press Start;
+            then your receptions are shared with Open Waters under the agreement
+            you accepted. AIS-catcher's separate community sharing is disabled.
+          </p>
+        </section>
+
+        <section id="install" class="mb-12 scroll-mt-24">
+          <h3 class="mb-4">3. Install AIS-catcher and load your config</h3>
+          <p class="text-fg-muted mb-5">
+            AIS-catcher is free software that receives ships and gives you a
+            dashboard in your browser. Follow the instructions for your
+            computer.
+          </p>
+          <nav
+            aria-label="Choose your computer"
+            class="mb-6 flex flex-wrap gap-4"
+          >
+            <a href="#windows">Windows</a><a href="#mac">Mac</a><a href="#linux"
+              >Linux</a
+            >
+          </nav>
+          <details
+            id="windows"
+            class="border-line mb-4 scroll-mt-24 rounded-xl border p-5"
+            open
+          >
+            <summary class="cursor-pointer text-lg font-semibold"
+              >Windows</summary
+            >
+            <ol class="text-fg-muted mt-4 list-decimal space-y-3 pl-6">
+              <li>
+                Download the <a
+                  href={`${DOCS}/installation/windows/#recent-releases`}
+                  >AIS-catcher Edge x64 ZIP</a
+                > for a typical Intel/AMD Windows PC and extract it into a folder.
+                Windows on ARM needs a separate compatibility check.
+              </li>
+              <li>
+                Download and open <a href="https://zadig.akeo.ie/">Zadig</a>. In
+                Options, select <strong>List All Devices</strong>. Select the
+                RTL-SDR's <strong>Bulk-In, Interface (Interface 0)</strong> device,
+                choose <strong>WinUSB</strong>, and click Install Driver or
+                Replace Driver. Confirm you selected the dongle, not another USB
+                device. This is a one-time step.
+              </li>
+              <li>
+                Copy the downloaded <code>aiscatcher.json</code> into the extracted
+                AIS-catcher folder. In File Explorer, open that folder, type <code
+                  >powershell</code
+                > in the address bar, and press Enter. Run the command below, and
+                leave the window open while receiving.
+              </li>
+            </ol>
+            <CodeBlock
+              code=".\AIS-catcher.exe -E .\aiscatcher.json 127.0.0.1:8118"
+              class="mt-4"
+            />
+            <p class="text-fg-muted mt-4 text-sm">
+              If it won't launch, the <a href={`${DOCS}/installation/windows/`}
+                >Windows guide</a
+              > links the Microsoft runtime it needs.
+            </p>
+          </details>
+          <details
+            id="mac"
+            class="border-line mb-4 scroll-mt-24 rounded-xl border p-5"
+          >
+            <summary class="cursor-pointer text-lg font-semibold">Mac</summary>
+            <p class="text-fg-muted mt-4 mb-4">
+              The Mac setup uses Terminal and builds the software. Open Terminal
+              from Applications → Utilities. If you don't have Homebrew, follow
+              the installation instructions at <a href="https://brew.sh/"
+                >brew.sh</a
+              >, including its final shell setup steps. Accept Apple's
+              command-line tools installation if prompted.
+            </p>
+            <p class="text-fg-muted mb-3">
+              Run these commands in Terminal, one line at a time. The build may
+              take several minutes.
+            </p>
+            <CodeBlock code={installMac} class="mb-4" />
+            <p class="text-fg-muted mb-3">
+              The last command asks for your Mac login password; Terminal
+              doesn't show it as you type. Then start the dashboard using your
+              downloaded config:
+            </p>
+            <CodeBlock
+              code="AIS-catcher -E ~/Downloads/aiscatcher.json 127.0.0.1:8118"
+            />
+            <p class="text-fg-muted mt-4 text-sm">
+              Leave Terminal running while receiving. If a command fails, use
+              the <a href={`${DOCS}/installation/macos/`}
+                >Mac installation guide</a
+              >.
+            </p>
+          </details>
+          <details
+            id="linux"
+            class="border-line scroll-mt-24 rounded-xl border p-5"
+          >
+            <summary class="cursor-pointer text-lg font-semibold">Linux</summary
+            >
+            <p class="text-fg-muted mt-4 mb-3">
+              On Ubuntu or Debian, open Terminal and run the official installer
+              below. It downloads AIS-catcher, installs its dependencies, and
+              sets it up as a background service. Enter your administrator
+              password if asked.
+            </p>
+            <CodeBlock code={installLinux} class="mb-4" />
+            <p class="text-fg-muted mb-3">
+              For this new installation, load your downloaded config into the
+              service, then restart it. These commands save a backup of the
+              previous config and keep the token readable only by the service
+              user.
+            </p>
+            <CodeBlock code={installConfig} class="mb-4" />
+            <p class="text-fg-muted text-sm">
+              If curl is missing, run <code>sudo apt install curl</code> first. For
+              another distribution, follow the <a
+                href={`${DOCS}/installation/overview/`}
+                >platform installation guide</a
+              >.
+            </p>
+          </details>
+        </section>
+
+        <section id="first-ships" class="mb-12 scroll-mt-24">
+          <h3 class="mb-4">4. Start receiving and sharing</h3>
+          <ol class="text-fg-muted list-decimal space-y-3 pl-6">
+            <li>
+              On the same computer, open <a href="http://localhost:8118/"
+                >http://localhost:8118</a
+              > in your browser. This is your receiver's dashboard.
+            </li>
+            <li>
+              Set a dashboard admin password when asked. The downloaded config
+              has already selected your RTL-SDR and Open Waters output, so you
+              don't need the setup wizard.
+            </li>
+            <li>
+              Press <strong>Start</strong>. This starts local reception and
+              shares your ship messages with Open Waters over an encrypted
+              connection.
+            </li>
+            <li>
+              Look at the dashboard's local map and received-message count. With
+              traffic in range, the count increases and ships appear.
+            </li>
+          </ol>
+          <p class="text-fg-muted mt-4">
+            You're receiving ships directly from your window. Give the receiver
+            time to hear passing traffic; some ship details arrive less often
+            than positions. If nothing arrives, <a href="#help"
+              >check these fixes</a
+            >{" "}
+            before buying more equipment.
+          </p>
+          <p class="text-fg-muted mt-3 text-sm">
+            Keep your computer awake while receiving. You can close the browser
+            tab; AIS-catcher itself must stay running. Keep the dashboard on
+            your home network and don't forward its port through your router.
+          </p>
+        </section>
+
+        <section id="confirm" class="mb-12 scroll-mt-24">
+          <h3 class="mb-4">5. Open your station page</h3>
+          <p class="text-fg-muted mb-4">
+            Return to the token tab and follow your station's link. Check that
+            it shows recent receptions while your local receiver is hearing
+            ships. That confirms your data is reaching Open Waters; finding the
+            same ship on the worldwide map alone doesn't.
+          </p>
+          <Card>
+            <p class="mb-2 font-semibold">You're contributing.</p>
+            <p class="text-fg-muted">
+              Keep using this setup whenever your computer is on. To stop
+              sharing, turn off this output's Active setting, save, and restart
+              the receiver. You can keep receiving locally.
+            </p>
+          </Card>
+          <p class="text-fg-muted mt-4">
+            Your receptions are shared under CC0 and the volunteer database
+            under ODbL. <a href="/ais/contribute/#access"
+              >See how contributor access works</a
+            >{" "}
+            and <a href="/ais/#contribute"
+              >how the open network shares your data</a
+            >.
+          </p>
+          <p class="text-fg-muted mt-4">
+            Once your token earns contributor access, you can also{" "}
+            <a href="/ais/ais-catcher/#readback"
+              >read the network in a separate AIS-catcher viewer</a
+            >. Keep that viewer separate from this receiver’s sharing output so
+            network traffic is not sent back as your own reception.
+          </p>
+        </section>
+
+        <section id="help" class="mb-16 scroll-mt-24">
+          <h3 class="mb-5">If no ships appear</h3>
+          <div class="space-y-5">
+            {
+              troubleshooting.map(({ symptom, action }) => (
+                <div>
+                  <>
+                    <h4 class="mb-1 text-base">{symptom}</h4>
+                    <p class="text-fg-muted">{action}</p>
+                  </>
+                </div>
+              ))
+            }
+          </div>
+          <p class="text-fg-muted mt-5 text-sm">
+            Still stuck? <a href={`mailto:${CONTACT_EMAIL}`}>Email us</a> with your
+            computer type and the step you're on, without your token. See also <a
+              href={`${DOCS}/advanced/troubleshooting/`}
+              >AIS-catcher troubleshooting</a
+            >.
+          </p>
+        </section>
+      </section>
+
+      <section id="permanent" class="border-line scroll-mt-24 border-t pt-10">
+        <p class="text-fg-muted mb-3 text-sm">Optional next step</p>
+        <h2 class="mb-4">Make it permanent</h2>
+        <p class="text-fg-muted mb-8">
+          Start here once your computer setup works. Reuse your receiver and
+          Open Waters token. A dedicated computer can keep it running; an
+          outdoor antenna can improve the view of the water. You can do either
+          separately, and keep the starter setup for as long as it suits you.
+        </p>
+        <details class="border-line mb-6 rounded-xl border p-5">
+          <summary class="cursor-pointer text-lg font-semibold"
+            >Leave a Raspberry Pi running</summary
+          >
+          <p class="text-fg-muted mt-4 mb-4">
+            A Pi is a small computer you can leave beside the antenna. It uses
+            the same USB receiver and indoor antenna. Budget for a computer,
+            power supply, case and storage in addition to your starter kit;
+            you'll also prepare its software and home-network access.
+          </p>
+          <ul class="text-fg-muted mb-5 list-disc space-y-2 pl-5">
+            <li>
+              <a
+                href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/"
+                >Raspberry Pi 4 Model B, 2 GB</a
+              >, or a compatible Pi you already own
+            </li>
+            <li>
+              <a
+                href="https://www.raspberrypi.com/products/type-c-power-supply/"
+                >Official 15 W USB-C power supply</a
+              > with your region's plug
+            </li>
+            <li>
+              <a
+                href="https://www.raspberrypi.com/products/raspberry-pi-4-case/"
+                >Pi 4 case</a
+              >
+            </li>
+            <li>
+              32 GB microSD card and a card reader for your setup computer, if
+              it doesn't have one
+            </li>
+            <li>
+              Your home Wi-Fi, or an Ethernet cable for a wired connection
+            </li>
+          </ul>
+          <p class="text-fg-muted mb-4 text-sm">
+            Check bundle contents before buying. Pi prices vary by region; these
+            purchases are extra to the antenna kit. No new antenna is required.
+          </p>
+          <ol class="text-fg-muted mb-4 list-decimal space-y-3 pl-6">
+            <li>
+              On your existing computer, install <a
+                href="https://www.raspberrypi.com/software/"
+                >Raspberry Pi Imager</a
+              >. Select Pi 4 and Raspberry Pi OS Lite (64-bit), then your
+              microSD card. Writing the image erases the selected card, so
+              double-check the device.
+            </li>
+            <li>
+              In Imager's customization, set hostname <code>aisreceiver</code>,
+              your own username and password, Wi-Fi details and country, and
+              enable SSH with password authentication. Follow the <a
+                href="https://www.raspberrypi.com/documentation/computers/getting-started.html"
+                >official setup guide</a
+              > if the screen labels differ.
+            </li>
+            <li>
+              Eject the card, put it in the Pi, move the USB receiver from your
+              computer to the Pi, and connect power. Stop the old receiver
+              software first.
+            </li>
+            <li>
+              From Terminal on a Mac/Linux computer or PowerShell on Windows,
+              run <code>ssh YOUR_USERNAME@aisreceiver.local</code>, replacing <code
+                >YOUR_USERNAME</code
+              >. Confirm the connection to your Pi, then enter the password you
+              set. If the hostname isn't found, use the Pi's local IP address
+              from your router.
+            </li>
+            <li>In that SSH session, run the installer below.</li>
+          </ol>
+          <CodeBlock code={installLinux} class="mb-4" />
+          <p class="text-fg-muted mb-3">
+            From a second Terminal or PowerShell window on your normal computer,
+            copy the original downloaded config to the Pi. Replace <code
+              >YOUR_USERNAME</code
+            > with the Pi username:
+          </p>
+          <CodeBlock
+            code="scp $HOME/Downloads/aiscatcher.json YOUR_USERNAME@aisreceiver.local:aiscatcher.json"
+            class="mb-4"
+          />
+          <p class="text-fg-muted mb-3">
+            Back in the Pi's SSH session, load it into this fresh installation.
+            It uses the same token, keeping your station identity. Don't run
+            this on a Pi with an existing receiver configuration you want to
+            keep.
+          </p>
+          <CodeBlock
+            code={installConfig.replace(
+              "~/Downloads/aiscatcher.json",
+              "~/aiscatcher.json",
+            )}
+            class="mb-4"
+          />
+          <p class="text-fg-muted mb-4">
+            From your normal computer, open <a
+              href="http://aisreceiver.local:8118/"
+              >http://aisreceiver.local:8118</a
+            >. Set the new dashboard password, then follow <a
+              href="#first-ships">the Start and reception steps</a
+            >. If you deleted the original download, return to the same
+            browser's token page to download it again; don't generate a new
+            station on the Pi.
+          </p>
+          <p class="text-fg-muted">
+            The installer sets up a background service. In the SSH session, run <code
+              >sudo reboot</code
+            >; the connection will close. After the Pi starts again, check both
+            its local dashboard and your Open Waters station page to confirm
+            receiving and sharing resume. Leave its dashboard on your home
+            network.
+          </p>
+        </details>
+        <details class="border-line mb-8 rounded-xl border p-5">
+          <summary class="cursor-pointer text-lg font-semibold"
+            >Install a permanent outdoor antenna</summary
+          >
+          <p class="text-fg-muted mt-4 mb-4">
+            If buildings or a low window limit reception, an outdoor location
+            with a clearer view may help. This adds the cost and work of a
+            weatherproof marine VHF/AIS antenna, mount, cable, matching
+            connectors and an installation suitable for your site. Your computer
+            or Pi can keep using the same SDR.
+          </p>
+          <p class="text-fg-muted">
+            The kit's telescopic antenna isn't made for permanent outdoor use.
+            Before purchasing, follow the <a href={`${DOCS}/what-you-need/`}
+              >AIS-catcher equipment guidance</a
+            >{" "}
+            and your antenna manufacturer's mounting and grounding instructions. This
+            is an advanced installation, optional for contributing.
+          </p>
+        </details>
+        <p class="text-fg-muted text-sm">
+          Already have a dAISy? It decodes AIS itself, but still needs a
+          computer to share its messages. Use the <a
+            href="https://wegmatt.com/docs.html"
+            >dedicated receiver instructions</a
+          >. Equipment and software links checked October 11, 2026. The setup
+          instructions follow the manufacturers' documentation; these hardware
+          combinations have not been tested by Open Waters.
+        </p>
+      </section>
+    </div>
+  </Container>
+</MainLayout>

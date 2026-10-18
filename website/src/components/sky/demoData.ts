@@ -2,7 +2,9 @@ import {
   moonIllumination,
   searchMoonPhases,
   sunAltAz,
+  sunAltitudeEvents,
   sunEvents,
+  sunTransits,
   type Observer,
 } from "@openwaters/almanac";
 
@@ -41,6 +43,66 @@ const TRANSITIONS = {
   astroDawn: [4, 3],
   astroDusk: [3, 4],
 } as const;
+
+type Crossing = { time: Date; kind: "rising" | "falling" };
+export type SunSpan = { from: Date; to: Date; morning: boolean };
+
+/**
+ * The stretches of `[start, end)` the Sun spends between two altitude
+ * crossings. The Sun enters rising through `lower` or falling through
+ * `upper`, and leaves the other way. A span cut by the window edge is clipped
+ * to it.
+ */
+function spans(
+  start: Date,
+  end: Date,
+  lower: Crossing[],
+  upper: Crossing[],
+): SunSpan[] {
+  const marks = [
+    ...lower.map((c) => ({ ...c, enter: c.kind === "rising" })),
+    ...upper.map((c) => ({ ...c, enter: c.kind === "falling" })),
+  ].sort((a, b) => a.time.getTime() - b.time.getTime());
+  // ponytail: a day with no crossing at all counts as outside the band. The
+  // Sun can graze inside it all day near the poles; check altitude if a
+  // demo ever shows one.
+  let from: Date | null = marks[0] && !marks[0].enter ? start : null;
+  const out: SunSpan[] = [];
+  for (const m of marks) {
+    if (m.enter) from = m.time;
+    else if (from) {
+      out.push({ from, to: m.time, morning: m.kind === "rising" });
+      from = null;
+    }
+  }
+  const last = marks.at(-1);
+  if (from && last)
+    out.push({ from, to: end, morning: last.kind === "rising" });
+  return out;
+}
+
+/**
+ * Golden hour (Sun between the horizon and +6°) and blue hour (−4° to −8°),
+ * the definitions the Slackwater app uses, plus solar noon and midnight.
+ * Golden hour runs from sunrise or to sunset, so its horizon end is the same
+ * upper-limb instant as the sunrise readout.
+ */
+export function sunHours(start: Date, end: Date, observer: Observer) {
+  const at = (deg: number) => sunAltitudeEvents(start, end, observer, deg);
+  const horizon = sunEvents(start, end, observer).flatMap(
+    ({ time, kind }): Crossing[] =>
+      kind === "rise"
+        ? [{ time, kind: "rising" }]
+        : kind === "set"
+          ? [{ time, kind: "falling" }]
+          : [],
+  );
+  return {
+    golden: spans(start, end, horizon, at(6)),
+    blue: spans(start, end, at(-8), at(-4)),
+    transits: sunTransits(start, end, observer),
+  };
+}
 
 export function twilightDay(
   latitude: number,
@@ -82,7 +144,20 @@ export function twilightDay(
     stage = event.transition[1];
   }
   if (from < 24) bands.push({ from, to: 24, stage });
-  return { start, bands };
+  const hour = (t: Date) => (t.getTime() - start.getTime()) / 3_600_000;
+  const span = (s: SunSpan) => ({
+    from: hour(s.from),
+    to: hour(s.to),
+    morning: s.morning,
+  });
+  const extra = sunHours(start, end, observer);
+  return {
+    start,
+    bands,
+    golden: extra.golden.map(span),
+    blue: extra.blue.map(span),
+    transits: extra.transits.map((t) => ({ hour: hour(t.time), kind: t.kind })),
+  };
 }
 
 export function sunYear(observer: Observer, year = 2026) {

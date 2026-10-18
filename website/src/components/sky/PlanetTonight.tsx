@@ -150,7 +150,9 @@ export default function PlanetTonight() {
           <p className="text-fg-muted text-sm">
             The horizontal line is the horizon. Background shading follows
             twilight; tracks below −17° are clipped. Being above the horizon
-            does not guarantee visibility.
+            does not guarantee visibility: Uranus is at the edge of naked-eye
+            sight under a truly dark sky, and Neptune needs binoculars or a
+            telescope.
           </p>
           <div className="flex flex-wrap gap-2">
             {PLANETS.map((p, i) => (

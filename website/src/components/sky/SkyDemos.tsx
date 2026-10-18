@@ -1,10 +1,16 @@
 import { useMemo, useState } from "react";
-import { moonIllumination, moonAltAz } from "@openwaters/almanac";
+import {
+  moonAltAz,
+  moonIllumination,
+  moonOrientation,
+  moonTransits,
+} from "@openwaters/almanac";
 import { DateTime } from "../DateTime";
 import { cn } from "../../utils/cn";
-import { moonPath, phaseName } from "./moonPath";
+import { moonPath, moonTiltDeg, phaseName } from "./moonPath";
 import { moonMonth, twilightDay } from "./demoData";
 import { LocationPicker, useLocation, toObserver } from "./LocationPicker";
+import { startOfZonedDay } from "./time";
 
 const DAY_MS = 86_400_000;
 const PHASE_LABELS = {
@@ -23,7 +29,16 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
   const illumination = moonIllumination(instant);
   const name = phaseName(illumination.phase);
   const selectedDay = Math.floor(offset);
-  const altitude = moonAltAz(instant, toObserver(place)).altDeg;
+  const observer = toObserver(place);
+  const altitude = moonAltAz(instant, observer).altDeg;
+  const tilt = moonTiltDeg(moonOrientation(instant, observer));
+  const dayStart = startOfZonedDay(place.tz, instant);
+  const highest = moonTransits(
+    dayStart,
+    new Date(dayStart.getTime() + DAY_MS),
+    observer,
+  ).find((t) => t.kind === "upper")?.time;
+  const highestAlt = highest && moonAltAz(highest, observer).altDeg;
   const changeMonth = (value: string) => {
     setMonth(value);
     setOffset(0.5);
@@ -75,17 +90,12 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
             viewBox="0 0 160 160"
             className="size-32 shrink-0 sm:size-40"
             role="img"
-            aria-label={`${name}, ${Math.round(illumination.fraction * 100)}% illuminated`}
+            aria-label={`${name}, ${Math.round(illumination.fraction * 100)}% illuminated, tilted as seen from ${place.label}`}
           >
             <circle cx="80" cy="80" r="70" fill="#1e293b" />
             <path
-              d={moonPath(
-                80,
-                80,
-                70,
-                illumination.fraction,
-                illumination.waxing,
-              )}
+              d={moonPath(80, 80, 70, illumination.fraction, true)}
+              transform={`rotate(${tilt} 80 80)`}
               fill="#f4f4ef"
             />
           </svg>
@@ -113,6 +123,25 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
             <p className="text-fg-muted text-sm">
               Moon {Math.abs(altitude).toFixed(1)}°{" "}
               {altitude >= 0 ? "above" : "below"} the horizon here
+            </p>
+            <p className="text-fg-muted text-sm">
+              Highest this day{" "}
+              {highest && highestAlt !== undefined ? (
+                <>
+                  <DateTime
+                    datetime={highest}
+                    timeZone={place.tz}
+                    hour="2-digit"
+                    minute="2-digit"
+                  />
+                  , {Math.abs(highestAlt).toFixed(0)}°{" "}
+                  {highestAlt >= 0 ? "up" : "below the horizon"}
+                </>
+              ) : (
+                // The Moon transits every 24 h 50 min, so one civil day a
+                // month has no upper transit.
+                "— (no transit)"
+              )}
             </p>
           </div>
         </div>
@@ -184,10 +213,12 @@ export function MoonFilmstrip({ initialMonth }: { initialMonth: string }) {
         ))}
       </div>
       <p className="text-fg-muted text-sm">
-        Phase buttons jump to the exact instant. The upright discs illustrate
-        illumination; their tilt in your sky depends on your location. Phase is
-        effectively the same worldwide; location changes the local time and Moon
-        altitude.
+        Phase buttons jump to the exact instant. The large disc is turned the
+        way the Moon sits in the sky at the chosen place and time, with its lit
+        side toward the Sun, even when it is below the horizon. The small daily
+        discs stay upright, the calendar convention. Phase is effectively the
+        same worldwide; location changes the local time, the Moon's altitude,
+        and its tilt.
       </p>
     </div>
   );
@@ -200,6 +231,10 @@ const STAGES = [
   { label: "Astronomical twilight", color: "#414c78" },
   { label: "Night", color: "#101c35" },
 ];
+const HOURS = [
+  { key: "golden", label: "Golden hour (0° to +6°)", color: "#f29e38" },
+  { key: "blue", label: "Blue hour (−4° to −8°)", color: "#4f7fd1" },
+] as const;
 const hourLabel = (hours: number) => {
   const minutes = Math.round(hours * 60);
   return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
@@ -208,7 +243,7 @@ const hourLabel = (hours: number) => {
 export function TwilightRibbon() {
   const [place, setPlace] = useLocation();
   const [month, setMonth] = useState<6 | 12>(6);
-  const { start, bands } = useMemo(
+  const { start, bands, golden, blue, transits } = useMemo(
     () => twilightDay(place.lat, month, place.lon, place.tz),
     [place, month],
   );
@@ -216,6 +251,12 @@ export function TwilightRibbon() {
     .filter((band) => band.stage === 0)
     .reduce((hours, band) => hours + band.to - band.from, 0);
   const location = place.label;
+  const noon = transits.find((t) => t.kind === "upper");
+  const midnight = transits.find((t) => t.kind === "lower");
+  const hourSpans = [
+    ...golden.map((s) => ({ ...s, kind: HOURS[0] })),
+    ...blue.map((s) => ({ ...s, kind: HOURS[1] })),
+  ].sort((a, b) => a.from - b.from);
 
   return (
     <div className="space-y-5">
@@ -244,11 +285,11 @@ export function TwilightRibbon() {
       </div>
       <div>
         <svg
-          viewBox="0 0 800 60"
+          viewBox="0 0 800 80"
           preserveAspectRatio="none"
-          className="block h-16 w-full"
+          className="block h-20 w-full"
           role="img"
-          aria-label={`Daylight and twilight at ${location} on ${month === 6 ? "June" : "December"} 21, 2026. ${daylight.toFixed(1)} hours of daylight. Exact intervals are listed below.`}
+          aria-label={`Daylight, twilight, golden hour and blue hour at ${location} on ${month === 6 ? "June" : "December"} 21, 2026. ${daylight.toFixed(1)} hours of daylight. Exact intervals are listed below.`}
         >
           {bands.map((band) => (
             <rect
@@ -258,6 +299,38 @@ export function TwilightRibbon() {
               width={((band.to - band.from) / 24) * 800}
               height="60"
               fill={STAGES[band.stage]!.color}
+            />
+          ))}
+          {/* Golden and blue hour on their own lane under the ribbon: blue
+              hour straddles the civil/nautical boundary, so drawing it on top
+              would hide the band edges it crosses. */}
+          {hourSpans.map((s) => (
+            <rect
+              key={`${s.kind.key}-${s.from}`}
+              x={(s.from / 24) * 800}
+              y="64"
+              width={((s.to - s.from) / 24) * 800}
+              height="16"
+              rx="2"
+              fill={s.kind.color}
+            />
+          ))}
+          {transits.map((t) => (
+            <line
+              key={t.kind}
+              x1={(t.hour / 24) * 800}
+              x2={(t.hour / 24) * 800}
+              y1="0"
+              y2="60"
+              // Dark on the light bands, white on the dark ones.
+              stroke={
+                (bands.find((b) => t.hour < b.to)?.stage ?? 4) < 2
+                  ? "#101c35"
+                  : "#ffffff"
+              }
+              strokeWidth="2"
+              strokeDasharray={t.kind === "lower" ? "4 4" : undefined}
+              vectorEffect="non-scaling-stroke"
             />
           ))}
         </svg>
@@ -274,6 +347,36 @@ export function TwilightRibbon() {
               <rect width="12" height="12" rx="2" fill={stage.color} />
             </svg>
             {stage.label}
+          </span>
+        ))}
+        {HOURS.map((h) => (
+          <span key={h.key} className="inline-flex items-center gap-2">
+            <svg width="12" height="12" aria-hidden="true">
+              <rect width="12" height="12" rx="2" fill={h.color} />
+            </svg>
+            {h.label}
+          </span>
+        ))}
+        {[
+          { label: "Solar noon", t: noon, dash: undefined },
+          { label: "Solar midnight", t: midnight, dash: "3 2" },
+        ].map(({ label, t, dash }) => (
+          <span key={label} className="inline-flex items-center gap-2">
+            <svg width="12" height="12" aria-hidden="true">
+              <line
+                x1="6"
+                x2="6"
+                y1="0"
+                y2="12"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeDasharray={dash}
+              />
+            </svg>
+            {label}{" "}
+            <span className="text-fg-muted tabular-nums">
+              {t ? hourLabel(t.hour) : "—"}
+            </span>
           </span>
         ))}
       </div>
@@ -296,13 +399,22 @@ export function TwilightRibbon() {
       </p>
       <details className="text-sm">
         <summary className="text-accent cursor-pointer font-medium">
-          Exact twilight intervals
+          Exact twilight, golden and blue hour intervals
         </summary>
         <ul className="mt-3 space-y-1">
           {bands.map((band) => (
             <li key={band.from} className="tabular-nums">
               {hourLabel(band.from)}–{hourLabel(band.to)} ·{" "}
               {STAGES[band.stage]!.label}
+            </li>
+          ))}
+        </ul>
+        <ul className="mt-3 space-y-1">
+          {hourSpans.map((s) => (
+            <li key={`${s.kind.key}-${s.from}`} className="tabular-nums">
+              {hourLabel(s.from)}–{hourLabel(s.to)} ·{" "}
+              {s.morning ? "Morning" : "Evening"}{" "}
+              {s.kind.key === "golden" ? "golden hour" : "blue hour"}
             </li>
           ))}
         </ul>

@@ -12,6 +12,7 @@ const MAP = "/ais/vessels";
 const STATIONS = "/ais/stations";
 const pre =
   "bg-well overflow-x-auto rounded-lg p-4 text-sm break-all whitespace-pre-wrap text-fg-strong";
+const tokenPre = pre.replace("text-sm", "text-xs");
 ---
 
 <MainLayout
@@ -44,7 +45,7 @@ const pre =
       data-server={SERVER}
       data-stations={STATIONS}
     >
-      <Card>
+      <Card data-form>
         <p class="text-fg-muted mb-5">
           Your token and station are tied to this browser. Come back any time to
           get the same station id or to rename it. Clearing this browser's data
@@ -102,44 +103,120 @@ const pre =
 
       <div data-out hidden class="space-y-8">
         <Card>
-          <div class="mb-3 flex items-center justify-between gap-3">
-            <h2 class="text-xl font-semibold">Your token</h2>
+          <div class="mb-5 flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h2 class="text-xl font-semibold">Your station</h2>
+              <p data-sub class="text-fg-faint truncate font-mono text-sm"></p>
+            </div>
+            <a
+              data-stlink
+              href={MAP}
+              class="btn btn-secondary shrink-0 text-sm"
+            >
+              View station
+              <Icon name="mdi:chevron-right" class="size-4" />
+            </a>
+          </div>
+          <div class="bg-well mb-5 flex items-center gap-3 rounded-lg p-4">
+            <span class="relative flex size-3 shrink-0">
+              <span
+                data-rx-ping
+                hidden
+                class="bg-cta absolute inline-flex size-full animate-ping rounded-full opacity-75"
+              ></span>
+              <span data-rx-dot class="bg-fg-faint relative size-3 rounded-full"
+              ></span>
+            </span>
+            <div>
+              <p
+                class="text-fg-faint text-xs font-medium tracking-wide uppercase"
+              >
+                Live status
+              </p>
+              <p data-rx role="status" class="text-fg-strong font-medium">
+                Checking for data…
+              </p>
+            </div>
+          </div>
+          <h3 class="mb-2 text-base font-semibold">Token</h3>
+          <pre data-token class={tokenPre}></pre>
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
             <button type="button" data-copy class="btn btn-secondary text-sm">
               <Icon name="mdi:content-copy" class="size-4" />
               <span data-copy-label>Copy</span>
             </button>
+            <button
+              type="button"
+              data-regen
+              class="text-fg-muted hover:text-accent-hover cursor-pointer text-sm underline-offset-4 hover:underline"
+            >
+              Regenerate token
+            </button>
           </div>
-          <pre data-token class={pre}></pre>
-          <p class="text-fg-muted mt-3 text-sm">
-            Station id <code class="bg-surface rounded px-1" data-sub></code>,
-            expires <span data-exp></span>. Your data appears as <code
-              class="bg-surface rounded px-1"
-              >source: station:&lt;station id&gt;</code
-            >; see it on <a data-stlink href={MAP}>the live map</a> or at <code
-              class="bg-surface rounded px-1">/v1/stations</code
-            >.
-          </p>
         </Card>
 
         <Card>
           <h2 class="mb-4 text-xl font-semibold">Send your receiver's data</h2>
           <h3 class="mb-1 text-base font-semibold">AIS-catcher</h3>
+          <p class="text-fg-muted mb-3 text-sm">
+            Starting with a USB RTL-SDR? Download a config with your token,
+            receiver input, and Open Waters output already filled in. Follow the{
+              " "
+            }
+            <a href="/ais/getting-started/ashore/#install">shore setup guide</a
+            >{" "}
+            to install and launch it, then press Start in the dashboard.
+          </p>
+          <a
+            data-config-download
+            download="aiscatcher.json"
+            class="btn btn-primary mb-3"
+          >
+            Download AIS-catcher config
+          </a>
+          <p class="text-fg-muted mb-5 text-sm">
+            This file contains your private token. Keep it private. It is for a
+            new RTL-SDR setup; don't replace an existing receiver's config.
+            AIS-catcher's separate community sharing is disabled.
+          </p>
           <p class="text-fg-muted mb-2 text-sm">
-            Realtime over MQTT, authenticated, works behind any NAT:
+            Already have a receiver setup? Append the options starting at
+            <code>-Q</code> to its existing command, keeping your input settings and
+            other outputs. The full MQTT example:
           </p>
           <pre data-cmd-aiscatcher class={`${pre} mb-3`}></pre>
           <p class="text-fg-muted mb-2 text-sm">
-            Or its HTTP output, one batch every five seconds:
+            Or append the HTTP output options starting at <code>-H</code>,
+            sending one batch every five seconds:
           </p>
           <pre data-cmd-aiscatcher-http class={`${pre} mb-5`}></pre>
+          <p class="text-fg-muted mb-5 text-sm">
+            MQTT requires the explicit <code>:443</code> port and{" "}
+            <code>MSGFORMAT NMEA</code> (or <code>NMEA_TAG</code> for receive timestamps).
+            To read network traffic into AIS-catcher, follow the{" "}
+            <a href="/ais/ais-catcher/#readback"
+              >separate network viewer guide</a
+            >; keep that traffic out of your receiver’s sharing outputs.
+          </p>
           <h3 class="mb-1 text-base font-semibold">Signal K</h3>
           <p class="text-fg-muted mb-5 text-sm">
             Install <code class="bg-surface rounded px-1">signalk-aiscast</code> from
             the App Store. It creates its own token; nothing to paste.
           </p>
+          <h3 class="mb-1 text-base font-semibold">docker-shipfeeder</h3>
+          <p class="text-fg-muted mb-5 text-sm">
+            Update to the latest image and enable{" "}
+            <code>OPENWATERS_SHAREDATA=true</code>. It creates and saves its own
+            token for MQTT. You can instead set <code
+              >OPENWATERS_FEEDER_KEY</code
+            >
+            to the token above to reuse this station. Follow the{" "}
+            <a href="/ais/contribute/#docker">shipfeeder setup guide</a> for the Compose
+            settings and UDP fallback behavior.
+          </p>
           <h3 class="mb-1 text-base font-semibold">UDP</h3>
           <p class="text-fg-muted text-sm">
-            docker-shipfeeder or any forwarder: host <code
+            For a NMEA forwarder using UDP: host <code
               class="bg-surface rounded px-1">udp.ais.openwaters.io</code
             >, port <code class="bg-surface rounded px-1">10110</code>, no
             token. The station appears as an anonymous <code
@@ -174,12 +251,58 @@ const pre =
 </MainLayout>
 
 <script>
+  import { aiscatcherConfig } from "../../utils/aiscatcher-config";
+  import { stationStatus } from "../../utils/station-status";
+  import { track } from "../../utils/analytics";
+
   const root = document.querySelector<HTMLElement>("[data-token-page]")!;
   const server = root.dataset.server!;
   const stations = root.dataset.stations!;
   const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+  const form = $("[data-form]");
 
   type Claims = { sub: string; exp?: number };
+  function usableToken(
+    value: unknown,
+  ): value is { token: string; claims: Claims; name_error?: string } {
+    if (!value || typeof value !== "object") return false;
+    const { token, claims } = value as { token?: unknown; claims?: Claims };
+    if (
+      typeof token !== "string" ||
+      !/^ak1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{86}$/.test(token) ||
+      !claims ||
+      typeof claims.sub !== "string" ||
+      !/^ed25519:[A-Za-z0-9_-]{43}$/.test(claims.sub) ||
+      (claims.exp !== undefined &&
+        (typeof claims.exp !== "number" ||
+          !Number.isFinite(claims.exp) ||
+          (claims.exp !== 0 && claims.exp * 1000 <= Date.now())))
+    )
+      return false;
+    try {
+      const body = JSON.parse(
+        atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")),
+      );
+      return (
+        body.sub === claims.sub &&
+        body.exp === (claims.exp ?? 0) &&
+        body.role === "personal"
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  function storedToken() {
+    try {
+      const value: unknown = JSON.parse(
+        localStorage.getItem("aiscast.token") ?? "null",
+      );
+      return usableToken(value) ? value : null;
+    } catch {
+      return null;
+    }
+  }
   const b64url = (buf: ArrayBuffer) =>
     btoa(String.fromCharCode(...new Uint8Array(buf)))
       .replace(/\+/g, "-")
@@ -204,24 +327,93 @@ const pre =
     return dev;
   }
 
+  let configUrl: string | undefined;
   function show(token: string, claims: Claims) {
+    if (configUrl) URL.revokeObjectURL(configUrl);
+    configUrl = URL.createObjectURL(
+      new Blob([aiscatcherConfig(token)], {
+        type: "application/json",
+      }),
+    );
+    $<HTMLAnchorElement>("[data-config-download]").href = configUrl;
     $("[data-token]").textContent = token;
-    $("[data-sub]").textContent = claims.sub;
-    $("[data-exp]").textContent = claims.exp
-      ? new Date(claims.exp * 1000).toISOString().slice(0, 10)
-      : "never";
+    const subEl = $("[data-sub]");
+    subEl.textContent = abbreviate(claims.sub);
+    subEl.title = claims.sub;
     // Left unencoded: the id's colons and slashes are legal in a path, the route is a
     // splat, and this is the address /ais/vessels?station= redirects to, so the link a
     // volunteer copies is already the canonical one.
     $<HTMLAnchorElement>("[data-stlink]").href =
       `${stations}/station:${claims.sub}`;
+    // No -d:0. It selects SDR device index 0, which is already the default, so
+    // it adds nothing for the dongle case and hard-fails every other input with
+    // "Device Manager: device does not exist" — a serial VHF feed (-e), a
+    // network feed (-t), or a UDP feed (-x). Verified against AIS-catcher
+    // v0.70; both commands below were confirmed working without it.
     $("[data-cmd-aiscatcher]").textContent =
-      `AIS-catcher -d:0 -Q wssmqtt://x:${token}@${server.replace(/^https?:\/\//, "")}:443/v1/stream MSGFORMAT NMEA`;
+      `AIS-catcher -Q wssmqtt://x:${token}@${server.replace(/^https?:\/\//, "")}:443/v1/stream MSGFORMAT NMEA`;
     $("[data-cmd-aiscatcher-http]").textContent =
-      `AIS-catcher -d:0 -H ${server}/v1/receive USERPWD x:${token} GZIP on INTERVAL 5`;
+      `AIS-catcher -H ${server}/v1/receive USERPWD x:${token} GZIP on INTERVAL 5`;
     $("[data-cmd-ws]").textContent =
       `websocat ${server.replace(/^http/, "ws")}/v0/stream\n{"APIKey":"${token}","BoundingBoxes":[[[41,-71.5],[42.5,-69.5]]]}`;
     $("[data-out]").hidden = false;
+    form.hidden = true;
+    clearInterval(rxTimer);
+    checkReceiving(claims.sub);
+    rxTimer = setInterval(() => checkReceiving(claims.sub, true), 60_000);
+  }
+
+  // ed25519:FtsAVnQJaoWPFk3G… → FtsAVn…Dkb4o; the title keeps the full id.
+  function abbreviate(sub: string) {
+    const key = sub.slice(sub.indexOf(":") + 1);
+    return key.length > 14 ? `${key.slice(0, 6)}…${key.slice(-5)}` : key;
+  }
+
+  let rxTimer: ReturnType<typeof setInterval> | undefined;
+  // A slow check could finish after a newer one and show an older status, so
+  // a poll waits for the check in flight, and only the latest check may write.
+  let rxSeq = 0;
+  let rxBusy = false;
+  let receivingObserved = false;
+
+  async function checkReceiving(sub: string, poll = false) {
+    if (poll && rxBusy) return;
+    const seq = ++rxSeq;
+    rxBusy = true;
+    const text = $("[data-rx]");
+    const dot = $("[data-rx-dot]");
+    const ping = $("[data-rx-ping]");
+    const light = (color: string) => {
+      dot.className = `relative size-3 rounded-full ${color}`;
+      ping.hidden = color !== "bg-cta";
+    };
+    // Rewriting the same text makes some screen readers announce it again.
+    const say = (msg: string) => {
+      if (text.textContent !== msg) text.textContent = msg;
+    };
+    try {
+      const res = await fetch(`${server}/v1/stations/station:${sub}`);
+      if (!res.ok && res.status !== 404) throw new Error(String(res.status));
+      const lastAge: number | null = res.ok
+        ? (await res.json()).station.last_age_s
+        : null;
+      if (seq !== rxSeq) return;
+      const { receiving, message } = stationStatus(lastAge);
+      say(message);
+      light(
+        receiving ? "bg-cta" : lastAge == null ? "bg-fg-faint" : "bg-highlight",
+      );
+      if (receiving && !receivingObserved) {
+        receivingObserved = true;
+        track("ais_station_receiving_observed");
+      }
+    } catch {
+      if (seq !== rxSeq) return;
+      say("Couldn't check station status");
+      light("bg-fg-faint");
+    } finally {
+      if (seq === rxSeq) rxBusy = false;
+    }
   }
 
   // The lines a token request signs, as the server checks them: no newline at
@@ -280,6 +472,7 @@ const pre =
     go.disabled = true; // one request at a time
     status.textContent = "…";
     try {
+      const operation = storedToken() ? "reissue" : "initial";
       if (!crypto?.subtle) throw new Error("this browser has no WebCrypto");
       const dev = await deviceKey();
       const bind = $<HTMLInputElement>("[data-bind]").checked;
@@ -297,14 +490,18 @@ const pre =
         }),
       });
       if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-      const { token, claims, name_error } = await res.json();
+      const response: unknown = await res.json();
+      if (!usableToken(response)) throw new Error("Invalid token response");
+      const { token, claims, name_error } = response;
       localStorage.setItem("aiscast.token", JSON.stringify({ token, claims }));
       if (!name_error) localStorage.setItem("aiscast.name", name);
       show(token, claims);
+      track("ais_token_issued", { operation });
       $("[data-go-label]").textContent = "Regenerate token";
       status.textContent = name_error
         ? `Token ready, but the name was not saved: ${name_error}.`
         : "";
+      form.hidden = !name_error;
     } catch (e) {
       const msg = String((e as Error).message || e);
       status.textContent =
@@ -324,16 +521,17 @@ const pre =
     setTimeout(() => (label.textContent = "Copy"), 1500);
   });
 
-  const prev = localStorage.getItem("aiscast.token");
+  // Reopens the form rather than regenerating at once, so the name and
+  // address binding can change with it.
+  $("[data-regen]").addEventListener("click", () => {
+    form.hidden = false;
+    form.scrollIntoView({ behavior: "smooth", block: "start" });
+    nameInput.focus({ preventScroll: true });
+  });
+
+  const prev = storedToken();
   if (prev) {
-    const { token, claims } = JSON.parse(prev) as {
-      token: string;
-      claims: Claims;
-    };
-    if (!claims.exp || claims.exp * 1000 > Date.now()) {
-      show(token, claims);
-      $("[data-go-label]").textContent = "Regenerate token";
-      status.textContent = `existing token for station ${claims.sub}`;
-    }
+    show(prev.token, prev.claims);
+    $("[data-go-label]").textContent = "Regenerate token";
   }
 </script>

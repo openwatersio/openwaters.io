@@ -106,6 +106,10 @@ test(
         !/[a-z,.:](\[[^\]]+\]\(|\*\*[A-Za-z]|`[A-Za-z])/.test(md),
         `${page}: text runs into a link, bold or code span without a space`,
       );
+      assert.ok(
+        !/\]\([^\n)]+\)[A-Za-z]/.test(md),
+        `${page}: link runs into the following word without a space`,
+      );
     }
     const stations = read("tides/stations/index.md");
     assert.match(stations, /slackwater\.xyz\/tides\//);
@@ -306,6 +310,26 @@ test(
   },
 );
 
+test("every internal link on a prerendered page resolves", { skip }, () => {
+  // Routes served by the AIS Worker on openwaters.io, not built here.
+  const external = /^\/ais\/(vessels|stations|network|map|sitemap)([/.?#]|$)/;
+  const exists = (path: string) => {
+    if (path === "/") return true;
+    const clean = path.replace(/^\//, "").replace(/\/$/, "");
+    // A page, or a real file like /robots.txt; a bare directory is not a page.
+    return (
+      existsSync(new URL(`${clean}/index.html`, dist)) ||
+      (/\.[a-z0-9]+$/i.test(clean) && existsSync(new URL(clean, dist)))
+    );
+  };
+  for (const page of globSync("**/index.html", { cwd: dist })) {
+    for (const [, href] of read(page).matchAll(/href="(\/[^"]*)"/g)) {
+      const path = href!.split(/[?#]/, 1)[0]!;
+      if (external.test(path) || path.startsWith("/_astro/")) continue;
+      assert.ok(exists(path), `${page}: dead link ${href}`);
+    }
+  }
+});
 test(
   "currents API page is built, linked, and listed wherever the tides page is",
   { skip },

@@ -1,0 +1,19 @@
+---
+const pages = Object.keys(import.meta.glob("../pages/**/*.astro"))
+  .filter((path) => !path.includes("["))
+  .map((path) =>
+    path
+      .replace("../pages", "")
+      .replace(/(?:index)?\.astro$/, "/")
+      .replace(/\/+/g, "/"),
+  );
+---
+
+<meta name="analytics-pages" content={JSON.stringify(pages)} />
+<script>
+  import { startAnalytics } from "../utils/analytics";
+  const pages = document.querySelector<HTMLMetaElement>(
+    'meta[name="analytics-pages"]',
+  )?.content;
+  if (pages) startAnalytics(JSON.parse(pages));
+</script>
