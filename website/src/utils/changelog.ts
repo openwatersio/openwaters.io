@@ -292,6 +292,29 @@ export async function localizeImages(
   return out;
 }
 
+/**
+ * Makes site-relative URLs absolute, for feed readers, which have no base URL.
+ * A srcset lists several candidates, and each one is rewritten.
+ */
+export const absoluteUrls = (html: string, site: URL) => {
+  const abs = (url: string) =>
+    url.startsWith("/") && !url.startsWith("//") ? site.origin + url : url;
+  return html
+    .replace(
+      /\b(href|src)="([^"]*)"/g,
+      (_, attr, url) => `${attr}="${abs(url)}"`,
+    )
+    .replace(
+      /\bsrcset="([^"]*)"/g,
+      (_, set: string) =>
+        // Candidates are "url [descriptor]", separated by commas.
+        `srcset="${set
+          .split(",")
+          .map((c) => c.replace(/^(\s*)(\S+)/, (_m, ws, url) => ws + abs(url)))
+          .join(",")}"`,
+    );
+};
+
 // No dots: wrangler.jsonc serves any path with a dot straight from assets, so
 // /updates/almanac-0.8.0/ would never reach the page.
 export const slugify = (text: string) =>

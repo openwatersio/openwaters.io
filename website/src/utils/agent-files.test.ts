@@ -372,7 +372,14 @@ test(
         .replace(/&gt;/g, ">")
         .replace(/&quot;/g, '"')
         .replace(/&amp;/g, "&");
-      for (const [, src] of text.matchAll(/<img[^>]*?src="([^"]+)"/g)) {
+      // Each srcset candidate is checked like a src.
+      const srcs = [
+        ...[...text.matchAll(/<img[^>]*?\ssrc="([^"]+)"/g)].map((m) => m[1]),
+        ...[...text.matchAll(/\ssrcset="([^"]+)"/g)].flatMap((m) =>
+          m[1].split(",").map((c) => c.trim().split(/\s+/)[0]),
+        ),
+      ];
+      for (const src of srcs) {
         const path = src.replace(/^https:\/\/openwaters\.io/, "");
         // Visitors load images only from this site.
         assert.ok(
