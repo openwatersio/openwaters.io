@@ -1,0 +1,36 @@
+---
+import { PROJECTS, type Project } from "../../utils/changelog";
+import { cn } from "../../utils/cn";
+
+interface Props {
+  type: "release" | "announcement";
+  projects: Project[];
+  class?: string;
+}
+
+const { type, projects, class: className } = Astro.props;
+const names = projects.length
+  ? projects.map((p) => PROJECTS[p].name).join(", ")
+  : "Open Waters";
+---
+
+<!-- On wide screens the label sits right-aligned, so the chip goes last and lines up
+     down the page; the project name varies, so it takes the ragged edge. -->
+<span
+  class={cn(
+    "text-fg-faint flex items-baseline gap-2 text-sm md:flex-row-reverse",
+    className,
+  )}
+>
+  <span
+    class={cn(
+      "rounded border px-1.5 py-0.5 text-[10px] font-medium tracking-[0.08em] uppercase",
+      type === "release"
+        ? "border-line-strong text-fg-muted"
+        : "border-accent/40 text-accent",
+    )}
+  >
+    {type === "release" ? "Release" : "Announcement"}
+  </span>{" "}
+  <span>{names}</span>
+</span>

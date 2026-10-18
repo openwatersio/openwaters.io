@@ -353,3 +353,54 @@ test(
     }
   },
 );
+
+test(
+  "every site image in the updates pages and feeds was built",
+  { skip },
+  () => {
+    const files = globSync("updates/**/{index.html,rss.xml}", { cwd: dist });
+    assert.ok(files.length > 10, `only ${files.length} updates files`);
+    let local = 0;
+    for (const file of files) {
+      // Feeds escape their HTML; &amp; goes last so it isn't decoded twice.
+      const text = read(file)
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, "&");
+      for (const [, src] of text.matchAll(/<img[^>]*?src="([^"]+)"/g)) {
+        const path = src.replace(/^https:\/\/openwaters\.io/, "");
+        // Visitors load images only from this site.
+        assert.ok(
+          path.startsWith("/"),
+          `${file}: image from another host ${src}`,
+        );
+        local++;
+        assert.ok(
+          existsSync(new URL(`.${path.split("?")[0]}`, dist)),
+          `${file}: missing image ${src}`,
+        );
+      }
+    }
+    // A published announcement with a local image must have produced one.
+    const announcements = globSync("*.md", {
+      cwd: new URL("../content/announcements/", import.meta.url),
+    }).map((f) =>
+      readFileSync(
+        new URL(`../content/announcements/${f}`, import.meta.url),
+        "utf8",
+      ),
+    );
+    // Builds publish an announcement that isn't a draft and isn't dated ahead.
+    const withImages = announcements.filter((a) => {
+      const date = /^date: ["']?([\d-]+)/m.exec(a)?.[1];
+      return (
+        !/^draft: true$/m.test(a) &&
+        !(date && Date.parse(date) > Date.now()) &&
+        /^image: ["']?\.|!\[[^\]]*\]\(\./m.test(a)
+      );
+    });
+    if (withImages.length)
+      assert.ok(local > 0, "no announcement image was built");
+  },
+);
