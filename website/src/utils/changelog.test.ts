@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import {
+  absoluteUrls,
   changelogPath,
   cleanBody,
   filterTitle,
@@ -382,5 +383,29 @@ test("localizeImages: local copies replace remote images; the rest become links"
       Promise.reject(new Error("offline")),
     ),
     '<a href="https://github.com/a.png">Map</a>',
+  );
+});
+
+test("absoluteUrls: every site-relative URL, including each srcset candidate", () => {
+  const site = new URL("https://openwaters.io/");
+  assert.equal(
+    absoluteUrls(
+      '<a href="/tides/"><img src="/_astro/a.webp" srcset="/_astro/a-400.webp 400w, /_astro/a-800.webp 800w" alt=""></a>' +
+        '<a href="https://github.com/x">x</a><img src="//cdn.example/b.png">',
+      site,
+    ),
+    '<a href="https://openwaters.io/tides/"><img src="https://openwaters.io/_astro/a.webp" srcset="https://openwaters.io/_astro/a-400.webp 400w, https://openwaters.io/_astro/a-800.webp 800w" alt=""></a>' +
+      '<a href="https://github.com/x">x</a><img src="//cdn.example/b.png">',
+  );
+});
+
+test("absoluteUrls: srcset candidates without descriptors, or after a leading space", () => {
+  const site = new URL("https://openwaters.io/");
+  assert.equal(
+    absoluteUrls(
+      '<img srcset="/a.png, /b.png 2x"><img srcset=" /c 1x,/d 2x">',
+      site,
+    ),
+    '<img srcset="https://openwaters.io/a.png, https://openwaters.io/b.png 2x"><img srcset=" https://openwaters.io/c 1x,https://openwaters.io/d 2x">',
   );
 });

@@ -9,6 +9,7 @@ import {
   type Entry,
 } from "./changelog-entries";
 import {
+  absoluteUrls,
   changelogPath,
   filterDescription,
   filterTitle,
@@ -24,10 +25,6 @@ const escape = (s: string) =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
-
-// Feed readers have no base URL for site-relative links.
-const absolute = (html: string, site: URL) =>
-  html.replace(/(href|src|srcset)="\/(?!\/)/g, `$1="${site.origin}/`);
 
 // An announcement's `rendered.html` leaves local images as placeholders that only
 // render() resolves, so the feed renders the full component, cover image first.
@@ -62,7 +59,7 @@ export async function changelogFeed(site: URL, filter: Filter = {}) {
   const items = await Promise.all(
     entries.map(async (entry) => {
       const url = new URL(entryHref(entry), site).href;
-      const html = absolute(
+      const html = absoluteUrls(
         entry.type === "release"
           ? await releaseHtml(entry.release.data.body)
           : await announcementHtml(entry, container),
