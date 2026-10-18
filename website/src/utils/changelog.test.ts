@@ -368,6 +368,14 @@ test("localizeImages: local copies replace remote images; the rest become links"
       '<p><a href="https://tracker.example/p.gif">Image</a></p>' +
       '<p><img src="/_astro/b.webp" alt="Local"></p>',
   );
+  // `$` in release-note text stays literal.
+  assert.equal(
+    await localizeImages(
+      '<img src="https://github.com/a.png" alt="costs $\' more">',
+      async () => "/_astro/a.webp",
+    ),
+    '<img src="/_astro/a.webp" alt="costs $\' more">',
+  );
   // A failed download links to the original.
   assert.equal(
     await localizeImages('<img src="https://github.com/a.png" alt="Map">', () =>

@@ -268,8 +268,6 @@ export function summarize(body: string, max = 200): string {
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
 }
 
-// No dots: wrangler.jsonc serves any path with a dot straight from assets, so
-// /changelog/almanac-0.8.0/ would never reach the page.
 /**
  * Swaps each remote image in rendered release notes for the local copy `localize`
  * returns, so visitors never load images from another host. An image it can't
@@ -286,16 +284,18 @@ export async function localizeImages(
     const url = src.replace(/&amp;/g, "&");
     const local = await localize(url).catch(() => url);
     const alt = /\balt="([^"]*)"/.exec(tag)?.[1] || "Image";
-    out = out.replace(
-      tag,
+    // Function replacers: a `$` in release-note text is not a replacement pattern.
+    out = out.replace(tag, () =>
       local.startsWith("/")
-        ? tag.replace(`src="${src}"`, `src="${local}"`)
+        ? tag.replace(`src="${src}"`, () => `src="${local}"`)
         : `<a href="${src}">${alt}</a>`,
     );
   }
   return out;
 }
 
+// No dots: wrangler.jsonc serves any path with a dot straight from assets, so
+// /changelog/almanac-0.8.0/ would never reach the page.
 export const slugify = (text: string) =>
   text
     .toLowerCase()

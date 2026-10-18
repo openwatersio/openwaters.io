@@ -59,7 +59,13 @@ const githubReleases: Loader = {
     );
     store.clear();
     for (const source of SOURCES) {
-      for (const release of toReleases(source, fetched.get(source.repo)!)) {
+      const releases = toReleases(source, fetched.get(source.repo)!);
+      // A tag scheme change can filter out a whole source without an error.
+      if (!releases.length && fetched.get(source.repo)!.length)
+        logger.warn(
+          `${source.name}: ${source.repo} has releases, but none are shown`,
+        );
+      for (const release of releases) {
         // Upstream tags can repeat a title; a date keeps both pages.
         let id = release.id;
         if (store.has(id)) {

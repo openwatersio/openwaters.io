@@ -346,7 +346,11 @@ test(
         .replace(/&amp;/g, "&");
       for (const [, src] of text.matchAll(/<img[^>]*?src="([^"]+)"/g)) {
         const path = src.replace(/^https:\/\/openwaters\.io/, "");
-        if (!path.startsWith("/")) continue; // external image
+        // Visitors load images only from this site.
+        assert.ok(
+          path.startsWith("/"),
+          `${file}: image from another host ${src}`,
+        );
         local++;
         assert.ok(
           existsSync(new URL(`.${path.split("?")[0]}`, dist)),

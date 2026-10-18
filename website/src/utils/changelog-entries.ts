@@ -96,8 +96,8 @@ export const formatDate = (date: Date, options: Intl.DateTimeFormatOptions) =>
 
 /**
  * A release's notes as HTML, with its images downloaded into the build. The hosts
- * allowed are `image.domains` in astro.config.mjs; getImage leaves any other URL as
- * it is, and localizeImages turns that into a link.
+ * allowed are `image.domains` in astro.config.mjs; getImage rejects any other URL,
+ * and localizeImages turns it into a link.
  */
 export const releaseHtml = (body: string) =>
   localizeImages(
