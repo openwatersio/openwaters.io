@@ -4,7 +4,7 @@ import { PROJECT_KEYS, TYPE_KEYS, changelogPath } from "../utils/changelog";
 import { entryHref, getEntries } from "../utils/changelog-entries";
 import { sitemapXml, toUrlPath } from "../utils/sitemap";
 
-// Every page except the dynamic routes (the changelog's are added below) —
+// Every page except the dynamic routes (the updates pages are added below) —
 // globbed rather than listed so a new page is never silently left out of the sitemap.
 //
 // Station pages are deliberately absent. slackwater.xyz is being built to own the
@@ -18,7 +18,7 @@ const staticPaths = Object.keys(import.meta.glob("./**/*.astro"))
   .map(toUrlPath)
   .sort();
 
-// The changelog's dynamic routes are prerendered, so their URLs are known here.
+// The updates pages' dynamic routes are prerendered, so their URLs are known here.
 const changelogPaths = async () => [
   ...PROJECT_KEYS.flatMap((project) =>
     TYPE_KEYS.map((type) => changelogPath({ project, type })),

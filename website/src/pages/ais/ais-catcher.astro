@@ -311,10 +311,9 @@ const faqSchema = {
 
       <figure class="mb-6">
         {
-          /* A plain img, not astro:assets: <Image> routes through the runtime
-            /_image endpoint, which on Cloudflare needs an IMAGES binding this
-            repo does not configure. The file is already sized and encoded for
-            the one place it appears, so the service has nothing to add. */
+          /* A plain img, not astro:assets: the file is already sized and
+            encoded for the one place it appears, so the image service has
+            nothing to add. */
         }
         <img
           src="/ais/ais-catcher-network.webp"

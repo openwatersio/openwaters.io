@@ -14,7 +14,7 @@ const project = z.enum(PROJECT_KEYS as [string, ...string[]]);
 async function fetchReleases(repo: string): Promise<GitHubRelease[]> {
   const headers: Record<string, string> = {
     accept: "application/vnd.github+json",
-    "user-agent": "openwaters.io changelog",
+    "user-agent": "openwaters.io updates",
   };
   // Optional, but the build machines share IPs and GitHub allows 60 anonymous
   // requests an hour per IP.
@@ -30,10 +30,10 @@ async function fetchReleases(repo: string): Promise<GitHubRelease[]> {
     // ponytail: one retry for GitHub's occasional 5xx; an outage still fails.
     let res: Response = await get().catch(get);
     if (res.status >= 500) res = await get();
-    // Failing the build beats deploying a changelog with a project missing.
+    // Failing the build beats deploying updates with a project missing.
     if (!res.ok)
       throw new Error(
-        `changelog: ${repo} releases: HTTP ${res.status}` +
+        `updates: ${repo} releases: HTTP ${res.status}` +
           (res.status === 401
             ? " (GITHUB_TOKEN is invalid or expired)"
             : [403, 429].includes(res.status) && !process.env.GITHUB_TOKEN

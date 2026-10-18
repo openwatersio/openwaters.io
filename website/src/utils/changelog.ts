@@ -21,15 +21,15 @@ export const TYPES = {
 export type TypeKey = keyof typeof TYPES;
 export const TYPE_KEYS = Object.keys(TYPES) as TypeKey[];
 
-/** A changelog view: everything, or narrowed to a project, a type, or both. */
+/** A view of the updates: everything, or narrowed to a project, a type, or both. */
 export interface Filter {
   project?: Project;
   type?: TypeKey;
 }
 
-// /changelog/, /changelog/ais/, /changelog/announcements/, /changelog/ais/announcements/
+// /updates/, /updates/ais/, /updates/announcements/, /updates/ais/announcements/
 export const changelogPath = ({ project, type }: Filter) =>
-  `/changelog/${project ? `${project}/` : ""}${type ? `${type}/` : ""}`;
+  `/updates/${project ? `${project}/` : ""}${type ? `${type}/` : ""}`;
 
 // "New releases from AIS.", "Announcements from Open Waters."
 export function filterDescription({ project, type }: Filter) {
@@ -38,10 +38,9 @@ export function filterDescription({ project, type }: Filter) {
   return `${type ? what[type] : "New releases and announcements"} from ${from}.`;
 }
 
-// "AIS releases", "Announcements", "Changelog"
+// "AIS releases", "Announcements", "Updates"
 export function filterTitle({ project, type }: Filter) {
-  if (!type)
-    return project ? `${PROJECTS[project].name} changelog` : "Changelog";
+  if (!type) return project ? `${PROJECTS[project].name} updates` : "Updates";
   const name = TYPES[type].name;
   return project ? `${PROJECTS[project].name} ${name.toLowerCase()}` : name;
 }
@@ -104,7 +103,6 @@ export const SOURCES: Source[] = [
     name: "Seascape style",
     prefix: "style-",
   },
-  { repo: "tile57", project: "charts", name: "tile57" },
   { repo: "crowd-depth", project: "charts", name: "Crowd depth" },
   { repo: "maritime-zones", project: "charts", name: "Maritime zones" },
   { repo: "almanac", project: "sky", name: "Almanac" },
@@ -295,7 +293,7 @@ export async function localizeImages(
 }
 
 // No dots: wrangler.jsonc serves any path with a dot straight from assets, so
-// /changelog/almanac-0.8.0/ would never reach the page.
+// /updates/almanac-0.8.0/ would never reach the page.
 export const slugify = (text: string) =>
   text
     .toLowerCase()

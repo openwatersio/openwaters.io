@@ -1,6 +1,6 @@
-name: Changelog rebuild
+name: Updates rebuild
 
-# The changelog reads GitHub Releases from other repos at build time, and a release
+# The updates pages read GitHub Releases from other repos at build time, and a release
 # there doesn't push here, so production is rebuilt every six hours to pick them up.
 on:
   schedule:

@@ -45,9 +45,9 @@ The AIS service is "Open Waters AIS" in prose, titles, and metadata. `aiscast` n
 
 Avoid spreading large numeric arrays into `Math.min` or `Math.max`; the argument list can overflow. Scan the values in a loop instead.
 
-## Changelog
+## Updates
 
-`/changelog/` merges two content collections defined in `website/src/content.config.ts`:
+`/updates/` merges two content collections defined in `website/src/content.config.ts`:
 
 - **Releases** come from GitHub Releases at build time. `SOURCES` in `website/src/utils/changelog.ts` lists the repositories, their category, and any tag prefix. Prereleases are left out.
 - **Announcements** are Markdown files in `website/src/content/announcements/`, with `title`, `date`, `summary`, optional `projects` (empty means all of Open Waters), and optional `image`. A file with `draft: true`, or a `date` still in the future, shows in `npm run dev` and is left out of builds. A future-dated announcement appears with the first rebuild after its date, so up to six hours late.
@@ -68,6 +68,6 @@ Cloudflare Workers Builds creates preview versions for pull requests and deploys
 - `api/wrangler.jsonc` deploys `openwaters-api` without a public route. The gateway reaches it through a service binding.
 - `gateway/wrangler.jsonc` deploys `openwaters-api-gateway`, which owns `api.openwaters.io`.
 
-A release in another repository doesn't push here, so `.github/workflows/changelog-rebuild.yml` rebuilds production every six hours through a Workers Builds deploy hook, whose URL is the `CLOUDFLARE_DEPLOY_HOOK_URL` secret in the `deploy` environment. Run the workflow by hand to publish a release sooner.
+A release in another repository doesn't push here, so `.github/workflows/updates-rebuild.yml` rebuilds production every six hours through a Workers Builds deploy hook, whose URL is the `CLOUDFLARE_DEPLOY_HOOK_URL` secret in the `deploy` environment. Run the workflow by hand to publish a release sooner.
 
 This repository has no versioned release process. A merge to `main` is the production release.

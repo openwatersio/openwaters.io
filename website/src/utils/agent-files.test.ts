@@ -355,11 +355,11 @@ test(
 );
 
 test(
-  "every site image in the changelog pages and feeds was built",
+  "every site image in the updates pages and feeds was built",
   { skip },
   () => {
-    const files = globSync("changelog/**/{index.html,rss.xml}", { cwd: dist });
-    assert.ok(files.length > 10, `only ${files.length} changelog files`);
+    const files = globSync("updates/**/{index.html,rss.xml}", { cwd: dist });
+    assert.ok(files.length > 10, `only ${files.length} updates files`);
     let local = 0;
     for (const file of files) {
       // Feeds escape their HTML; &amp; goes last so it isn't decoded twice.

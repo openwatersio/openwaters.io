@@ -67,12 +67,12 @@ export async function getEntries({ project, type }: Filter = {}): Promise<
       announcement,
     })),
   ];
-  // Entries share /changelog/<id>/ with the filter pages, and a collision would
+  // Entries share /updates/<id>/ with the filter pages, and a collision would
   // silently drop a page.
   const taken = new Set<string>([...PROJECT_KEYS, ...TYPE_KEYS]);
   for (const { id } of entries) {
     if (taken.has(id))
-      throw new Error(`changelog: duplicate or reserved id ${id}`);
+      throw new Error(`updates: duplicate or reserved id ${id}`);
     taken.add(id);
   }
 
@@ -88,8 +88,7 @@ export async function getEntries({ project, type }: Filter = {}): Promise<
     .sort((a, b) => +b.date - +a.date);
 }
 
-export const entryHref = (entry: Pick<Entry, "id">) =>
-  `/changelog/${entry.id}/`;
+export const entryHref = (entry: Pick<Entry, "id">) => `/updates/${entry.id}/`;
 
 export const formatDate = (date: Date, options: Intl.DateTimeFormatOptions) =>
   date.toLocaleDateString("en-US", { timeZone: "UTC", ...options });
@@ -100,7 +99,13 @@ export const formatDate = (date: Date, options: Intl.DateTimeFormatOptions) =>
  * and localizeImages turns it into a link.
  */
 export const releaseHtml = (body: string) =>
-  localizeImages(
-    md(body),
-    async (src) => (await getImage({ src, inferSize: true })).src,
-  );
+  localizeImages(md(body), async (src) => {
+    try {
+      return (await getImage({ src, inferSize: true })).src;
+    } catch (error) {
+      // The image still shows as a link, but a host missing from image.domains
+      // would otherwise turn every release image into one without a word.
+      console.warn(`updates: linking release image ${src}: ${error}`);
+      throw error;
+    }
+  });

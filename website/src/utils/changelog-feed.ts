@@ -50,7 +50,7 @@ const feedTitle = (entry: Entry) =>
     : entry.title;
 
 /**
- * RSS 2.0 for the changelog. Items carry the full entry as HTML, so feed readers and
+ * RSS 2.0 for the updates pages. Items carry the full entry as HTML, so feed readers and
  * RSS-to-email services can show it without a click-through.
  */
 export async function changelogFeed(site: URL, filter: Filter = {}) {

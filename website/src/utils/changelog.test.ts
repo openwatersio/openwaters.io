@@ -185,10 +185,10 @@ test("changelogPath and filterTitle: project, type, or both", () => {
   assert.deepEqual(
     filters.map((f) => [changelogPath(f), filterTitle(f)]),
     [
-      ["/changelog/", "Changelog"],
-      ["/changelog/ais/", "AIS changelog"],
-      ["/changelog/announcements/", "Announcements"],
-      ["/changelog/ais/releases/", "AIS releases"],
+      ["/updates/", "Updates"],
+      ["/updates/ais/", "AIS updates"],
+      ["/updates/announcements/", "Announcements"],
+      ["/updates/ais/releases/", "AIS releases"],
     ],
   );
 });

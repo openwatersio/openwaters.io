@@ -11,7 +11,7 @@ import {
   releaseHtml,
   type Entry,
 } from "../../utils/changelog-entries";
-import { PROJECTS } from "../../utils/changelog";
+import { PROJECTS, changelogPath } from "../../utils/changelog";
 
 export async function getStaticPaths() {
   const entries = await getEntries();
@@ -24,9 +24,9 @@ export async function getStaticPaths() {
 const { entry } = Astro.props as { entry: Entry };
 const project = entry.projects.length === 1 ? entry.projects[0] : undefined;
 const crumbs = [
-  { href: "/changelog/", label: "Changelog" },
+  { href: changelogPath({}), label: "Updates" },
   ...(project
-    ? [{ href: `/changelog/${project}/`, label: PROJECTS[project].name }]
+    ? [{ href: changelogPath({ project }), label: PROJECTS[project].name }]
     : []),
 ];
 
@@ -45,7 +45,7 @@ const image =
     ? `${entry.title}: ${entry.subtitle}`
     : entry.title}
   description={entry.summary}
-  feed={project ? `/changelog/${project}/rss.xml` : "/changelog/rss.xml"}
+  feed={`${changelogPath({ project })}rss.xml`}
 >
   <article class="container-custom max-w-3xl py-16 md:py-24">
     <nav aria-label="Breadcrumb">

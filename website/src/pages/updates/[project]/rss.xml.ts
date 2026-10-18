@@ -8,8 +8,8 @@ import {
 } from "../../../utils/changelog";
 import { changelogFeed } from "../../../utils/changelog-feed";
 
-// One segment is either a project (/changelog/ais/rss.xml) or a type
-// (/changelog/announcements/rss.xml).
+// One segment is either a project (/updates/ais/rss.xml) or a type
+// (/updates/announcements/rss.xml).
 export const getStaticPaths = (() =>
   [...PROJECT_KEYS, ...TYPE_KEYS].map((project) => ({
     params: { project },
