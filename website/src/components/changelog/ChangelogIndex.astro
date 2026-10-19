@@ -3,6 +3,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 import Icon from "../Icon.astro";
 import AnnouncementCard from "./AnnouncementCard.astro";
 import EntryLabel from "./EntryLabel.astro";
+import SubscribeForm from "./SubscribeForm.astro";
 import { cn } from "../../utils/cn";
 import {
   entryHref,
@@ -66,16 +67,10 @@ const filters = [
   feed={feed}
 >
   <div class="container-custom max-w-5xl py-16 md:py-24">
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <div>
-        <h1>Updates</h1>
-        <p class="text-lead mt-4 max-w-2xl">{description}</p>
-      </div>
-      <a href={feed} class="btn btn-secondary btn-sm">
-        <Icon name="mdi:rss" class="size-4" />
-        RSS
-      </a>
-    </div>
+    <h1>Updates</h1>
+    <p class="text-lead mt-4 max-w-2xl">{description}</p>
+
+    <SubscribeForm project={project} type={type} feed={feed} />
 
     <div
       class="mt-10 flex flex-wrap gap-x-2 gap-y-3 md:justify-between md:gap-x-8"

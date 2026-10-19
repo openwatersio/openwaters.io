@@ -6,7 +6,7 @@ import { CONTACT_EMAIL } from "../utils/constants";
 
 <MainLayout
   title="Privacy"
-  description="What the Open Waters site and APIs collect, what they do not, and who operates them."
+  description="What the Open Waters site, APIs, and email updates collect, what they do not, and who operates them."
 >
   <Container class="py-16">
     <div class="mx-auto max-w-3xl">
@@ -16,7 +16,8 @@ import { CONTACT_EMAIL } from "../utils/constants";
         <p class="text-fg-muted text-xl leading-relaxed">
           Open Waters is run by Open Water Software, LLC. There are no accounts
           here, so there is no profile to build. This page describes what the
-          site and the APIs actually see, and what they deliberately do not.
+          site, the APIs, and the email updates list actually see, and what they
+          deliberately do not.
         </p>
 
         <h2 class="mt-12 mb-6">The website</h2>
@@ -49,6 +50,18 @@ import { CONTACT_EMAIL } from "../utils/constants";
           your own machine, and clearing site data removes it.
         </p>
 
+        <h2 class="mt-12 mb-6">Email updates</h2>
+        <p>
+          If you sign up for email updates, your address and the projects you
+          pick go to <a href="https://buttondown.com/legal/privacy"
+            >Buttondown</a
+          >, which stores them and sends the emails. The form posts from your
+          browser straight to Buttondown, so it also sees the usual request
+          details, such as your IP address and browser. Signing up takes you to
+          Buttondown's site to confirm, where its own privacy policy applies,
+          and every email has a link to unsubscribe. We use the list only to
+          send Open Waters updates.
+        </p>
         <h2 class="mt-12 mb-6">The APIs</h2>
 
         <p>
@@ -92,7 +105,8 @@ import { CONTACT_EMAIL } from "../utils/constants";
           worth selling. Contributed AIS data is forwarded to the open exchanges
           named in the <a href="/api/ais/">AIS documentation</a>, which is the
           point of contributing it. The site and APIs run on Cloudflare, which
-          sees request traffic as the infrastructure provider.
+          sees request traffic as the infrastructure provider. Email updates are
+          sent by Buttondown, which holds the subscriber list.
         </p>
 
         <h2 class="mt-12 mb-6">Questions</h2>

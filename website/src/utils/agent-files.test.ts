@@ -303,6 +303,12 @@ test(
     const privacy = read("privacy/index.md");
     assert.match(privacy, /Plausible/);
     assert.match(privacy, /localStorage/);
+    // The Updates pages' sign-up form posts to Buttondown.
+    assert.match(
+      read("updates/index.html"),
+      /action="https:\/\/buttondown\.com\//,
+    );
+    assert.match(privacy, /Buttondown/);
     // No retention window here on purpose: how far back the track endpoint
     // reaches is a per-tier access limit, not how long positions are kept, and
     // the archive has no documented period to state.
