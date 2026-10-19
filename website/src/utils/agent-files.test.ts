@@ -303,7 +303,7 @@ test(
     const privacy = read("privacy/index.md");
     assert.match(privacy, /Plausible/);
     assert.match(privacy, /localStorage/);
-    // The Updates pages' sign-up form posts to Buttondown.
+    // The Updates pages' sign-up form posts to Buttondown; see the sign-up test.
     assert.match(
       read("updates/index.html"),
       /action="https:\/\/buttondown\.com\//,
@@ -419,5 +419,29 @@ test(
     });
     if (withImages.length)
       assert.ok(local > 0, "no announcement image was built");
+  },
+);
+
+test(
+  "the email sign-up pre-checks the right projects on each Updates page",
+  { skip },
+  () => {
+    const checked = (page: string) =>
+      [...read(page).matchAll(/name="tag" value="([a-z]+)" checked/g)].map(
+        (m) => m[1],
+      );
+    assert.deepEqual(checked("updates/index.html"), [
+      "ais",
+      "tides",
+      "charts",
+      "sky",
+    ]);
+    assert.deepEqual(checked("updates/ais/index.html"), ["ais"]);
+    assert.deepEqual(checked("updates/announcements/index.html"), []);
+    assert.deepEqual(checked("updates/almanac-0-11-0/index.html"), ["sky"]);
+    // The form is useless in Markdown, but the feed link beside it is not.
+    const md = read("updates/ais/index.md");
+    assert.doesNotMatch(md, /Get updates by email/);
+    assert.match(md, /\/updates\/ais\/rss\.xml/);
   },
 );

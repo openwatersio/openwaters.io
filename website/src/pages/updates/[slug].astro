@@ -5,6 +5,7 @@ import { render } from "astro:content";
 import MainLayout from "../../layouts/MainLayout.astro";
 import Icon from "../../components/Icon.astro";
 import EntryLabel from "../../components/changelog/EntryLabel.astro";
+import SubscribeForm from "../../components/changelog/SubscribeForm.astro";
 import {
   formatDate,
   getEntries,
@@ -134,5 +135,10 @@ const image =
         </div>
       )
     }
+
+    <SubscribeForm
+      project={project}
+      feed={`${changelogPath({ project })}rss.xml`}
+    />
   </article>
 </MainLayout>
