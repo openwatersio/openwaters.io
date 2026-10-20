@@ -29,6 +29,7 @@ Run these before opening a pull request:
 npm run build
 npm test -w website
 npm run build -w api
+npm run check:gateway
 ```
 
 Format website files with `npm run format -w website`. Husky and lint-staged format staged files before a commit.

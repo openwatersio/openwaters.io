@@ -1,8 +1,3 @@
-interface Env {
-  TIDES: Fetcher;
-  BATHYMETRY: Fetcher;
-}
-
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
