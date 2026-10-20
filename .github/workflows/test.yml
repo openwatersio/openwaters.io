@@ -25,3 +25,4 @@ jobs:
       - run: npm run build
       - run: npm test -w website
       - run: npm run build -w api
+      - run: npm run check:gateway
