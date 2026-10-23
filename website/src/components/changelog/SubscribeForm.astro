@@ -1,0 +1,84 @@
+---
+import Icon from "../Icon.astro";
+import {
+  PROJECTS,
+  PROJECT_KEYS,
+  type Project,
+  type TypeKey,
+} from "../../utils/changelog";
+
+interface Props {
+  /** Pre-checks only this project; every project otherwise. */
+  project?: Project;
+  /** On the announcements view with no project, nothing is pre-checked. */
+  type?: TypeKey;
+  /** The RSS feed for the page the form sits on. */
+  feed: string;
+}
+
+const { project, type, feed } = Astro.props;
+// Every subscriber gets announcements; a checked project adds its release roundups.
+const checked = (key: Project) =>
+  project ? key === project : type !== "announcements";
+// A plain form post, as Buttondown requires: it may answer with a CAPTCHA or a
+// validation page. Each checked project becomes a subscriber tag named by its key
+// (see CONTRIBUTING.md). data-nosnippet keeps the form out of the page's Markdown;
+// the RSS link sits outside it so the Markdown keeps it.
+---
+
+<form
+  action="https://buttondown.com/api/emails/embed-subscribe/openwaters"
+  method="post"
+  data-nosnippet
+  class="card mt-10 grid gap-4 md:grid-cols-[1fr_auto] md:items-end"
+>
+  <div>
+    <h2 class="text-lg tracking-tight md:text-xl">Get updates by email</h2>
+    <p class="text-fg-muted mt-1 text-sm">
+      Every subscriber gets announcements. Pick projects to get roundups of
+      their releases too. Unsubscribe from any email.
+    </p>
+    <fieldset class="mt-4">
+      <legend class="sr-only">Projects</legend>
+      <div class="flex flex-wrap gap-x-5 gap-y-2">
+        {
+          PROJECT_KEYS.map((key) => (
+            <label class="text-fg flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="tag"
+                value={key}
+                checked={checked(key)}
+                class="accent-accent size-4"
+              />
+              {PROJECTS[key].name}
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+  </div>
+  <div class="flex flex-col gap-3">
+    <div class="flex flex-wrap gap-2">
+      <label for="subscribe-email" class="sr-only">Email address</label>
+      <input
+        id="subscribe-email"
+        type="email"
+        name="email"
+        required
+        autocomplete="email"
+        placeholder="you@example.com"
+        class="border-line-strong bg-well text-fg-strong placeholder:text-fg-faint focus-visible:outline-accent min-w-0 flex-1 rounded-full border px-4 py-2 text-sm focus-visible:outline-2 md:w-64 md:flex-none"
+      />
+      <input type="hidden" name="embed" value="1" />
+      <button type="submit" class="btn btn-primary btn-sm">Subscribe</button>
+    </div>
+  </div>
+</form>
+<a
+  href={feed}
+  class="text-fg-muted hover:text-fg-strong mt-3 flex items-center gap-1.5 text-sm md:justify-end"
+>
+  <Icon name="mdi:rss" class="size-4" />
+  Or follow the RSS feed
+</a>

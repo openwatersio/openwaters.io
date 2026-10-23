@@ -68,4 +68,4 @@ Factual contrasts with the usual alternatives, checked September 2026. Their ter
 - [Updates](https://openwaters.io/updates/): releases and announcements from every project, with RSS feeds by project and type
 - [Contact](https://openwaters.io/contact/): email for licensing and higher rate limits, GitHub issues for bugs, Discord for questions
 - [License](https://openwaters.io/license/): terms for the code and data
-- [Privacy](https://openwaters.io/privacy/): no accounts and no cookies; what the site and APIs do see
+- [Privacy](https://openwaters.io/privacy/): no accounts and no cookies; what the site, the APIs, and the Buttondown email list do see

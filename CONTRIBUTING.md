@@ -53,6 +53,8 @@ Avoid spreading large numeric arrays into `Math.min` or `Math.max`; the argument
 - **Releases** come from GitHub Releases at build time. `SOURCES` in `website/src/utils/changelog.ts` lists the repositories, their category, and any tag prefix. Prereleases are left out.
 - **Announcements** are Markdown files in `website/src/content/announcements/`, with `title`, `date`, `summary`, optional `projects` (empty means all of Open Waters), and optional `image`. A file with `draft: true`, or a `date` still in the future, shows in `npm run dev` and is left out of builds. A future-dated announcement appears with the first rebuild after its date, so up to six hours late.
 
+The Updates pages have an email sign-up form for the `openwaters` newsletter on Buttondown. Every subscriber gets announcements, and each checked project becomes a subscriber tag named by its key in `PROJECTS` (`ais`, `tides`, `charts`, `sky`), which the team uses to target release roundups. Renaming or adding a project key changes the tag new subscribers get, so update the tags in Buttondown to match.
+
 `npm run build` fetches every repository's releases twice, once for `astro check` and once for `astro build`, and GitHub allows 60 anonymous requests an hour per IP. Set `GITHUB_TOKEN` in your shell, not a `.env` file, when you build more than once an hour. Use a fine-grained token with no permissions, and replace it before it expires, since an expired token fails every build with "GITHUB_TOKEN is invalid or expired": it only reads public releases, and Workers Builds, where it is a build secret, exposes it to every branch's build.
 
 ## Markdown and crawlers
