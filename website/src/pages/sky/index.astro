@@ -174,73 +174,68 @@ print(sirius.altDeg, sirius.azDeg)`;
 
       <SkyDome client:only="react">
         <div slot="fallback" class="space-y-6">
-          <div
-            class="bg-surface mx-auto aspect-square w-full max-w-[34rem] animate-pulse rounded-full"
-          >
-          </div>
+          <div class="bg-surface mx-auto aspect-square w-full max-w-[34rem] animate-pulse rounded-full"></div>
           <div class="bg-surface h-6 w-full animate-pulse rounded"></div>
         </div>
       </SkyDome>
 
       <!-- Demos -->
       <div class="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
-        {
-          explore.map((card) => (
-            <Card href={card.href} class="space-y-3">
-              <div class="text-accent">
-                <Icon name={card.icon} class="size-12" />
-              </div>
-              <h2 class="text-3xl md:text-4xl">{card.title}</h2>
-              <p class="text-fg-muted">{card.body}</p>
-              <span class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium">
-                {card.cta}
-                <svg
-                  class="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </span>
-            </Card>
-          ))
-        }
+        {explore.map((card) => (
+          <Card href={card.href} class="space-y-3">
+            <div class="text-accent">
+              <Icon name={card.icon} class="size-12" />
+            </div>
+            <h2 class="text-3xl md:text-4xl">{card.title}</h2>
+            <p class="text-fg-muted">{card.body}</p>
+            <span class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium">
+              {card.cta}
+              <svg
+                class="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </span>
+          </Card>
+        ))}
       </div>
 
       <p class="text-fg-muted mt-8">
-        The same astronomy engine powers <a
+        The same astronomy engine powers{" "}
+        <a
           href="https://slackwater.xyz/"
           class="text-accent font-medium underline-offset-4 hover:underline"
-          >Slackwater's Sun and Moon views</a
-        >, with Moon illumination and sunrise/sunset alongside the tide
-        timeline.
+        >
+          Slackwater's Sun and Moon views
+        </a>
+        , with Moon illumination and sunrise/sunset alongside the tide timeline.
       </p>
 
       <!-- Key Features -->
       <div class="mt-16 mb-16">
         <h2 class="mb-6 text-3xl font-semibold">Key Features</h2>
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {
-            features.map((feature) => (
-              <Card>
-                <div class="flex items-start gap-3">
-                  <div class="text-accent">
-                    <Icon name={feature.icon} class="size-8" />
-                  </div>
-                  <div>
-                    <h3 class="mb-2 text-lg font-semibold">{feature.title}</h3>
-                    <p class="text-fg-muted text-sm">{feature.body}</p>
-                  </div>
+          {features.map((feature) => (
+            <Card>
+              <div class="flex items-start gap-3">
+                <div class="text-accent">
+                  <Icon name={feature.icon} class="size-8" />
                 </div>
-              </Card>
-            ))
-          }
+                <div>
+                  <h3 class="mb-2 text-lg font-semibold">{feature.title}</h3>
+                  <p class="text-fg-muted text-sm">{feature.body}</p>
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
 
@@ -259,57 +254,62 @@ print(sirius.altDeg, sirius.azDeg)`;
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left tabular-nums">
-            <caption class="text-fg-muted mb-3 text-left text-sm"
-              >Median query time saved compared with Almanac 0.4.1</caption
-            >
-            <thead
-              ><tr class="border-line border-b"
-                ><th scope="col" class="py-3 pr-4">Workload</th><th
-                  scope="col"
-                  class="py-3 pr-4">TypeScript</th
-                ><th scope="col" class="py-3">Swift</th></tr
-              ></thead
-            >
+            <caption class="text-fg-muted mb-3 text-left text-sm">
+              Median query time saved compared with Almanac 0.4.1
+            </caption>
+            <thead>
+              <tr class="border-line border-b">
+                <th scope="col" class="py-3 pr-4">
+                  Workload
+                </th>
+                <th scope="col" class="py-3 pr-4">
+                  TypeScript
+                </th>
+                <th scope="col" class="py-3">
+                  Swift
+                </th>
+              </tr>
+            </thead>
             <tbody>
-              <tr class="border-line border-b"
-                ><th scope="row" class="py-3 pr-4 font-medium"
-                  >Sun events · one year</th
-                ><td class="text-accent py-3 pr-4">73.4%</td><td
-                  class="text-accent py-3">62.8%</td
-                ></tr
-              >
-              <tr class="border-line border-b"
-                ><th scope="row" class="py-3 pr-4 font-medium"
-                  >Moon events · one year</th
-                ><td class="text-accent py-3 pr-4">57.6%</td><td
-                  class="text-accent py-3">57.4%</td
-                ></tr
-              >
-              <tr class="border-line border-b"
-                ><th scope="row" class="py-3 pr-4 font-medium"
-                  >Sun events · 228 hours</th
-                ><td class="text-accent py-3 pr-4">73.4%</td><td
-                  class="text-accent py-3">61.9%</td
-                ></tr
-              >
-              <tr
-                ><th scope="row" class="py-3 pr-4 font-medium"
-                  >Moon events · 228 hours</th
-                ><td class="text-accent py-3 pr-4">57.1%</td><td
-                  class="text-accent py-3">57.0%</td
-                ></tr
-              >
+              <tr class="border-line border-b">
+                <th scope="row" class="py-3 pr-4 font-medium">
+                  Sun events · one year
+                </th>
+                <td class="text-accent py-3 pr-4">73.4%</td>
+                <td class="text-accent py-3">62.8%</td>
+              </tr>
+              <tr class="border-line border-b">
+                <th scope="row" class="py-3 pr-4 font-medium">
+                  Moon events · one year
+                </th>
+                <td class="text-accent py-3 pr-4">57.6%</td>
+                <td class="text-accent py-3">57.4%</td>
+              </tr>
+              <tr class="border-line border-b">
+                <th scope="row" class="py-3 pr-4 font-medium">
+                  Sun events · 228 hours
+                </th>
+                <td class="text-accent py-3 pr-4">73.4%</td>
+                <td class="text-accent py-3">61.9%</td>
+              </tr>
+              <tr>
+                <th scope="row" class="py-3 pr-4 font-medium">
+                  Moon events · 228 hours
+                </th>
+                <td class="text-accent py-3 pr-4">57.1%</td>
+                <td class="text-accent py-3">57.0%</td>
+              </tr>
             </tbody>
           </table>
         </div>
         <p class="text-fg-muted text-sm">
           Measurements use seven interleaved process pairs with the same harness
           and toolchain; build and startup time are excluded. Timings vary by
-          machine. CI checks for median regressions above 20%. <a
-            href={PERFORMANCE}
-            class="text-accent hover:underline"
-            >Read the benchmark results and reproduction instructions</a
-          >.
+          machine. CI checks for median regressions above 20%.{" "}
+          <a href={PERFORMANCE} class="text-accent hover:underline">
+            Read the benchmark results and reproduction instructions
+          </a>
+          .
         </p>
       </section>
 
@@ -338,21 +338,36 @@ print(sirius.altDeg, sirius.azDeg)`;
           </div>
         </Card>
         <p class="text-fg-muted mt-4 text-sm">
-          Supported interval: 1950-01-01 through 2100-12-31. See the <a
+          Supported interval: 1950-01-01 through 2100-12-31. See the{" "}
+          <a
             href={`${REPO}/blob/main/docs/SCOPE.md`}
-            class="text-accent hover:underline">supported scope</a
-          > for capabilities and limits. Coming from another library? Almanac has
-          migration guides from <a
+            class="text-accent hover:underline"
+          >
+            supported scope
+          </a>{" "}
+          for capabilities and limits. Coming from another library? Almanac has
+          migration guides from{" "}
+          <a
             href={`${REPO}/blob/main/docs/migrating-from-suncalc.md`}
-            class="text-accent hover:underline">SunCalc</a
-          > and <a
+            class="text-accent hover:underline"
+          >
+            SunCalc
+          </a>{" "}
+          and{" "}
+          <a
             href={`${REPO}/blob/main/docs/migrating-from-solar.md`}
-            class="text-accent hover:underline">Solar</a
-          >, and a <a
+            class="text-accent hover:underline"
+          >
+            Solar
+          </a>
+          , and a{" "}
+          <a
             href={`${REPO}/blob/main/docs/comparison.md`}
             class="text-accent hover:underline"
-            >comparison with other libraries</a
-          >.
+          >
+            comparison with other libraries
+          </a>
+          .
         </p>
       </div>
 
@@ -376,7 +391,10 @@ print(sirius.altDeg, sirius.azDeg)`;
               <Icon name="mdi:github" class="size-6" />
               View on GitHub
             </a>
-            <a href={PERFORMANCE} class="btn btn-secondary"> Benchmarks </a>
+            <a href={PERFORMANCE} class="btn btn-secondary">
+              {" "}
+              Benchmarks{" "}
+            </a>
           </div>
         </div>
       </Card>

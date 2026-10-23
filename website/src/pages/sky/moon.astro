@@ -81,9 +81,9 @@ console.log(moonTransits(start, end, observer).filter(t => t.kind === 'upper'));
         </div>
         <MoonFilmstrip initialMonth={initialMonth} client:load />
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
           <CodeBlock code={moonCode} class="mt-4" />
         </details>
       </section>
@@ -99,17 +99,20 @@ console.log(moonTransits(start, end, observer).filter(t => t.kind === 'upper'));
           Explore penumbral, partial and total lunar eclipses with real examples
           from 2026–2027. Scrub across each event to see what changes on the
           Moon itself. A lunar eclipse is the Earth's shadow falling on the
-          Moon; the Moon's shadow falling on the Earth is a <a
+          Moon; the Moon's shadow falling on the Earth is a{" "}
+          <a
             href="/sky/sun/#solar-eclipses"
             class="text-accent font-medium underline-offset-4 hover:underline"
-            >solar eclipse</a
-          >.
+          >
+            solar eclipse
+          </a>
+          .
         </p>
         <LunarEclipseDemo client:load />
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
           <CodeBlock
             class="mt-4"
             code={`import { lunarEclipses, lunarEclipseVisibility } from '@openwaters/almanac';

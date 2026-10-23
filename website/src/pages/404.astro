@@ -21,18 +21,16 @@ const next = [
         There is no page at this address. Where to look next:
       </p>
       <ul class="list-inside list-disc space-y-1">
-        {
-          next.map(([href, label]) => (
-            <li>
-              <a
-                href={href}
-                class="text-accent hover:text-accent-hover font-medium"
-              >
-                {label}
-              </a>
-            </li>
-          ))
-        }
+        {next.map(([href, label]) => (
+          <li>
+            <a
+              href={href}
+              class="text-accent hover:text-accent-hover font-medium"
+            >
+              {label}
+            </a>
+          </li>
+        ))}
       </ul>
     </div>
   </Container>

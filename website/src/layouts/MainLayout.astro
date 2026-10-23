@@ -72,15 +72,9 @@ const fullTitle =
       is:inline
       set:html={jsonLd(organization(CONTACT_EMAIL))}
     />
-    {
-      schema && (
-        <script
-          type="application/ld+json"
-          is:inline
-          set:html={jsonLd(schema)}
-        />
-      )
-    }
+    {schema && (
+      <script type="application/ld+json" is:inline set:html={jsonLd(schema)} />
+    )}
 
     <Analytics />
   </head>

@@ -37,14 +37,15 @@ import Icon from "../../components/Icon.astro";
 
       <div class="prose prose-xl mb-12 max-w-none">
         <p>
-          Many agencies <a
-            href="https://tidesandcurrents.noaa.gov/web_services_info.html"
-            >like NOAA</a
-          > provide high-quality tide data and prediction services. But these services
-          require online access, and are not available for every country. Slackwater
-          uses standard algorithms to predict tide heights anywhere that has <a
-            href="/tides/harmonics/">well-defined harmonic constituents</a
-          >.
+          Many agencies{" "}
+          <a href="https://tidesandcurrents.noaa.gov/web_services_info.html">
+            like NOAA
+          </a>{" "}
+          provide high-quality tide data and prediction services. But these
+          services require online access, and are not available for every
+          country. Slackwater uses standard algorithms to predict tide heights
+          anywhere that has{" "}
+          <a href="/tides/harmonics/">well-defined harmonic constituents</a>.
         </p>
       </div>
 
@@ -65,7 +66,8 @@ import Icon from "../../components/Icon.astro";
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
                 </svg>
               </div>
               <div>
@@ -92,7 +94,8 @@ import Icon from "../../components/Icon.astro";
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  ></path>
                 </svg>
               </div>
               <div>
@@ -147,7 +150,8 @@ import Icon from "../../components/Icon.astro";
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                  ></path>
                 </svg>
               </div>
               <div>
@@ -176,11 +180,8 @@ import Icon from "../../components/Icon.astro";
 
             <div>
               <h3 class="mb-3 text-xl font-semibold">Example Usage</h3>
-              <div
-                class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4"
-              >
-                <pre
-                  class="text-sm"><code>{`import {
+              <div class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4">
+                <pre class="text-sm"><code>{`import {
   getTimelinePrediction,
   getExtremesPrediction
 } from 'slackwater';

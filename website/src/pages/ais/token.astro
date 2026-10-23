@@ -69,10 +69,11 @@ const tokenPre = pre.replace("text-sm", "text-xs");
         <label class="text-fg-muted mb-5 flex items-start gap-3 text-sm">
           <input type="checkbox" data-agree class="mt-1" />
           <span>
-            I accept the <a
-              href="https://github.com/openwatersio/aiscast/blob/main/docs/contributor-agreement.md"
-              >contributor agreement</a
-            >: the data I send is my station's own reception, my receptions are
+            I accept the{" "}
+            <a href="https://github.com/openwatersio/aiscast/blob/main/docs/contributor-agreement.md">
+              contributor agreement
+            </a>
+            : the data I send is my station's own reception, my receptions are
             dedicated to the public domain (CC0), and the aggregate is published
             under ODbL.
           </span>
@@ -124,13 +125,13 @@ const tokenPre = pre.replace("text-sm", "text-xs");
                 hidden
                 class="bg-cta absolute inline-flex size-full animate-ping rounded-full opacity-75"
               ></span>
-              <span data-rx-dot class="bg-fg-faint relative size-3 rounded-full"
+              <span
+                data-rx-dot
+                class="bg-fg-faint relative size-3 rounded-full"
               ></span>
             </span>
             <div>
-              <p
-                class="text-fg-faint text-xs font-medium tracking-wide uppercase"
-              >
+              <p class="text-fg-faint text-xs font-medium tracking-wide uppercase">
                 Live status
               </p>
               <p data-rx role="status" class="text-fg-strong font-medium">
@@ -160,11 +161,8 @@ const tokenPre = pre.replace("text-sm", "text-xs");
           <h3 class="mb-1 text-base font-semibold">AIS-catcher</h3>
           <p class="text-fg-muted mb-3 text-sm">
             Starting with a USB RTL-SDR? Download a config with your token,
-            receiver input, and Open Waters output already filled in. Follow the{
-              " "
-            }
-            <a href="/ais/getting-started/ashore/#install">shore setup guide</a
-            >{" "}
+            receiver input, and Open Waters output already filled in. Follow the{" "}
+            <a href="/ais/getting-started/ashore/#install">shore setup guide</a>{" "}
             to install and launch it, then press Start in the dashboard.
           </p>
           <a
@@ -181,8 +179,8 @@ const tokenPre = pre.replace("text-sm", "text-xs");
           </p>
           <p class="text-fg-muted mb-2 text-sm">
             Already have a receiver setup? Append the options starting at
-            <code>-Q</code> to its existing command, keeping your input settings and
-            other outputs. The full MQTT example:
+            <code>-Q</code> to its existing command, keeping your input settings
+            and other outputs. The full MQTT example:
           </p>
           <pre data-cmd-aiscatcher class={`${pre} mb-3`}></pre>
           <p class="text-fg-muted mb-2 text-sm">
@@ -192,45 +190,45 @@ const tokenPre = pre.replace("text-sm", "text-xs");
           <pre data-cmd-aiscatcher-http class={`${pre} mb-5`}></pre>
           <p class="text-fg-muted mb-5 text-sm">
             MQTT requires the explicit <code>:443</code> port and{" "}
-            <code>MSGFORMAT NMEA</code> (or <code>NMEA_TAG</code> for receive timestamps).
-            To read network traffic into AIS-catcher, follow the{" "}
-            <a href="/ais/ais-catcher/#readback"
-              >separate network viewer guide</a
-            >; keep that traffic out of your receiver’s sharing outputs.
+            <code>MSGFORMAT NMEA</code> (or <code>NMEA_TAG</code> for receive
+            timestamps). To read network traffic into AIS-catcher, follow the{" "}
+            <a href="/ais/ais-catcher/#readback">
+              separate network viewer guide
+            </a>
+            ; keep that traffic out of your receiver’s sharing outputs.
           </p>
           <h3 class="mb-1 text-base font-semibold">Signal K</h3>
           <p class="text-fg-muted mb-5 text-sm">
-            Install <code class="bg-surface rounded px-1">signalk-aiscast</code> from
-            the App Store. It creates its own token; nothing to paste.
+            Install <code class="bg-surface rounded px-1">signalk-aiscast</code>{" "}
+            from the App Store. It creates its own token; nothing to paste.
           </p>
           <h3 class="mb-1 text-base font-semibold">docker-shipfeeder</h3>
           <p class="text-fg-muted mb-5 text-sm">
             Update to the latest image and enable{" "}
             <code>OPENWATERS_SHAREDATA=true</code>. It creates and saves its own
-            token for MQTT. You can instead set <code
-              >OPENWATERS_FEEDER_KEY</code
-            >
+            token for MQTT. You can instead set{" "}
+            <code>OPENWATERS_FEEDER_KEY</code>
             to the token above to reuse this station. Follow the{" "}
-            <a href="/ais/contribute/#docker">shipfeeder setup guide</a> for the Compose
-            settings and UDP fallback behavior.
+            <a href="/ais/contribute/#docker">shipfeeder setup guide</a> for the
+            Compose settings and UDP fallback behavior.
           </p>
           <h3 class="mb-1 text-base font-semibold">UDP</h3>
           <p class="text-fg-muted text-sm">
-            For a NMEA forwarder using UDP: host <code
-              class="bg-surface rounded px-1">udp.ais.openwaters.io</code
-            >, port <code class="bg-surface rounded px-1">10110</code>, no
-            token. The station appears as an anonymous <code
-              class="bg-surface rounded px-1">udp:…</code
-            > unless you bound this address above.
+            For a NMEA forwarder using UDP: host{" "}
+            <code class="bg-surface rounded px-1">udp.ais.openwaters.io</code>,
+            port <code class="bg-surface rounded px-1">10110</code>, no token.
+            The station appears as an anonymous{" "}
+            <code class="bg-surface rounded px-1">udp:…</code> unless you bound
+            this address above.
           </p>
         </Card>
 
         <Card>
           <h2 class="mb-2 text-xl font-semibold">Read the stream</h2>
           <p class="text-fg-muted mb-3 text-sm">
-            Any aisstream.io client: hostname <code
-              class="bg-surface rounded px-1">ais.openwaters.io</code
-            >, API key = your token. Or from a shell:
+            Any aisstream.io client: hostname{" "}
+            <code class="bg-surface rounded px-1">ais.openwaters.io</code>, API
+            key = your token. Or from a shell:
           </p>
           <pre data-cmd-ws class={pre}></pre>
         </Card>
@@ -240,11 +238,9 @@ const tokenPre = pre.replace("text-sm", "text-xs");
         Personal tokens get 2 concurrent streams, 50 messages a second each, and
         400 square degrees of subscribed area. Contribute data and the same
         token becomes a contributor on its own: 5 streams, 200 messages a
-        second, any area, and the raw NMEA feed. <a href="/ais#limits"
-          >Tiers and limits</a
-        >. Need more than that? <a href={`mailto:${CONTACT_EMAIL}`}
-          >{CONTACT_EMAIL}</a
-        >.
+        second, any area, and the raw NMEA feed.{" "}
+        <a href="/ais#limits">Tiers and limits</a>. Need more than that?{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
       </p>
     </div>
   </Container>
