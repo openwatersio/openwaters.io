@@ -25,7 +25,7 @@
     "@openwaters/almanac": "^0.9.0",
     "@openwaters/seascape": "^0.3.0",
     "@slackwater/api": "^1.0.0-beta.3",
-    "@slackwater/database": "^1.0.0-beta.0",
+    "@slackwater/database": "^1.0.0-beta.20261017",
     "@slackwater/engine": "^1.0.0-beta.0",
     "@slackwater/react": "^1.0.0-beta.0",
     "@tailwindcss/typography": "^0.5.20",
