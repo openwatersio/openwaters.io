@@ -41,58 +41,50 @@ const image =
 ---
 
 <MainLayout
-  title={entry.type === "release" && entry.subtitle
-    ? `${entry.title}: ${entry.subtitle}`
-    : entry.title}
+  title={
+    entry.type === "release" && entry.subtitle
+      ? `${entry.title}: ${entry.subtitle}`
+      : entry.title
+  }
   description={entry.summary}
   feed={`${changelogPath({ project })}rss.xml`}
 >
   <article class="container-custom max-w-3xl py-16 md:py-24">
     <nav aria-label="Breadcrumb">
       <ol class="text-fg-muted flex flex-wrap items-center gap-2 text-sm">
-        {
-          crumbs.map((crumb, i) => (
-            <li class="flex items-center gap-2">
-              {i > 0 && (
-                <span aria-hidden="true" class="text-fg-faint">
-                  /
-                </span>
-              )}
-              <a href={crumb.href} class="text-fg-muted hover:text-fg-strong">
-                {crumb.label}
-              </a>
-            </li>
-          ))
-        }
+        {crumbs.map((crumb, i) => (
+          <li class="flex items-center gap-2">
+            {i > 0 && (
+              <span aria-hidden="true" class="text-fg-faint">
+                /
+              </span>
+            )}
+            <a href={crumb.href} class="text-fg-muted hover:text-fg-strong">
+              {crumb.label}
+            </a>
+          </li>
+        ))}
       </ol>
     </nav>
 
     <h1 class="mt-10 text-4xl md:text-5xl">{entry.title}</h1>
-    {
-      entry.type === "release" && entry.subtitle && (
-        <p class="text-lead mt-3">{entry.subtitle}</p>
-      )
-    }
-    <p
-      class="mt-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1"
-    >
+    {entry.type === "release" && entry.subtitle && (
+      <p class="text-lead mt-3">{entry.subtitle}</p>
+    )}
+    <p class="mt-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
       <time datetime={entry.date.toISOString()} class="text-fg-faint text-sm">
-        {
-          formatDate(entry.date, {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          })
-        }
+        {formatDate(entry.date, {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })}
       </time>
       <EntryLabel type={entry.type} projects={entry.projects} />
     </p>
 
-    {
-      entry.type === "announcement" && (
-        <p class="text-lead mt-6">{entry.summary}</p>
-      )
-    }
+    {entry.type === "announcement" && (
+      <p class="text-lead mt-6">{entry.summary}</p>
+    )}
 
     {
       // Decorative cover: no alt text, and left out of the page's Markdown.
@@ -103,36 +95,32 @@ const image =
       )
     }
 
-    {
-      release && release.packages.length > 0 && (
-        <ul class="mt-8 flex flex-wrap gap-2">
-          {release.packages.map((p) => (
-            <li>
-              <a
-                href={p.url}
-                class="border-line-strong text-fg-muted hover:text-fg-strong block rounded-full border px-3 py-1 text-sm"
-              >
-                {p.name} {p.version}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )
-    }
+    {release && release.packages.length > 0 && (
+      <ul class="mt-8 flex flex-wrap gap-2">
+        {release.packages.map((p) => (
+          <li>
+            <a
+              href={p.url}
+              class="border-line-strong text-fg-muted hover:text-fg-strong block rounded-full border px-3 py-1 text-sm"
+            >
+              {p.name} {p.version}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
 
     <div class="prose prose-lg mt-10 max-w-none">
       {Content ? <Content /> : <Fragment set:html={notes} />}
     </div>
 
-    {
-      release && (
-        <div class="border-line mt-12 border-t pt-8">
-          <a href={release.url} class="btn btn-secondary btn-sm">
-            <Icon name="mdi:github" class="size-4" />
-            View release on GitHub
-          </a>
-        </div>
-      )
-    }
+    {release && (
+      <div class="border-line mt-12 border-t pt-8">
+        <a href={release.url} class="btn btn-secondary btn-sm">
+          <Icon name="mdi:github" class="size-4" />
+          View release on GitHub
+        </a>
+      </div>
+    )}
   </article>
 </MainLayout>

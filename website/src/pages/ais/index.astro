@@ -248,22 +248,15 @@ const licenses = [
     <div class="absolute inset-0">
       <AisMap center={[23.6, 59.7]} zoom={6.3} class="h-full w-full" />
     </div>
-    <div
-      class="from-canvas/10 to-canvas pointer-events-none absolute inset-0 bg-linear-to-b via-transparent via-50%"
-    >
-    </div>
-    <div
-      class="bg-canvas/50 lg:from-canvas lg:via-canvas/30 pointer-events-none absolute inset-0 lg:bg-transparent lg:bg-linear-to-r lg:via-75% lg:to-transparent"
-    >
-    </div>
+    <div class="from-canvas/10 to-canvas pointer-events-none absolute inset-0 bg-linear-to-b via-transparent via-50%"></div>
+    <div class="bg-canvas/50 lg:from-canvas lg:via-canvas/30 pointer-events-none absolute inset-0 lg:bg-transparent lg:bg-linear-to-r lg:via-75% lg:to-transparent"></div>
     <Container class="relative pt-36 pb-24 lg:pt-44 lg:pb-28">
-      <div
-        class="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]"
-      >
+      <div class="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
         <div class="pointer-events-none max-w-2xl">
           <p class="eyebrow mb-6">Open Waters AIS</p>
           <h1 class="mb-6">
-            All the ships at sea,<br />
+            All the ships at sea,
+            <br />
             <span class="text-highlight">instantaneously.</span>
           </h1>
           <p class="text-lead mb-8 max-w-xl">
@@ -275,7 +268,9 @@ const licenses = [
               Read the API docs
               <Icon name="mdi:arrow-right" class="size-4" />
             </a>
-            <a href={TOKEN_PAGE} class="btn btn-secondary">Get a token</a>
+            <a href={TOKEN_PAGE} class="btn btn-secondary">
+              Get a token
+            </a>
             <a href="/ais/vessels" class="btn btn-secondary">
               <Icon name="mdi:map-outline" class="size-4" />
               Open the live map
@@ -291,37 +286,35 @@ const licenses = [
   <section class="py-8">
     <Container>
       <ul class="grid gap-5 md:grid-cols-3">
-        {
-          [
-            {
-              icon: "mdi:broadcast",
-              title: "Real-time API",
-              text: "Get every AIS message as it is heard over WebSocket, SSE, or NMEA. Fetch a GeoJSON snapshot of what is in a box right now, plus stations and live stats.",
-              link: { label: "API reference", href: "/api/ais/" },
-            },
-            {
-              icon: "mdi:open-source-initiative",
-              title: "Open source, open data",
-              text: "An open AIS network powered by MIT-licensed code, and data re-served under each source's own terms, with the source named on every event.",
-              link: { label: "GitHub", href: REPO },
-            },
-            {
-              icon: "mdi:hand-heart-outline",
-              title: "Free for personal use",
-              text: "Read without an account; a one-click token covers a boat, a dashboard, or a side project. Contributing AIS data earns more.",
-              link: { label: "See tiers and limits", href: "#limits" },
-            },
-          ].map((w) => (
-            <li class="card flex flex-col gap-3">
-              <Icon name={w.icon} class="text-accent size-6" />
-              <h2 class="text-lg font-semibold tracking-normal">{w.title}</h2>
-              <p class="text-fg-muted text-sm">{w.text}</p>
-              <a href={w.link.href} class="mt-auto text-sm font-medium">
-                {w.link.label} →
-              </a>
-            </li>
-          ))
-        }
+        {[
+          {
+            icon: "mdi:broadcast",
+            title: "Real-time API",
+            text: "Get every AIS message as it is heard over WebSocket, SSE, or NMEA. Fetch a GeoJSON snapshot of what is in a box right now, plus stations and live stats.",
+            link: { label: "API reference", href: "/api/ais/" },
+          },
+          {
+            icon: "mdi:open-source-initiative",
+            title: "Open source, open data",
+            text: "An open AIS network powered by MIT-licensed code, and data re-served under each source's own terms, with the source named on every event.",
+            link: { label: "GitHub", href: REPO },
+          },
+          {
+            icon: "mdi:hand-heart-outline",
+            title: "Free for personal use",
+            text: "Read without an account; a one-click token covers a boat, a dashboard, or a side project. Contributing AIS data earns more.",
+            link: { label: "See tiers and limits", href: "#limits" },
+          },
+        ].map((w) => (
+          <li class="card flex flex-col gap-3">
+            <Icon name={w.icon} class="text-accent size-6" />
+            <h2 class="text-lg font-semibold tracking-normal">{w.title}</h2>
+            <p class="text-fg-muted text-sm">{w.text}</p>
+            <a href={w.link.href} class="mt-auto text-sm font-medium">
+              {w.link.label} →
+            </a>
+          </li>
+        ))}
       </ul>
     </Container>
   </section>
@@ -330,9 +323,7 @@ const licenses = [
   <section class="py-16 lg:py-24">
     <Container>
       <SectionDivider index={1} total={4} label="Stream" />
-      <div
-        class="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
-      >
+      <div class="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
           <h2 class="mb-5">Stream vessel data in your favorite language.</h2>
           <p class="text-fg-muted mb-6 text-lg">
@@ -347,16 +338,18 @@ const licenses = [
           </div>
           <p class="text-fg-faint text-sm">
             Coming from aisstream.io? Point your client at{" "}
-            <code class="text-fg-muted">wss://{SERVER}/v0/stream</code> with a token
-            as <code class="text-fg-muted">APIKey</code> and it keeps working. Stream
-            gone quiet? <a href="/ais/alternatives/aisstream/"
-              >Check whether aisstream.io is down</a
-            >.
+            <code class="text-fg-muted">wss://{SERVER}/v0/stream</code> with a
+            token as <code class="text-fg-muted">APIKey</code> and it keeps
+            working. Stream gone quiet?{" "}
+            <a href="/ais/alternatives/aisstream/">
+              Check whether aisstream.io is down
+            </a>
+            .
           </p>
           <p class="text-fg-faint mt-3 text-sm">
             Talking to Claude or ChatGPT instead? Add{" "}
-            <code class="text-fg-muted">https://{SERVER}/mcp</code> as an MCP server
-            and ask what is in the port.
+            <code class="text-fg-muted">https://{SERVER}/mcp</code> as an MCP
+            server and ask what is in the port.
           </p>
         </div>
         <div
@@ -368,35 +361,31 @@ const licenses = [
             aria-label="Language"
             class="border-line flex gap-1 overflow-x-auto border-b p-2"
           >
-            {
-              snippets.map((s, i) => (
-                <button
-                  id={`tab-${s.id}`}
-                  role="tab"
-                  type="button"
-                  aria-selected={i === 0}
-                  tabindex={i === 0 ? 0 : -1}
-                  aria-controls={`snippet-${s.id}`}
-                  class="text-fg-muted hover:text-fg-strong aria-selected:bg-surface-raised aria-selected:text-fg-strong rounded-lg px-3 py-1.5 text-sm font-medium"
-                >
-                  {s.label}
-                </button>
-              ))
-            }
-          </div>
-          {
-            snippets.map((s, i) => (
-              <div
-                role="tabpanel"
-                id={`snippet-${s.id}`}
-                aria-labelledby={`tab-${s.id}`}
-                tabindex="0"
-                hidden={i !== 0}
+            {snippets.map((s, i) => (
+              <button
+                id={`tab-${s.id}`}
+                role="tab"
+                type="button"
+                aria-selected={i === 0}
+                tabindex={i === 0 ? 0 : -1}
+                aria-controls={`snippet-${s.id}`}
+                class="text-fg-muted hover:text-fg-strong aria-selected:bg-surface-raised aria-selected:text-fg-strong rounded-lg px-3 py-1.5 text-sm font-medium"
               >
-                <Fragment set:html={highlighted[i]} />
-              </div>
-            ))
-          }
+                {s.label}
+              </button>
+            ))}
+          </div>
+          {snippets.map((s, i) => (
+            <div
+              role="tabpanel"
+              id={`snippet-${s.id}`}
+              aria-labelledby={`tab-${s.id}`}
+              tabindex="0"
+              hidden={i !== 0}
+            >
+              <Fragment set:html={highlighted[i]} />
+            </div>
+          ))}
         </div>
       </div>
     </Container>
@@ -420,69 +409,63 @@ const licenses = [
           <thead>
             <tr class="border-line bg-surface border-b">
               <th class="w-48"></th>
-              {
-                tiers.map((t) => (
-                  <th
-                    scope="col"
-                    class="text-fg-strong px-4 py-4 text-left align-top font-semibold"
-                  >
-                    {t.name}
-                    <span class="text-fg-muted mt-1 block text-xs font-normal">
-                      {t.text}
-                    </span>
-                  </th>
-                ))
-              }
+              {tiers.map((t) => (
+                <th
+                  scope="col"
+                  class="text-fg-strong px-4 py-4 text-left align-top font-semibold"
+                >
+                  {t.name}
+                  <span class="text-fg-muted mt-1 block text-xs font-normal">
+                    {t.text}
+                  </span>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody class="divide-line divide-y">
-            {
-              rows.map(([feature, ...cells]) => (
-                <tr>
-                  <th
-                    scope="row"
-                    class="text-fg-muted px-4 py-3 text-left font-normal"
-                  >
-                    {feature}
-                  </th>
-                  {cells.map((c) => (
-                    <td class="px-4 py-3 font-mono text-xs">
-                      {c === true ? (
-                        <Icon
-                          name="mdi:check"
-                          class="text-accent inline size-4"
-                        />
-                      ) : c === false ? (
-                        <span class="text-fg-faint">—</span>
-                      ) : (
-                        c
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            }
+            {rows.map(([feature, ...cells]) => (
+              <tr>
+                <th
+                  scope="row"
+                  class="text-fg-muted px-4 py-3 text-left font-normal"
+                >
+                  {feature}
+                </th>
+                {cells.map((c) => (
+                  <td class="px-4 py-3 font-mono text-xs">
+                    {c === true ? (
+                      <Icon
+                        name="mdi:check"
+                        class="text-accent inline size-4"
+                      />
+                    ) : c === false ? (
+                      <span class="text-fg-faint">—</span>
+                    ) : (
+                      c
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
           </tbody>
           <tfoot>
             <tr>
               <td></td>
-              {
-                tiers.map((t) => (
-                  <td class="px-4 py-5">
-                    {t.cta && (
-                      <a
-                        href={t.cta.href}
-                        class:list={[
-                          "btn btn-sm",
-                          t.cta.primary ? "btn-primary" : "btn-secondary",
-                        ]}
-                      >
-                        {t.cta.label}
-                      </a>
-                    )}
-                  </td>
-                ))
-              }
+              {tiers.map((t) => (
+                <td class="px-4 py-5">
+                  {t.cta && (
+                    <a
+                      href={t.cta.href}
+                      class:list={[
+                        "btn btn-sm",
+                        t.cta.primary ? "btn-primary" : "btn-secondary",
+                      ]}
+                    >
+                      {t.cta.label}
+                    </a>
+                  )}
+                </td>
+              ))}
             </tr>
           </tfoot>
         </table>
@@ -494,9 +477,8 @@ const licenses = [
         or MMSI-list limit you are refused with a message that says so.
         Following vessels by MMSI is bounded by the list, not by area, so a
         world-wide MMSI subscription is allowed in every tier. Need more, or
-        unsure which tier you are? <a href={`mailto:${CONTACT_EMAIL}`}
-          >{CONTACT_EMAIL}</a
-        >.
+        unsure which tier you are?{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
       </p>
     </Container>
   </section>
@@ -505,9 +487,7 @@ const licenses = [
   <section class="py-16 lg:py-24">
     <Container>
       <SectionDivider index={3} total={4} label="Contribute" id="contribute" />
-      <div
-        class="mt-12 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
-      >
+      <div class="mt-12 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
           <h2 class="mb-5">
             A network you can contribute to. Data you can take with you.
@@ -522,16 +502,12 @@ const licenses = [
             Keep feeding other networks, keep a copy, and build on the data
             yourself.
           </p>
-          <a href="/ais/contribute/" class="btn btn-primary"
-            >Connect your receiver <Icon
-              name="mdi:arrow-right"
-              class="size-4"
-            /></a
-          >
+          <a href="/ais/contribute/" class="btn btn-primary">
+            Connect your receiver <Icon name="mdi:arrow-right" class="size-4" />
+          </a>
           <p class="text-fg-muted mt-5 text-sm">
-            No receiver yet? <a href="/ais/getting-started/ashore/"
-              >Get started from shore</a
-            >{" "}
+            No receiver yet?{" "}
+            <a href="/ais/getting-started/ashore/">Get started from shore</a>{" "}
             with a USB receiver, an antenna, and the computer you already own.
           </p>
         </div>
@@ -539,9 +515,7 @@ const licenses = [
           aria-label="How AIS data moves through Open Waters"
           class="bg-well min-w-0 rounded-2xl p-6 lg:p-8"
         >
-          <div
-            class="grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr_auto_1fr]"
-          >
+          <div class="grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
             <div class="space-y-3">
               <div class="border-line-strong rounded-lg border p-3">
                 <Icon name="mdi:radio-tower" class="text-accent mb-2 size-6" />
@@ -556,10 +530,10 @@ const licenses = [
             <span
               aria-hidden="true"
               class="text-accent justify-self-center text-2xl"
-              ><span class="sm:hidden">↓</span><span class="hidden sm:inline"
-                >→</span
-              ></span
             >
+              <span class="sm:hidden">↓</span>
+              <span class="hidden sm:inline">→</span>
+            </span>
             <div class="border-accent rounded-lg border p-3">
               <Icon name="mdi:vector-combine" class="text-accent mb-2 size-6" />
               <p class="font-semibold">Open Waters</p>
@@ -570,10 +544,10 @@ const licenses = [
             <span
               aria-hidden="true"
               class="text-accent justify-self-center text-2xl"
-              ><span class="sm:hidden">↓</span><span class="hidden sm:inline"
-                >→</span
-              ></span
             >
+              <span class="sm:hidden">↓</span>
+              <span class="hidden sm:inline">→</span>
+            </span>
             <div class="border-line-strong rounded-lg border p-3">
               <Icon name="mdi:map-outline" class="text-accent mb-2 size-6" />
               <p class="font-semibold">You and everyone else</p>
@@ -586,17 +560,19 @@ const licenses = [
             <p class="mb-3 text-sm font-semibold">
               Federation between independent nodes
             </p>
-            <div
-              class="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2 text-center text-sm"
-            >
+            <div class="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2 text-center text-sm">
               <div class="border-line-strong rounded-lg border p-2">
                 Community node
               </div>
-              <span aria-hidden="true" class="text-accent">↔</span>
+              <span aria-hidden="true" class="text-accent">
+                ↔
+              </span>
               <div class="border-line-strong rounded-lg border p-2">
                 Open Waters
               </div>
-              <span aria-hidden="true" class="text-accent">↔</span>
+              <span aria-hidden="true" class="text-accent">
+                ↔
+              </span>
               <div class="border-line-strong rounded-lg border p-2">
                 Another node
               </div>
@@ -613,18 +589,20 @@ const licenses = [
         <div>
           <h3 class="mb-3 text-xl">Your receptions: CC0</h3>
           <p class="text-fg-muted">
-            Individual volunteer receptions enter the public domain under <a
-              href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a
-            >. You can copy, reuse, and share them, including commercially. We
+            Individual volunteer receptions enter the public domain under{" "}
+            <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
+            . You can copy, reuse, and share them, including commercially. We
             have the same rights as everyone else.
           </p>
         </div>
         <div>
           <h3 class="mb-3 text-xl">The volunteer database: ODbL</h3>
           <p class="text-fg-muted">
-            The combined volunteer database stays open under <a
-              href="https://opendatacommons.org/licenses/odbl/summary/">ODbL</a
-            >. Reuse and redistribute it with attribution; publicly used adapted
+            The combined volunteer database stays open under{" "}
+            <a href="https://opendatacommons.org/licenses/odbl/summary/">
+              ODbL
+            </a>
+            . Reuse and redistribute it with attribution; publicly used adapted
             databases must also be offered under ODbL. Partner feeds retain
             their own terms.
           </p>
@@ -643,10 +621,11 @@ const licenses = [
       <p class="text-fg-muted mt-8 max-w-3xl text-sm">
         You can stop contributing whenever you want. Receptions already released
         remain open; Open Waters gets no exclusive license, even if the project
-        changes hands. Read the <a
-          href={`${REPO}/blob/main/docs/contributor-agreement.md`}
-          >contributor agreement</a
-        > for the commitment behind this.
+        changes hands. Read the{" "}
+        <a href={`${REPO}/blob/main/docs/contributor-agreement.md`}>
+          contributor agreement
+        </a>{" "}
+        for the commitment behind this.
       </p>
     </Container>
   </section>
@@ -655,9 +634,7 @@ const licenses = [
   <section class="py-16 lg:py-24">
     <Container>
       <SectionDivider index={4} total={4} label="Sources" id="sources" />
-      <div
-        class="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
-      >
+      <div class="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
           <h2 class="mb-5">Every event names its source.</h2>
           <p class="text-fg-muted mb-4 text-lg">
@@ -671,119 +648,112 @@ const licenses = [
         </div>
         <div class="border-line overflow-x-auto rounded-2xl border">
           <table id="ais-sources" class="w-full min-w-lg text-sm">
-            <thead
-              class="eyebrow border-line bg-surface text-fg-faint border-b text-[10px]"
-            >
+            <thead class="eyebrow border-line bg-surface text-fg-faint border-b text-[10px]">
               <tr>
-                <th scope="col" class="px-4 py-3 text-left font-medium"
-                  >Source</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Vessels</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Unique</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Events / 24h</th
-                >
-                <th scope="col" class="px-4 py-3 text-right font-medium"
-                  >Last heard</th
-                >
+                <th scope="col" class="px-4 py-3 text-left font-medium">
+                  Source
+                </th>
+                <th scope="col" class="px-4 py-3 text-right font-medium">
+                  Vessels
+                </th>
+                <th scope="col" class="px-4 py-3 text-right font-medium">
+                  Unique
+                </th>
+                <th scope="col" class="px-4 py-3 text-right font-medium">
+                  Events / 24h
+                </th>
+                <th scope="col" class="px-4 py-3 text-right font-medium">
+                  Last heard
+                </th>
               </tr>
             </thead>
             <tbody class="divide-line divide-y">
-              {
-                sources.map((row) => (
-                  <tr data-ids={row.ids.join(",")}>
-                    <td class="px-4 py-3">
-                      <span class="text-fg-strong font-medium">{row.name}</span>
-                      <span class="text-fg-faint block text-xs">
-                        {row.where}
-                      </span>
-                    </td>
-                    <td
-                      class="px-4 py-3 text-right font-mono text-xs"
-                      data-stat="vessels"
-                    >
-                      –
-                    </td>
-                    <td
-                      class="px-4 py-3 text-right font-mono text-xs"
-                      data-stat="exclusive"
-                    >
-                      –
-                    </td>
-                    <td
-                      class="px-4 py-3 text-right font-mono text-xs"
-                      data-stat="events"
-                    >
-                      –
-                    </td>
-                    <td
-                      class="text-fg-muted px-4 py-3 text-right font-mono text-xs"
-                      data-stat="age"
-                    >
-                      –
-                    </td>
-                  </tr>
-                ))
-              }
+              {sources.map((row) => (
+                <tr data-ids={row.ids.join(",")}>
+                  <td class="px-4 py-3">
+                    <span class="text-fg-strong font-medium">{row.name}</span>
+                    <span class="text-fg-faint block text-xs">{row.where}</span>
+                  </td>
+                  <td
+                    class="px-4 py-3 text-right font-mono text-xs"
+                    data-stat="vessels"
+                  >
+                    –
+                  </td>
+                  <td
+                    class="px-4 py-3 text-right font-mono text-xs"
+                    data-stat="exclusive"
+                  >
+                    –
+                  </td>
+                  <td
+                    class="px-4 py-3 text-right font-mono text-xs"
+                    data-stat="events"
+                  >
+                    –
+                  </td>
+                  <td
+                    class="text-fg-muted px-4 py-3 text-right font-mono text-xs"
+                    data-stat="age"
+                  >
+                    –
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
       <div class="mt-16 max-w-2xl">
-        <h3 id="license" class="mb-4 scroll-mt-24">License</h3>
+        <h3 id="license" class="mb-4 scroll-mt-24">
+          License
+        </h3>
         <p class="text-fg-muted">
           Licensing is per source, and the aggregate is not relicensed: each
           event is re-served under the terms of the source it came from, which
-          is why <code class="text-fg">source</code> is on every event and every vessel.
-          If you display or redistribute the data, carry the source's attribution
-          through.
+          is why <code class="text-fg">source</code> is on every event and every
+          vessel. If you display or redistribute the data, carry the source's
+          attribution through.
         </p>
       </div>
       <div class="border-line mt-8 overflow-x-auto rounded-2xl border">
         <table class="w-full min-w-lg text-sm">
-          <thead
-            class="eyebrow border-line bg-surface text-fg-faint border-b text-[10px]"
-          >
+          <thead class="eyebrow border-line bg-surface text-fg-faint border-b text-[10px]">
             <tr>
-              <th scope="col" class="px-4 py-3 text-left font-medium">Source</th
-              >
-              <th scope="col" class="px-4 py-3 text-left font-medium"
-                >License</th
-              >
-              <th scope="col" class="px-4 py-3 text-left font-medium"
-                >What you must do</th
-              >
+              <th scope="col" class="px-4 py-3 text-left font-medium">
+                Source
+              </th>
+              <th scope="col" class="px-4 py-3 text-left font-medium">
+                License
+              </th>
+              <th scope="col" class="px-4 py-3 text-left font-medium">
+                What you must do
+              </th>
             </tr>
           </thead>
           <tbody class="divide-line divide-y">
-            {
-              licenses.map((row) => (
-                <tr>
-                  <td class="text-fg-strong px-4 py-3 font-medium">
-                    {row.source}
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap">
-                    {row.href ? (
-                      <a
-                        href={row.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {row.license}
-                      </a>
-                    ) : (
-                      row.license
-                    )}
-                  </td>
-                  <td class="text-fg-muted px-4 py-3">{row.obligation}</td>
-                </tr>
-              ))
-            }
+            {licenses.map((row) => (
+              <tr>
+                <td class="text-fg-strong px-4 py-3 font-medium">
+                  {row.source}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  {row.href ? (
+                    <a
+                      href={row.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {row.license}
+                    </a>
+                  ) : (
+                    row.license
+                  )}
+                </td>
+                <td class="text-fg-muted px-4 py-3">{row.obligation}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -792,13 +762,16 @@ const licenses = [
         <a
           href={`${REPO}/blob/main/LICENSE`}
           target="_blank"
-          rel="noopener noreferrer">MIT</a
-        >. The full position on licensing, privacy, and how the project funds
-        itself without relicensing data is in the <a
-          href={REPO}
-          target="_blank"
-          rel="noopener noreferrer">GitHub repository</a
-        >.
+          rel="noopener noreferrer"
+        >
+          MIT
+        </a>
+        . The full position on licensing, privacy, and how the project funds
+        itself without relicensing data is in the{" "}
+        <a href={REPO} target="_blank" rel="noopener noreferrer">
+          GitHub repository
+        </a>
+        .
       </p>
     </Container>
   </section>
@@ -806,9 +779,7 @@ const licenses = [
   <!-- Closing call -->
   <section class="pb-24">
     <Container>
-      <div
-        class="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-12"
-      >
+      <div class="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-12">
         <div>
           <h2 class="mb-2">Start with one WebSocket.</h2>
           <p class="text-fg-muted text-lg">
@@ -817,8 +788,12 @@ const licenses = [
           </p>
         </div>
         <div class="flex shrink-0 flex-wrap gap-3">
-          <a href="/api/ais/" class="btn btn-primary">Read the API docs</a>
-          <a href={TOKEN_PAGE} class="btn btn-secondary">Get a token</a>
+          <a href="/api/ais/" class="btn btn-primary">
+            Read the API docs
+          </a>
+          <a href={TOKEN_PAGE} class="btn btn-secondary">
+            Get a token
+          </a>
         </div>
       </div>
     </Container>

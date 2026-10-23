@@ -52,11 +52,9 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
 >
   <!-- Map hero -->
   <section class="border-line border-b">
-    {
-      /* Non-interactive so scrolling past doesn't get captured by the map;
+    {/* Non-interactive so scrolling past doesn't get captured by the map;
         clicking opens the viewer at this framing instead. Attribution lives
-        in the viewer and in the sections below. */
-    }
+        in the viewer and in the sections below. */}
     <a href={viewerHref(hero)} aria-label="Open the viewer at this location">
       <ChartMap
         class="pointer-events-none h-[70vh] min-h-136 w-full"
@@ -107,17 +105,17 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
         class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
       >
         <span class="mr-2 font-semibold">On this page:</span>
-        <a href="#sources" class="text-accent hover:text-accent-hover"
-          >Sources</a
-        >
+        <a href="#sources" class="text-accent hover:text-accent-hover">
+          Sources
+        </a>
         <span class="text-fg-faint mx-2">·</span>
-        <a href="#how-to-use" class="text-accent hover:text-accent-hover"
-          >How to use</a
-        >
+        <a href="#how-to-use" class="text-accent hover:text-accent-hover">
+          How to use
+        </a>
         <span class="text-fg-faint mx-2">·</span>
-        <a href="#license" class="text-accent hover:text-accent-hover"
-          >License</a
-        >
+        <a href="#license" class="text-accent hover:text-accent-hover">
+          License
+        </a>
       </nav>
 
       <!-- Not for navigational use -->
@@ -126,12 +124,13 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
           <Icon name="mdi:alert" class="size-5" /> Not for navigational use
         </h2>
         <p class="text-fg text-sm">
-          Depths are <strong>not</strong> reduced to a chart datum and do not account
-          for tides or water level — they are not charted depths. Data is interpolated
-          and merged from sources of differing age, resolution, and datum, then smoothed
-          during tiling, so values are approximate, and gridded bathymetry omits hazards
-          (rocks, wrecks, obstructions) shown on official charts. Always consult official
-          nautical charts for navigation.
+          Depths are <strong>not</strong> reduced to a chart datum and do not
+          account for tides or water level — they are not charted depths. Data
+          is interpolated and merged from sources of differing age, resolution,
+          and datum, then smoothed during tiling, so values are approximate, and
+          gridded bathymetry omits hazards (rocks, wrecks, obstructions) shown
+          on official charts. Always consult official nautical charts for
+          navigation.
         </p>
       </div>
 
@@ -140,51 +139,50 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
         Sources
       </h2>
       <p class="text-fg-muted mb-4">
-        Seascape is a mosaic of {sources.length || "many"} sources. Global coverage
-        is at ~450 m resolution (zoom 8), and regional detail is as low as ~8 m (zoom
-        14) where high-resolution sources exist. Where sources overlap, datum-authoritative
-        sources (e.g. NOAA S-102, already on a chart datum) are the highest priority,
-        and then higher-resolution sources are preferred.
+        Seascape is a mosaic of {sources.length || "many"} sources. Global
+        coverage is at ~450 m resolution (zoom 8), and regional detail is as low
+        as ~8 m (zoom 14) where high-resolution sources exist. Where sources
+        overlap, datum-authoritative sources (e.g. NOAA S-102, already on a
+        chart datum) are the highest priority, and then higher-resolution
+        sources are preferred.
       </p>
-      {
-        sources.length > 0 ? (
-          <ul class="mb-12 ml-6 list-disc space-y-3 text-sm">
-            {sources.map((source) => (
-              <li>
-                {source.website ? (
-                  <a
-                    href={source.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-accent hover:text-accent-hover"
-                  >
-                    {source.name ?? source.id}
-                  </a>
-                ) : (
-                  (source.name ?? source.id)
-                )}
-                <br />
-                <span class="text-fg-muted">
-                  {source.producer} · License: {source.license}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p class="text-fg-muted mb-12">
-            See the{" "}
-            <a
-              href="https://tiles.openwaters.io/seascape/manifest.json"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-accent hover:text-accent-hover"
-            >
-              deployed manifest
-            </a>{" "}
-            for the full source list.
-          </p>
-        )
-      }
+      {sources.length > 0 ? (
+        <ul class="mb-12 ml-6 list-disc space-y-3 text-sm">
+          {sources.map((source) => (
+            <li>
+              {source.website ? (
+                <a
+                  href={source.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-accent hover:text-accent-hover"
+                >
+                  {source.name ?? source.id}
+                </a>
+              ) : (
+                (source.name ?? source.id)
+              )}
+              <br />
+              <span class="text-fg-muted">
+                {source.producer} · License: {source.license}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-fg-muted mb-12">
+          See the{" "}
+          <a
+            href="https://tiles.openwaters.io/seascape/manifest.json"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-accent hover:text-accent-hover"
+          >
+            deployed manifest
+          </a>{" "}
+          for the full source list.
+        </p>
+      )}
 
       <!-- How to use -->
       <h2 id="how-to-use" class="mb-4 scroll-mt-24 text-3xl font-semibold">
@@ -206,8 +204,10 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
           target="_blank"
           rel="noopener noreferrer"
           class="text-accent hover:text-accent-hover"
-          >Usage section of the README</a
-        > for tile URLs, a ready-to-use style, and MapLibre examples.
+        >
+          Usage section of the README
+        </a>{" "}
+        for tile URLs, a ready-to-use style, and MapLibre examples.
       </p>
 
       <!-- License -->
@@ -215,25 +215,30 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
         License
       </h2>
       <p class="text-fg-muted mb-4">
-        <strong>Tiles</strong> — the tile compilation served at <code
-          class="bg-surface rounded px-1">tiles.openwaters.io/seascape</code
-        > is licensed{" "}
+        <strong>Tiles</strong> — the tile compilation served at{" "}
+        <code class="bg-surface rounded px-1">
+          tiles.openwaters.io/seascape
+        </code>{" "}
+        is licensed{" "}
         <a
           href="https://creativecommons.org/licenses/by/4.0/"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-accent hover:text-accent-hover">CC BY 4.0</a
-        >: free for any use with the following attribution:
+          class="text-accent hover:text-accent-hover"
+        >
+          CC BY 4.0
+        </a>
+        : free for any use with the following attribution:
       </p>
       <div class="bg-well text-fg-strong mb-4 overflow-x-auto rounded-lg p-4">
-        <pre
-          class="text-sm"><code>© Open Waters: Seascape &lt;https://openwaters.io/charts/seascape&gt;</code></pre>
+        <pre class="text-sm"><code>© Open Waters: Seascape &lt;https://openwaters.io/charts/seascape&gt;</code></pre>
       </div>
       <p class="text-fg-muted mb-4">
         The TileJSON endpoints carry that credit in their{" "}
-        <code class="bg-surface rounded px-1">attribution</code> field, so MapLibre's
-        attribution control displays it automatically, linking back to this page.
-        The underlying data remains under each source's own open terms, listed above.
+        <code class="bg-surface rounded px-1">attribution</code> field, so
+        MapLibre's attribution control displays it automatically, linking back
+        to this page. The underlying data remains under each source's own open
+        terms, listed above.
       </p>
       <p class="text-fg-muted mb-4">
         <strong>Code</strong> — the build pipeline is{" "}
@@ -241,8 +246,11 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
           href="https://github.com/openwatersio/seascape/blob/main/LICENSE"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-accent hover:text-accent-hover">BSD-3-Clause</a
-        >.
+          class="text-accent hover:text-accent-hover"
+        >
+          BSD-3-Clause
+        </a>
+        .
       </p>
     </div>
   </Container>

@@ -216,48 +216,47 @@ const article = {
     </p>
     <p class="text-fg-muted mb-12 text-sm">
       Coming from aisstream.io? Change the hostname and keep your code: see{" "}
-      <a href="/ais/vs/aisstream/">Open Waters AIS vs aisstream.io</a>, or <a
-        href="/ais/alternatives/aisstream/"
-        >check whether aisstream.io is down</a
-      >.
+      <a href="/ais/vs/aisstream/">Open Waters AIS vs aisstream.io</a>, or{" "}
+      <a href="/ais/alternatives/aisstream/">
+        check whether aisstream.io is down
+      </a>
+      .
     </p>
 
-    {
-      groups.map(({ slug, text, tag = text, note, Intro, streams }) => (
-        <section id={slug} class="mb-16 scroll-mt-24">
-          <h2 class="mb-6 text-3xl font-semibold">{text}</h2>
-          {Intro && (
-            <article class="prose max-w-none">
-              <Intro />
-            </article>
-          )}
-          {tagDescriptions.get(tag) && (
-            <div
-              class="prose text-fg-muted mb-6 max-w-none"
-              set:html={md(tagDescriptions.get(tag)!)}
-            />
-          )}
-          {note && (
-            <div
-              class="prose text-fg-muted mb-6 max-w-none"
-              set:html={md(note)}
-            />
-          )}
-          {(byTag.get(tag) ?? []).map((endpoint) => (
-            <ApiEndpoint
-              endpoint={endpoint}
-              host={SERVER}
-              id={endpointId(endpoint)}
-            />
-          ))}
-          {(streams ?? []).map(({ Content, text, ...stream }) => (
-            <StreamEndpoint {...stream}>
-              <Content />
-            </StreamEndpoint>
-          ))}
-        </section>
-      ))
-    }
+    {groups.map(({ slug, text, tag = text, note, Intro, streams }) => (
+      <section id={slug} class="mb-16 scroll-mt-24">
+        <h2 class="mb-6 text-3xl font-semibold">{text}</h2>
+        {Intro && (
+          <article class="prose max-w-none">
+            <Intro />
+          </article>
+        )}
+        {tagDescriptions.get(tag) && (
+          <div
+            class="prose text-fg-muted mb-6 max-w-none"
+            set:html={md(tagDescriptions.get(tag)!)}
+          />
+        )}
+        {note && (
+          <div
+            class="prose text-fg-muted mb-6 max-w-none"
+            set:html={md(note)}
+          />
+        )}
+        {(byTag.get(tag) ?? []).map((endpoint) => (
+          <ApiEndpoint
+            endpoint={endpoint}
+            host={SERVER}
+            id={endpointId(endpoint)}
+          />
+        ))}
+        {(streams ?? []).map(({ Content, text, ...stream }) => (
+          <StreamEndpoint {...stream}>
+            <Content />
+          </StreamEndpoint>
+        ))}
+      </section>
+    ))}
   </div>
 </ApiLayout>
 

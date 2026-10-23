@@ -39,12 +39,15 @@ for (let day = 0; day <= 181; day++) {
       <a
         href="/sky/"
         class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium"
-        ><Icon name="mdi:chevron-left" class="size-5" />Almanac</a
       >
+        <Icon name="mdi:chevron-left" class="size-5" />
+        Almanac
+      </a>
       <div class="mt-4 flex items-center gap-3">
-        <span class="text-accent"
-          ><Icon name="mdi:orbit" class="size-10" /></span
-        ><h1 class="mb-0">Planets</h1>
+        <span class="text-accent">
+          <Icon name="mdi:orbit" class="size-10" />
+        </span>
+        <h1 class="mb-0">Planets</h1>
       </div>
       <div class="text-lead mt-2 mb-4">
         Tonight's sky and the wandering planets
@@ -64,23 +67,24 @@ for (let day = 0; day <= 181; day++) {
         <div>
           <h2 id="tonight-title" class="mb-3 text-3xl font-semibold">
             Planets tonight
-          </h2><p class="text-fg-muted">
+          </h2>
+          <p class="text-fg-muted">
             Follow seven planets from sunset to sunrise. Choose a place and
             evening date, select a planet, and scrub through the night to find
             its altitude and direction.
           </p>
         </div>
-        <PlanetTonight client:only="react"
-          ><div
+        <PlanetTonight client:only="react">
+          <div
             slot="fallback"
             class="bg-surface h-96 animate-pulse rounded-xl"
-          >
-          </div></PlanetTonight
-        >
+          ></div>
+        </PlanetTonight>
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          ><CodeBlock code={tonightCode} class="mt-4" />
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
+          <CodeBlock code={tonightCode} class="mt-4" />
         </details>
       </section>
       <section
@@ -91,7 +95,8 @@ for (let day = 0; day <= 181; day++) {
         <div>
           <h2 id="wandering-title" class="mb-3 text-3xl font-semibold">
             Why planets wander
-          </h2><p class="text-fg-muted">
+          </h2>
+          <p class="text-fg-muted">
             Move through a few months of Mars, Jupiter, or Saturn. The view from
             above and the view from Earth share the same date: watch the line of
             sight turn as Earth passes the planet.
@@ -99,9 +104,10 @@ for (let day = 0; day <= 181; day++) {
         </div>
         <PlanetWander client:load />
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          ><CodeBlock code={wanderCode} class="mt-4" />
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
+          <CodeBlock code={wanderCode} class="mt-4" />
         </details>
       </section>
       <section
@@ -112,16 +118,18 @@ for (let day = 0; day <= 181; day++) {
         <div>
           <h2 id="solar-system-title" class="mb-3 text-3xl font-semibold">
             The solar system in motion
-          </h2><p class="text-fg-muted">
+          </h2>
+          <p class="text-fg-muted">
             Thirty years, eight planets, one Sun. Scrub through the years or
             press Play to watch each planet circle at its own pace.
           </p>
         </div>
         <SolarSystem client:load />
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          ><CodeBlock
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
+          <CodeBlock
             class="mt-4"
             code={`import { planetHeliocentricPosition } from '@openwaters/almanac';
 

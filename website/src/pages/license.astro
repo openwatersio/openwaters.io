@@ -34,15 +34,16 @@ import Card from "../components/ui/Card.astro";
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                ></path>
               </svg>
             </div>
             <div class="flex-1">
               <h2 class="mb-3 text-2xl font-semibold">Software License</h2>
               <p class="text-fg-muted mb-4">
                 All software projects developed by Open Waters are released
-                under the{" "}
-                <strong>MIT License</strong> unless otherwise specified.
+                under the <strong>MIT License</strong> unless otherwise
+                specified.
               </p>
               <div class="bg-surface mb-4 rounded-lg p-4 font-mono text-sm">
                 <p class="mb-2">MIT License</p>
@@ -84,13 +85,11 @@ import Card from "../components/ui/Card.astro";
             <div class="flex-1">
               <h2 class="mb-3 text-2xl font-semibold">Data License</h2>
               <p class="text-fg-muted mb-4">
-                Data provided by Open Waters is generally licensed under the{
-                  " "
-                }
-                <strong
-                  >Creative Commons CC0 1.0 Universal (CC0 1.0) Public Domain
-                  Dedication</strong
-                >{" "}
+                Data provided by Open Waters is generally licensed under the{" "}
+                <strong>
+                  Creative Commons CC0 1.0 Universal (CC0 1.0) Public Domain
+                  Dedication
+                </strong>{" "}
                 or <strong>Open Database License (ODbL)</strong>, depending on
                 the dataset.
               </p>
@@ -146,17 +145,17 @@ import Card from "../components/ui/Card.astro";
               <ul class="text-fg-muted space-y-2">
                 <li class="flex items-start gap-2">
                   <span class="text-accent mt-1">•</span>
-                  <span
-                    ><strong>NOAA Tide Data:</strong> Public domain data from the
-                    National Oceanic and Atmospheric Administration</span
-                  >
+                  <span>
+                    <strong>NOAA Tide Data:</strong> Public domain data from the
+                    National Oceanic and Atmospheric Administration
+                  </span>
                 </li>
                 <li class="flex items-start gap-2">
                   <span class="text-accent mt-1">•</span>
-                  <span
-                    ><strong>IHO TICON Database:</strong> International Hydrographic
-                    Organization tide constituent data</span
-                  >
+                  <span>
+                    <strong>IHO TICON Database:</strong> International
+                    Hydrographic Organization tide constituent data
+                  </span>
                 </li>
               </ul>
               <p class="text-fg-muted mt-4 text-sm">
@@ -176,15 +175,21 @@ import Card from "../components/ui/Card.astro";
           </p>
           <div class="border-line bg-canvas rounded-lg border p-4">
             <p class="font-mono text-sm">
-              Data/Software from <a
-                href="https://openwaters.io"
-                class="hover:text-accent-hover text-accent">Open Waters</a
-              >
-              (<a
+              Data/Software from{" "}
+              <a
                 href="https://openwaters.io"
                 class="hover:text-accent-hover text-accent"
-                >https://openwaters.io</a
-              >)
+              >
+                Open Waters
+              </a>
+              (
+              <a
+                href="https://openwaters.io"
+                class="hover:text-accent-hover text-accent"
+              >
+                https://openwaters.io
+              </a>
+              )
             </p>
           </div>
         </Card>
@@ -200,7 +205,10 @@ import Card from "../components/ui/Card.astro";
               need clarification on licensing terms, please don't hesitate to
               reach out.
             </p>
-            <a href="/contact/" class="btn btn-primary"> Contact Us </a>
+            <a href="/contact/" class="btn btn-primary">
+              {" "}
+              Contact Us{" "}
+            </a>
           </div>
         </Card>
       </div>
