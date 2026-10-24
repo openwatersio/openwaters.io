@@ -6,7 +6,7 @@ This repository contains the Open Waters website and the workers behind its publ
 
 - `website/` contains the Astro site and its React islands. Astro pages live in `website/src/pages/`, shared components in `website/src/components/`, and global styles in `website/src/styles/global.css`.
 - `api/` contains the Express tides and currents API and its Cloudflare Worker entry point.
-- `gateway/` owns `api.openwaters.io` and routes `/tides`, `/currents`, and `/bathymetry` requests to service-bound workers.
+- `gateway/` owns `api.openwaters.io` and routes `/tides`, `/currents`, and `/bathymetry` requests to service-bound workers. It also serves a `Disallow: /` `robots.txt` on `api`, `tiles`, and `data.openwaters.io`.
 
 ## Setup and development
 
