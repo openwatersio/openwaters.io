@@ -359,6 +359,26 @@ test(
 );
 
 test(
+  "AIS API page says free for personal use wherever it states its title",
+  { skip },
+  () => {
+    const html = read("api/ais/index.html");
+    assert.match(
+      html,
+      /<title>Free real-time AIS API for personal use \| Open Waters<\/title>/,
+    );
+    assert.match(
+      html,
+      /<h1[^>]*>Free real-time AIS API for personal use<\/h1>/,
+    );
+    assert.match(
+      read("api/ais/index.md"),
+      /^# Free real-time AIS API for personal use/m,
+    );
+  },
+);
+
+test(
   "every site image in the updates pages and feeds was built",
   { skip },
   () => {
