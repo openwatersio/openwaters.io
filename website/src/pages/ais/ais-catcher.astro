@@ -96,6 +96,10 @@ const faq = [
     a: "MQTT, unless you have a reason not to. It is realtime where the HTTP output batches on an interval, it carries your station identity, and it connects outward over port 443 so a home network needs no port forwarding. UDP is the quickest to try and the only one that needs no token, but it earns no tier until you bind its source address.",
   },
   {
+    q: "On Windows, the MQTT or HTTP output fails with a certificate or SSL error. How do I fix it?",
+    a: "The Windows build of AIS-catcher includes OpenSSL but no CA certificates, so it cannot verify ais.openwaters.io. Download Mozilla's root bundle from https://curl.se/ca/cacert.pem and save it somewhere permanent, for example C:\\AIS-catcher\\cacert.pem. Then point OpenSSL at it: in start.bat, add set SSL_CERT_FILE=C:\\AIS-catcher\\cacert.pem on a line before AIS-catcher, or set SSL_CERT_FILE as a system environment variable if AIS-catcher runs as a service. Restart AIS-catcher. The UDP output needs no certificates, if you only want to check that your receiver is heard.",
+  },
+  {
     q: "Why does my UDP station not get the contributor tier?",
     a: "UDP carries no authentication, so the network cannot tell whose station it is. Create a personal token from the same address with address binding turned on, and that station starts counting toward it. Switching to the MQTT or HTTP output instead does the same thing without the binding step.",
   },
