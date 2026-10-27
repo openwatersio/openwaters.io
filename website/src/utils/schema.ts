@@ -69,7 +69,7 @@ export const organization = (email: string) => ({
       name: "Open Waters AIS free personal access",
       price: 0,
       priceCurrency: "USD",
-      url: `${SITE}/ais/pricing/`,
+      url: `${SITE}/api/ais/#limits`,
       description:
         "Real-time vessel data from coastal authorities and volunteer receivers, free for personal use through an aisstream-compatible API. Anonymous and Personal tiers have published usage limits; contributing receiver data earns the free Contributor tier. Source data terms apply.",
       itemOffered: { "@type": "Service", name: "Open Waters AIS" },
