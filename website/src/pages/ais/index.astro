@@ -17,27 +17,26 @@ const STATUS = "https://status.openwaters.io";
 const BOATERS = false;
 const uses = [
   {
-    icon: "mdi:ferry",
     title: "Track your fleet",
-    text: "Give us a list of MMSIs and every position report for those vessels arrives as JSON, with course, speed, heading, name, destination, and ETA. Free for a personal project.",
+    image: "/ais/uses/fleet.webp",
+    text: "Follow the boats you care about by MMSI or IMO number, wherever they are in the world. See where each one is now, where it’s headed and when it should arrive, and look back over a year of where it’s been.",
     link: { label: "Subscribe by MMSI", href: "/api/ais/#stream-v1" },
   },
   {
-    icon: "mdi:vector-square",
     title: "Monitor your waters",
-    text: "Draw a box around a port, a strait, or a stretch of coast and read everything inside it. One subscribe frame, no polling, no credits burned per query.",
+    image: "/ais/uses/waters.webp",
+    text: "Pick a harbor, a strait, or a stretch of coast and see every vessel in it as it moves. Watch ships arrive and leave, spot who’s sitting at anchor or tied up, and know the moment something new shows up.",
     link: { label: "Subscribe by area", href: "/api/ais/#quick-start" },
   },
   {
-    icon: "mdi:chart-timeline-variant",
     title: "Analyze marine activity",
-    text: "Every event carries a timestamp, the station that heard it, and the source it came from. Log the stream and you own the dataset: transit counts, dwell times, traffic by hour, whatever you want to ask.",
+    image: "/ais/uses/activity.webp",
+    text: "Every report tells you the vessel, its position, speed, and heading, and which receiver heard it. Keep them all, add names, sizes, flags, destinations, and registry details, and answer your own questions about who passes, when, and how often.",
     link: { label: "Event fields", href: "/api/ais/#stream-v1" },
   },
   ...(BOATERS
     ? [
         {
-          icon: "mdi:sail-boat",
           title: "See beyond your antenna",
           text: "The Signal K plugin shows AIS traffic your own receiver cannot hear, on the chartplotter you already have. A supplement to onboard AIS, never a substitute, and not for safety of navigation.",
           link: {
@@ -194,13 +193,38 @@ const licenses = [
       <ul class="grid gap-5 md:grid-cols-3">
         {
           uses.map((u) => (
-            <li class="card flex flex-col gap-3">
-              <Icon name={u.icon} class="text-accent size-6" />
-              <h2 class="text-lg font-semibold tracking-normal">{u.title}</h2>
-              <p class="text-fg-muted text-sm">{u.text}</p>
-              <a href={u.link.href} class="mt-auto text-sm font-medium">
-                {u.link.label} →
-              </a>
+            <li class="card flex flex-col overflow-hidden p-0">
+              {u.image ? (
+                <div class="relative">
+                  <img
+                    src={u.image}
+                    alt=""
+                    width="960"
+                    height="720"
+                    loading="lazy"
+                    decoding="async"
+                    class="aspect-16/9 w-full mask-b-from-30% object-cover"
+                  />
+                  <h2 class="absolute inset-x-6 bottom-6 text-lg font-semibold tracking-normal">
+                    {u.title}
+                  </h2>
+                </div>
+              ) : (
+                <h2 class="px-6 pt-6 text-lg font-semibold tracking-normal">
+                  {u.title}
+                </h2>
+              )}
+              <div
+                class:list={[
+                  "relative flex flex-1 flex-col gap-3 p-6 pt-3",
+                  u.image && "-mt-6",
+                ]}
+              >
+                <p class="text-fg-muted text-sm">{u.text}</p>
+                <a href={u.link.href} class="mt-auto text-sm font-medium">
+                  {u.link.label} →
+                </a>
+              </div>
             </li>
           ))
         }
