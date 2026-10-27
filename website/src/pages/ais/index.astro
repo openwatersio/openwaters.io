@@ -13,8 +13,6 @@ const REPO = "https://github.com/openwatersio/aiscast";
 const AGREEMENT = `${REPO}/blob/main/docs/contributor-agreement.md`;
 const STATUS = "https://status.openwaters.io";
 
-// Whether boaters get their own card is undecided. Flip to show it.
-const BOATERS = false;
 const uses = [
   {
     title: "Track your fleet",
@@ -34,18 +32,6 @@ const uses = [
     text: "Every report tells you the vessel, its position, speed, and heading, and which receiver heard it. Keep them all, add names, sizes, flags, destinations, and registry details, and answer your own questions about who passes, when, and how often.",
     link: { label: "Event fields", href: "/api/ais/#stream-v1" },
   },
-  ...(BOATERS
-    ? [
-        {
-          title: "See beyond your antenna",
-          text: "The Signal K plugin shows AIS traffic your own receiver cannot hear, on the chartplotter you already have. A supplement to onboard AIS, never a substitute, and not for safety of navigation.",
-          link: {
-            label: "Signal K plugin",
-            href: "https://www.npmjs.com/package/signalk-aiscast",
-          },
-        },
-      ]
-    : []),
 ];
 
 const open = [
@@ -64,8 +50,8 @@ const open = [
   {
     icon: "mdi:license",
     title: "Openly licensed contributions",
-    text: "Volunteer receptions are dedicated CC0 and the volunteer aggregate is ODbL. Data shared under those licenses stays reusable under them. Partner data carries its own licenses, and source is on every event so you can attribute correctly.",
-    link: { label: "Contributor agreement", href: AGREEMENT },
+    text: "Every source keeps its own license, and every event names its source so you can credit it.",
+    link: { label: "Licenses", href: "#license" },
   },
 ];
 
@@ -185,32 +171,21 @@ const licenses = [
       <ul class="grid gap-5 md:grid-cols-3">
         {uses.map((u) => (
           <li class="card flex flex-col overflow-hidden p-0">
-            {u.image ? (
-              <div class="relative">
-                <img
-                  src={u.image}
-                  alt=""
-                  width="960"
-                  height="720"
-                  loading="lazy"
-                  decoding="async"
-                  class="aspect-16/9 w-full mask-b-from-30% object-cover"
-                />
-                <h2 class="absolute inset-x-6 bottom-6 text-lg font-semibold tracking-normal">
-                  {u.title}
-                </h2>
-              </div>
-            ) : (
-              <h2 class="px-6 pt-6 text-lg font-semibold tracking-normal">
+            <div class="relative">
+              <img
+                src={u.image}
+                alt=""
+                width="960"
+                height="720"
+                loading="lazy"
+                decoding="async"
+                class="aspect-16/9 w-full mask-b-from-30% object-cover"
+              />
+              <h2 class="absolute inset-x-6 bottom-6 text-lg font-semibold tracking-normal">
                 {u.title}
               </h2>
-            )}
-            <div
-              class:list={[
-                "relative flex flex-1 flex-col gap-3 p-6 pt-3",
-                u.image && "-mt-6",
-              ]}
-            >
+            </div>
+            <div class="relative -mt-6 flex flex-1 flex-col gap-3 p-6 pt-3">
               <p class="text-fg-muted text-sm">{u.text}</p>
               <a href={u.link.href} class="mt-auto text-sm font-medium">
                 {u.link.label} →
@@ -286,9 +261,7 @@ const licenses = [
       <SectionDivider index={2} total={3} label="Contribute" id="contribute" />
       <div class="mt-12 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
-          <h2 class="mb-5">
-            A network you can contribute to. Data you can take with you.
-          </h2>
+          <h2 class="mb-5">Share what you hear. Take the data with you.</h2>
           <p class="text-fg-muted mb-5 text-lg">
             Your receiver fills in part of the coast. Other receivers fill in
             theirs. aiscast, the Open Waters AIS network, brings those
@@ -382,28 +355,7 @@ const licenses = [
           </figcaption>
         </figure>
       </div>
-      <div class="border-line mt-12 grid gap-8 border-t pt-8 md:grid-cols-3">
-        <div>
-          <h3 class="mb-3 text-xl">Your receptions: CC0</h3>
-          <p class="text-fg-muted">
-            Individual volunteer receptions enter the public domain under{" "}
-            <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
-            . You can copy, reuse, and share them, including commercially. We
-            have the same rights as everyone else.
-          </p>
-        </div>
-        <div>
-          <h3 class="mb-3 text-xl">The volunteer database: ODbL</h3>
-          <p class="text-fg-muted">
-            The combined volunteer database stays open under{" "}
-            <a href="https://opendatacommons.org/licenses/odbl/summary/">
-              ODbL
-            </a>
-            . Reuse and redistribute it with attribution; publicly used adapted
-            databases must also be offered under ODbL. Partner feeds retain
-            their own terms.
-          </p>
-        </div>
+      <div class="border-line mt-12 max-w-3xl border-t pt-8">
         <div>
           <h3 class="mb-3 text-xl">Built to outlive one operator</h3>
           <p class="text-fg-muted">
