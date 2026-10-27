@@ -19,11 +19,11 @@
   "devDependencies": {
     "concurrently": "^10.0.6",
     "typescript": "^6.0.3",
-    "wrangler": "^4.149.0"
+    "wrangler": "^4.151.3"
   },
   "dependencies": {
     "@slackwater/api": "^1.0.0-beta.3",
-    "@slackwater/database": "^1.0.0-beta.0",
+    "@slackwater/database": "^1.0.0-beta.20261017",
     "@slackwater/engine": "^1.0.0-beta.0",
     "@slackwater/react": "^1.0.0-beta.0",
     "slackwater": "^1.0.0-beta.0"

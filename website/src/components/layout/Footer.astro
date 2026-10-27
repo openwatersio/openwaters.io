@@ -56,32 +56,23 @@ const currentYear = new Date().getFullYear();
           Open source marine software and data.
         </p>
       </div>
-      {
-        columns.map((column) => (
-          <div>
-            <h2 class="eyebrow text-fg-faint mb-4 text-[11px]">
-              {column.title}
-            </h2>
-            <ul class="space-y-2.5 text-sm">
-              {column.links.map((link) => (
-                <li>
-                  <a
-                    href={link.href}
-                    class="text-fg-muted hover:text-fg-strong"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      }
+      {columns.map((column) => (
+        <div>
+          <h2 class="eyebrow text-fg-faint mb-4 text-[11px]">{column.title}</h2>
+          <ul class="space-y-2.5 text-sm">
+            {column.links.map((link) => (
+              <li>
+                <a href={link.href} class="text-fg-muted hover:text-fg-strong">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
 
-    <div
-      class="border-line text-fg-faint mt-12 flex flex-col gap-3 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between"
-    >
+    <div class="border-line text-fg-faint mt-12 flex flex-col gap-3 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
       <p>
         © {currentYear} Open Water Software, LLC. Some rights reserved.{" "}
         <a href="/license/" class="text-fg-muted hover:text-fg-strong">

@@ -46,39 +46,37 @@ const charts = [
       <h2 class="sr-only">Tools and data</h2>
       <div class="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
         <!-- Charts -->
-        {
-          charts.map((chart) => (
-            <Card href={`/charts/${chart.id}/`} class="space-y-3">
-              <div class="border-line overflow-hidden rounded-lg border">
-                <ChartMap
-                  class="pointer-events-none aspect-video w-full"
-                  chart={chart.id}
-                  center={chart.center}
-                  zoom={chart.zoom}
-                  interactive={false}
+        {charts.map((chart) => (
+          <Card href={`/charts/${chart.id}/`} class="space-y-3">
+            <div class="border-line overflow-hidden rounded-lg border">
+              <ChartMap
+                class="pointer-events-none aspect-video w-full"
+                chart={chart.id}
+                center={chart.center}
+                zoom={chart.zoom}
+                interactive={false}
+              />
+            </div>
+            <h3 class="text-3xl md:text-4xl lg:text-5xl">{chart.name}</h3>
+            <p class="text-fg-muted text-pretty">{chart.description}</p>
+            <span class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium">
+              Explore {chart.name}
+              <svg
+                class="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
                 />
-              </div>
-              <h3 class="text-3xl md:text-4xl lg:text-5xl">{chart.name}</h3>
-              <p class="text-fg-muted text-pretty">{chart.description}</p>
-              <span class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium">
-                Explore {chart.name}
-                <svg
-                  class="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </span>
-            </Card>
-          ))
-        }
+              </svg>
+            </span>
+          </Card>
+        ))}
 
         <!-- Tides -->
         <Card class="space-y-3">
@@ -99,11 +97,14 @@ const charts = [
           </div>
           <h3 class="text-3xl md:text-4xl lg:text-5xl">Tides</h3>
           <p class="text-fg-muted">
-            Tide predictions powered by the <a
+            Tide predictions powered by the{" "}
+            <a
               href="https://slackwater.xyz/"
               class="text-accent hover:text-accent-hover underline"
-              >Slackwater</a
-            > engine, with data from thousands of stations worldwide.
+            >
+              Slackwater
+            </a>{" "}
+            engine, with data from thousands of stations worldwide.
           </p>
           <a
             href="/tides/"
@@ -120,7 +121,8 @@ const charts = [
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M9 5l7 7-7 7"></path>
+                d="M9 5l7 7-7 7"
+              ></path>
             </svg>
           </a>
         </Card>
@@ -135,9 +137,7 @@ const charts = [
             Open Waters AIS streams live vessel traffic from open government
             feeds and volunteer receivers, by bounding box.
           </p>
-          <span
-            class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium"
-          >
+          <span class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium">
             Explore AIS
             <svg
               class="h-4 w-4"
@@ -149,7 +149,8 @@ const charts = [
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M9 5l7 7-7 7"></path>
+                d="M9 5l7 7-7 7"
+              ></path>
             </svg>
           </span>
         </Card>
@@ -164,9 +165,7 @@ const charts = [
             Sunrise, moon phase, stars and lunar eclipses for any position,
             computed offline by the Almanac engine.
           </p>
-          <span
-            class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium"
-          >
+          <span class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium">
             Explore the sky
             <svg
               class="h-4 w-4"
@@ -178,7 +177,8 @@ const charts = [
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M9 5l7 7-7 7"></path>
+                d="M9 5l7 7-7 7"
+              ></path>
             </svg>
           </span>
         </Card>
@@ -205,9 +205,7 @@ const charts = [
             Collect and share depth data from your vessel to contribute to
             crowd-sourced bathymetry programs.
           </p>
-          <span
-            class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium"
-          >
+          <span class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium">
             Learn more
             <svg
               class="h-4 w-4"
@@ -219,7 +217,8 @@ const charts = [
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M9 5l7 7-7 7"></path>
+                d="M9 5l7 7-7 7"
+              ></path>
             </svg>
           </span>
         </Card>
@@ -230,9 +229,7 @@ const charts = [
   <!-- CTA Section -->
   <section class="py-16">
     <Container>
-      <div
-        class="card text-fg-strong mx-auto max-w-4xl space-y-6 rounded-2xl p-10 text-center"
-      >
+      <div class="card text-fg-strong mx-auto max-w-4xl space-y-6 rounded-2xl p-10 text-center">
         <h2 class="text-fg-strong">Get Involved</h2>
         <p class="text-fg-muted mx-auto max-w-2xl text-xl text-balance">
           Join our community of mariners, developers, and ocean enthusiasts
@@ -257,7 +254,10 @@ const charts = [
             <Icon name="mdi:discord" class="size-6" />
             Join us on Discord
           </a>
-          <a href="/contact/" class="btn btn-secondary"> Get in Touch </a>
+          <a href="/contact/" class="btn btn-secondary">
+            {" "}
+            Get in Touch{" "}
+          </a>
         </div>
       </div>
     </Container>

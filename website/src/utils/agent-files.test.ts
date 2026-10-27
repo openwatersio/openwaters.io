@@ -359,6 +359,26 @@ test(
 );
 
 test(
+  "AIS API page uses the Open Waters AIS API title everywhere it states it",
+  { skip },
+  () => {
+    const html = read("api/ais/index.html");
+    assert.match(
+      html,
+      /<title>Open Waters AIS API \| Open Waters<\/title>/,
+    );
+    assert.match(
+      html,
+      /<h1[^>]*>Open Waters AIS API<\/h1>/,
+    );
+    assert.match(
+      read("api/ais/index.md"),
+      /^# Open Waters AIS API/m,
+    );
+  },
+);
+
+test(
   "every site image in the updates pages and feeds was built",
   { skip },
   () => {

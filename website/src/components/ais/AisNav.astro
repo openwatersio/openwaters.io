@@ -26,21 +26,19 @@ const current = normalize(Astro.url.pathname);
     className,
   )}
 >
-  <a href="/ais/" class="text-fg-strong hover:text-fg-strong"
-    >Open Waters AIS:</a
-  >
-  {
-    links.map((link) => (
-      <a
-        href={link.href}
-        aria-current={current === normalize(link.href) ? "page" : undefined}
-        class={cn(
-          "hover:text-fg-strong",
-          current === normalize(link.href) ? "text-accent" : "text-fg-muted",
-        )}
-      >
-        {link.label}
-      </a>
-    ))
-  }
+  <a href="/ais/" class="text-fg-strong hover:text-fg-strong">
+    Open Waters AIS:
+  </a>
+  {links.map((link) => (
+    <a
+      href={link.href}
+      aria-current={current === normalize(link.href) ? "page" : undefined}
+      class={cn(
+        "hover:text-fg-strong",
+        current === normalize(link.href) ? "text-accent" : "text-fg-muted",
+      )}
+    >
+      {link.label}
+    </a>
+  ))}
 </nav>

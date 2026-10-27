@@ -36,8 +36,8 @@ const charts = [
       <div class="mx-auto max-w-3xl text-center">
         <h1 class="mb-6">Charts</h1>
         <p class="text-lead">
-          Ready-to-use nautical-themed web map tiles.<br /> Built from open data sources
-          with open source tools.
+          Ready-to-use nautical-themed web map tiles.
+          <br /> Built from open data sources with open source tools.
         </p>
       </div>
     </Container>
@@ -46,41 +46,39 @@ const charts = [
   <!-- Chart list -->
   <Container class="py-16">
     <div class="mx-auto max-w-4xl space-y-16">
-      {
-        charts.map((chart) => (
-          <section class="grid items-center gap-8 md:grid-cols-3">
+      {charts.map((chart) => (
+        <section class="grid items-center gap-8 md:grid-cols-3">
+          <a
+            href={`/charts/${chart.id}/`}
+            class="border-line block overflow-hidden rounded-lg border shadow-sm transition-shadow hover:shadow-md"
+            aria-label={`${chart.name} preview`}
+          >
+            {/* pointer-events-none so the whole preview acts as a link */}
+            <ChartMap
+              class="pointer-events-none aspect-4/3 w-full"
+              chart={chart.id}
+              center={chart.center}
+              zoom={chart.zoom}
+              interactive={false}
+            />
+          </a>
+          <div class="md:col-span-2">
+            <h2 class="mb-3 text-3xl font-semibold">
+              <a href={`/charts/${chart.id}/`} class="hover:text-accent">
+                {chart.name}
+              </a>
+            </h2>
+            <p class="text-fg-muted mb-4">{chart.description}</p>
             <a
               href={`/charts/${chart.id}/`}
-              class="border-line block overflow-hidden rounded-lg border shadow-sm transition-shadow hover:shadow-md"
-              aria-label={`${chart.name} preview`}
+              class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium"
             >
-              {/* pointer-events-none so the whole preview acts as a link */}
-              <ChartMap
-                class="pointer-events-none aspect-4/3 w-full"
-                chart={chart.id}
-                center={chart.center}
-                zoom={chart.zoom}
-                interactive={false}
-              />
+              Explore {chart.name}
+              <Icon name="mdi:arrow-right" class="size-5" />
             </a>
-            <div class="md:col-span-2">
-              <h2 class="mb-3 text-3xl font-semibold">
-                <a href={`/charts/${chart.id}/`} class="hover:text-accent">
-                  {chart.name}
-                </a>
-              </h2>
-              <p class="text-fg-muted mb-4">{chart.description}</p>
-              <a
-                href={`/charts/${chart.id}/`}
-                class="text-accent hover:text-accent-hover inline-flex items-center gap-1 font-medium"
-              >
-                Explore {chart.name}
-                <Icon name="mdi:arrow-right" class="size-5" />
-              </a>
-            </div>
-          </section>
-        ))
-      }
+          </div>
+        </section>
+      ))}
     </div>
   </Container>
 </MainLayout>

@@ -184,7 +184,7 @@ const description =
 const article = {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  headline: "AIS API",
+  headline: "Open Waters AIS API",
   description,
   url: `${SITE}/api/ais/`,
   author: publisher,
@@ -196,14 +196,14 @@ const article = {
 ---
 
 <ApiLayout
-  title="AIS API"
+  title="Open Waters AIS API"
   description={description}
   schema={article}
   sections={sections}
 >
   <div class="ais-ref">
     <div class="flex items-center justify-between">
-      <h1 class="mb-3">AIS API</h1>
+      <h1 class="mb-3">Open Waters AIS API</h1>
       <div class="flex gap-3">
         <a
           href="https://github.com/openwatersio/aiscast"
@@ -221,17 +221,18 @@ const article = {
       </div>
     </div>
     <p class="text-lead mb-4">
-      Open Waters AIS: every AIS message heard by receivers around the world,
+      A realtime AIS API: every AIS message heard by receivers around the world,
       pushed to you as it happens, plus a snapshot of where everything is right
-      now.
+      now. Free for personal use, with <a href="/ais/pricing/">paid plans</a>{" "}
+      available for commercial use.
     </p>
     <p class="text-fg-muted mb-12 text-sm">
-      Free for personal use; <a href="/ais/pricing/">see pricing</a> for products.
       Coming from aisstream.io? Change the hostname and keep your code: see{" "}
-      <a href="/ais/vs/aisstream/">Open Waters AIS vs aisstream.io</a>, or <a
-        href="/ais/alternatives/aisstream/"
-        >check whether aisstream.io is down</a
-      >.
+      <a href="/ais/vs/aisstream/">Open Waters AIS vs aisstream.io</a>, or{" "}
+      <a href="/ais/alternatives/aisstream/">
+        check whether aisstream.io is down
+      </a>
+      .
     </p>
 
     <section id="quick-start" class="mb-16 scroll-mt-24">
@@ -248,49 +249,48 @@ const article = {
         The box is <code>[minLat, minLon, maxLat, maxLon]</code>, here a stretch
         of the Oslofjord. Change it, or follow specific vessels with{" "}
         <code>{'{"type":"subscribe","mmsi":[257123456]}'}</code>. Every frame
-        that is not an <code>event</code> is a <code>welcome</code> with your limits,
-        an <code>ack</code>, or an <code>error</code> that says what to fix. Full
-        details under <a href="#stream-v1">WebSocket</a>;{" "}
-        <a href="/ais/token/">get a token</a> when you outgrow the anonymous limits.
+        that is not an <code>event</code> is a <code>welcome</code> with your
+        limits, an <code>ack</code>, or an <code>error</code> that says what to
+        fix. Full details under <a href="#stream-v1">WebSocket</a>;{" "}
+        <a href="/ais/token/">get a token</a> when you outgrow the anonymous
+        limits.
       </p>
     </section>
 
-    {
-      groups.map(({ slug, text, tag = text, note, Intro, streams }) => (
-        <section id={slug} class="mb-16 scroll-mt-24">
-          <h2 class="mb-6 text-3xl font-semibold">{text}</h2>
-          {Intro && (
-            <article class="prose max-w-none">
-              <Intro />
-            </article>
-          )}
-          {tagDescriptions.get(tag) && (
-            <div
-              class="prose text-fg-muted mb-6 max-w-none"
-              set:html={md(tagDescriptions.get(tag)!)}
-            />
-          )}
-          {note && (
-            <div
-              class="prose text-fg-muted mb-6 max-w-none"
-              set:html={md(note)}
-            />
-          )}
-          {(byTag.get(tag) ?? []).map((endpoint) => (
-            <ApiEndpoint
-              endpoint={endpoint}
-              host={SERVER}
-              id={endpointId(endpoint)}
-            />
-          ))}
-          {(streams ?? []).map(({ Content, text, ...stream }) => (
-            <StreamEndpoint {...stream}>
-              <Content />
-            </StreamEndpoint>
-          ))}
-        </section>
-      ))
-    }
+    {groups.map(({ slug, text, tag = text, note, Intro, streams }) => (
+      <section id={slug} class="mb-16 scroll-mt-24">
+        <h2 class="mb-6 text-3xl font-semibold">{text}</h2>
+        {Intro && (
+          <article class="prose max-w-none">
+            <Intro />
+          </article>
+        )}
+        {tagDescriptions.get(tag) && (
+          <div
+            class="prose text-fg-muted mb-6 max-w-none"
+            set:html={md(tagDescriptions.get(tag)!)}
+          />
+        )}
+        {note && (
+          <div
+            class="prose text-fg-muted mb-6 max-w-none"
+            set:html={md(note)}
+          />
+        )}
+        {(byTag.get(tag) ?? []).map((endpoint) => (
+          <ApiEndpoint
+            endpoint={endpoint}
+            host={SERVER}
+            id={endpointId(endpoint)}
+          />
+        ))}
+        {(streams ?? []).map(({ Content, text, ...stream }) => (
+          <StreamEndpoint {...stream}>
+            <Content />
+          </StreamEndpoint>
+        ))}
+      </section>
+    ))}
   </div>
 </ApiLayout>
 

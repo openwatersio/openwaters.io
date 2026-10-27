@@ -180,12 +180,13 @@ const faqSchema = {
       <h1 class="mb-4">AIS for Signal K</h1>
 
       <p class="text-lead mb-8">
-        <code class="bg-surface rounded px-1">signalk-aiscast</code> puts worldwide
-        AIS traffic on a Signal K boat that has no AIS receiver, and on the chartplotter
-        already wired to it. It also sends what your receiver hears to <a
-          href="/ais/">aiscast, the Open Waters AIS network</a
-        >, so the water only boats can hear gets covered. One plugin, one
-        connection, both directions, and no account.
+        <code class="bg-surface rounded px-1">signalk-aiscast</code> puts
+        worldwide AIS traffic on a Signal K boat that has no AIS receiver, and
+        on the chartplotter already wired to it. It also sends what your
+        receiver hears to{" "}
+        <a href="/ais/">aiscast, the Open Waters AIS network</a>, so the water
+        only boats can hear gets covered. One plugin, one connection, both
+        directions, and no account.
       </p>
 
       <nav
@@ -194,16 +195,14 @@ const faqSchema = {
         class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
       >
         <span class="mr-2 font-semibold">On this page:</span>
-        {
-          sections.map((s, i) => (
-            <>
-              {i > 0 && <span class="text-fg-faint mx-2">·</span>}
-              <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
-                {s.label}
-              </a>
-            </>
-          ))
-        }
+        {sections.map((s, i) => (
+          <>
+            {i > 0 && <span class="text-fg-faint mx-2">·</span>}
+            <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
+              {s.label}
+            </a>
+          </>
+        ))}
       </nav>
 
       <h2 id="install" class="mb-4 scroll-mt-24 text-3xl font-semibold">
@@ -211,10 +210,10 @@ const faqSchema = {
       </h2>
       <div class="text-fg-muted mb-6 space-y-4">
         <p>
-          In the Signal K admin UI, open <strong>App Store</strong> → search <strong
-            >AIScast</strong
-          > → Install, then enable it in <strong>Plugin Config</strong>. Or from
-          a shell in <code class="bg-surface rounded px-1">~/.signalk</code>:
+          In the Signal K admin UI, open <strong>App Store</strong> → search{" "}
+          <strong>AIScast</strong> → Install, then enable it in{" "}
+          <strong>Plugin Config</strong>. Or from a shell in{" "}
+          <code class="bg-surface rounded px-1">~/.signalk</code>:
         </p>
       </div>
       <CodeBlock code="npm install signalk-aiscast" class="mb-6" />
@@ -225,12 +224,18 @@ const faqSchema = {
           Nothing is published until you enable the plugin.
         </p>
         <p class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-          <a href={NPM} class="text-accent hover:text-accent-hover">npm</a>
-          <a href={PLUGIN_README} class="text-accent hover:text-accent-hover"
-            >README</a
-          >
-          <a href={REPO} class="text-accent hover:text-accent-hover">Source</a>
-          <a href={MAP} class="text-accent hover:text-accent-hover">Vessels</a>
+          <a href={NPM} class="text-accent hover:text-accent-hover">
+            npm
+          </a>
+          <a href={PLUGIN_README} class="text-accent hover:text-accent-hover">
+            README
+          </a>
+          <a href={REPO} class="text-accent hover:text-accent-hover">
+            Source
+          </a>
+          <a href={MAP} class="text-accent hover:text-accent-hover">
+            Vessels
+          </a>
         </p>
       </div>
 
@@ -238,15 +243,13 @@ const faqSchema = {
         What you get
       </h2>
       <div class="mb-12 grid gap-4 sm:grid-cols-2">
-        {
-          gets.map((g) => (
-            <Card class="p-5">
-              <Icon name={g.icon} class="text-accent mb-3 size-7" />
-              <h3 class="mb-1 text-base font-semibold">{g.title}</h3>
-              <p class="text-fg-muted text-sm">{g.text}</p>
-            </Card>
-          ))
-        }
+        {gets.map((g) => (
+          <Card class="p-5">
+            <Icon name={g.icon} class="text-accent mb-3 size-7" />
+            <h3 class="mb-1 text-base font-semibold">{g.title}</h3>
+            <p class="text-fg-muted text-sm">{g.text}</p>
+          </Card>
+        ))}
       </div>
 
       <h2 id="plotter" class="mb-4 scroll-mt-24 text-3xl font-semibold">
@@ -256,11 +259,11 @@ const faqSchema = {
         <p>
           This is the part most people do not expect. Signal K apps are not the
           only thing that can show aiscast traffic: the plugin re-emits every
-          injected target as a plain <code class="bg-surface rounded px-1"
-            >!AIVDM</code
-          > sentence on the server's NMEA 0183 output. Anything already reading that
-          output — a Raymarine, B&G, or Garmin MFD on the network, OpenCPN, a tablet
-          app on TCP 10110 — draws the targets as if they came from a receiver. The
+          injected target as a plain{" "}
+          <code class="bg-surface rounded px-1">!AIVDM</code> sentence on the
+          server's NMEA 0183 output. Anything already reading that output — a
+          Raymarine, B&G, or Garmin MFD on the network, OpenCPN, a tablet app on
+          TCP 10110 — draws the targets as if they came from a receiver. The
           other end needs no Signal K support and no configuration.
         </p>
         <p>
@@ -280,22 +283,24 @@ const faqSchema = {
       </h2>
       <div class="text-fg-muted mb-12 space-y-4">
         <p>
-          Install <a
+          Install{" "}
+          <a
             href="https://github.com/sbender9/signalk-buddylist-plugin"
             class="text-accent hover:text-accent-hover"
-            >signalk-buddylist-plugin</a
-          > alongside this one and the boats on your buddy list stay on your chart
-          wherever they are, far beyond VHF range. Add a buddy in Freeboard-SK by
-          tapping a vessel, and this plugin follows that MMSI on aiscast alongside
-          the radius.
+          >
+            signalk-buddylist-plugin
+          </a>{" "}
+          alongside this one and the boats on your buddy list stay on your chart
+          wherever they are, far beyond VHF range. Add a buddy in Freeboard-SK
+          by tapping a vessel, and this plugin follows that MMSI on aiscast
+          alongside the radius.
         </p>
         <p>
-          Buddies are followed in every receive mode, including <strong
-            >Off</strong
-          >: following a boat across an ocean is the whole point. The buddylist
-          plugin raises its own proximity alert the moment positions arrive, so
-          the buddy icon, the buddies-only filter, and phone alerts work at any
-          distance.
+          Buddies are followed in every receive mode, including{" "}
+          <strong>Off</strong>: following a boat across an ocean is the whole
+          point. The buddylist plugin raises its own proximity alert the moment
+          positions arrive, so the buddy icon, the buddies-only filter, and
+          phone alerts work at any distance.
         </p>
         <p>
           A buddy only appears when some station or satellite feed hears them.
@@ -325,10 +330,14 @@ const faqSchema = {
           of its onward feed to other aggregators.
         </p>
         <p>
-          What you share is published under the <a
+          What you share is published under the{" "}
+          <a
             href={`${REPO}/blob/main/docs/contributor-agreement.md`}
-            class="text-accent hover:text-accent-hover">contributor agreement</a
-          >: volunteer receptions are CC0, the aggregate is ODbL, and the
+            class="text-accent hover:text-accent-hover"
+          >
+            contributor agreement
+          </a>
+          : volunteer receptions are CC0, the aggregate is ODbL, and the
           agreement says so before the data exists. Contributors also get the
           deduplicated raw stream back, which no other AIS network offers. The
           agreement changes only through public pull requests.
@@ -341,9 +350,9 @@ const faqSchema = {
       <div class="text-fg-muted mb-12 space-y-4">
         <p>
           Sharing your own position gives you something back: your boat gets a
-          page at <code class="bg-surface rounded px-1"
-            >/ais/vessels/&lt;mmsi&gt;</code
-          >, with where it is, where it has been, and a photo if there is one on
+          page at{" "}
+          <code class="bg-surface rounded px-1">/ais/vessels/&lt;mmsi&gt;</code>
+          , with where it is, where it has been, and a photo if there is one on
           Wikimedia Commons. Leave the boat on its mooring and you can open that
           page from anywhere to see that it is still there.
         </p>
@@ -355,9 +364,9 @@ const faqSchema = {
           relays everything else your receiver hears.
         </p>
         <p class="text-sm">
-          <a href={MAP} class="text-accent hover:text-accent-hover"
-            >Open Vessels</a
-          >
+          <a href={MAP} class="text-accent hover:text-accent-hover">
+            Open Vessels
+          </a>
         </p>
       </div>
 
@@ -365,14 +374,12 @@ const faqSchema = {
         Works with
       </h2>
       <div class="mb-12 space-y-4">
-        {
-          worksWith.map((w) => (
-            <div class="border-line border-l-2 pl-4">
-              <h3 class="mb-1 text-base font-semibold">{w.name}</h3>
-              <p class="text-fg-muted text-sm" set:html={w.text} />
-            </div>
-          ))
-        }
+        {worksWith.map((w) => (
+          <div class="border-line border-l-2 pl-4">
+            <h3 class="mb-1 text-base font-semibold">{w.name}</h3>
+            <p class="text-fg-muted text-sm" set:html={w.text} />
+          </div>
+        ))}
       </div>
 
       <h2 id="settings" class="mb-6 scroll-mt-24 text-3xl font-semibold">
@@ -388,31 +395,29 @@ const faqSchema = {
             </tr>
           </thead>
           <tbody>
-            {
-              settings.map(([name, dflt, meaning]) => (
-                <tr class="border-line border-t">
-                  <td class="px-4 py-3 align-top">{name}</td>
-                  <td class="text-fg-muted px-4 py-3 align-top font-mono text-xs">
-                    {dflt}
-                  </td>
-                  <td class="text-fg-muted px-4 py-3 align-top">{meaning}</td>
-                </tr>
-              ))
-            }
+            {settings.map(([name, dflt, meaning]) => (
+              <tr class="border-line border-t">
+                <td class="px-4 py-3 align-top">{name}</td>
+                <td class="text-fg-muted px-4 py-3 align-top font-mono text-xs">
+                  {dflt}
+                </td>
+                <td class="text-fg-muted px-4 py-3 align-top">{meaning}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
 
-      <h2 id="faq" class="mb-6 scroll-mt-24 text-3xl font-semibold">FAQ</h2>
+      <h2 id="faq" class="mb-6 scroll-mt-24 text-3xl font-semibold">
+        FAQ
+      </h2>
       <div class="mb-12 space-y-6">
-        {
-          faq.map((item) => (
-            <div>
-              <h3 class="mb-1 text-base font-semibold">{item.q}</h3>
-              <p class="text-fg-muted text-sm">{item.a}</p>
-            </div>
-          ))
-        }
+        {faq.map((item) => (
+          <div>
+            <h3 class="mb-1 text-base font-semibold">{item.q}</h3>
+            <p class="text-fg-muted text-sm">{item.a}</p>
+          </div>
+        ))}
       </div>
 
       <Card class="p-6">
@@ -423,16 +428,18 @@ const faqSchema = {
           the aiscast discussions.
         </p>
         <p class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-          <a href={NPM} class="text-accent hover:text-accent-hover"
-            >signalk-aiscast on npm</a
-          >
+          <a href={NPM} class="text-accent hover:text-accent-hover">
+            signalk-aiscast on npm
+          </a>
           <a
             href={`${REPO}/discussions`}
-            class="text-accent hover:text-accent-hover">Discussions</a
+            class="text-accent hover:text-accent-hover"
           >
-          <a href="/ais/" class="text-accent hover:text-accent-hover"
-            >About aiscast</a
-          >
+            Discussions
+          </a>
+          <a href="/ais/" class="text-accent hover:text-accent-hover">
+            About aiscast
+          </a>
         </p>
       </Card>
     </div>

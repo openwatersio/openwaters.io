@@ -147,17 +147,9 @@ const licenses = [
     <div class="absolute inset-0">
       <AisMap center={[23.6, 59.7]} zoom={6.3} class="h-full w-full" />
     </div>
-    <div
-      class="from-canvas/10 to-canvas pointer-events-none absolute inset-0 bg-linear-to-b via-transparent via-50%"
-    >
-    </div>
-    <div
-      class="bg-canvas/50 lg:from-canvas lg:via-canvas/30 pointer-events-none absolute inset-0 lg:bg-transparent lg:bg-linear-to-r lg:via-75% lg:to-transparent"
-    >
-    </div>
-    <Container
-      class="relative min-h-136 pt-36 pb-10 lg:min-h-160 lg:pt-44 lg:pb-12"
-    >
+    <div class="from-canvas/10 to-canvas pointer-events-none absolute inset-0 bg-linear-to-b via-transparent via-50%"></div>
+    <div class="bg-canvas/50 lg:from-canvas lg:via-canvas/30 pointer-events-none absolute inset-0 lg:bg-transparent lg:bg-linear-to-r lg:via-75% lg:to-transparent"></div>
+    <Container class="relative min-h-136 pt-36 pb-10 lg:min-h-160 lg:pt-44 lg:pb-12">
       <div class="pointer-events-none max-w-2xl">
         <AisNav class="pointer-events-auto mb-6" />
         <h1 class="mb-6">
@@ -168,15 +160,15 @@ const licenses = [
           receiver.
         </p>
       </div>
-      <div
-        class="pointer-events-auto flex flex-wrap items-center justify-between gap-x-10 gap-y-6"
-      >
+      <div class="pointer-events-auto flex flex-wrap items-center justify-between gap-x-10 gap-y-6">
         <div class="flex flex-wrap gap-3">
           <a href="/api/ais/" class="btn btn-primary">
             Use the API
             <Icon name="mdi:arrow-right" class="size-4" />
           </a>
-          <a href="/ais/contribute/" class="btn btn-secondary">Contribute</a>
+          <a href="/ais/contribute/" class="btn btn-secondary">
+            Contribute
+          </a>
           <a href="/ais/vessels" class="btn btn-secondary">
             <Icon name="mdi:map-outline" class="size-4" />
             Vessels
@@ -191,43 +183,41 @@ const licenses = [
   <section class="py-8">
     <Container>
       <ul class="grid gap-5 md:grid-cols-3">
-        {
-          uses.map((u) => (
-            <li class="card flex flex-col overflow-hidden p-0">
-              {u.image ? (
-                <div class="relative">
-                  <img
-                    src={u.image}
-                    alt=""
-                    width="960"
-                    height="720"
-                    loading="lazy"
-                    decoding="async"
-                    class="aspect-16/9 w-full mask-b-from-30% object-cover"
-                  />
-                  <h2 class="absolute inset-x-6 bottom-6 text-lg font-semibold tracking-normal">
-                    {u.title}
-                  </h2>
-                </div>
-              ) : (
-                <h2 class="px-6 pt-6 text-lg font-semibold tracking-normal">
+        {uses.map((u) => (
+          <li class="card flex flex-col overflow-hidden p-0">
+            {u.image ? (
+              <div class="relative">
+                <img
+                  src={u.image}
+                  alt=""
+                  width="960"
+                  height="720"
+                  loading="lazy"
+                  decoding="async"
+                  class="aspect-16/9 w-full mask-b-from-30% object-cover"
+                />
+                <h2 class="absolute inset-x-6 bottom-6 text-lg font-semibold tracking-normal">
                   {u.title}
                 </h2>
-              )}
-              <div
-                class:list={[
-                  "relative flex flex-1 flex-col gap-3 p-6 pt-3",
-                  u.image && "-mt-6",
-                ]}
-              >
-                <p class="text-fg-muted text-sm">{u.text}</p>
-                <a href={u.link.href} class="mt-auto text-sm font-medium">
-                  {u.link.label} →
-                </a>
               </div>
-            </li>
-          ))
-        }
+            ) : (
+              <h2 class="px-6 pt-6 text-lg font-semibold tracking-normal">
+                {u.title}
+              </h2>
+            )}
+            <div
+              class:list={[
+                "relative flex flex-1 flex-col gap-3 p-6 pt-3",
+                u.image && "-mt-6",
+              ]}
+            >
+              <p class="text-fg-muted text-sm">{u.text}</p>
+              <a href={u.link.href} class="mt-auto text-sm font-medium">
+                {u.link.label} →
+              </a>
+            </div>
+          </li>
+        ))}
       </ul>
     </Container>
   </section>
@@ -236,9 +226,7 @@ const licenses = [
   <section class="py-16 lg:py-24">
     <Container>
       <SectionDivider index={1} total={3} label="Network" />
-      <div
-        class="mt-12 grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
-      >
+      <div class="mt-12 grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
           <h2 class="mb-5">A network that grows with every receiver.</h2>
           <p class="text-fg-muted mb-6 text-lg">
@@ -255,38 +243,32 @@ const licenses = [
           <p class="px-6 pt-6 font-semibold">Unique Vessels</p>
           <div id="ais-network">
             <dl class="grid grid-cols-3 gap-4 px-6 pt-3 pb-6">
-              {
-                vesselWindows.map((n) => (
-                  <div class="flex min-w-0 flex-col-reverse justify-end gap-1">
-                    <dt class="text-fg-faint text-[11px] font-medium tracking-[0.12em] whitespace-nowrap uppercase">
-                      <span class="sr-only">Unique vessels in the last </span>
-                      {n.label}
-                    </dt>
-                    <dd class="text-fg-strong text-2xl font-semibold tracking-tight tabular-nums sm:text-4xl">
-                      <span data-stat={n.key}>–</span>
-                    </dd>
-                  </div>
-                ))
-              }
+              {vesselWindows.map((n) => (
+                <div class="flex min-w-0 flex-col-reverse justify-end gap-1">
+                  <dt class="text-fg-faint text-[11px] font-medium tracking-[0.12em] whitespace-nowrap uppercase">
+                    <span class="sr-only">Unique vessels in the last </span>
+                    {n.label}
+                  </dt>
+                  <dd class="text-fg-strong text-2xl font-semibold tracking-tight tabular-nums sm:text-4xl">
+                    <span data-stat={n.key}>–</span>
+                  </dd>
+                </div>
+              ))}
             </dl>
             <dl class="border-line grid grid-cols-3 gap-4 border-t px-6 py-5">
-              {
-                health.map((n) => (
-                  <div class="flex min-w-0 flex-col-reverse justify-end gap-1">
-                    <dt class="text-fg-faint text-[10px] font-medium tracking-[0.12em] uppercase">
-                      {n.label}
-                    </dt>
-                    <dd class="text-fg-strong text-lg font-semibold tabular-nums">
-                      <span data-stat={n.key}>–</span>
-                    </dd>
-                  </div>
-                ))
-              }
+              {health.map((n) => (
+                <div class="flex min-w-0 flex-col-reverse justify-end gap-1">
+                  <dt class="text-fg-faint text-[10px] font-medium tracking-[0.12em] uppercase">
+                    {n.label}
+                  </dt>
+                  <dd class="text-fg-strong text-lg font-semibold tabular-nums">
+                    <span data-stat={n.key}>–</span>
+                  </dd>
+                </div>
+              ))}
             </dl>
           </div>
-          <div
-            class="border-line text-accent group-hover:text-accent-hover flex items-center justify-between gap-4 border-t px-6 py-4 text-sm font-medium"
-          >
+          <div class="border-line text-accent group-hover:text-accent-hover flex items-center justify-between gap-4 border-t px-6 py-4 text-sm font-medium">
             <span>Sources, delays, and every station on the network page</span>
             <Icon
               name="mdi:arrow-right"
@@ -312,12 +294,16 @@ const licenses = [
           </p>
           <p class="text-fg-faint text-sm">
             Talking to Claude or ChatGPT instead? Add{" "}
-            <code class="text-fg-muted">https://{SERVER}/mcp</code> as an MCP server
-            and <a href="/api/ais/#mcp">ask what is in the port</a>.
+            <code class="text-fg-muted">https://{SERVER}/mcp</code> as an MCP
+            server and <a href="/api/ais/#mcp">ask what is in the port</a>.
           </p>
           <div class="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-2">
-            <a href="/api/ais/" class="btn btn-primary">Explore the APIs</a>
-            <a href="/ais/pricing/" class="font-medium">View pricing →</a>
+            <a href="/api/ais/" class="btn btn-primary">
+              Explore the APIs
+            </a>
+            <a href="/ais/pricing/" class="font-medium">
+              View pricing →
+            </a>
           </div>
         </div>
         <div id="contribute" class="card flex scroll-mt-24 flex-col gap-4 p-8">
@@ -329,9 +315,9 @@ const licenses = [
             else you contribute today.
           </p>
           <div class="mt-auto pt-2">
-            <a href="/ais/contribute/" class="btn btn-secondary"
-              >Connect your receiver</a
-            >
+            <a href="/ais/contribute/" class="btn btn-secondary">
+              Connect your receiver
+            </a>
           </div>
         </div>
       </div>
@@ -343,70 +329,67 @@ const licenses = [
     <Container>
       <SectionDivider index={3} total={3} label="Open" />
       <ul class="mt-12 grid gap-5 md:grid-cols-3">
-        {
-          open.map((o) => (
-            <li class="card flex flex-col gap-3">
-              <Icon name={o.icon} class="text-accent size-6" />
-              <h2 class="text-lg font-semibold tracking-normal">{o.title}</h2>
-              <p class="text-fg-muted text-sm">{o.text}</p>
-              <a href={o.link.href} class="mt-auto text-sm font-medium">
-                {o.link.label} →
-              </a>
-            </li>
-          ))
-        }
+        {open.map((o) => (
+          <li class="card flex flex-col gap-3">
+            <Icon name={o.icon} class="text-accent size-6" />
+            <h2 class="text-lg font-semibold tracking-normal">{o.title}</h2>
+            <p class="text-fg-muted text-sm">{o.text}</p>
+            <a href={o.link.href} class="mt-auto text-sm font-medium">
+              {o.link.label} →
+            </a>
+          </li>
+        ))}
       </ul>
 
       <div class="mt-16 max-w-2xl">
-        <h3 id="license" class="mb-4 scroll-mt-24">License</h3>
+        <h3 id="license" class="mb-4 scroll-mt-24">
+          License
+        </h3>
         <p class="text-fg-muted">
           Licensing is per source, and the aggregate is not relicensed: each
           event is re-served under the terms of the source it came from, which
-          is why <code class="text-fg">source</code> is on every event and every vessel.
-          If you display or redistribute the data, carry the source's attribution
-          through.
+          is why <code class="text-fg">source</code> is on every event and every
+          vessel. If you display or redistribute the data, carry the source's
+          attribution through.
         </p>
       </div>
       <div class="border-line mt-8 overflow-x-auto rounded-2xl border">
         <table class="w-full min-w-lg text-sm">
-          <thead
-            class="border-line bg-surface text-fg-faint border-b text-[11px] font-medium tracking-[0.12em] uppercase"
-          >
+          <thead class="border-line bg-surface text-fg-faint border-b text-[11px] font-medium tracking-[0.12em] uppercase">
             <tr>
-              <th scope="col" class="px-4 py-3 text-left font-medium">Source</th
-              >
-              <th scope="col" class="px-4 py-3 text-left font-medium"
-                >License</th
-              >
-              <th scope="col" class="px-4 py-3 text-left font-medium"
-                >What you must do</th
-              >
+              <th scope="col" class="px-4 py-3 text-left font-medium">
+                Source
+              </th>
+              <th scope="col" class="px-4 py-3 text-left font-medium">
+                License
+              </th>
+              <th scope="col" class="px-4 py-3 text-left font-medium">
+                What you must do
+              </th>
             </tr>
           </thead>
           <tbody class="divide-line divide-y">
-            {
-              licenses.map((row) => (
-                <tr>
-                  <td class="text-fg-strong px-4 py-3 font-medium">
-                    {row.source}
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap">
-                    {row.href ? (
-                      <a
-                        href={row.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {row.license}
-                      </a>
-                    ) : (
-                      row.license
-                    )}
-                  </td>
-                  <td class="text-fg-muted px-4 py-3">{row.obligation}</td>
-                </tr>
-              ))
-            }
+            {licenses.map((row) => (
+              <tr>
+                <td class="text-fg-strong px-4 py-3 font-medium">
+                  {row.source}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  {row.href ? (
+                    <a
+                      href={row.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {row.license}
+                    </a>
+                  ) : (
+                    row.license
+                  )}
+                </td>
+                <td class="text-fg-muted px-4 py-3">{row.obligation}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -415,13 +398,20 @@ const licenses = [
         <a
           href={`${REPO}/blob/main/LICENSE`}
           target="_blank"
-          rel="noopener noreferrer">MIT</a
-        >. The full position on licensing, privacy, and how the project funds
-        itself without relicensing data is in the <a
+          rel="noopener noreferrer"
+        >
+          MIT
+        </a>
+        . The full position on licensing, privacy, and how the project funds
+        itself without relicensing data is in the{" "}
+        <a
           href={`${REPO}/blob/main/docs/policy.md`}
           target="_blank"
-          rel="noopener noreferrer">data policy</a
-        >.
+          rel="noopener noreferrer"
+        >
+          data policy
+        </a>
+        .
       </p>
     </Container>
   </section>
@@ -429,9 +419,7 @@ const licenses = [
   <!-- Closing call -->
   <section class="pb-24">
     <Container>
-      <div
-        class="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-12"
-      >
+      <div class="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-12">
         <div>
           <h2 class="mb-2">Track ship traffic, or help others see it.</h2>
           <p class="text-fg-muted text-lg">
@@ -439,22 +427,24 @@ const licenses = [
           </p>
         </div>
         <div class="flex shrink-0 flex-wrap gap-3">
-          <a href="/api/ais/" class="btn btn-primary">Use the data</a>
-          <a href="/ais/contribute/" class="btn btn-secondary">Contribute</a>
+          <a href="/api/ais/" class="btn btn-primary">
+            Use the data
+          </a>
+          <a href="/ais/contribute/" class="btn btn-secondary">
+            Contribute
+          </a>
         </div>
       </div>
       <p
         class="text-fg-faint mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm"
         data-nosnippet
       >
-        {
-          footer.map((f, i) => (
-            <>
-              {i > 0 && " · "}
-              <a href={f.href}>{f.label}</a>
-            </>
-          ))
-        }
+        {footer.map((f, i) => (
+          <>
+            {i > 0 && " · "}
+            <a href={f.href}>{f.label}</a>
+          </>
+        ))}
       </p>
     </Container>
   </section>

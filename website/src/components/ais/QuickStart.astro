@@ -17,35 +17,31 @@ const { highlighted } = Astro.props;
     aria-label="Language"
     class="border-line flex gap-1 overflow-x-auto border-b p-2"
   >
-    {
-      snippets.map((s, i) => (
-        <button
-          id={`tab-${s.id}`}
-          role="tab"
-          type="button"
-          aria-selected={i === 0}
-          tabindex={i === 0 ? 0 : -1}
-          aria-controls={`snippet-${s.id}`}
-          class="text-fg-muted hover:text-fg-strong aria-selected:bg-surface-raised aria-selected:text-fg-strong rounded-lg px-3 py-1.5 text-sm font-medium"
-        >
-          {s.label}
-        </button>
-      ))
-    }
-  </div>
-  {
-    snippets.map((s, i) => (
-      <div
-        role="tabpanel"
-        id={`snippet-${s.id}`}
-        aria-labelledby={`tab-${s.id}`}
-        tabindex="0"
-        hidden={i !== 0}
+    {snippets.map((s, i) => (
+      <button
+        id={`tab-${s.id}`}
+        role="tab"
+        type="button"
+        aria-selected={i === 0}
+        tabindex={i === 0 ? 0 : -1}
+        aria-controls={`snippet-${s.id}`}
+        class="text-fg-muted hover:text-fg-strong aria-selected:bg-surface-raised aria-selected:text-fg-strong rounded-lg px-3 py-1.5 text-sm font-medium"
       >
-        <Fragment set:html={highlighted[i]} />
-      </div>
-    ))
-  }
+        {s.label}
+      </button>
+    ))}
+  </div>
+  {snippets.map((s, i) => (
+    <div
+      role="tabpanel"
+      id={`snippet-${s.id}`}
+      aria-labelledby={`tab-${s.id}`}
+      tabindex="0"
+      hidden={i !== 0}
+    >
+      <Fragment set:html={highlighted[i]} />
+    </div>
+  ))}
 </div>
 
 <script>

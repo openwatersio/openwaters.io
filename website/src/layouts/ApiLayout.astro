@@ -41,51 +41,49 @@ const current = Astro.url.pathname.replace(/\/?$/, "/");
             API Reference
           </p>
           <ul class="space-y-1">
-            {
-              pages.map((page) => (
-                <li>
-                  <a
-                    href={page.href}
-                    aria-current={current === page.href ? "page" : undefined}
-                    class={
-                      current === page.href
-                        ? "text-accent block rounded px-3 py-1.5 font-medium"
-                        : "text-fg-muted hover:text-accent block rounded px-3 py-1.5"
-                    }
-                  >
-                    {page.label}
-                  </a>
-                  {current === page.href && sections.length > 0 && (
-                    <ul class="border-line mt-1 space-y-1 border-l pl-3">
-                      {sections.map((section) => (
-                        <li>
-                          <a
-                            href={`#${section.slug}`}
-                            class="text-fg-muted hover:text-accent block rounded px-2 py-1"
-                          >
-                            {section.text}
-                          </a>
-                          {section.children && section.children.length > 0 && (
-                            <ul class="mb-1 space-y-0.5">
-                              {section.children.map((child) => (
-                                <li>
-                                  <a
-                                    href={`#${child.slug}`}
-                                    class="text-fg-faint hover:text-accent block rounded py-0.5 pl-5 text-xs"
-                                  >
-                                    {child.text}
-                                  </a>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))
-            }
+            {pages.map((page) => (
+              <li>
+                <a
+                  href={page.href}
+                  aria-current={current === page.href ? "page" : undefined}
+                  class={
+                    current === page.href
+                      ? "text-accent block rounded px-3 py-1.5 font-medium"
+                      : "text-fg-muted hover:text-accent block rounded px-3 py-1.5"
+                  }
+                >
+                  {page.label}
+                </a>
+                {current === page.href && sections.length > 0 && (
+                  <ul class="border-line mt-1 space-y-1 border-l pl-3">
+                    {sections.map((section) => (
+                      <li>
+                        <a
+                          href={`#${section.slug}`}
+                          class="text-fg-muted hover:text-accent block rounded px-2 py-1"
+                        >
+                          {section.text}
+                        </a>
+                        {section.children && section.children.length > 0 && (
+                          <ul class="mb-1 space-y-0.5">
+                            {section.children.map((child) => (
+                              <li>
+                                <a
+                                  href={`#${child.slug}`}
+                                  class="text-fg-faint hover:text-accent block rounded py-0.5 pl-5 text-xs"
+                                >
+                                  {child.text}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
           </ul>
         </nav>
       </aside>
@@ -96,57 +94,53 @@ const current = Astro.url.pathname.replace(/\/?$/, "/");
           aria-label="API reference"
           class="border-line mb-8 flex gap-4 border-b pb-3 text-sm lg:hidden"
         >
-          {
-            pages.map((page) => (
-              <a
-                href={page.href}
-                aria-current={current === page.href ? "page" : undefined}
-                class={
-                  current === page.href
-                    ? "text-accent font-medium"
-                    : "text-fg-muted hover:text-accent"
-                }
-              >
-                {page.label}
-              </a>
-            ))
-          }
+          {pages.map((page) => (
+            <a
+              href={page.href}
+              aria-current={current === page.href ? "page" : undefined}
+              class={
+                current === page.href
+                  ? "text-accent font-medium"
+                  : "text-fg-muted hover:text-accent"
+              }
+            >
+              {page.label}
+            </a>
+          ))}
         </nav>
-        {
-          sections.length > 0 && (
-            <details data-nosnippet class="mb-8 text-sm lg:hidden">
-              <summary class="text-fg-muted cursor-pointer font-medium">
-                On this page
-              </summary>
-              <ul class="border-line mt-3 space-y-1 border-l pl-3">
-                {sections.map((section) => (
-                  <li>
-                    <a
-                      href={`#${section.slug}`}
-                      class="text-fg-muted hover:text-accent block py-1"
-                    >
-                      {section.text}
-                    </a>
-                    {section.children && section.children.length > 0 && (
-                      <ul class="mb-1 space-y-0.5">
-                        {section.children.map((child) => (
-                          <li>
-                            <a
-                              href={`#${child.slug}`}
-                              class="text-fg-faint hover:text-accent block py-0.5 pl-4 text-xs"
-                            >
-                              {child.text}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </details>
-          )
-        }
+        {sections.length > 0 && (
+          <details data-nosnippet class="mb-8 text-sm lg:hidden">
+            <summary class="text-fg-muted cursor-pointer font-medium">
+              On this page
+            </summary>
+            <ul class="border-line mt-3 space-y-1 border-l pl-3">
+              {sections.map((section) => (
+                <li>
+                  <a
+                    href={`#${section.slug}`}
+                    class="text-fg-muted hover:text-accent block py-1"
+                  >
+                    {section.text}
+                  </a>
+                  {section.children && section.children.length > 0 && (
+                    <ul class="mb-1 space-y-0.5">
+                      {section.children.map((child) => (
+                        <li>
+                          <a
+                            href={`#${child.slug}`}
+                            class="text-fg-faint hover:text-accent block py-0.5 pl-4 text-xs"
+                          >
+                            {child.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
         <slot />
       </div>
     </div>

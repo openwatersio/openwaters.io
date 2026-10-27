@@ -149,22 +149,20 @@ const faqSchema = {
       <h1 class="mb-4">AIS for AIS-catcher</h1>
 
       <p class="text-lead mb-8">
-        One line feeds what your antenna hears to <a href="/ais/"
-          >Open Waters AIS</a
-        >. Once your token earns contributor access, read network traffic back
-        into a separate AIS-catcher viewer. Your receptions are public open data
-        under CC0; Open Waters gets no exclusive rights.
+        One line feeds what your antenna hears to{" "}
+        <a href="/ais/">Open Waters AIS</a>. Once your token earns contributor
+        access, read network traffic back into a separate AIS-catcher viewer.
+        Your receptions are public open data under CC0; Open Waters gets no
+        exclusive rights.
       </p>
 
       <p class="text-fg-muted mb-8">
         This guide is for people already running AIS-catcher. Starting with your
-        first USB receiver? Follow the <a href="/ais/getting-started/ashore/"
-          >shore setup guide</a
-        >{" "}
-        for hardware, installation, and a token-filled configuration download. Using
-        docker-shipfeeder? Its <a href="/ais/contribute/#docker"
-          >built-in Open Waters integration</a
-        >{" "}
+        first USB receiver? Follow the{" "}
+        <a href="/ais/getting-started/ashore/">shore setup guide</a> for
+        hardware, installation, and a token-filled configuration download. Using
+        docker-shipfeeder? Its{" "}
+        <a href="/ais/contribute/#docker">built-in Open Waters integration</a>{" "}
         handles the token and output for you.
       </p>
 
@@ -174,23 +172,19 @@ const faqSchema = {
         class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
       >
         <span class="mr-2 font-semibold">On this page:</span>
-        {
-          sections.map((s, i) => (
-            <>
-              {i > 0 && <span class="text-fg-faint mx-2">·</span>}
-              <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
-                {s.label}
-              </a>
-            </>
-          ))
-        }
+        {sections.map((s, i) => (
+          <>
+            {i > 0 && <span class="text-fg-faint mx-2">·</span>}
+            <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
+              {s.label}
+            </a>
+          </>
+        ))}
       </nav>
 
-      {
-        /* Two states, swapped client-side from the token in localStorage. The
+      {/* Two states, swapped client-side from the token in localStorage. The
           no-token copy is what ships in the HTML, so a visitor without one — and
-          a crawler — sees the call to action rather than an empty card. */
-      }
+          a crawler — sees the call to action rather than an empty card. */}
       <Card class="mb-12 p-5" data-cta>
         <h2 class="mb-2 text-lg font-semibold" data-cta-title>
           Get your token first
@@ -207,21 +201,21 @@ const faqSchema = {
             href={TOKEN}
             class="btn btn-primary"
             rel="noopener"
-            target="_blank">Create a token</a
+            target="_blank"
           >
+            Create a token
+          </a>
         </p>
       </Card>
 
       <div class="mb-12 grid gap-4 sm:grid-cols-2">
-        {
-          gets.map((g) => (
-            <Card class="p-5">
-              <Icon name={g.icon} class="text-accent mb-3 size-7" />
-              <h3 class="mb-1 text-base font-semibold">{g.title}</h3>
-              <p class="text-fg-muted text-sm">{g.text}</p>
-            </Card>
-          ))
-        }
+        {gets.map((g) => (
+          <Card class="p-5">
+            <Icon name={g.icon} class="text-accent mb-3 size-7" />
+            <h3 class="mb-1 text-base font-semibold">{g.title}</h3>
+            <p class="text-fg-muted text-sm">{g.text}</p>
+          </Card>
+        ))}
       </div>
 
       <h2 id="send" class="mb-4 scroll-mt-24 text-3xl font-semibold">
@@ -230,36 +224,34 @@ const faqSchema = {
       <div class="text-fg-muted mb-8 space-y-4">
         <p>
           Use MQTT unless your setup needs another transport. Add the options
-          starting at <code>-Q</code>, <code>-H</code>, or <code>-u</code> to the
-          command you already run, keeping its input settings and other outputs. Save
-          and restart your existing receiver process; do not start a second process
-          on the same USB device.
+          starting at <code>-Q</code>, <code>-H</code>, or <code>-u</code> to
+          the command you already run, keeping its input settings and other
+          outputs. Save and restart your existing receiver process; do not start
+          a second process on the same USB device.
         </p>
       </div>
 
       <div class="mb-8 space-y-6">
-        {
-          paths.map((p) => (
-            <div>
-              <div class="mb-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <h3 class="text-base font-semibold">{p.name}</h3>
-                <span class="text-fg-faint text-xs">{p.credit}</span>
-              </div>
-              <CodeBlock code={p.cmd} token={p.token} class="mb-2" />
-              <p class="text-fg-muted text-sm">{p.when}</p>
+        {paths.map((p) => (
+          <div>
+            <div class="mb-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h3 class="text-base font-semibold">{p.name}</h3>
+              <span class="text-fg-faint text-xs">{p.credit}</span>
             </div>
-          ))
-        }
+            <CodeBlock code={p.cmd} token={p.token} class="mb-2" />
+            <p class="text-fg-muted text-sm">{p.when}</p>
+          </div>
+        ))}
       </div>
 
       <div class="text-fg-muted mb-12 space-y-4">
         <p>
           Two details that trip people up. The port in the MQTT address is
-          required — AIS-catcher does not assume 443 for <code
-            class="bg-surface rounded px-1">wssmqtt://</code
-          >. And <code class="bg-surface rounded px-1">MSGFORMAT NMEA_TAG</code> works
-          too, carrying the time each message was received in a TAG block, which is
-          worth it if your station ever buffers.
+          required — AIS-catcher does not assume 443 for{" "}
+          <code class="bg-surface rounded px-1">wssmqtt://</code>. And{" "}
+          <code class="bg-surface rounded px-1">MSGFORMAT NMEA_TAG</code> works
+          too, carrying the time each message was received in a TAG block, which
+          is worth it if your station ever buffers.
         </p>
         <p>
           For the UDP path, your station shows up as a hash of your address,
@@ -270,9 +262,10 @@ const faqSchema = {
           while a trusted source has heard the same vessel recently.
         </p>
         <p>
-          <a href={TOKEN} class="text-accent hover:text-accent-hover"
-            >Create a token</a
-          > in your browser — no sign-up, no email, and it does not expire.
+          <a href={TOKEN} class="text-accent hover:text-accent-hover">
+            Create a token
+          </a>{" "}
+          in your browser — no sign-up, no email, and it does not expire.
         </p>
       </div>
 
@@ -288,19 +281,22 @@ const faqSchema = {
           left to decode.
         </p>
         <p>
-          If the machine it is wired to runs Signal K, use <a
-            href="/ais/signalk/"
-            class="text-accent hover:text-accent-hover">the Signal K plugin</a
-          > instead. It shares every sentence the server receives, needs no extra
-          wiring, and sends network traffic back out to your chartplotter. Running
-          AIS-catcher alongside it would also mean two programs wanting the same serial
-          device, which one of them will lose.
+          If the machine it is wired to runs Signal K, use{" "}
+          <a href="/ais/signalk/" class="text-accent hover:text-accent-hover">
+            the Signal K plugin
+          </a>{" "}
+          instead. It shares every sentence the server receives, needs no extra
+          wiring, and sends network traffic back out to your chartplotter.
+          Running AIS-catcher alongside it would also mean two programs wanting
+          the same serial device, which one of them will lose.
         </p>
         <p>
           With no Signal K, AIS-catcher can forward from the serial port instead
-          of decoding — <code class="bg-surface rounded px-1"
-            >AIS-catcher -e 38400 /dev/ttyUSB0 -u udp.ais.openwaters.io 10110</code
-          >. 38400 is the standard rate for AIS on NMEA 0183. Wire the adapter
+          of decoding —{" "}
+          <code class="bg-surface rounded px-1">
+            AIS-catcher -e 38400 /dev/ttyUSB0 -u udp.ais.openwaters.io 10110
+          </code>
+          . 38400 is the standard rate for AIS on NMEA 0183. Wire the adapter
           receive-only.
         </p>
       </div>
@@ -310,11 +306,9 @@ const faqSchema = {
       </h2>
 
       <figure class="mb-6">
-        {
-          /* A plain img, not astro:assets: the file is already sized and
+        {/* A plain img, not astro:assets: the file is already sized and
             encoded for the one place it appears, so the image service has
-            nothing to add. */
-        }
+            nothing to add. */}
         <img
           src="/ais/ais-catcher-network.webp"
           alt="AIS-catcher's own web viewer showing 6,602 vessels worldwide: both coasts of North America, dense traffic across northern Europe and the Mediterranean, the Gulf, southeast Asia and Australia."
@@ -341,11 +335,10 @@ const faqSchema = {
         <p>
           AIS-catcher's own network inputs are plain TCP and UDP, not
           WebSockets, so bridge the feed into its built-in UDP server and point
-          its web viewer at the result. Install <a
-            href="https://github.com/vi/websocat#installation">websocat</a
-          >{" "}
-          first. Leave your hardware receiver running, then run these commands in
-          two separate terminals on the same computer:
+          its web viewer at the result. Install{" "}
+          <a href="https://github.com/vi/websocat#installation">websocat</a>{" "}
+          first. Leave your hardware receiver running, then run these commands
+          in two separate terminals on the same computer:
         </p>
       </div>
       <p class="mb-3 font-medium">Terminal 1: start the network viewer.</p>
@@ -363,48 +356,50 @@ const faqSchema = {
       />
       <div class="text-fg-muted mb-12 space-y-4">
         <p>
-          <code class="bg-surface rounded px-1">/v1/nmea</code> needs a token at the
-          contributor tier, which your station earns by feeding — so this is the thing
-          feeding gets you, not a separate product. Each frame is one message, sentences
-          joined by CRLF, with a TAG block naming the station that heard it, the time,
-          and the licence its source publishes under.
+          <code class="bg-surface rounded px-1">/v1/nmea</code> needs a token at
+          the contributor tier, which your station earns by feeding — so this is
+          the thing feeding gets you, not a separate product. Each frame is one
+          message, sentences joined by CRLF, with a TAG block naming the station
+          that heard it, the time, and the licence its source publishes under.
         </p>
         <p>
-          The <code class="bg-surface rounded px-1">bbox</code> is optional and repeatable,
-          and worth setting even though the load is not the reason. A Pi 5 took the
-          unfiltered world at about 0.2% CPU, so that is not what bites. AIS-catcher's
-          vessel table holds 4,096 ships, and a worldwide feed fills it in minutes
-          and then churns — which means the six-minutely static messages carrying
-          vessel names mostly arrive after a ship has already been evicted, and you
-          get a map of unnamed contacts. Bound it to the water you care about and
-          the names stay.
+          The <code class="bg-surface rounded px-1">bbox</code> is optional and
+          repeatable, and worth setting even though the load is not the reason.
+          A Pi 5 took the unfiltered world at about 0.2% CPU, so that is not
+          what bites. AIS-catcher's vessel table holds 4,096 ships, and a
+          worldwide feed fills it in minutes and then churns — which means the
+          six-minutely static messages carrying vessel names mostly arrive after
+          a ship has already been evicted, and you get a map of unnamed
+          contacts. Bound it to the water you care about and the names stay.
         </p>
         <p>
-          <strong>Keep the network out of your receiver outputs.</strong> The viewer
-          command above is a separate instance, with no forwarding outputs and community
-          sharing disabled by <code>-X off</code>. Keep your hardware receiver’s
-          MQTT, HTTP, and UDP outputs on its original process. Adding those
-          outputs to the network viewer would send the aggregate back as your
-          own reception. If you combine inputs in one process, configure{" "}
-          <a
-            href="https://jvde-github.github.io/AIS-catcher-docs/configuration/output/overview/#routing-messages"
-            >output groups</a
-          >{" "}
+          <strong>Keep the network out of your receiver outputs.</strong> The
+          viewer command above is a separate instance, with no forwarding
+          outputs and community sharing disabled by <code>-X off</code>. Keep
+          your hardware receiver’s MQTT, HTTP, and UDP outputs on its original
+          process. Adding those outputs to the network viewer would send the
+          aggregate back as your own reception. If you combine inputs in one
+          process, configure{" "}
+          <a href="https://jvde-github.github.io/AIS-catcher-docs/configuration/output/overview/#routing-messages">
+            output groups
+          </a>{" "}
           so only locally received traffic reaches each sharing output.
         </p>
         <p>
-          Open <a href="http://localhost:8100/">localhost:8100</a> to see the network
-          viewer. Keep the bridge and viewer processes running. The example bounding
-          box covers southern British Columbia; replace it with your area’s south,
-          west, north, and east limits in decimal degrees.
+          Open <a href="http://localhost:8100/">localhost:8100</a> to see the
+          network viewer. Keep the bridge and viewer processes running. The
+          example bounding box covers southern British Columbia; replace it with
+          your area’s south, west, north, and east limits in decimal degrees.
         </p>
         <p>
-          <strong>Already running Signal K?</strong> Then skip the bridge. The <a
-            href="/ais/signalk/"
-            class="text-accent hover:text-accent-hover">Signal K plugin</a
-          > already pulls network traffic in and re-emits it as NMEA 0183, so AIS-catcher
-          can read the server's output directly and show your receiver's own targets
-          and the network's together, with no token and nothing to install:
+          <strong>Already running Signal K?</strong> Then skip the bridge. The{" "}
+          <a href="/ais/signalk/" class="text-accent hover:text-accent-hover">
+            Signal K plugin
+          </a>{" "}
+          already pulls network traffic in and re-emits it as NMEA 0183, so
+          AIS-catcher can read the server's output directly and show your
+          receiver's own targets and the network's together, with no token and
+          nothing to install:
         </p>
         <CodeBlock
           code="AIS-catcher -t txt://localhost:10110 -N 8100 -X off"
@@ -414,8 +409,9 @@ const faqSchema = {
           <a
             href={`${API}#stream-nmea`}
             class="text-accent hover:text-accent-hover"
-            >Raw NMEA feed reference</a
           >
+            Raw NMEA feed reference
+          </a>
         </p>
       </div>
 
@@ -430,11 +426,13 @@ const faqSchema = {
           and sending them to other networks.
         </p>
         <p>
-          The <a href={`${REPO}/blob/main/docs/contributor-agreement.md`}
-            >contributor agreement</a
-          > sets out those terms. Read <a href="/ais/#contribute"
-            >how the open network works</a
-          > for federation, reuse rights, and the forthcoming bulk archive downloads.
+          The{" "}
+          <a href={`${REPO}/blob/main/docs/contributor-agreement.md`}>
+            contributor agreement
+          </a>{" "}
+          sets out those terms. Read{" "}
+          <a href="/ais/#contribute">how the open network works</a> for
+          federation, reuse rights, and the forthcoming bulk archive downloads.
         </p>
       </div>
 
@@ -456,16 +454,14 @@ const faqSchema = {
           the actual problem. Naming your station is optional and free.
         </p>
         <p class="text-sm">
-          <a href={MAP} class="text-accent hover:text-accent-hover"
-            >Open Vessels</a
-          >
+          <a href={MAP} class="text-accent hover:text-accent-hover">
+            Open Vessels
+          </a>
         </p>
       </div>
 
-      {
-        /* Filled in from /v1/stations/<id> when the visitor has a token. Hidden
-          in the shipped HTML, so nobody without one sees an empty frame. */
-      }
+      {/* Filled in from /v1/stations/<id> when the visitor has a token. Hidden
+          in the shipped HTML, so nobody without one sees an empty frame. */}
       <Card class="mb-12 p-5" data-stats hidden>
         <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
           <h3 class="text-base font-semibold" data-stats-name></h3>
@@ -473,21 +469,24 @@ const faqSchema = {
             data-stats-link
             href={STATIONS}
             class="text-accent hover:text-accent-hover text-sm font-medium"
-            >Station page</a
           >
+            Station page
+          </a>
         </div>
         <p class="text-fg-muted mb-4 text-sm" data-stats-note></p>
         <dl data-stats-list></dl>
-        {
-          /* "Near" is a GeoNames place name, which is CC BY 4.0 and so cannot
-            be shown uncredited. Revealed with the row, not before. */
-        }
+        {/* "Near" is a GeoNames place name, which is CC BY 4.0 and so cannot
+            be shown uncredited. Revealed with the row, not before. */}
         <p class="text-fg-faint mt-4 hidden text-xs" data-stats-credit>
-          Place name from <a
+          Place name from{" "}
+          <a
             href="https://www.geonames.org/"
             rel="noopener"
-            class="hover:text-fg-muted underline">GeoNames</a
-          >, CC BY 4.0.
+            class="hover:text-fg-muted underline"
+          >
+            GeoNames
+          </a>
+          , CC BY 4.0.
         </p>
       </Card>
 
@@ -498,26 +497,26 @@ const faqSchema = {
         <p>
           Open Waters AIS never asks a station to stop feeding anywhere else,
           and never will. AIS-catcher fans out to as many destinations as you
-          configure, and <a
-            href={SHIPFEEDER}
-            class="text-accent hover:text-accent-hover">docker-shipfeeder</a
-          > supports the Open Waters feed directly. Follow the <a
-            href="/ais/contribute/#docker">shipfeeder setup instructions</a
-          >{" "}
-          to enable it without adding a second copy of the same output.
+          configure, and{" "}
+          <a href={SHIPFEEDER} class="text-accent hover:text-accent-hover">
+            docker-shipfeeder
+          </a>{" "}
+          supports the Open Waters feed directly. Follow the{" "}
+          <a href="/ais/contribute/#docker">shipfeeder setup instructions</a> to
+          enable it without adding a second copy of the same output.
         </p>
       </div>
 
-      <h2 id="faq" class="mb-6 scroll-mt-24 text-3xl font-semibold">FAQ</h2>
+      <h2 id="faq" class="mb-6 scroll-mt-24 text-3xl font-semibold">
+        FAQ
+      </h2>
       <div class="mb-12 space-y-6">
-        {
-          faq.map((item) => (
-            <div>
-              <h3 class="mb-1 text-base font-semibold">{item.q}</h3>
-              <p class="text-fg-muted text-sm">{item.a}</p>
-            </div>
-          ))
-        }
+        {faq.map((item) => (
+          <div>
+            <h3 class="mb-1 text-base font-semibold">{item.q}</h3>
+            <p class="text-fg-muted text-sm">{item.a}</p>
+          </div>
+        ))}
       </div>
 
       <Card class="p-6">
@@ -527,20 +526,24 @@ const faqSchema = {
           antenna advice, and setup problems go to the discussions.
         </p>
         <p class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-          <a href={TOKEN} class="text-accent hover:text-accent-hover"
-            >Create a token</a
-          >
-          <a href={API} class="text-accent hover:text-accent-hover">API docs</a>
-          <a href={AISCATCHER} class="text-accent hover:text-accent-hover"
-            >AIS-catcher</a
-          >
-          <a href={AISCATCHER_DOCS} class="text-accent hover:text-accent-hover"
-            >AIS-catcher docs</a
-          >
+          <a href={TOKEN} class="text-accent hover:text-accent-hover">
+            Create a token
+          </a>
+          <a href={API} class="text-accent hover:text-accent-hover">
+            API docs
+          </a>
+          <a href={AISCATCHER} class="text-accent hover:text-accent-hover">
+            AIS-catcher
+          </a>
+          <a href={AISCATCHER_DOCS} class="text-accent hover:text-accent-hover">
+            AIS-catcher docs
+          </a>
           <a
             href={`${REPO}/discussions`}
-            class="text-accent hover:text-accent-hover">Discussions</a
+            class="text-accent hover:text-accent-hover"
           >
+            Discussions
+          </a>
         </p>
       </Card>
     </div>

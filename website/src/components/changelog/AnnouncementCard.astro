@@ -26,14 +26,12 @@ const { title, summary, date, image, projects, draft } = announcement.data;
   )}
 >
   <div class={cn("flex flex-col", featured ? "p-8 md:p-12" : "p-6 md:p-8")}>
-    {
-      featured && (
-        <p class="eyebrow flex items-center gap-1.5">
-          <Icon name="mdi:bullhorn-outline" class="size-4" />
-          Latest announcement
-        </p>
-      )
-    }
+    {featured && (
+      <p class="eyebrow flex items-center gap-1.5">
+        <Icon name="mdi:bullhorn-outline" class="size-4" />
+        Latest announcement
+      </p>
+    )}
     <h3
       class={cn(
         "group-hover:text-accent-hover transition-colors",
@@ -49,9 +47,7 @@ const { title, summary, date, image, projects, draft } = announcement.data;
       </time>
       {draft && <span class="text-highlight">Draft</span>}
     </p>
-    <p class="text-fg-muted mt-4 max-w-2xl text-pretty md:text-lg">
-      {summary}
-    </p>
+    <p class="text-fg-muted mt-4 max-w-2xl text-pretty md:text-lg">{summary}</p>
     <div class="mt-auto flex flex-wrap items-center justify-between gap-4 pt-8">
       <span class="text-accent flex items-center gap-1.5 text-sm font-medium">
         Read the announcement
@@ -63,13 +59,11 @@ const { title, summary, date, image, projects, draft } = announcement.data;
       <EntryLabel type="announcement" projects={projects as Project[]} />
     </div>
   </div>
-  {
-    image && (
-      // Decorative cover: no alt text, and left out of the page's Markdown (turndown's
-      // image rule outranks data-nosnippet on the img itself).
-      <div data-nosnippet class="max-h-80 md:max-h-none">
-        <Image src={image} alt="" class="h-full w-full object-cover" />
-      </div>
-    )
-  }
+  {image && (
+    // Decorative cover: no alt text, and left out of the page's Markdown (turndown's
+    // image rule outranks data-nosnippet on the img itself).
+    <div data-nosnippet class="max-h-80 md:max-h-none">
+      <Image src={image} alt="" class="h-full w-full object-cover" />
+    </div>
+  )}
 </a>

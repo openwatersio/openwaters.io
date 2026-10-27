@@ -112,9 +112,9 @@ for (const eclipse of globalSolarEclipses(start, end)) {
         </div>
         <TwilightRibbon client:load />
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
           <CodeBlock code={twilightCode} class="mt-4" />
         </details>
       </section>
@@ -128,9 +128,9 @@ for (const eclipse of globalSolarEclipses(start, end)) {
         </h2>
         <SunYear client:load />
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
           <CodeBlock
             class="mt-4"
             code={`import { sunAltAz } from '@openwaters/almanac';
@@ -158,23 +158,25 @@ console.log(points);`}
           A solar eclipse is a different event from every place: your location
           determines which eclipses appear, their contact times, and how much of
           the Sun the Moon covers. A solar eclipse is the Moon's shadow falling
-          on the Earth; the Earth's shadow falling on the Moon is a <a
+          on the Earth; the Earth's shadow falling on the Moon is a{" "}
+          <a
             href="/sky/moon/#lunar-eclipses"
             class="text-accent font-medium underline-offset-4 hover:underline"
-            >lunar eclipse</a
-          >.
+          >
+            lunar eclipse
+          </a>
+          .
         </p>
         <SolarEclipseDemo client:only="react">
           <div
             slot="fallback"
             class="bg-surface h-96 w-full animate-pulse rounded-xl"
-          >
-          </div>
+          ></div>
         </SolarEclipseDemo>
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
           <CodeBlock code={solarCode} class="mt-4" />
         </details>
       </section>
@@ -196,13 +198,12 @@ console.log(points);`}
           <div
             slot="fallback"
             class="bg-surface aspect-square w-full animate-pulse rounded-xl md:w-1/2"
-          >
-          </div>
+          ></div>
         </GlobalSolarEclipseDemo>
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
           <CodeBlock code={globalCode} class="mt-4" />
         </details>
       </section>

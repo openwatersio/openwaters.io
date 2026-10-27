@@ -80,18 +80,15 @@ const dehydratedState = dehydrate(queryClient);
           </a>
         </div>
 
-        {
-          station.disclaimers &&
-            station.disclaimers !== "No obvious issues" && (
-              <div class="callout text-alert mb-4 flex items-center gap-3 text-sm">
-                <Icon
-                  name="mdi:alert-circle-outline"
-                  class="mt-0.5 h-5 w-5 shrink-0"
-                />
-                {station.disclaimers}
-              </div>
-            )
-        }
+        {station.disclaimers && station.disclaimers !== "No obvious issues" && (
+          <div class="callout text-alert mb-4 flex items-center gap-3 text-sm">
+            <Icon
+              name="mdi:alert-circle-outline"
+              class="mt-0.5 h-5 w-5 shrink-0"
+            />
+            {station.disclaimers}
+          </div>
+        )}
 
         <TideStationIsland
           client:load
@@ -101,9 +98,7 @@ const dehydratedState = dehydrate(queryClient);
 
         <Card class="mt-8">
           <section>
-            <div
-              class="border-line mb-6 flex items-center justify-between gap-8 border-b pb-4"
-            >
+            <div class="border-line mb-6 flex items-center justify-between gap-8 border-b pb-4">
               <div>
                 <h3 class="text-xl">Station Data</h3>
                 <p class="text-sm">
@@ -146,58 +141,52 @@ const dehydratedState = dehydrate(queryClient);
                 >
                   {station.license.type}
                 </a>
-                {
-                  !station.license.commercial_use && (
-                    <span class="bg-highlight/15 text-highlight ml-2 rounded px-2 py-0.5 text-xs">
-                      Non-commercial
-                    </span>
-                  )
-                }
+                {!station.license.commercial_use && (
+                  <span class="bg-highlight/15 text-highlight ml-2 rounded px-2 py-0.5 text-xs">
+                    Non-commercial
+                  </span>
+                )}
               </dd>
 
-              {
-                station.license.notes && (
-                  <>
-                    <dt>License Notes</dt>
-                    <dd class="text-fg-muted">{station.license.notes}</dd>
-                  </>
-                )
-              }
+              {station.license.notes && (
+                <>
+                  <dt>License Notes</dt>
+                  <dd class="text-fg-muted">{station.license.notes}</dd>
+                </>
+              )}
 
               <dt>Type</dt>
               <dd class="capitalize">{station.type}</dd>
 
-              {
-                referenceStation && station.offsets && (
-                  <>
-                    <dt>Reference Station</dt>
-                    <dd>
-                      <a href={`/tides/stations/${referenceStation.id}/`}>
-                        {referenceStation.name}
-                      </a>
-                    </dd>
+              {referenceStation && station.offsets && (
+                <>
+                  <dt>Reference Station</dt>
+                  <dd>
+                    <a href={`/tides/stations/${referenceStation.id}/`}>
+                      {referenceStation.name}
+                    </a>
+                  </dd>
 
-                    <dt>Height Offsets</dt>
-                    <dd>
-                      High: {station.offsets.height.high}
-                      {station.offsets.height.type === "ratio" ? "x" : "m"},
-                      Low: {station.offsets.height.low}
-                      {station.offsets.height.type === "ratio" ? "x" : "m"}
-                      <span class="text-fg-faint ml-1">
-                        ({station.offsets.height.type})
-                      </span>
-                    </dd>
+                  <dt>Height Offsets</dt>
+                  <dd>
+                    High: {station.offsets.height.high}
+                    {station.offsets.height.type === "ratio" ? "x" : "m"}, Low:{" "}
+                    {station.offsets.height.low}
+                    {station.offsets.height.type === "ratio" ? "x" : "m"}
+                    <span class="text-fg-faint ml-1">
+                      ({station.offsets.height.type})
+                    </span>
+                  </dd>
 
-                    <dt>Time Offsets</dt>
-                    <dd>
-                      High: {station.offsets.time.high > 0 ? "+" : ""}
-                      {station.offsets.time.high} min, Low:{" "}
-                      {station.offsets.time.low > 0 ? "+" : ""}
-                      {station.offsets.time.low} min
-                    </dd>
-                  </>
-                )
-              }
+                  <dt>Time Offsets</dt>
+                  <dd>
+                    High: {station.offsets.time.high > 0 ? "+" : ""}
+                    {station.offsets.time.high} min, Low:{" "}
+                    {station.offsets.time.low > 0 ? "+" : ""}
+                    {station.offsets.time.low} min
+                  </dd>
+                </>
+              )}
 
               <dt>Timezone</dt>
               <dd>{station.timezone}</dd>
@@ -205,25 +194,21 @@ const dehydratedState = dehydrate(queryClient);
               <dt>Chart Datum</dt>
               <dd>{station.chart_datum}</dd>
 
-              {
-                station.epoch && (
-                  <>
-                    <dt>Epoch</dt>
-                    <dd>
-                      {station.epoch.start} – {station.epoch.end}
-                    </dd>
-                  </>
-                )
-              }
+              {station.epoch && (
+                <>
+                  <dt>Epoch</dt>
+                  <dd>
+                    {station.epoch.start} – {station.epoch.end}
+                  </dd>
+                </>
+              )}
             </dl>
           </section>
         </Card>
 
         <Card>
           <section>
-            <div
-              class="border-line mb-6 flex items-center justify-between gap-8 border-b pb-4"
-            >
+            <div class="border-line mb-6 flex items-center justify-between gap-8 border-b pb-4">
               <div>
                 <h3 class="text-xl">API</h3>
                 <p class="text-sm">
@@ -243,13 +228,12 @@ const dehydratedState = dehydrate(queryClient);
                   Get station info
                 </h4>
                 <div class="flex items-center gap-3 overflow-x-auto">
-                  <span
-                    class="bg-tide-high/15 text-tide-high shrink-0 rounded-sm px-2 py-1 text-xs font-bold"
-                    >GET</span
-                  >
-                  <span class="font-mono text-sm"
-                    >{API_HOST}/tides/stations/{station.id}</span
-                  >
+                  <span class="bg-tide-high/15 text-tide-high shrink-0 rounded-sm px-2 py-1 text-xs font-bold">
+                    GET
+                  </span>
+                  <span class="font-mono text-sm">
+                    {API_HOST}/tides/stations/{station.id}
+                  </span>
                 </div>
               </div>
 
@@ -258,13 +242,12 @@ const dehydratedState = dehydrate(queryClient);
                   Get tide extremes (high/low)
                 </h4>
                 <div class="flex items-center gap-3 overflow-x-auto">
-                  <span
-                    class="bg-tide-high/15 text-tide-high rounded-sm px-2 py-1 text-xs font-bold"
-                    >GET</span
-                  >
-                  <span class="font-mono text-sm"
-                    >{API_HOST}/tides/stations/{station.id}/extremes</span
-                  >
+                  <span class="bg-tide-high/15 text-tide-high rounded-sm px-2 py-1 text-xs font-bold">
+                    GET
+                  </span>
+                  <span class="font-mono text-sm">
+                    {API_HOST}/tides/stations/{station.id}/extremes
+                  </span>
                 </div>
               </div>
             </div>
@@ -272,9 +255,7 @@ const dehydratedState = dehydrate(queryClient);
         </Card>
         <Card>
           <section>
-            <div
-              class="border-line mb-6 flex items-center justify-between gap-8 border-b pb-4"
-            >
+            <div class="border-line mb-6 flex items-center justify-between gap-8 border-b pb-4">
               <div>
                 <h3 class="text-xl">JavaScript</h3>
                 <p class="text-sm">
@@ -296,16 +277,14 @@ const dehydratedState = dehydrate(queryClient);
                 <h4 class="text-fg-muted mb-2 text-sm font-semibold">
                   Install
                 </h4>
-                <pre
-                  class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4 text-sm"><code>npm install slackwater</code></pre>
+                <pre class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4 text-sm"><code>npm install slackwater</code></pre>
               </div>
 
               <div>
                 <h4 class="text-fg-muted mb-2 text-sm font-semibold">
                   Get tide predictions
                 </h4>
-                <pre
-                  class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4 text-sm"><code>{`import { findStation } from "slackwater";
+                <pre class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4 text-sm"><code>{`import { findStation } from "slackwater";
 
 const station = findStation("${station.id}");
 

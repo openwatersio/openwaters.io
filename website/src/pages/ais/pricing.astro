@@ -106,16 +106,18 @@ const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
       <div class="max-w-2xl">
         <h1 class="mb-5">Pick a plan and start a 30-day trial.</h1>
         <p class="text-lead mb-8">
-          Free for people and for anyone running a receiver. {price(49)} a month for
-          a fleet, {price(99)} for a region, {price(199)} for the world. No credits,
-          no per-message billing, cancel whenever.
+          Free for people and for anyone running a receiver. {price(49)} a month
+          for a fleet, {price(99)} for a region, {price(199)} for the world. No
+          credits, no per-message billing, cancel whenever.
         </p>
         <div class="flex flex-wrap gap-3">
           <a href={TRIAL} class="btn btn-primary">
             Start a trial
             <Icon name="mdi:arrow-right" class="size-4" />
           </a>
-          <a href="/api/ais/" class="btn btn-secondary">Read the API docs</a>
+          <a href="/api/ais/" class="btn btn-secondary">
+            Read the API docs
+          </a>
         </div>
         <p class="text-fg-faint mt-4 text-sm">
           There is no checkout yet, so a message does the work: say which plan,
@@ -140,36 +142,39 @@ const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
         <table class="w-full min-w-lg text-sm">
           <thead>
             <tr class="border-line bg-surface border-b">
-              <th scope="col" class={th}>Option</th>
-              <th scope="col" class={th}>Who it's for</th>
-              <th scope="col" class={th}>Price</th>
+              <th scope="col" class={th}>
+                Option
+              </th>
+              <th scope="col" class={th}>
+                Who it's for
+              </th>
+              <th scope="col" class={th}>
+                Price
+              </th>
             </tr>
           </thead>
           <tbody class="divide-line divide-y">
-            {
-              free.map((f) => (
-                <tr>
-                  <th
-                    scope="row"
-                    class="text-fg-strong px-4 py-3 text-left font-medium"
-                  >
-                    {f.name}
-                  </th>
-                  <td class="text-fg-muted px-4 py-3">{f.who}</td>
-                  <td class={td}>{f.price}</td>
-                </tr>
-              ))
-            }
+            {free.map((f) => (
+              <tr>
+                <th
+                  scope="row"
+                  class="text-fg-strong px-4 py-3 text-left font-medium"
+                >
+                  {f.name}
+                </th>
+                <td class="text-fg-muted px-4 py-3">{f.who}</td>
+                <td class={td}>{f.price}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
       <p class="text-fg-faint mt-4 max-w-3xl text-sm">
-        The current limits for each are in the <a href={LIMITS}
-          >access documentation</a
-        >. Students, researchers, journalists, and open-source projects that
-        need more than the personal limits: <a href="/contact/">contact us</a>.
-        That request gets a free token, not a quote.{" "}
-        <a href="/ais/token/">Get a personal token →</a>
+        The current limits for each are in the{" "}
+        <a href={LIMITS}>access documentation</a>. Students, researchers,
+        journalists, and open-source projects that need more than the personal
+        limits: <a href="/contact/">contact us</a>. That request gets a free
+        token, not a quote. <a href="/ais/token/">Get a personal token →</a>
       </p>
     </Container>
   </section>
@@ -186,86 +191,77 @@ const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
         <table class="w-full min-w-2xl table-fixed text-sm">
           <thead>
             <tr class="border-line bg-surface border-b">
-              <th scope="col" class="w-44"><span class="sr-only">Plan</span></th
-              >
-              {
-                plans.map((p) => (
-                  <th scope="col" class={th}>
-                    {p}
-                  </th>
-                ))
-              }
+              <th scope="col" class="w-44">
+                <span class="sr-only">Plan</span>
+              </th>
+              {plans.map((p) => (
+                <th scope="col" class={th}>
+                  {p}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody class="divide-line divide-y">
-            {
-              paid.map(([feature, ...cells]) => (
-                <tr>
-                  <th
-                    scope="row"
-                    class="text-fg-muted px-4 py-3 text-left font-normal"
-                  >
-                    {feature}
-                  </th>
-                  {cells.map((c) => (
-                    <td class={td}>
-                      {c === true ? (
-                        <Icon
-                          name="mdi:check"
-                          class="text-accent inline size-4"
-                        />
-                      ) : c === false ? (
-                        <span class="text-fg-faint">—</span>
-                      ) : (
-                        c
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            }
+            {paid.map(([feature, ...cells]) => (
+              <tr>
+                <th
+                  scope="row"
+                  class="text-fg-muted px-4 py-3 text-left font-normal"
+                >
+                  {feature}
+                </th>
+                {cells.map((c) => (
+                  <td class={td}>
+                    {c === true ? (
+                      <Icon
+                        name="mdi:check"
+                        class="text-accent inline size-4"
+                      />
+                    ) : c === false ? (
+                      <span class="text-fg-faint">—</span>
+                    ) : (
+                      c
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
           </tbody>
           <tfoot>
             <tr>
               <td></td>
-              {
-                plans.map((p) => (
-                  <td class="px-4 py-5">
-                    <a href={TRIAL} class="btn btn-sm btn-secondary">
-                      {p === "Custom" ? "Contact us" : "Start a trial"}
-                    </a>
-                  </td>
-                ))
-              }
+              {plans.map((p) => (
+                <td class="px-4 py-5">
+                  <a href={TRIAL} class="btn btn-sm btn-secondary">
+                    {p === "Custom" ? "Contact us" : "Start a trial"}
+                  </a>
+                </td>
+              ))}
             </tr>
           </tfoot>
         </table>
       </div>
       <p class="text-fg-faint mt-4 max-w-3xl text-sm">
-        Extra concurrent streams are {price(5)} each per month on any plan. Custom
-        covers an SLA, a dedicated node, sub-keys, or a contract your legal team wrote.
-        Following vessels by MMSI is bounded by the list, not the map, so a world-wide
-        MMSI subscription works on Fleet.
+        Extra concurrent streams are {price(5)} each per month on any plan.
+        Custom covers an SLA, a dedicated node, sub-keys, or a contract your
+        legal team wrote. Following vessels by MMSI is bounded by the list, not
+        the map, so a world-wide MMSI subscription works on Fleet.
       </p>
     </Container>
   </section>
 
   <section class="py-12 lg:py-16">
     <Container>
-      <div
-        class="grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
-      >
+      <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
           <h2 class="mb-5">Which one</h2>
           <ul class="space-y-5">
-            {
-              which.map((w) => (
-                <li>
-                  <h3 class={q}>{w.q}</h3>
-                  <p class="text-fg-muted">{w.a}</p>
-                </li>
-              ))
-            }
+            {which.map((w) => (
+              <li>
+                <h3 class={q}>{w.q}</h3>
+                <p class="text-fg-muted">{w.a}</p>
+              </li>
+            ))}
           </ul>
         </div>
         <div class="card">
@@ -275,18 +271,16 @@ const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
           <p class="text-fg-muted mb-4">
             Terrestrial coverage is strongest in the Nordics and wherever our
             volunteers run receivers. Elsewhere positions come from partner
-            aggregates and run about a minute behind; the <a href="/ais/network"
-              >network status</a
-            > shows the current delay, so check your own waters in <a
-              href="/ais/vessels">Vessels</a
-            > first. There is no SLA below Custom, and the plans are month-to-month
-            so you can leave if that stops working for you.
+            aggregates and run about a minute behind; the{" "}
+            <a href="/ais/network">network status</a> shows the current delay,
+            so check your own waters in <a href="/ais/vessels">Vessels</a>{" "}
+            first. There is no SLA below Custom, and the plans are
+            month-to-month so you can leave if that stops working for you.
           </p>
           <p class="text-fg-muted">
             Attribution goes on every paid plan: “Vessel positions: Open Waters
-            AIS (openwaters.io/ais/)” somewhere a user can see, plus the <a
-              href="/ais/#license">source credits</a
-            > if you republish.
+            AIS (openwaters.io/ais/)” somewhere a user can see, plus the{" "}
+            <a href="/ais/#license">source credits</a> if you republish.
           </p>
         </div>
       </div>
@@ -298,14 +292,12 @@ const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
       <div class="max-w-3xl">
         <h2 class="mb-8">Questions</h2>
         <ul class="space-y-6">
-          {
-            questions.map((item) => (
-              <li>
-                <h3 class={q}>{item.q}</h3>
-                <p class="text-fg-muted">{item.a}</p>
-              </li>
-            ))
-          }
+          {questions.map((item) => (
+            <li>
+              <h3 class={q}>{item.q}</h3>
+              <p class="text-fg-muted">{item.a}</p>
+            </li>
+          ))}
         </ul>
       </div>
     </Container>
@@ -313,9 +305,7 @@ const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
 
   <section class="pb-24">
     <Container>
-      <div
-        class="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-12"
-      >
+      <div class="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-12">
         <div>
           <h2 class="mb-2">Start with the free stream.</h2>
           <p class="text-fg-muted text-lg">
@@ -323,8 +313,12 @@ const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
           </p>
         </div>
         <div class="flex shrink-0 flex-wrap gap-3">
-          <a href={TRIAL} class="btn btn-primary">Start a trial</a>
-          <a href="/api/ais/" class="btn btn-secondary">Read the API docs</a>
+          <a href={TRIAL} class="btn btn-primary">
+            Start a trial
+          </a>
+          <a href="/api/ais/" class="btn btn-secondary">
+            Read the API docs
+          </a>
         </div>
       </div>
       <p
@@ -334,9 +328,9 @@ const q = "text-fg-strong mb-1 text-lg font-semibold tracking-normal";
         <a href="/api/ais/">API docs</a> ·
         <a href="/ais/contribute/">Contribute</a> ·
         <a href="/ais/#license">Source licenses</a> ·
-        <a href={`${REPO}/blob/main/docs/contributor-agreement.md`}
-          >Contributor agreement</a
-        >
+        <a href={`${REPO}/blob/main/docs/contributor-agreement.md`}>
+          Contributor agreement
+        </a>
       </p>
     </Container>
   </section>

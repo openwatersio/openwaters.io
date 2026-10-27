@@ -77,144 +77,118 @@ const filters = [
       </a>
     </div>
 
-    <div
-      class="mt-10 flex flex-wrap gap-x-2 gap-y-3 md:justify-between md:gap-x-8"
-    >
-      {
-        filters.map((filter) => (
-          <nav aria-label={filter.label}>
-            {/* Phones: one chip per filter showing the current choice, opening a menu. */}
-            <details
-              name="updates-filter"
-              data-nosnippet
-              class="group/menu relative md:hidden"
-            >
-              <summary class="border-line-strong bg-surface-raised text-fg-strong flex cursor-pointer list-none items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium [&::-webkit-details-marker]:hidden">
-                {filter.chips.find((chip) => chip.active)?.label}
-                <Icon
-                  name="mdi:chevron-down"
-                  class="size-4 transition-transform group-open/menu:rotate-180"
-                />
-              </summary>
-              <ul class="border-line-strong bg-well absolute top-full left-0 z-10 mt-2 min-w-48 rounded-2xl border p-1.5 shadow-xl">
-                {filter.chips.map((chip) => (
-                  <li>
-                    <a
-                      href={chip.href}
-                      aria-current={chip.active ? "page" : undefined}
-                      class={cn(
-                        "hover:bg-surface flex items-center justify-between gap-4 rounded-xl px-3 py-2 text-sm",
-                        chip.active ? "text-fg-strong" : "text-fg-muted",
-                      )}
-                    >
-                      {chip.label}
-                      {chip.active && (
-                        <Icon name="mdi:check" class="text-accent size-4" />
-                      )}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </details>
-            <ul class="hidden flex-wrap gap-2 md:flex">
+    <div class="mt-10 flex flex-wrap gap-x-2 gap-y-3 md:justify-between md:gap-x-8">
+      {filters.map((filter) => (
+        <nav aria-label={filter.label}>
+          {/* Phones: one chip per filter showing the current choice, opening a menu. */}
+          <details
+            name="updates-filter"
+            data-nosnippet
+            class="group/menu relative md:hidden"
+          >
+            <summary class="border-line-strong bg-surface-raised text-fg-strong flex cursor-pointer list-none items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium [&::-webkit-details-marker]:hidden">
+              {filter.chips.find((chip) => chip.active)?.label}
+              <Icon
+                name="mdi:chevron-down"
+                class="size-4 transition-transform group-open/menu:rotate-180"
+              />
+            </summary>
+            <ul class="border-line-strong bg-well absolute top-full left-0 z-10 mt-2 min-w-48 rounded-2xl border p-1.5 shadow-xl">
               {filter.chips.map((chip) => (
                 <li>
                   <a
                     href={chip.href}
                     aria-current={chip.active ? "page" : undefined}
                     class={cn(
-                      "block rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
-                      chip.active
-                        ? "border-line-strong bg-surface-raised text-fg-strong"
-                        : "text-fg-muted hover:text-fg-strong hover:bg-surface border-transparent",
+                      "hover:bg-surface flex items-center justify-between gap-4 rounded-xl px-3 py-2 text-sm",
+                      chip.active ? "text-fg-strong" : "text-fg-muted",
                     )}
                   >
                     {chip.label}
+                    {chip.active && (
+                      <Icon name="mdi:check" class="text-accent size-4" />
+                    )}
                   </a>
                 </li>
               ))}
             </ul>
-          </nav>
-        ))
-      }
+          </details>
+          <ul class="hidden flex-wrap gap-2 md:flex">
+            {filter.chips.map((chip) => (
+              <li>
+                <a
+                  href={chip.href}
+                  aria-current={chip.active ? "page" : undefined}
+                  class={cn(
+                    "block rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+                    chip.active
+                      ? "border-line-strong bg-surface-raised text-fg-strong"
+                      : "text-fg-muted hover:text-fg-strong hover:bg-surface border-transparent",
+                  )}
+                >
+                  {chip.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))}
     </div>
 
-    {
-      pinned?.type === "announcement" && (
-        <div class="mt-12">
-          <AnnouncementCard announcement={pinned.announcement} featured />
-        </div>
-      )
-    }
+    {pinned?.type === "announcement" && (
+      <div class="mt-12">
+        <AnnouncementCard announcement={pinned.announcement} featured />
+      </div>
+    )}
 
-    {
-      [...months].map(([month, items]) => (
-        <section class="mt-16">
-          <h2 class="text-xl md:text-2xl">{month}</h2>
-          <ol class="border-line mt-4 border-t">
-            {items.map((entry) => (
-              <li
-                class={cn(
-                  "border-line border-b",
-                  entry.type === "release" && entry.release.data.patch
-                    ? "py-3"
-                    : "py-6",
-                )}
-              >
-                {entry.type === "announcement" ? (
-                  <AnnouncementCard announcement={entry.announcement} />
-                ) : (
-                  // One column on phones (title, date, summary, label); on wider
-                  // screens the date and label flank the title on its baseline.
-                  <a
-                    href={entryHref(entry)}
-                    class="group grid grid-cols-1 gap-y-1 md:grid-cols-[6rem_1fr_11rem] md:items-baseline md:gap-x-6"
-                  >
-                    <div class="md:col-start-2 md:row-start-1">
-                      <h3
+    {[...months].map(([month, items]) => (
+      <section class="mt-16">
+        <h2 class="text-xl md:text-2xl">{month}</h2>
+        <ol class="border-line mt-4 border-t">
+          {items.map((entry) => (
+            <li
+              class={cn(
+                "border-line border-b",
+                entry.type === "release" && entry.release.data.patch
+                  ? "py-3"
+                  : "py-6",
+              )}
+            >
+              {entry.type === "announcement" ? (
+                <AnnouncementCard announcement={entry.announcement} />
+              ) : (
+                // One column on phones (title, date, summary, label); on wider
+                // screens the date and label flank the title on its baseline.
+                <a
+                  href={entryHref(entry)}
+                  class="group grid grid-cols-1 gap-y-1 md:grid-cols-[6rem_1fr_11rem] md:items-baseline md:gap-x-6"
+                >
+                  <div class="md:col-start-2 md:row-start-1">
+                    <h3
+                      class={cn(
+                        "group-hover:text-accent-hover inline transition-colors",
+                        entry.release.data.patch
+                          ? "text-fg-muted text-sm font-medium tracking-normal"
+                          : "text-fg-strong text-base font-semibold tracking-tight md:text-lg",
+                      )}
+                    >
+                      {entry.title}
+                    </h3>
+                    {/* A patch keeps to one line, so its package follows the title. */}
+                    {entry.subtitle && (
+                      <p
                         class={cn(
-                          "group-hover:text-accent-hover inline transition-colors",
-                          entry.release.data.patch
-                            ? "text-fg-muted text-sm font-medium tracking-normal"
-                            : "text-fg-strong text-base font-semibold tracking-tight md:text-lg",
+                          "text-fg-faint text-sm",
+                          entry.release.data.patch ? "ml-2 inline" : "mt-0.5",
                         )}
                       >
-                        {entry.title}
-                      </h3>
-                      {/* A patch keeps to one line, so its package follows the title. */}
-                      {entry.subtitle && (
-                        <p
-                          class={cn(
-                            "text-fg-faint text-sm",
-                            entry.release.data.patch ? "ml-2 inline" : "mt-0.5",
-                          )}
-                        >
-                          {entry.subtitle}
-                        </p>
-                      )}
-                    </div>
-                    {entry.release.data.patch ? (
-                      // Phones show a patch's date and project on one line.
-                      <div class="text-fg-faint flex items-baseline gap-1.5 text-sm md:contents">
-                        <time
-                          datetime={entry.date.toISOString()}
-                          class="text-fg-faint text-sm md:col-start-1 md:row-start-1"
-                        >
-                          {formatDate(entry.date, {
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </time>
-                        <span aria-hidden="true" class="md:hidden">
-                          ·
-                        </span>
-                        <EntryLabel
-                          type="release"
-                          projects={entry.projects}
-                          class="md:col-start-3 md:row-start-1"
-                        />
-                      </div>
-                    ) : (
+                        {entry.subtitle}
+                      </p>
+                    )}
+                  </div>
+                  {entry.release.data.patch ? (
+                    // Phones show a patch's date and project on one line.
+                    <div class="text-fg-faint flex items-baseline gap-1.5 text-sm md:contents">
                       <time
                         datetime={entry.date.toISOString()}
                         class="text-fg-faint text-sm md:col-start-1 md:row-start-1"
@@ -224,27 +198,45 @@ const filters = [
                           day: "numeric",
                         })}
                       </time>
-                    )}
-                    {!entry.release.data.patch && (
-                      <>
-                        <p class="text-fg-muted mt-1 line-clamp-2 text-sm md:col-start-2 md:mt-0">
-                          {entry.summary}
-                        </p>
-                        <EntryLabel
-                          type="release"
-                          projects={entry.projects}
-                          class="mt-1 md:col-start-3 md:row-start-1 md:mt-0"
-                        />
-                      </>
-                    )}
-                  </a>
-                )}
-              </li>
-            ))}
-          </ol>
-        </section>
-      ))
-    }
+                      <span aria-hidden="true" class="md:hidden">
+                        ·
+                      </span>
+                      <EntryLabel
+                        type="release"
+                        projects={entry.projects}
+                        class="md:col-start-3 md:row-start-1"
+                      />
+                    </div>
+                  ) : (
+                    <time
+                      datetime={entry.date.toISOString()}
+                      class="text-fg-faint text-sm md:col-start-1 md:row-start-1"
+                    >
+                      {formatDate(entry.date, {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </time>
+                  )}
+                  {!entry.release.data.patch && (
+                    <>
+                      <p class="text-fg-muted mt-1 line-clamp-2 text-sm md:col-start-2 md:mt-0">
+                        {entry.summary}
+                      </p>
+                      <EntryLabel
+                        type="release"
+                        projects={entry.projects}
+                        class="mt-1 md:col-start-3 md:row-start-1 md:mt-0"
+                      />
+                    </>
+                  )}
+                </a>
+              )}
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
 
     {!entries.length && <p class="text-fg-muted mt-16">Nothing here yet.</p>}
   </div>
