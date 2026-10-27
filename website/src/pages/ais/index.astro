@@ -280,47 +280,150 @@ const licenses = [
     </Container>
   </section>
 
-  <!-- Two ways to participate -->
+  <!-- Contribute -->
   <section class="py-16 lg:py-24">
     <Container>
-      <SectionDivider index={2} total={3} label="Participate" />
-      <div class="mt-12 grid gap-5 md:grid-cols-2">
-        <div class="card flex flex-col gap-4 p-8">
-          <h2 class="text-2xl">Use the data</h2>
-          <p class="text-fg-muted text-lg">
-            Open a WebSocket, send one subscribe frame, and the messages start
-            arriving. There is a working example in five languages and nothing
-            to sign up for first.
+      <SectionDivider index={2} total={3} label="Contribute" id="contribute" />
+      <div class="mt-12 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+        <div>
+          <h2 class="mb-5">
+            A network you can contribute to. Data you can take with you.
+          </h2>
+          <p class="text-fg-muted mb-5 text-lg">
+            Your receiver fills in part of the coast. Other receivers fill in
+            theirs. aiscast, the Open Waters AIS network, brings those
+            receptions together with public feeds so everyone can see more.
           </p>
-          <p class="text-fg-faint text-sm">
-            Talking to Claude or ChatGPT instead? Add{" "}
-            <code class="text-fg-muted">https://{SERVER}/mcp</code> as an MCP
-            server and <a href="/api/ais/#mcp">ask what is in the port</a>.
+          <p class="text-fg-muted mb-8">
+            Share what you hear without giving Open Waters exclusive control.
+            Keep feeding other networks, keep a copy, and build on the data
+            yourself.
           </p>
-          <div class="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-2">
-            <a href="/api/ais/" class="btn btn-primary">
-              Explore the APIs
-            </a>
-            <a href="/ais/pricing/" class="font-medium">
-              View pricing →
-            </a>
-          </div>
+          <a href="/ais/contribute/" class="btn btn-primary">
+            Connect your receiver <Icon name="mdi:arrow-right" class="size-4" />
+          </a>
+          <p class="text-fg-muted mt-5 text-sm">
+            No receiver yet?{" "}
+            <a href="/ais/getting-started/ashore/">Get started from shore</a>{" "}
+            with a USB receiver, an antenna, and the computer you already own.
+          </p>
         </div>
-        <div id="contribute" class="card flex scroll-mt-24 flex-col gap-4 p-8">
-          <h2 class="text-2xl">Contribute coverage</h2>
-          <p class="text-fg-muted text-lg">
-            Whatever your receiver hears joins the network, deduplicated against
-            every other station, and you get the whole feed back. Add one output
-            line to the software you already run; keep contributing everywhere
-            else you contribute today.
-          </p>
-          <div class="mt-auto pt-2">
-            <a href="/ais/contribute/" class="btn btn-secondary">
-              Connect your receiver
-            </a>
+        <figure
+          aria-label="How AIS data moves through Open Waters"
+          class="bg-well min-w-0 rounded-2xl p-6 lg:p-8"
+        >
+          <div class="grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
+            <div class="space-y-3">
+              <div class="border-line-strong rounded-lg border p-3">
+                <Icon name="mdi:radio-tower" class="text-accent mb-2 size-6" />
+                <p class="font-semibold">Your receiver</p>
+                <p class="text-fg-muted text-sm">And other volunteers</p>
+              </div>
+              <div class="border-line-strong rounded-lg border p-3">
+                <p class="font-semibold">Public feeds</p>
+                <p class="text-fg-muted text-sm">Each with its own license</p>
+              </div>
+            </div>
+            <span
+              aria-hidden="true"
+              class="text-accent justify-self-center text-2xl"
+            >
+              <span class="sm:hidden">↓</span>
+              <span class="hidden sm:inline">→</span>
+            </span>
+            <div class="border-accent rounded-lg border p-3">
+              <Icon name="mdi:vector-combine" class="text-accent mb-2 size-6" />
+              <p class="font-semibold">Open Waters</p>
+              <p class="text-fg-muted mt-1 text-sm">
+                Combine receptions. Remove duplicates. Keep the source.
+              </p>
+            </div>
+            <span
+              aria-hidden="true"
+              class="text-accent justify-self-center text-2xl"
+            >
+              <span class="sm:hidden">↓</span>
+              <span class="hidden sm:inline">→</span>
+            </span>
+            <div class="border-line-strong rounded-lg border p-3">
+              <Icon name="mdi:map-outline" class="text-accent mb-2 size-6" />
+              <p class="font-semibold">You and everyone else</p>
+              <p class="text-fg-muted mt-1 text-sm">
+                Live map, apps, research, and your own saved feed
+              </p>
+            </div>
           </div>
+          <div class="border-line-strong mt-6 border-t pt-5">
+            <p class="mb-3 text-sm font-semibold">
+              Federation between independent nodes
+            </p>
+            <div class="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2 text-center text-sm">
+              <div class="border-line-strong rounded-lg border p-2">
+                Community node
+              </div>
+              <span aria-hidden="true" class="text-accent">
+                ↔
+              </span>
+              <div class="border-line-strong rounded-lg border p-2">
+                Open Waters
+              </div>
+              <span aria-hidden="true" class="text-accent">
+                ↔
+              </span>
+              <div class="border-line-strong rounded-lg border p-2">
+                Another node
+              </div>
+            </div>
+          </div>
+          <figcaption class="text-fg-muted mt-4 text-sm">
+            Receivers and public feeds send to Open Waters, which serves the
+            live data. Independently operated nodes exchange data through
+            federation while preserving its source and license.
+          </figcaption>
+        </figure>
+      </div>
+      <div class="border-line mt-12 grid gap-8 border-t pt-8 md:grid-cols-3">
+        <div>
+          <h3 class="mb-3 text-xl">Your receptions: CC0</h3>
+          <p class="text-fg-muted">
+            Individual volunteer receptions enter the public domain under{" "}
+            <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
+            . You can copy, reuse, and share them, including commercially. We
+            have the same rights as everyone else.
+          </p>
+        </div>
+        <div>
+          <h3 class="mb-3 text-xl">The volunteer database: ODbL</h3>
+          <p class="text-fg-muted">
+            The combined volunteer database stays open under{" "}
+            <a href="https://opendatacommons.org/licenses/odbl/summary/">
+              ODbL
+            </a>
+            . Reuse and redistribute it with attribution; publicly used adapted
+            databases must also be offered under ODbL. Partner feeds retain
+            their own terms.
+          </p>
+        </div>
+        <div>
+          <h3 class="mb-3 text-xl">Built to outlive one operator</h3>
+          <p class="text-fg-muted">
+            Save the live feed today, within your access limits. Public archive
+            downloads are coming, so you will be able to retrieve historical
+            data too. Federation already lets independently operated nodes
+            exchange data; the open licenses let others build on it and continue
+            operating the network.
+          </p>
         </div>
       </div>
+      <p class="text-fg-muted mt-8 max-w-3xl text-sm">
+        You can stop contributing whenever you want. Receptions already released
+        remain open; Open Waters gets no exclusive license, even if the project
+        changes hands. Read the{" "}
+        <a href={`${REPO}/blob/main/docs/contributor-agreement.md`}>
+          contributor agreement
+        </a>{" "}
+        for the commitment behind this.
+      </p>
     </Container>
   </section>
 
