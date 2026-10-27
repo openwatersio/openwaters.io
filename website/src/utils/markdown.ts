@@ -12,6 +12,12 @@ turndown.remove(["script", "style", "template", "button"]);
 turndown.remove(
   (node) => node.nodeName === "SVG" || node.hasAttribute("data-nosnippet"),
 );
+// An image with empty alt is decorative, so it has nothing to say in Markdown.
+// A rule, not remove(): Turndown's own image rule is checked before remove().
+turndown.addRule("decorativeImage", {
+  filter: (node) => node.nodeName === "IMG" && node.getAttribute("alt") === "",
+  replacement: () => "",
+});
 // A link with nothing to say (a map preview, an icon-only button) is noise.
 turndown.addRule("emptyLink", {
   filter: (node) => node.nodeName === "A" && !node.textContent?.trim(),
