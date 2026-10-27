@@ -49,7 +49,7 @@ export function readToken(): AiscastToken | null {
 }
 
 /**
- * The station's page on the live map. The id's colons and slashes are legal in
+ * The station's page on Vessels. The id's colons and slashes are legal in
  * a path and the route is a splat, so this is left unencoded to match the
  * address the token page hands out.
  */
