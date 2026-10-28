@@ -5,8 +5,12 @@ import * as database from "@slackwater/database";
 
 import { stationTargets } from "../src/utils/station-redirects.ts";
 
+// SLACKWATER_ORIGIN points the check at a preview deploy, for a database release
+// that slackwater.xyz has not shipped yet.
+const origin = process.env.SLACKWATER_ORIGIN ?? "https://slackwater.xyz";
+
 const sitemap = async (name) => {
-  const response = await fetch(`https://slackwater.xyz/sitemap-${name}.xml`);
+  const response = await fetch(`${origin}/sitemap-${name}.xml`);
   if (!response.ok)
     throw new Error(`sitemap-${name}.xml: HTTP ${response.status}`);
   const xml = await response.text();

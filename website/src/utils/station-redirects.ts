@@ -26,18 +26,15 @@ const KIND_ROOT: Record<Kind, string> = {
   current: "/currents/",
 };
 
-// slackwater.xyz names this gate and leaves it unpublished (src/lib/registry.ts EXCLUDED).
-const UNPUBLISHED_CHS = new Set(["chs-arran-rapids"]);
-
 /**
  * Whether slackwater.xyz publishes a page at this route's path.
  *
  * Mirrors loadCatalogue in slackwater.xyz src/lib/catalogue.ts and chsStations in
  * src/lib/registry.ts: a provider row (`noaa/…`, `ticon/…`) that the quality pass
- * accepts, is licensed for commercial use, and can be predicted; or a curated CHS
- * current gate. The ten CHS tide ports it publishes all share a route with a TICON
- * row, so the provider rule covers them. If slackwater.xyz changes this rule, a
- * station here redirects to its place page instead, or to a missing page there
+ * accepts, is licensed for commercial use, and can be predicted; or any curated
+ * CHS record the database routes, gate or tide port, since the page fetches CHS
+ * predictions in the browser. If slackwater.xyz changes this rule, a station here
+ * redirects to its place page instead, or to a missing page there
  * (`npm run check:station-redirects` catches both).
  */
 export function hasPage(
@@ -50,11 +47,7 @@ export function hasPage(
     const record = db.stationsById.get(id);
     if (!record) return false;
     if (!id.includes("/")) {
-      return (
-        kind === "current" &&
-        record.source?.name === "Canadian Hydrographic Service" &&
-        !UNPUBLISHED_CHS.has(id)
-      );
+      return record.source?.name === "Canadian Hydrographic Service";
     }
     const predictable =
       (record.harmonic_constituents ?? []).length > 0 ||

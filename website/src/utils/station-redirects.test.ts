@@ -60,31 +60,31 @@ test("stationTargets: an unpublished station falls back to the nearest place pag
         tide: [
           { path: "/tides/ca/bc/victoria/", stationIds: ["ticon/v"] },
           { path: "/tides/ca/bc/rejected/", stationIds: ["ticon/r"] },
-          { path: "/tides/ca/ns/abbotts/", stationIds: ["chs-abbotts"] },
-          { path: "/tides/ca/acadia/", stationIds: ["chs-acadia"] },
+          { path: "/tides/ca/ns/withheld/", stationIds: ["ticon/ns"] },
+          { path: "/tides/ca/withheld/", stationIds: ["ticon/ca"] },
           { path: "/tides/zz/nowhere/", stationIds: ["ticon/nc"] },
         ],
       },
       {
         "ticon/v": published,
         "ticon/r": published,
-        "chs-abbotts": { source: { name: "Canadian Hydrographic Service" } },
-        "chs-acadia": { source: { name: "Canadian Hydrographic Service" } },
+        "ticon/ns": published,
+        "ticon/ca": published,
         "ticon/nc": { ...published, license: { commercial_use: false } },
       },
-      ["ticon/r"],
+      ["ticon/r", "ticon/ns", "ticon/ca"],
     ),
   );
   // Withheld by the quality pass: its subdivision has a page.
   assert.equal(targets.fallbacks["ticon/r"], "/tides/ca/bc/");
   // No published station in Nova Scotia, so the country page.
-  assert.equal(targets.fallbacks["chs-abbotts"], "/tides/ca/");
-  assert.equal(targets.fallbacks["chs-acadia"], "/tides/ca/");
+  assert.equal(targets.fallbacks["ticon/ns"], "/tides/ca/");
+  assert.equal(targets.fallbacks["ticon/ca"], "/tides/ca/");
   // Nothing published anywhere above it.
   assert.equal(targets.fallbacks["ticon/nc"], "/tides/");
 });
 
-test("stationTargets: curated CHS current gates have pages, tide ports do not", () => {
+test("stationTargets: every curated CHS gate and tide port has a page", () => {
   const chs = { source: { name: "Canadian Hydrographic Service" } };
   const targets = stationTargets(
     fixture(
@@ -111,8 +111,11 @@ test("stationTargets: curated CHS current gates have pages, tide ports do not", 
     ),
   );
   assert.equal(targets.pages["chs-gate"], "/currents/ca/bc/gate/");
-  assert.equal(targets.fallbacks["chs-arran-rapids"], "/currents/ca/bc/");
-  assert.equal(targets.fallbacks["chs-port"], "/tides/");
+  assert.equal(
+    targets.pages["chs-arran-rapids"],
+    "/currents/ca/bc/arran-rapids/",
+  );
+  assert.equal(targets.pages["chs-port"], "/tides/ca/bc/port/");
   // A NOAA subordinate current is predicted from its reference's offsets.
   assert.equal(targets.pages["noaa/c"], "/currents/us/wa/noaa/");
 });
@@ -203,8 +206,11 @@ test("stationTargets: the real database", () => {
     real.pages["chs-seymour-narrows"],
     "/currents/ca/bc/seymour-narrows/",
   );
-  // A CHS tide port slackwater.xyz has no page for.
-  assert.equal(real.fallbacks["chs-abbotts-harbour"], "/tides/ca/ns/");
+  // A CHS tide port, published with predictions fetched from CHS in the browser.
+  assert.equal(
+    real.pages["chs-abbotts-harbour"],
+    "/tides/ca/ns/abbotts-harbour/",
+  );
   // Every routed id has a target, and every target is a slackwater.xyz path.
   for (const kind of ["tide", "current"] as const) {
     for (const route of database.stationRoutes(kind)) {

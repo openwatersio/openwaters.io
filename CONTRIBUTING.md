@@ -44,7 +44,7 @@ Landing pages for Open Waters libraries live in this repository. A library that 
 
 The AIS service is "Open Waters AIS" in prose, titles, and metadata. `aiscast` names the open-source server, its repository, CLI, and packages; use it only when the text is about the software. "AIS" remains the navigation label and section name, and the hostname remains `ais.openwaters.io`.
 
-Tide and current station pages live on slackwater.xyz. `/tides/stations/` URLs redirect there by station id, using a map built from `@slackwater/database` routes in `website/src/utils/station-redirects.ts`. Its rule for which stations have a page mirrors slackwater.xyz's catalogue. Run `npm run check:station-redirects -w website` after bumping `@slackwater/database`, or when slackwater.xyz changes which stations it publishes; it compares the map with that site's sitemaps.
+Tide and current station pages live on slackwater.xyz. `/tides/stations/` URLs redirect there by station id, using a map built from `@slackwater/database` routes in `website/src/utils/station-redirects.ts`. Its rule for which stations have a page mirrors slackwater.xyz's catalogue. Run `npm run check:station-redirects -w website` after bumping `@slackwater/database`, or when slackwater.xyz changes which stations it publishes; it compares the map with that site's sitemaps. When the bump is ahead of what slackwater.xyz has deployed, point it at that site's preview with `SLACKWATER_ORIGIN=https://pr-NNN-slackwater-xyz.clarkbw.workers.dev`.
 
 Avoid spreading large numeric arrays into `Math.min` or `Math.max`; the argument list can overflow. Scan the values in a loop instead.
 
