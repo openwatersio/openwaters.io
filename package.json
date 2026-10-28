@@ -13,14 +13,17 @@
     "dev": "concurrently \"npm run dev -w website\" \"npm run dev -w api\"",
     "dev:website": "npm run dev -w website",
     "dev:api": "npm run dev -w api",
-    "build": "npm run build -w website"
+    "build": "npm run build -w website",
+    "check:gateway": "wrangler types -c gateway/wrangler.jsonc gateway/worker-configuration.d.ts && tsc -p gateway"
   },
   "devDependencies": {
-    "concurrently": "^10.0.5"
+    "concurrently": "^10.0.6",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.151.3"
   },
   "dependencies": {
     "@slackwater/api": "^1.0.0-beta.3",
-    "@slackwater/database": "^1.0.0-beta.0",
+    "@slackwater/database": "^1.0.0-beta.20261017",
     "@slackwater/engine": "^1.0.0-beta.0",
     "slackwater": "^1.0.0-beta.0"
   }

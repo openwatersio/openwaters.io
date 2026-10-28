@@ -43,14 +43,22 @@ const link = "text-accent hover:text-accent-hover font-medium";
   <p class="text-fg-muted mb-12 text-xl">
     Tidal current predictions from harmonic constituents, powered by the open
     source{" "}
-    <a href="https://github.com/openwatersio/slackwater" class={link}
-      >Slackwater</a
-    > engine. Open and free, no authentication required, and described by an <a
-      href="/openapi.json"
-      class={link}>OpenAPI specification</a
-    >. Browse current stations at{" "}
-    <a href="https://slackwater.xyz/currents/" class={link}>slackwater.xyz</a> or
-    in the <a href="https://slackwater.xyz/" class={link}>Slackwater app</a>.
+    <a href="https://github.com/openwatersio/slackwater" class={link}>
+      Slackwater
+    </a>{" "}
+    engine. Open and free, no authentication required, and described by an{" "}
+    <a href="/openapi.json" class={link}>
+      OpenAPI specification
+    </a>
+    . Browse current stations at{" "}
+    <a href="https://slackwater.xyz/currents/" class={link}>
+      slackwater.xyz
+    </a>{" "}
+    or in the{" "}
+    <a href="https://slackwater.xyz/" class={link}>
+      Slackwater app
+    </a>
+    .
   </p>
 
   <div id="getting-started" class="mb-16 scroll-mt-24">
@@ -67,9 +75,11 @@ const link = "text-accent hover:text-accent-hover font-medium";
         <div>
           <h3 class="mb-3 text-xl font-semibold">Rate Limits</h3>
           <p class="text-fg-muted">
-            The currents API shares the <a href="/api/tides/" class={link}
-              >tides API</a
-            >'s limits:
+            The currents API shares the{" "}
+            <a href="/api/tides/" class={link}>
+              tides API
+            </a>
+            's limits:
           </p>
           <ul class="text-fg-muted ml-4 list-inside list-disc space-y-1">
             <li>100 requests per minute per IP address</li>
@@ -88,8 +98,7 @@ const link = "text-accent hover:text-accent-hover font-medium";
             nearest a point, for the next seven days:
           </p>
           <div class="bg-well text-fg-strong overflow-x-auto rounded-lg p-4">
-            <pre
-              class="text-sm"><code>{`curl "${API_HOST}/currents/events?latitude=48.406&longitude=-122.643"`}</code></pre>
+            <pre class="text-sm"><code>{`curl "${API_HOST}/currents/events?latitude=48.406&longitude=-122.643"`}</code></pre>
           </div>
         </div>
 
@@ -113,8 +122,8 @@ const link = "text-accent hover:text-accent-hover font-medium";
           <p class="text-fg-muted">
             Speeds are in knots along the station's flood axis. Positive is
             flood and negative is ebb. Responses carry the station's{" "}
-            <code>floodDirection</code> and <code>ebbDirection</code> in degrees true
-            when it publishes them.
+            <code>floodDirection</code> and <code>ebbDirection</code> in degrees
+            true when it publishes them.
           </p>
         </div>
 
@@ -123,9 +132,10 @@ const link = "text-accent hover:text-accent-hover font-medium";
           <p class="text-fg-muted">
             Each event has a <code>kind</code>: <code>slack</code>,{" "}
             <code>maxFlood</code>, or <code>maxEbb</code>. Maximum flood and ebb
-            also carry a <code>direction</code> in degrees true when the station has
-            one. Slack carries the small residual speed left at the turn. The timeline
-            endpoints return a signed speed every 10 minutes instead.
+            also carry a <code>direction</code> in degrees true when the station
+            has one. Slack carries the small residual speed left at the turn.
+            The timeline endpoints return a signed speed every 10 minutes
+            instead.
           </p>
         </div>
 
@@ -146,27 +156,24 @@ const link = "text-accent hover:text-accent-hover font-medium";
           <p class="text-fg-muted">
             Canadian Hydrographic Service stations are listed so you can show
             them, but CHS terms do not allow its predictions to be
-            redistributed. Their prediction endpoints return{" "}
-            <code>451</code> with a link to the official CHS predictions, and station
-            listings mark them <code>predictions: false</code>. The
-            nearest-station endpoints return that <code>451</code> rather than answering
-            for a station farther away. Stations with no prediction model return <code
-              >404</code
-            >.
+            redistributed. Their prediction endpoints return <code>451</code>{" "}
+            with a link to the official CHS predictions, and station listings
+            mark them <code>predictions: false</code>. The nearest-station
+            endpoints return that <code>451</code> rather than answering for a
+            station farther away. Stations with no prediction model return{" "}
+            <code>404</code>.
           </p>
         </div>
       </div>
     </Card>
   </div>
 
-  {
-    Array.from(groupedEndpoints.entries()).map(([tag, tagEndpoints]) => (
-      <div id={tagId(tag)} class="mb-16 scroll-mt-24">
-        {showGroups && <h2 class="mb-6 text-3xl font-semibold">{tag}</h2>}
-        {tagEndpoints.map((endpoint) => (
-          <ApiEndpoint endpoint={endpoint} id={endpointId(endpoint)} />
-        ))}
-      </div>
-    ))
-  }
+  {Array.from(groupedEndpoints.entries()).map(([tag, tagEndpoints]) => (
+    <div id={tagId(tag)} class="mb-16 scroll-mt-24">
+      {showGroups && <h2 class="mb-6 text-3xl font-semibold">{tag}</h2>}
+      {tagEndpoints.map((endpoint) => (
+        <ApiEndpoint endpoint={endpoint} id={endpointId(endpoint)} />
+      ))}
+    </div>
+  ))}
 </ApiLayout>

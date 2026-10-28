@@ -167,7 +167,7 @@
 
 @utility text-lead {
   color: var(--color-fg-muted);
-  @apply text-xl leading-snug text-pretty md:text-2xl;
+  @apply text-xl leading-snug text-balance text-pretty md:text-2xl;
 }
 
 @utility btn {

@@ -5,10 +5,14 @@ const columns = [
   {
     title: "Projects",
     links: [
+      {
+        label: "Slackwater",
+        href: "https://slackwater.xyz/",
+      },
       { label: "Tides", href: "/tides/" },
       { label: "Charts", href: "/charts/" },
       { label: "AIS", href: "/ais/" },
-      { label: "AIS live map", href: "/ais/vessels" },
+      { label: "AIS vessels", href: "/ais/vessels" },
       { label: "Sky", href: "/sky/" },
       { label: "Bathymetry", href: "/bathymetry/" },
     ],
@@ -19,13 +23,14 @@ const columns = [
       { label: "API reference", href: "/api/" },
       { label: "Tide database", href: "/tides/database/" },
       { label: "GitHub", href: "https://github.com/openwatersio" },
-      { label: "Discord", href: "https://discord.gg/NeMyrYMGr" },
+      { label: "Discord", href: "https://discord.gg/HTdZ4s9unG" },
     ],
   },
   {
     title: "Open Waters",
     links: [
       { label: "About", href: "/about/" },
+      { label: "Updates", href: "/updates/" },
       { label: "Contact", href: "/contact/" },
       { label: "License", href: "/license/" },
       { label: "Privacy", href: "/privacy/" },
@@ -51,32 +56,23 @@ const currentYear = new Date().getFullYear();
           Open source marine software and data.
         </p>
       </div>
-      {
-        columns.map((column) => (
-          <div>
-            <h2 class="eyebrow text-fg-faint mb-4 text-[11px]">
-              {column.title}
-            </h2>
-            <ul class="space-y-2.5 text-sm">
-              {column.links.map((link) => (
-                <li>
-                  <a
-                    href={link.href}
-                    class="text-fg-muted hover:text-fg-strong"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      }
+      {columns.map((column) => (
+        <div>
+          <h2 class="eyebrow text-fg-faint mb-4 text-[11px]">{column.title}</h2>
+          <ul class="space-y-2.5 text-sm">
+            {column.links.map((link) => (
+              <li>
+                <a href={link.href} class="text-fg-muted hover:text-fg-strong">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
 
-    <div
-      class="border-line text-fg-faint mt-12 flex flex-col gap-3 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between"
-    >
+    <div class="border-line text-fg-faint mt-12 flex flex-col gap-3 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
       <p>
         © {currentYear} Open Water Software, LLC. Some rights reserved.{" "}
         <a href="/license/" class="text-fg-muted hover:text-fg-strong">

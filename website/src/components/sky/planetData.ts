@@ -16,6 +16,8 @@ export const PLANETS = [
   { id: "mars", name: "Mars", color: "#ff947d" },
   { id: "jupiter", name: "Jupiter", color: "#e5b88e" },
   { id: "saturn", name: "Saturn", color: "#b8a7ef" },
+  { id: "uranus", name: "Uranus", color: "#8fd9d2" },
+  { id: "neptune", name: "Neptune", color: "#7f9cf5" },
 ] as const;
 
 export function planetNight(date: string, place: Place) {

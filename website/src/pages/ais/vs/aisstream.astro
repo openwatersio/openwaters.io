@@ -13,6 +13,7 @@ const ALTERNATIVES = "/ais/alternatives/aisstream/";
 const sections = [
   { id: "now", title: "Right now" },
   { id: "glance", title: "At a glance" },
+  { id: "api-key", title: "API keys" },
   { id: "protocol", title: "Protocol and compatibility" },
   { id: "coverage", title: "Coverage" },
   { id: "limits", title: "Limits and connection model" },
@@ -94,7 +95,7 @@ const live = [
 ];
 
 const description =
-  "Compare Open Waters AIS and aisstream.io for real-time vessel tracking and historical analysis: streams, vessel tracks, coverage, limits, and migration.";
+  "An aisstream.io-compatible API: change the hostname, use a free Open Waters AIS token as your APIKey, and add REST vessel tracks and published coverage.";
 
 const article = {
   "@context": "https://schema.org",
@@ -111,7 +112,7 @@ const article = {
 ---
 
 <MainLayout
-  title="Open Waters AIS vs aisstream.io"
+  title="aisstream.io API alternative: Open Waters AIS vs aisstream"
   image="/og/ais-vs-aisstream.png"
   description={description}
   schema={article}
@@ -132,17 +133,19 @@ const article = {
       </p>
 
       <p class="text-lead mb-4">
-        Open Waters AIS serves two workflows: following vessels in real time and
-        analysing their recorded movements. aisstream.io provides a free live
-        WebSocket feed. Open Waters AIS adds historical vessel tracks over REST,
-        current vessel lookups, and commercial access by arrangement. Its
-        compatibility endpoint accepts aisstream subscriptions, so existing
-        clients can start with a hostname and token change.
+        Open Waters AIS speaks the aisstream.io API. Its{" "}
+        <code class="bg-surface rounded px-1">/v0/stream</code> endpoint accepts
+        aisstream subscriptions and sends the same frames, so an existing client
+        needs a hostname change and an Open Waters AIS token in its{" "}
+        <code class="bg-surface rounded px-1">APIKey</code> field. Beyond the
+        live WebSocket feed both services offer, Open Waters AIS adds historical
+        vessel tracks over REST, current vessel lookups, and commercial access
+        by arrangement.
       </p>
       <p class="text-fg-muted mb-8">
-        Comparing more than these two? <a href={ALTERNATIVES}
-          >All aisstream.io alternatives</a
-        >.
+        Stream gone quiet?{" "}
+        <a href={ALTERNATIVES}>Check whether aisstream.io is down</a>, see its
+        outage record, and compare every alternative.
       </p>
 
       <nav
@@ -151,16 +154,14 @@ const article = {
         class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
       >
         <span class="mr-2 font-semibold">On this page:</span>
-        {
-          sections.map((s, i) => (
-            <>
-              {i > 0 && <span class="text-fg-faint mx-2">·</span>}
-              <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
-                {s.title}
-              </a>
-            </>
-          ))
-        }
+        {sections.map((s, i) => (
+          <>
+            {i > 0 && <span class="text-fg-faint mx-2">·</span>}
+            <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
+              {s.title}
+            </a>
+          </>
+        ))}
       </nav>
 
       <article>
@@ -183,33 +184,34 @@ const article = {
             <thead class="bg-surface">
               <tr>
                 <th scope="col" class="px-3 py-2 text-left"></th>
-                <th scope="col" class="px-3 py-2 text-right">Open Waters AIS</th
-                >
-                <th scope="col" class="px-3 py-2 text-right">aisstream.io</th>
+                <th scope="col" class="px-3 py-2 text-right">
+                  Open Waters AIS
+                </th>
+                <th scope="col" class="px-3 py-2 text-right">
+                  aisstream.io
+                </th>
               </tr>
             </thead>
             <tbody class="divide-line divide-y">
-              {
-                live.map((r) => (
-                  <tr>
-                    <th scope="row" class="px-3 py-2 text-left font-medium">
-                      {r.label}
-                    </th>
-                    <td
-                      class="px-3 py-2 text-right text-lg font-semibold tabular-nums"
-                      data-stat={r.ours}
-                    >
-                      –
-                    </td>
-                    <td
-                      class="px-3 py-2 text-right text-lg font-semibold tabular-nums"
-                      data-stat={r.theirs || undefined}
-                    >
-                      {r.theirs ? "–" : <span class="text-fg-faint">—</span>}
-                    </td>
-                  </tr>
-                ))
-              }
+              {live.map((r) => (
+                <tr>
+                  <th scope="row" class="px-3 py-2 text-left font-medium">
+                    {r.label}
+                  </th>
+                  <td
+                    class="px-3 py-2 text-right text-lg font-semibold tabular-nums"
+                    data-stat={r.ours}
+                  >
+                    –
+                  </td>
+                  <td
+                    class="px-3 py-2 text-right text-lg font-semibold tabular-nums"
+                    data-stat={r.theirs || undefined}
+                  >
+                    {r.theirs ? "–" : <span class="text-fg-faint">—</span>}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -229,22 +231,24 @@ const article = {
             <thead class="bg-surface">
               <tr>
                 <th scope="col" class="px-3 py-2 text-left"></th>
-                <th scope="col" class="px-3 py-2 text-left">Open Waters AIS</th>
-                <th scope="col" class="px-3 py-2 text-left">aisstream.io</th>
+                <th scope="col" class="px-3 py-2 text-left">
+                  Open Waters AIS
+                </th>
+                <th scope="col" class="px-3 py-2 text-left">
+                  aisstream.io
+                </th>
               </tr>
             </thead>
             <tbody class="divide-line divide-y">
-              {
-                glance.map(([label, ours, theirs]) => (
-                  <tr>
-                    <th scope="row" class="px-3 py-2 text-left font-medium">
-                      {label}
-                    </th>
-                    <td class="text-fg-muted px-3 py-2">{ours}</td>
-                    <td class="text-fg-muted px-3 py-2">{theirs}</td>
-                  </tr>
-                ))
-              }
+              {glance.map(([label, ours, theirs]) => (
+                <tr>
+                  <th scope="row" class="px-3 py-2 text-left font-medium">
+                    {label}
+                  </th>
+                  <td class="text-fg-muted px-3 py-2">{ours}</td>
+                  <td class="text-fg-muted px-3 py-2">{theirs}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -253,38 +257,60 @@ const article = {
           <a
             href="https://aisstream.io/documentation"
             target="_blank"
-            rel="noopener noreferrer">documentation</a
-          >{" "}
-          checked 8 October 2026. Open Waters AIS capabilities are documented in the{
-            " "
-          }
-          <a href="/api/ais/">API reference</a>. Spotted something out of date?{
-            " "
-          }
-          <a href="/contact/">Tell us</a>.
+            rel="noopener noreferrer"
+          >
+            documentation
+          </a>{" "}
+          checked 8 October 2026. Open Waters AIS capabilities are documented in
+          the <a href="/api/ais/">API reference</a>. Spotted something out of
+          date? <a href="/contact/">Tell us</a>.
+        </p>
+
+        <h2 id="api-key" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+          API keys
+        </h2>
+        <p class="text-fg-muted mb-4">
+          aisstream.io issues API keys to signed-in accounts: sign in with
+          GitHub or Google at aisstream.io, then create a key on its API keys
+          page. The key goes in the{" "}
+          <code class="bg-surface rounded px-1">APIKey</code> field of the
+          subscription message, and aisstream's JavaScript and Rust examples
+          read it from the{" "}
+          <code class="bg-surface rounded px-1">AISSTREAM_API_KEY</code>{" "}
+          environment variable.
+        </p>
+        <p class="text-fg-muted mb-12">
+          An Open Waters AIS token goes in the same field.{" "}
+          <a href="/ais/token/">Get one in one click</a>: no account, and it
+          never expires. If your client reads{" "}
+          <code class="bg-surface rounded px-1">AISSTREAM_API_KEY</code>, set it
+          to your Open Waters AIS token and change the hostname; the rest of the
+          code stays as it is. The native{" "}
+          <code class="bg-surface rounded px-1">/v1/stream</code> and{" "}
+          <code class="bg-surface rounded px-1">/v1/vessels</code> endpoints
+          need no token at all.
         </p>
 
         <h2 id="protocol" class="mb-4 scroll-mt-24 text-3xl font-semibold">
           Protocol and compatibility
         </h2>
         <p class="text-fg-muted mb-4">
-          aisstream's JSON is Go's <code class="bg-surface rounded px-1"
-            >encoding/json</code
-          > over the go-ais structs, typo and all (<code
-            class="bg-surface rounded px-1">VenderIDModel</code
-          >). Open Waters AIS uses the same decoder, so <code
-            class="bg-surface rounded px-1">/v0/stream</code
-          > frames are structurally identical; golden tests pin the envelope, rounding,
-          time format, error messages, and resubscribe behaviour against captured
-          aisstream output. Verified clients: <code
-            class="bg-surface rounded px-1">aisstream-ts</code
-          >, the official Go, Python and JavaScript examples, and <code
-            class="bg-surface rounded px-1">signalk-aisstream</code
-          >. Where aisstream's decoder is known wrong, <code
-            class="bg-surface rounded px-1">/v0</code
-          > reproduces the quirk deliberately and <code
-            class="bg-surface rounded px-1">/v1</code
-          > fixes it; the <a href="/api/ais/">API reference</a> lists each one.
+          aisstream's JSON is Go's{" "}
+          <code class="bg-surface rounded px-1">encoding/json</code> over the
+          go-ais structs, typo and all (
+          <code class="bg-surface rounded px-1">VenderIDModel</code>). Open
+          Waters AIS uses the same decoder, so{" "}
+          <code class="bg-surface rounded px-1">/v0/stream</code> frames are
+          structurally identical; golden tests pin the envelope, rounding, time
+          format, error messages, and resubscribe behaviour against captured
+          aisstream output. Verified clients:{" "}
+          <code class="bg-surface rounded px-1">aisstream-ts</code>, the
+          official Go, Python and JavaScript examples, and{" "}
+          <code class="bg-surface rounded px-1">signalk-aisstream</code>. Where
+          aisstream's decoder is known wrong,{" "}
+          <code class="bg-surface rounded px-1">/v0</code> reproduces the quirk
+          deliberately and <code class="bg-surface rounded px-1">/v1</code>{" "}
+          fixes it; the <a href="/api/ais/">API reference</a> lists each one.
         </p>
         <p class="text-fg-muted mb-12">
           Start with a hostname and token change, then test your filters,
@@ -305,22 +331,27 @@ const article = {
           Open Waters AIS publishes every source: Kystverket and BarentsWatch
           for Norway, Digitraffic for Finland, volunteer receivers wherever they
           are, the AISHub aggregate for the rest of the world, and aisstream.io
-          itself when it is delivering. <code class="bg-surface rounded px-1"
-            >/v1/stations</code
-          > gives each source's message count and age, and the live map draws the
-          same data. Use the <a href="/ais/">coverage map</a> and source health to
-          investigate missing or delayed positions.
+          itself when it is delivering.{" "}
+          <code class="bg-surface rounded px-1">/v1/stations</code> gives each
+          source's message count and age, and <a href="/ais/vessels">Vessels</a>{" "}
+          draws the same data. Use the <a href="/ais/">coverage map</a> and
+          source health to investigate missing or delayed positions.
         </p>
         <p class="text-fg-muted mb-12">
-          The gap: outside the Nordics and the volunteer footprint, our
-          positions are AISHub's, about a minute behind (<a
+          AISHub and its contributors make much of our worldwide terrestrial
+          coverage possible. Its snapshot positions are typically about a minute
+          behind (
+          <a
             href="https://ais.openwaters.io/v1/stats"
             target="_blank"
-            rel="noopener noreferrer">current delay</a
-          >). That is fine for "what is out there" and wrong for close quarters.
-          Coverage grows as receivers join. Neither a live feed nor historical
-          tracks are a substitute for onboard AIS or suitable for safety of
-          navigation.
+            rel="noopener noreferrer"
+          >
+            current delay
+          </a>
+          ). We contribute volunteer receptions to AISHub in return. Additional
+          receivers improve coverage and freshness. Neither a live feed nor
+          historical tracks are a substitute for onboard AIS or suitable for
+          safety of navigation.
         </p>
 
         <h2 id="limits" class="mb-4 scroll-mt-24 text-3xl font-semibold">
@@ -337,9 +368,8 @@ const article = {
           Open Waters AIS limits per token, publishes the numbers, thins a
           stream that exceeds its rate rather than dropping the connection,
           refuses an oversize area with a message that says so, and allows
-          in-band resubscribe for free. CORS is open on <code
-            class="bg-surface rounded px-1">/v1/vessels</code
-          >.
+          in-band resubscribe for free. CORS is open on{" "}
+          <code class="bg-surface rounded px-1">/v1/vessels</code>.
         </p>
 
         <h2 id="license" class="mb-4 scroll-mt-24 text-3xl font-semibold">
@@ -347,12 +377,11 @@ const article = {
         </h2>
         <p class="text-fg-muted mb-12">
           Confirm the terms for your intended use before displaying, storing, or
-          redistributing AIS data. Open Waters AIS publishes <a
-            href="/ais/#license">source terms and attribution</a
-          >; a commercial subscription does not erase upstream conditions.
-          Contact us about the sources your product can use, including whether
-          to exclude aisstream data when its reuse terms do not meet your
-          requirements.
+          redistributing AIS data. Open Waters AIS publishes{" "}
+          <a href="/ais/#license">source terms and attribution</a>; a commercial
+          subscription does not erase upstream conditions. Contact us about the
+          sources your product can use, including whether to exclude aisstream
+          data when its reuse terms do not meet your requirements.
         </p>
 
         <h2 id="who" class="mb-4 scroll-mt-24 text-3xl font-semibold">
@@ -368,68 +397,65 @@ const article = {
         </p>
         <h3 class="mb-2 text-xl font-semibold">Historical analysis</h3>
         <p class="text-fg-muted mb-6">
-          To reconstruct movements or study vessel activity, use the <a
-            href="/api/ais/#get-v1-vessels-mmsi-track"
-            >Open Waters AIS vessel-track API</a
-          >. It returns GeoJSON or GPX for a requested time range, with up to
-          366 days per request. That limit does not promise a year of
-          observations: check the recorded dates, gaps, and sampling for the
-          vessels you need. IMO lookup is available to contributor and
-          commercial tokens, but tracks under earlier MMSIs are not
-          automatically joined.
+          To reconstruct movements or study vessel activity, use the{" "}
+          <a href="/api/ais/#get-v1-vessels-mmsi-track">
+            Open Waters AIS vessel-track API
+          </a>
+          . It returns GeoJSON or GPX for a requested time range, with up to 366
+          days per request. That limit does not promise a year of observations:
+          check the recorded dates, gaps, and sampling for the vessels you need.
+          IMO lookup is available to contributor and commercial tokens, but
+          tracks under earlier MMSIs are not automatically joined.
         </p>
         <p class="text-fg-muted mb-12">
-          <a href="/ais/token/">Try personal access</a> or <a href="/contact/"
-            >discuss a commercial project</a
-          >. For historical work, include your vessel list, area, date range,
-          and required detail. Bulk datasets and contractual requirements need a
-          separate discussion; they are not implied by the public track
-          endpoint.
+          <a href="/ais/token/">Try personal access</a> or{" "}
+          <a href="/contact/">discuss a commercial project</a>. For historical
+          work, include your vessel list, area, date range, and required detail.
+          Bulk datasets and contractual requirements need a separate discussion;
+          they are not implied by the public track endpoint.
         </p>
 
         <h2 id="migration" class="mb-4 scroll-mt-24 text-3xl font-semibold">
           Migration
         </h2>
-        <ol
-          class="text-fg-muted marker:text-fg-faint mb-4 list-decimal space-y-2 pl-6"
-        >
+        <ol class="text-fg-muted marker:text-fg-faint mb-4 list-decimal space-y-2 pl-6">
           <li>
-            Get a token at <a href="/ais/token/">openwaters.io/ais/token</a>{
-              " "
-            }
-            for personal use. For a commercial product, <a href="/contact/"
-              >contact us</a
-            > for access.
+            Get a token at <a href="/ais/token/">openwaters.io/ais/token</a> for
+            personal use. For a commercial product,{" "}
+            <a href="/contact/">contact us</a> for access.
           </li>
           <li>
-            Replace <code class="bg-surface rounded px-1"
-              >wss://stream.aisstream.io/v0/stream</code
-            > with <code class="bg-surface rounded px-1"
-              >wss://ais.openwaters.io/v0/stream</code
-            >.
+            Replace{" "}
+            <code class="bg-surface rounded px-1">
+              wss://stream.aisstream.io/v0/stream
+            </code>{" "}
+            with{" "}
+            <code class="bg-surface rounded px-1">
+              wss://ais.openwaters.io/v0/stream
+            </code>
+            .
           </li>
           <li>
-            Put the token in <code class="bg-surface rounded px-1">APIKey</code
-            >. Test your subscriptions and message handling before switching
+            Put the token in <code class="bg-surface rounded px-1">APIKey</code>
+            . Test your subscriptions and message handling before switching
             production traffic.
           </li>
         </ol>
         <p class="text-fg-muted mb-4">
-          The full version, including what changes once you are across, is on <a
-            href={`${ALTERNATIVES}#switch`}>All aisstream.io alternatives</a
-          >.
+          The full version, including what changes once you are across, is in{" "}
+          <a href={`${ALTERNATIVES}#switch`}>Switching from aisstream.io</a>.
         </p>
         <p class="text-fg-muted">
           Support: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, or
-          an issue on the <a
-            href={REPO}
-            target="_blank"
-            rel="noopener noreferrer">aiscast repository</a
-          >. Current uptime is at <a
-            href={STATUS}
-            target="_blank"
-            rel="noopener noreferrer">status.openwaters.io</a
-          >.
+          an issue on the{" "}
+          <a href={REPO} target="_blank" rel="noopener noreferrer">
+            aiscast repository
+          </a>
+          . Current uptime is at{" "}
+          <a href={STATUS} target="_blank" rel="noopener noreferrer">
+            status.openwaters.io
+          </a>
+          .
         </p>
       </article>
     </div>

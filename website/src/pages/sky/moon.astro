@@ -7,7 +7,7 @@ import { MoonFilmstrip } from "../../components/sky/SkyDemos";
 import LunarEclipseDemo from "../../components/sky/LunarEclipseDemo";
 
 const initialMonth = new Date().toISOString().slice(0, 7);
-const moonCode = `import { moonIllumination, searchMoonPhases } from '@openwaters/almanac';
+const moonCode = `import { moonIllumination, moonOrientation, moonTransits, searchMoonPhases } from '@openwaters/almanac';
 
 const start = new Date('2026-09-01T00:00:00Z');
 const end = new Date('2026-10-01T00:00:00Z');
@@ -19,7 +19,16 @@ const days = Array.from({ length: 30 }, (_, day) => {
 // Each disc uses fraction (0–1) and waxing (bright side).
 // These are the exact instants for the four phase buttons.
 const quarters = searchMoonPhases(start, end);
-console.log(days, quarters);`;
+console.log(days, quarters);
+
+// Turn the large disc as it sits in the sky: the bright limb's angle from
+// the zenith, counterclockwise as the observer sees it.
+const observer = { latitudeDeg: 48.5, longitudeDeg: -123 };
+const { brightLimbAngleDeg, parallacticAngleDeg } = moonOrientation(start, observer);
+console.log(brightLimbAngleDeg - parallacticAngleDeg);
+
+// When the Moon is highest: its upper transit.
+console.log(moonTransits(start, end, observer).filter(t => t.kind === 'upper'));`;
 ---
 
 <MainLayout
@@ -72,9 +81,9 @@ console.log(days, quarters);`;
         </div>
         <MoonFilmstrip initialMonth={initialMonth} client:load />
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
           <CodeBlock code={moonCode} class="mt-4" />
         </details>
       </section>
@@ -90,17 +99,20 @@ console.log(days, quarters);`;
           Explore penumbral, partial and total lunar eclipses with real examples
           from 2026–2027. Scrub across each event to see what changes on the
           Moon itself. A lunar eclipse is the Earth's shadow falling on the
-          Moon; the Moon's shadow falling on the Earth is a <a
+          Moon; the Moon's shadow falling on the Earth is a{" "}
+          <a
             href="/sky/sun/#solar-eclipses"
             class="text-accent font-medium underline-offset-4 hover:underline"
-            >solar eclipse</a
-          >.
+          >
+            solar eclipse
+          </a>
+          .
         </p>
         <LunarEclipseDemo client:load />
         <details>
-          <summary class="text-accent cursor-pointer font-medium"
-            >Show the TypeScript</summary
-          >
+          <summary class="text-accent cursor-pointer font-medium">
+            Show the TypeScript
+          </summary>
           <CodeBlock
             class="mt-4"
             code={`import { lunarEclipses, lunarEclipseVisibility } from '@openwaters/almanac';

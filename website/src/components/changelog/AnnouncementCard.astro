@@ -1,0 +1,69 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+
+import Icon from "../Icon.astro";
+import EntryLabel from "./EntryLabel.astro";
+import { cn } from "../../utils/cn";
+import { entryHref, formatDate } from "../../utils/changelog-entries";
+import type { Project } from "../../utils/changelog";
+
+interface Props {
+  announcement: CollectionEntry<"announcements">;
+  /** The pinned card above the timeline. */
+  featured?: boolean;
+}
+
+const { announcement, featured = false } = Astro.props;
+const { title, summary, date, image, projects, draft } = announcement.data;
+---
+
+<a
+  href={entryHref(announcement)}
+  class={cn(
+    "group border-accent/25 from-accent/12 to-accent/3 hover:border-accent/50 relative grid overflow-hidden rounded-3xl border bg-linear-to-br transition-colors",
+    image && "md:grid-cols-[1.2fr_1fr]",
+  )}
+>
+  <div class={cn("flex flex-col", featured ? "p-8 md:p-12" : "p-6 md:p-8")}>
+    {featured && (
+      <p class="eyebrow flex items-center gap-1.5">
+        <Icon name="mdi:bullhorn-outline" class="size-4" />
+        Latest announcement
+      </p>
+    )}
+    <h3
+      class={cn(
+        "group-hover:text-accent-hover transition-colors",
+        featured && "mt-4",
+        featured ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl",
+      )}
+    >
+      {title}
+    </h3>
+    <p class="text-fg-faint mt-2 flex gap-3 text-sm">
+      <time datetime={date.toISOString()}>
+        {formatDate(date, { month: "long", day: "numeric", year: "numeric" })}
+      </time>
+      {draft && <span class="text-highlight">Draft</span>}
+    </p>
+    <p class="text-fg-muted mt-4 max-w-2xl text-pretty md:text-lg">{summary}</p>
+    <div class="mt-auto flex flex-wrap items-center justify-between gap-4 pt-8">
+      <span class="text-accent flex items-center gap-1.5 text-sm font-medium">
+        Read the announcement
+        <Icon
+          name="mdi:arrow-right"
+          class="size-4 transition-transform group-hover:translate-x-0.5"
+        />
+      </span>
+      <EntryLabel type="announcement" projects={projects as Project[]} />
+    </div>
+  </div>
+  {image && (
+    // Decorative cover: no alt text, and left out of the page's Markdown (turndown's
+    // image rule outranks data-nosnippet on the img itself).
+    <div data-nosnippet class="max-h-80 md:max-h-none">
+      <Image src={image} alt="" class="h-full w-full object-cover" />
+    </div>
+  )}
+</a>

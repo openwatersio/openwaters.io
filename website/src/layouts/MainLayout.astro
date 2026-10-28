@@ -1,5 +1,6 @@
 ---
 import Header from "../components/layout/Header.astro";
+import Analytics from "../components/Analytics.astro";
 import Footer from "../components/layout/Footer.astro";
 import "../styles/global.css";
 import { cn } from "../utils/cn";
@@ -13,6 +14,8 @@ interface Props {
   fullscreen?: boolean;
   /** Page-specific JSON-LD. Organization is emitted on every page regardless. */
   schema?: unknown;
+  /** An RSS feed for this page, advertised to feed readers. */
+  feed?: string;
 }
 
 const {
@@ -21,6 +24,7 @@ const {
   image = "/og/openwaters.png",
   fullscreen = false,
   schema,
+  feed,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -46,6 +50,7 @@ const fullTitle =
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+    {feed && <link rel="alternate" type="application/rss+xml" href={feed} />}
 
     <!-- Open Graph -->
     <meta property="og:title" content={fullTitle} />
@@ -67,21 +72,11 @@ const fullTitle =
       is:inline
       set:html={jsonLd(organization(CONTACT_EMAIL))}
     />
-    {
-      schema && (
-        <script
-          type="application/ld+json"
-          is:inline
-          set:html={jsonLd(schema)}
-        />
-      )
-    }
+    {schema && (
+      <script type="application/ld+json" is:inline set:html={jsonLd(schema)} />
+    )}
 
-    <script
-      is:inline
-      defer
-      data-domain="openwaters.io"
-      src="https://plausible.io/js/script.js"></script>
+    <Analytics />
   </head>
   <body
     class={cn({ "flex min-h-screen flex-col": true, fullscreen: fullscreen })}

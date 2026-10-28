@@ -58,7 +58,8 @@ import { TideChart } from "../../components/tides/TideCharts";
 
       <h3>All Constituents</h3>
       <p>
-        Just for fun, let's take a look at <strong>all</strong> the defined constituents:
+        Just for fun, let's take a look at <strong>all</strong> the defined
+        constituents:
       </p>
       <div class="bg-surface rounded-lg p-4">
         <TideChart type="all" />
@@ -82,22 +83,22 @@ import { TideChart } from "../../components/tides/TideCharts";
         <li class="flex items-start gap-2">
           <span class="text-accent mt-1">•</span>
           <span>
-            <strong>Amplitude:</strong> The strength of this constituent's effect
-            on water levels, typically measured in meters or feet.
+            <strong>Amplitude:</strong> The strength of this constituent's
+            effect on water levels, typically measured in meters or feet.
           </span>
         </li>
         <li class="flex items-start gap-2">
           <span class="text-accent mt-1">•</span>
           <span>
-            <strong>Phase (Epoch):</strong> The timing offset relative to an astronomical
-            reference, measured in degrees.
+            <strong>Phase (Epoch):</strong> The timing offset relative to an
+            astronomical reference, measured in degrees.
           </span>
         </li>
         <li class="flex items-start gap-2">
           <span class="text-accent mt-1">•</span>
           <span>
-            <strong>Speed:</strong> How quickly this constituent oscillates, measured
-            in degrees per hour.
+            <strong>Speed:</strong> How quickly this constituent oscillates,
+            measured in degrees per hour.
           </span>
         </li>
       </ul>
@@ -165,28 +166,37 @@ import { TideChart } from "../../components/tides/TideCharts";
 
       <!-- CTA -->
     </div>
-    <Card
-      class="card text-fg-strong mx-auto mt-12 max-w-3xl space-y-4 border-0 text-center"
-    >
+    <Card class="card text-fg-strong mx-auto mt-12 max-w-3xl space-y-4 border-0 text-center">
       <h2 class="text-fg-strong text-3xl font-semibold">
         How OpenWaters.io Predicts Tides
       </h2>
       <p class="text-balance">
-        The tide predictions from the <a
+        The tide predictions from the{" "}
+        <a class="text-fg-muted hover:text-accent-hover" href="/api/tides/">
+          Open Waters API
+        </a>{" "}
+        and on{" "}
+        <a
           class="text-fg-muted hover:text-accent-hover"
-          href="/api/tides/">Open Waters API</a
-        > and on <a
+          href="https://slackwater.xyz/tides/"
+        >
+          slackwater.xyz
+        </a>{" "}
+        are created using the{" "}
+        <a
           class="text-fg-muted hover:text-accent-hover"
-          href="https://slackwater.xyz/tides/">slackwater.xyz</a
-        > are created using the <a
+          href="/tides/slackwater/"
+        >
+          Slackwater
+        </a>{" "}
+        open source tide predictor, powered by harmonic constituents from the{" "}
+        <a
           class="text-fg-muted hover:text-accent-hover"
-          href="/tides/slackwater/">Slackwater</a
-        > open source tide predictor, powered by harmonic constituents from the{
-          " "
-        }
-        <a class="text-fg-muted hover:text-accent-hover" href="/tides/database/"
-          >tide database</a
-        >.
+          href="/tides/database/"
+        >
+          tide database
+        </a>
+        .
       </p>
       <div class="flex flex-wrap justify-center gap-4">
         <a href="/tides/database/" class="btn btn-primary">

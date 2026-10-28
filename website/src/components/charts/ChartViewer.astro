@@ -21,32 +21,25 @@ const about = {
 }[chart];
 ---
 
-{
-  /* Positioning lives on the wrapper: MapLibre forces position:relative on its
-    own container, which would override an `absolute` here and collapse it. */
-}
+{/* Positioning lives on the wrapper: MapLibre forces position:relative on its
+    own container, which would override an `absolute` here and collapse it. */}
 <div class="absolute inset-0">
   <div id="map" data-chart={chart} class="h-full w-full"></div>
 </div>
 
-{
-  /* Floats over the map, left-aligned under the site header, so the chart runs
-    edge to edge behind it */
-}
+{/* Floats over the map, left-aligned under the site header, so the chart runs
+    edge to edge behind it */}
 <div class="header-padding pointer-events-none absolute inset-x-0 top-0 z-10">
   <div class="flex items-start gap-3 p-4">
-    <div
-      class="card-glass pointer-events-auto mr-8 flex flex-wrap items-baseline gap-x-2 p-3 text-sm"
-    >
-      <span class="font-semibold">{about.name}</span>
-      ·
-      <span class="text-fg-muted hidden sm:inline">
-        {about.description}
-      </span>{" "}
+    <div class="card-glass pointer-events-auto mr-8 flex flex-wrap items-baseline gap-x-2 p-3 text-sm">
+      <span class="font-semibold">{about.name}</span>·
+      <span class="text-fg-muted hidden sm:inline">{about.description}</span>{" "}
       <a
         href={about.href}
-        class="text-accent hover:text-accent-hover font-medium">About</a
+        class="text-accent hover:text-accent-hover font-medium"
       >
+        About
+      </a>
     </div>
   </div>
 </div>

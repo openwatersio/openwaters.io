@@ -44,3 +44,11 @@ test("pageToMarkdown: converts only <main>, dropping chrome and scripts", () => 
 test("pageToMarkdown: a document without <main> converts whole", () => {
   assert.match(pageToMarkdown("<h1>x</h1>"), /^# x/);
 });
+
+test("pageToMarkdown: drops decorative images, keeps described ones", () => {
+  const md = pageToMarkdown(
+    '<main><h1>T</h1><img src="/a.webp" alt=""><img src="/b.png" alt="A chart"></main>',
+  );
+  assert.ok(!md.includes("[]("));
+  assert.match(md, /!\[A chart\]\(\/b\.png\)/);
+});

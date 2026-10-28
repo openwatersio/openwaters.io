@@ -28,27 +28,25 @@ const isCurrent = (href: string) => currentPath.startsWith(href);
     </a>
 
     <ul class="hidden items-center gap-7 text-sm md:flex">
-      {
-        navItems.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              aria-current={isCurrent(item.href) ? "page" : undefined}
-              class={cn(
-                "hover:text-fg-strong font-medium",
-                isCurrent(item.href) ? "text-fg-strong" : "text-fg-muted",
-              )}
-            >
-              {item.name}
-            </a>
-          </li>
-        ))
-      }
+      {navItems.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            aria-current={isCurrent(item.href) ? "page" : undefined}
+            class={cn(
+              "hover:text-fg-strong font-medium",
+              isCurrent(item.href) ? "text-fg-strong" : "text-fg-muted",
+            )}
+          >
+            {item.name}
+          </a>
+        </li>
+      ))}
     </ul>
 
     <div class="hidden items-center gap-4 md:flex">
       <a
-        href="https://discord.gg/NeMyrYMGr"
+        href="https://discord.gg/HTdZ4s9unG"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Discord"
@@ -81,24 +79,22 @@ const isCurrent = (href: string) => currentPath.startsWith(href);
   </nav>
 
   <ul id="mobile-menu" class="mt-3 hidden space-y-1 pb-3 md:hidden">
-    {
-      navItems.map((item) => (
-        <li>
-          <a
-            href={item.href}
-            aria-current={isCurrent(item.href) ? "page" : undefined}
-            class={cn(
-              "block rounded-lg px-3 py-2 font-medium",
-              isCurrent(item.href)
-                ? "bg-surface text-fg-strong"
-                : "text-fg-muted hover:bg-surface hover:text-fg-strong",
-            )}
-          >
-            {item.name}
-          </a>
-        </li>
-      ))
-    }
+    {navItems.map((item) => (
+      <li>
+        <a
+          href={item.href}
+          aria-current={isCurrent(item.href) ? "page" : undefined}
+          class={cn(
+            "block rounded-lg px-3 py-2 font-medium",
+            isCurrent(item.href)
+              ? "bg-surface text-fg-strong"
+              : "text-fg-muted hover:bg-surface hover:text-fg-strong",
+          )}
+        >
+          {item.name}
+        </a>
+      </li>
+    ))}
   </ul>
 </header>
 

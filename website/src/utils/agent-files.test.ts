@@ -2,9 +2,13 @@ import assert from "node:assert/strict";
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 
-// Checks the built site, so it only runs after `npm run build`.
+// Checks the built site, so it only runs after `npm run build`. CI never
+// skips, so a build that stops writing dist/client fails instead of passing.
 const dist = new URL("../../dist/client/", import.meta.url);
-const skip = !existsSync(dist) && "no dist/ (run npm run build first)";
+const skip =
+  process.env.CI !== "true" &&
+  !existsSync(dist) &&
+  "no dist/ (run npm run build first)";
 const read = (file: string) => readFileSync(new URL(file, dist), "utf8");
 const readBuffer = (file: string) => readFileSync(new URL(file, dist));
 
@@ -115,6 +119,10 @@ test(
       assert.ok(
         !/[a-z,.:](\[[^\]]+\]\(|\*\*[A-Za-z]|`[A-Za-z])/.test(md),
         `${page}: text runs into a link, bold or code span without a space`,
+      );
+      assert.ok(
+        !/\]\([^\n)]+\)[A-Za-z]/.test(md),
+        `${page}: link runs into the following word without a space`,
       );
     }
   },
@@ -313,6 +321,26 @@ test(
   },
 );
 
+test("every internal link on a prerendered page resolves", { skip }, () => {
+  // Routes served by the AIS Worker on openwaters.io, not built here.
+  const external = /^\/ais\/(vessels|stations|network|map|sitemap)([/.?#]|$)/;
+  const exists = (path: string) => {
+    if (path === "/") return true;
+    const clean = path.replace(/^\//, "").replace(/\/$/, "");
+    // A page, or a real file like /robots.txt; a bare directory is not a page.
+    return (
+      existsSync(new URL(`${clean}/index.html`, dist)) ||
+      (/\.[a-z0-9]+$/i.test(clean) && existsSync(new URL(clean, dist)))
+    );
+  };
+  for (const page of globSync("**/index.html", { cwd: dist })) {
+    for (const [, href] of read(page).matchAll(/href="(\/[^"]*)"/g)) {
+      const path = href!.split(/[?#]/, 1)[0]!;
+      if (external.test(path) || path.startsWith("/_astro/")) continue;
+      assert.ok(exists(path), `${page}: dead link ${href}`);
+    }
+  }
+});
 test(
   "currents API page is built, linked, and listed wherever the tides page is",
   { skip },
@@ -334,5 +362,74 @@ test(
         `${page} does not link the currents page`,
       );
     }
+  },
+);
+
+test(
+  "AIS API page uses the Open Waters AIS API title everywhere it states it",
+  { skip },
+  () => {
+    const html = read("api/ais/index.html");
+    assert.match(html, /<title>Open Waters AIS API \| Open Waters<\/title>/);
+    assert.match(html, /<h1[^>]*>Open Waters AIS API<\/h1>/);
+    assert.match(read("api/ais/index.md"), /^# Open Waters AIS API/m);
+  },
+);
+
+test(
+  "every site image in the updates pages and feeds was built",
+  { skip },
+  () => {
+    const files = globSync("updates/**/{index.html,rss.xml}", { cwd: dist });
+    assert.ok(files.length > 10, `only ${files.length} updates files`);
+    let local = 0;
+    for (const file of files) {
+      // Feeds escape their HTML; &amp; goes last so it isn't decoded twice.
+      const text = read(file)
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, "&");
+      // Each srcset candidate is checked like a src.
+      const srcs = [
+        ...[...text.matchAll(/<img[^>]*?\ssrc="([^"]+)"/g)].map((m) => m[1]),
+        ...[...text.matchAll(/\ssrcset="([^"]+)"/g)].flatMap((m) =>
+          m[1].split(",").map((c) => c.trim().split(/\s+/)[0]),
+        ),
+      ];
+      for (const src of srcs) {
+        const path = src.replace(/^https:\/\/openwaters\.io/, "");
+        // Visitors load images only from this site.
+        assert.ok(
+          path.startsWith("/"),
+          `${file}: image from another host ${src}`,
+        );
+        local++;
+        assert.ok(
+          existsSync(new URL(`.${path.split("?")[0]}`, dist)),
+          `${file}: missing image ${src}`,
+        );
+      }
+    }
+    // A published announcement with a local image must have produced one.
+    const announcements = globSync("*.md", {
+      cwd: new URL("../content/announcements/", import.meta.url),
+    }).map((f) =>
+      readFileSync(
+        new URL(`../content/announcements/${f}`, import.meta.url),
+        "utf8",
+      ),
+    );
+    // Builds publish an announcement that isn't a draft and isn't dated ahead.
+    const withImages = announcements.filter((a) => {
+      const date = /^date: ["']?([\d-]+)/m.exec(a)?.[1];
+      return (
+        !/^draft: true$/m.test(a) &&
+        !(date && Date.parse(date) > Date.now()) &&
+        /^image: ["']?\.|!\[[^\]]*\]\(\./m.test(a)
+      );
+    });
+    if (withImages.length)
+      assert.ok(local > 0, "no announcement image was built");
   },
 );

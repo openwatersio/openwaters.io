@@ -8,9 +8,14 @@ import { CONTACT_EMAIL } from "../../../utils/constants";
 import { SITE, publisher } from "../../../utils/schema";
 
 const DESCRIPTION =
-  "Compare AIS providers for real-time vessel tracking and historical analysis: streaming, vessel tracks, coverage, access, and source terms.";
+  "Whether aisstream.io is delivering right now, measured live from our own subscription, plus its 2026 outage record and alternatives that keep your stream running.";
+
+const STATS = "https://ais.openwaters.io/v1/stats";
+const ISSUES = "https://github.com/aisstream/issues/issues/";
 
 const sections = [
+  { id: "status", label: "Is it down right now?" },
+  { id: "record", label: "Outage record" },
   { id: "why", label: "Why people look for an alternative" },
   { id: "criteria", label: "What to look for" },
   { id: "alternatives", label: "The alternatives" },
@@ -18,6 +23,30 @@ const sections = [
   { id: "which", label: "Which one" },
   { id: "switch", label: "Switching to Open Waters AIS" },
   { id: "faq", label: "FAQ" },
+];
+
+const issue = (n: number) =>
+  `<a href='${ISSUES}${n}' target='_blank' rel='noopener noreferrer'>#${n}</a>`;
+
+// Each entry cites the aisstream issue threads it summarizes, so a reader can check
+// the claim and its date against the operator's own tracker.
+const record: { when: string; html: string }[] = [
+  {
+    when: "5–17 August 2026",
+    html: `Connections and subscriptions were accepted, but no messages arrived, from 13:31 UTC on 5 August (${issue(257)}, ${issue(269)}) until about 17 August (${issue(273)}).`,
+  },
+  {
+    when: "19–22 August 2026",
+    html: `Silent again from 06:18 UTC on 19 August until 22 August (${issue(279)}). aisstream's statement in that thread attributes the outage to a bug in circuit-breaker logic added to handle a sharp rise in load, and says its small team had limited internet access at the time.`,
+  },
+  {
+    when: "Early September 2026",
+    html: `Stale subscriptions held accounts at the three-connection limit and refused new connections with HTTP 429 for days, until aisstream restarted its load balancer and deployed a fix (${issue(292)}).`,
+  },
+  {
+    when: "September 2026",
+    html: `Connections closing immediately with code 1006 on every attempt (${issue(291)}). On 14 September aisstream said in that thread that it was very close to bandwidth capacity.`,
+  },
 ];
 
 // Bullet bodies carry inline markup (code spans, links), so they are authored as HTML
@@ -67,30 +96,30 @@ const alternatives: {
   {
     name: "AISHub",
     intro:
-      "The reciprocal exchange: run a receiver, feed it, get the aggregate.",
+      "A community AIS network built by receiver operators. Contribute your station’s receptions and get access to the combined data. Open Waters AIS contributes to AISHub and uses its aggregate for much of our worldwide terrestrial coverage.",
     bullets: [
       {
         label: "Protocol",
-        html: "REST snapshot (JSON, XML, CSV) polled at most once a minute. No push. The worldwide snapshot regenerates about once a minute, so positions run about a minute behind.",
+        html: "a REST API with snapshots in JSON, XML, or CSV, queried at most once a minute. The worldwide snapshot refreshes about once a minute, so positions are typically about a minute behind.",
       },
       {
         label: "Coverage",
-        html: "the largest volunteer network with published numbers: 1,600+ stations in 83 countries, ~98,000 vessels a day.",
+        html: "worldwide terrestrial coverage contributed by receiver operators. Their shared receptions are an important part of the coverage available through Open Waters AIS.",
       },
       {
         label: "Price",
-        html: "free, but only if your receiver meets the bar (10+ vessels average, 90% uptime, 60 s max downsampling, 10 s max delay). No receiver, no API.",
+        html: "free API access for contributors whose stations meet the published requirements: a seven-day average of at least 10 vessels and 90% uptime, with at most 60 seconds downsampling and 10 seconds message delay. <a href='https://www.aishub.net/join-us'>See how to join AISHub</a>.",
       },
       {
         label: "License",
-        html: "no written terms document. AISHub confirmed to us in writing (22 August 2026) that use, commercial use, and redistribution are unrestricted. The key is revocable at will.",
+        html: "AISHub publishes <a href='https://www.aishub.net/join-us'>terms for contributors and data use</a>. Credit AISHub contributors and check the terms for your project, including any redistribution.",
       },
       {
         label: "Honest limits",
-        html: "polling only, about a minute old, and the gate is a working station.",
+        html: "the API provides periodic snapshots rather than a push stream. API access requires an operational receiver meeting the contribution requirements. AIS data is not for safety of navigation.",
       },
     ],
-    best: "station operators who want a global “who is out there” view. Not for close-quarters use or anyone without a receiver.",
+    best: "receiver operators who want a worldwide view of vessel traffic while contributing to a shared community network.",
   },
   {
     name: "Open government feeds directly (Digitraffic, Kystverket, BarentsWatch, EuRIS)",
@@ -219,9 +248,9 @@ const glanceRows: [string, ...string[]][] = [
     "AISHub",
     "no (≤1/min)",
     "current positions, not an archive",
-    "global, 1,600+ stations, ~1 min behind",
+    "worldwide terrestrial, ~1 min behind",
     "contributors only",
-    "yes, confirmed by email",
+    "check AISHub terms",
     "no",
   ],
   [
@@ -269,7 +298,7 @@ const which: { when: string; then: string }[] = [
   },
   {
     when: "You run a receiver and want the world:",
-    then: "Compare AISHub’s reciprocal access with Open Waters AIS contributor access. Choose based on coverage, latency, and how you use the data.",
+    then: "AISHub offers aggregate access to qualifying receiver operators. Open Waters AIS contributes to that network and combines its coverage with other sources through streaming and snapshot APIs. You can contribute to both; choose the access that fits your project.",
   },
   {
     when: "Finland or Norway only:",
@@ -293,7 +322,7 @@ const faq = [
   },
   {
     q: "Is aisstream.io down?",
-    a: "Check current service reports in the aisstream issue tracker and your client logs. A quiet stream can also mean filters, coverage gaps, or a connection limit; it is not proof of an outage.",
+    a: "The status at the top of this page measures it live from a world-wide aisstream subscription we hold as one of our upstreams. If aisstream is delivering there but not to you, check your key, filters, and open connections: aisstream allows three subscribed connections per account and three open connections per IP, and stale connections have held accounts at that limit before.",
   },
   {
     q: "Is there a free alternative to aisstream.io?",
@@ -323,7 +352,7 @@ const faqSchema = {
 ---
 
 <MainLayout
-  title="aisstream.io alternatives"
+  title="Is aisstream.io down? Status, outages, and alternatives"
   image="/og/ais-alternatives-aisstream.png"
   description={DESCRIPTION}
   schema={faqSchema}
@@ -338,18 +367,20 @@ const faqSchema = {
         AIS
       </a>
 
-      <h1 class="mb-2">aisstream.io alternatives</h1>
+      <h1 class="mb-2">Is aisstream.io down? Status and alternatives</h1>
       <p class="text-fg-faint mb-4 text-sm">
-        Open Waters AIS and aisstream documentation checked 8 October 2026;
-        other provider details last checked 4 September 2026
+        aisstream outage record checked 11 October 2026; Open Waters AIS and
+        aisstream documentation checked 8 October 2026; other provider details
+        last checked 4 September 2026
       </p>
 
       <p class="text-lead mb-8">
-        Choose an AIS provider around the work you need to do: track vessels in
-        real time, or analyse where they have been. Open Waters AIS supports
-        both, with an aisstream-compatible stream for live applications and
-        historical vessel tracks over REST. Compare coverage, available dates,
-        and data terms before choosing a provider.
+        When an aisstream.io client goes quiet, the first question is whether
+        aisstream is down or your connection is. This page answers it live, from
+        a world-wide aisstream subscription we hold as one of our upstreams.
+        Below that are aisstream's recent outages and the alternatives that keep
+        a vessel feed running, starting with Open Waters AIS: an
+        aisstream-compatible stream plus historical vessel tracks over REST.
       </p>
 
       <nav
@@ -358,36 +389,102 @@ const faqSchema = {
         class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
       >
         <span class="mr-2 font-semibold">On this page:</span>
-        {
-          sections.map((s, i) => (
-            <>
-              {i > 0 && <span class="text-fg-faint mx-2">·</span>}
-              <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
-                {s.label}
-              </a>
-            </>
-          ))
-        }
+        {sections.map((s, i) => (
+          <>
+            {i > 0 && <span class="text-fg-faint mx-2">·</span>}
+            <a href={`#${s.id}`} class="text-accent hover:text-accent-hover">
+              {s.label}
+            </a>
+          </>
+        ))}
       </nav>
+
+      <h2 id="status" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Is aisstream.io down right now?
+      </h2>
+      <div
+        id="as-status"
+        data-nosnippet
+        data-src={STATS}
+        class="border-line bg-surface mb-4 rounded-lg border px-5 py-4"
+      >
+        <p class="mb-3 text-xl font-semibold" data-verdict>
+          Checking aisstream.io…
+        </p>
+        <dl class="gap-y-2 text-sm">
+          <dt>Last message</dt>
+          <dd class="tabular-nums" data-stat="age">
+            –
+          </dd>
+          <dt>Vessels, last 30 min</dt>
+          <dd class="tabular-nums" data-stat="vessels">
+            –
+          </dd>
+          <dt>Messages, last 24 h</dt>
+          <dd class="tabular-nums" data-stat="events">
+            –
+          </dd>
+        </dl>
+      </div>
+      <p class="text-fg-faint mb-12 text-sm">
+        Measured from one world-wide aisstream subscription on one key, updated
+        every 5 seconds from <a href={STATS}>/v1/stats</a>. A world-wide
+        subscription normally hears something every few seconds, so five quiet
+        minutes means aisstream has stopped delivering. If it is delivering here
+        and not to you, the problem is more likely your key, filters, or
+        connection count.
+      </p>
+
+      <h2 id="record" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Outage record
+      </h2>
+      <dl class="mb-4 gap-y-3">
+        {record.map((r) => (
+          <>
+            <dt class="pt-px">{r.when}</dt>
+            <dd class="text-fg-muted" set:html={r.html} />
+          </>
+        ))}
+      </dl>
+      <p class="text-fg-muted mb-12">
+        aisstream.io publishes no status page or uptime guarantee, and its{" "}
+        <a
+          href="https://github.com/aisstream/issues/issues"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          issue tracker
+        </a>{" "}
+        had 211 open issues on 11 October 2026. By its own account it ran for
+        nearly four years before these outages, and it remains one of our
+        upstreams: when it delivers, Open Waters AIS carries its positions.
+      </p>
 
       <h2 id="why" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         Why people look for an alternative
       </h2>
       <div class="text-fg-muted mb-12 space-y-4">
         <p>
-          A live map or fleet monitor needs timely positions and a connection it
-          can recover when interrupted. Historical analysis needs recorded
-          positions for specific vessels, places, and dates. A streaming API
-          alone does not provide the past: your application must store the feed
-          or use a provider with an archive.
+          Most people arrive here because an aisstream client stopped receiving
+          data. In the August outages, the connection opened and the
+          subscription was accepted, then nothing arrived and no error frame was
+          sent. From the client, that looks the same as a filter that matches no
+          vessels.
         </p>
         <p>
-          aisstream.io offers a free WebSocket feed. Its <a
-            href="https://aisstream.io/documentation">current documentation</a
-          >{" "}
-          describes subscription confirmations and connection limits, but no durable
-          replay or uptime guarantee. Look for an alternative when your project needs
-          historical queries, different coverage, or commercial terms.
+          A live map or fleet monitor needs timely positions and a connection
+          that says when it fails. Historical analysis needs recorded positions
+          for specific vessels, places, and dates. A streaming API alone does
+          not provide the past: your application must store the feed or use a
+          provider with an archive.
+        </p>
+        <p>
+          aisstream.io offers a free WebSocket feed. Its{" "}
+          <a href="https://aisstream.io/documentation">current documentation</a>{" "}
+          describes subscription confirmations and connection limits, but no
+          durable replay or uptime guarantee. Look for an alternative when your
+          project needs a stream that reports its own failures, historical
+          queries, different coverage, or commercial terms.
         </p>
       </div>
 
@@ -396,29 +493,30 @@ const faqSchema = {
       </h2>
       <ul class="text-fg-muted mb-12 space-y-3">
         <li>
-          <span class="font-semibold">Real-time tracking.</span> Decide whether you
-          need a continuous stream or periodic REST lookups. Check position age, reconnect
-          behaviour, and coverage for the vessels you follow.
+          <span class="font-semibold">Real-time tracking.</span> Decide whether
+          you need a continuous stream or periodic REST lookups. Check position
+          age, reconnect behaviour, and coverage for the vessels you follow.
         </li>
         <li>
-          <span class="font-semibold">Historical analysis.</span> Check available
-          dates, sampling, gaps, vessel identifiers, and export formats. A current
-          position snapshot does not replace a historical track.
+          <span class="font-semibold">Historical analysis.</span> Check
+          available dates, sampling, gaps, vessel identifiers, and export
+          formats. A current position snapshot does not replace a historical
+          track.
         </li>
         <li>
-          <span class="font-semibold">Coverage you can see.</span> Terrestrial AIS
-          reaches roughly 40 nautical miles from a receiver. Ask where the receivers
-          are, and whether the service shows you per-station health so a gap is distinguishable
-          from an outage.
+          <span class="font-semibold">Coverage you can see.</span> Terrestrial
+          AIS reaches roughly 40 nautical miles from a receiver. Ask where the
+          receivers are, and whether the service shows you per-station health so
+          a gap is distinguishable from an outage.
         </li>
         <li>
-          <span class="font-semibold">A license.</span> If you display, store, or
-          redistribute the data, you need written terms. Most commercial APIs forbid
-          public display or redistribution outright.
+          <span class="font-semibold">A license.</span> If you display, store,
+          or redistribute the data, you need written terms. Most commercial APIs
+          forbid public display or redistribution outright.
         </li>
         <li>
-          <span class="font-semibold">Failure that announces itself.</span> An ack,
-          a heartbeat, a close code, a status page.
+          <span class="font-semibold">Failure that announces itself.</span> An
+          ack, a heartbeat, a close code, a status page.
         </li>
         <li>
           <span class="font-semibold">Someone to email.</span>
@@ -429,34 +527,32 @@ const faqSchema = {
         The alternatives
       </h2>
       <div class="mb-6 space-y-6">
-        {
-          alternatives.map((a, i) => (
-            <Card>
-              <h3 class="mb-2 text-xl font-semibold">
-                {i + 1}. {a.name}
-              </h3>
-              {a.intro && <p class="text-fg-muted mb-4">{a.intro}</p>}
-              {/* The global dl style is a label | text grid: one scannable row per point. */}
-              <dl class="gap-y-3">
-                {a.bullets.map((b) => (
-                  <>
-                    <dt class="pt-px">{b.label}</dt>
-                    <dd class="text-fg-muted" set:html={b.html} />
-                  </>
-                ))}
-                <dt class="text-accent pt-px">Best for</dt>
-                <dd>{a.best}</dd>
-              </dl>
-              {i === 0 && (
-                <p class="mt-4 text-sm">
-                  <a href="/ais/vs/aisstream/">Field-by-field comparison</a> of
-                  Open Waters AIS and aisstream.io, or read the{" "}
-                  <a href="/api/ais/">API reference</a>.
-                </p>
-              )}
-            </Card>
-          ))
-        }
+        {alternatives.map((a, i) => (
+          <Card>
+            <h3 class="mb-2 text-xl font-semibold">
+              {i + 1}. {a.name}
+            </h3>
+            {a.intro && <p class="text-fg-muted mb-4">{a.intro}</p>}
+            {/* The global dl style is a label | text grid: one scannable row per point. */}
+            <dl class="gap-y-3">
+              {a.bullets.map((b) => (
+                <>
+                  <dt class="pt-px">{b.label}</dt>
+                  <dd class="text-fg-muted" set:html={b.html} />
+                </>
+              ))}
+              <dt class="text-accent pt-px">Best for</dt>
+              <dd>{a.best}</dd>
+            </dl>
+            {i === 0 && (
+              <p class="mt-4 text-sm">
+                <a href="/ais/vs/aisstream/">Field-by-field comparison</a> of
+                Open Waters AIS and aisstream.io, or read the{" "}
+                <a href="/api/ais/">API reference</a>.
+              </p>
+            )}
+          </Card>
+        ))}
       </div>
       <p class="text-fg-muted mb-12">
         Also seen: MyShipTracking (REST from €90/month, public or third-party
@@ -473,28 +569,24 @@ const faqSchema = {
           <thead class="bg-surface">
             <tr>
               <th scope="col" class="px-3 py-2 text-left"></th>
-              {
-                glanceColumns.map((c) => (
-                  <th scope="col" class="px-3 py-2 text-left">
-                    {c}
-                  </th>
-                ))
-              }
+              {glanceColumns.map((c) => (
+                <th scope="col" class="px-3 py-2 text-left">
+                  {c}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody class="divide-line divide-y">
-            {
-              glanceRows.map(([name, ...cells]) => (
-                <tr>
-                  <th scope="row" class="px-3 py-2 text-left font-medium">
-                    {name}
-                  </th>
-                  {cells.map((c) => (
-                    <td class="text-fg-muted px-3 py-2">{c}</td>
-                  ))}
-                </tr>
-              ))
-            }
+            {glanceRows.map(([name, ...cells]) => (
+              <tr>
+                <th scope="row" class="px-3 py-2 text-left font-medium">
+                  {name}
+                </th>
+                {cells.map((c) => (
+                  <td class="text-fg-muted px-3 py-2">{c}</td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -503,41 +595,40 @@ const faqSchema = {
         Which one
       </h2>
       <ul class="text-fg-muted mb-12 space-y-3">
-        {
-          which.map((w) => (
-            <li>
-              <span class="font-semibold">{w.when}</span> {w.then}
-            </li>
-          ))
-        }
+        {which.map((w) => (
+          <li>
+            <span class="font-semibold">{w.when}</span> {w.then}
+          </li>
+        ))}
       </ul>
 
       <h2 id="switch" class="mb-4 scroll-mt-24 text-3xl font-semibold">
         Switching from aisstream.io to Open Waters AIS
       </h2>
-      <ol
-        class="text-fg-muted marker:text-fg-faint mb-6 list-decimal space-y-2 pl-5"
-      >
+      <ol class="text-fg-muted marker:text-fg-faint mb-6 list-decimal space-y-2 pl-5">
         <li>
           Get a personal token for personal use, or contact us for commercial
           access.
         </li>
         <li>
-          Replace <code class="bg-surface rounded px-1"
-            >wss://stream.aisstream.io/v0/stream</code
-          > with <code class="bg-surface rounded px-1"
-            >wss://ais.openwaters.io/v0/stream</code
-          >.
+          Replace{" "}
+          <code class="bg-surface rounded px-1">
+            wss://stream.aisstream.io/v0/stream
+          </code>{" "}
+          with{" "}
+          <code class="bg-surface rounded px-1">
+            wss://ais.openwaters.io/v0/stream
+          </code>
+          .
         </li>
         <li>
           Put the token in <code class="bg-surface rounded px-1">APIKey</code>.
-          The compatibility endpoint accepts: <code
-            class="bg-surface rounded px-1">BoundingBoxes</code
-          >, <code class="bg-surface rounded px-1">FiltersShipMMSI</code>, <code
-            class="bg-surface rounded px-1">FilterMessageTypes</code
-          >, and the <code class="bg-surface rounded px-1">MessageType</code> / <code
-            class="bg-surface rounded px-1">MetaData</code
-          > /
+          The compatibility endpoint accepts:{" "}
+          <code class="bg-surface rounded px-1">BoundingBoxes</code>,{" "}
+          <code class="bg-surface rounded px-1">FiltersShipMMSI</code>,{" "}
+          <code class="bg-surface rounded px-1">FilterMessageTypes</code>, and
+          the <code class="bg-surface rounded px-1">MessageType</code> /{" "}
+          <code class="bg-surface rounded px-1">MetaData</code> /
           <code class="bg-surface rounded px-1">Message</code> frame shape.
         </li>
       </ol>
@@ -554,7 +645,9 @@ const faqSchema = {
       </div>
 
       <p class="mb-6">
-        <a href="/ais/token/" class="btn btn-primary">Get a token</a>
+        <a href="/ais/token/" class="btn btn-primary">
+          Get a token
+        </a>
       </p>
 
       <div class="text-fg-muted mb-12 space-y-4">
@@ -563,43 +656,82 @@ const faqSchema = {
           messages before migrating. Open Waters AIS personal limits are per
           token (2 concurrent streams, 50 messages a second, about 20°×20°), so
           a world-sized bounding box is refused with a message that says so
-          instead of silently throttled. Where aisstream's decoder was wrong (<code
-            class="bg-surface rounded px-1">Valid: true</code
-          > on out-of-range values, message 27 labelled 23), <code
-            class="bg-surface rounded px-1">/v0</code
-          > reproduces it on purpose so nothing breaks; <code
-            class="bg-surface rounded px-1">/v1</code
-          > gets it right. The full list is in the <a href="/api/ais/"
-            >API reference</a
-          >.
+          instead of silently throttled. Where aisstream's decoder was wrong (
+          <code class="bg-surface rounded px-1">Valid: true</code> on
+          out-of-range values, message 27 labelled 23),{" "}
+          <code class="bg-surface rounded px-1">/v0</code> reproduces it on
+          purpose so nothing breaks;{" "}
+          <code class="bg-surface rounded px-1">/v1</code> gets it right. The
+          full list is in the <a href="/api/ais/">API reference</a>.
         </p>
         <p>
-          When you have a minute, move to <code class="bg-surface rounded px-1"
-            >/v1/stream</code
-          >: no token for subscribing, one JSON event per message with <code
-            class="bg-surface rounded px-1">source</code
-          >, <code class="bg-surface rounded px-1">station</code>, the raw
-          sentence and the decoded fields, an ack when your subscription is
-          live, a heartbeat, and a close reason when we close.
+          When you have a minute, move to{" "}
+          <code class="bg-surface rounded px-1">/v1/stream</code>: no token for
+          subscribing, one JSON event per message with{" "}
+          <code class="bg-surface rounded px-1">source</code>,{" "}
+          <code class="bg-surface rounded px-1">station</code>, the raw sentence
+          and the decoded fields, an ack when your subscription is live, a
+          heartbeat, and a close reason when we close.
         </p>
       </div>
 
-      <h2 id="faq" class="mb-4 scroll-mt-24 text-3xl font-semibold">FAQ</h2>
+      <h2 id="faq" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        FAQ
+      </h2>
       <div class="space-y-6">
-        {
-          faq.map((item) => (
-            <div>
-              <h3 class="mb-1 font-semibold">{item.q}</h3>
-              <p class="text-fg-muted">{item.a}</p>
-            </div>
-          ))
-        }
+        {faq.map((item) => (
+          <div>
+            <h3 class="mb-1 font-semibold">{item.q}</h3>
+            <p class="text-fg-muted">{item.a}</p>
+          </div>
+        ))}
       </div>
       <p class="text-fg-muted mt-8 text-sm">
-        Questions, or a source we missed? <a href={`mailto:${CONTACT_EMAIL}`}
-          >{CONTACT_EMAIL}</a
-        >.
+        Questions, or a source we missed?{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
       </p>
     </div>
   </Container>
 </MainLayout>
+
+<script>
+  const root = document.getElementById("as-status");
+  if (root) {
+    // A world-wide subscription hears dozens of messages a second, so five quiet
+    // minutes is an outage rather than a lull.
+    const QUIET_S = 300;
+    const src = root.dataset.src!;
+    const verdict = root.querySelector("[data-verdict]")!;
+    const ago = (s: number) =>
+      s < 60
+        ? `${s}s ago`
+        : s < 3600
+          ? `${Math.round(s / 60)}m ago`
+          : `${Math.round(s / 3600)}h ago`;
+    const show = (key: string, value: string) => {
+      const el = root.querySelector(`[data-stat=${key}]`);
+      if (el) el.textContent = value;
+    };
+    const poll = async () => {
+      try {
+        const a = (await (await fetch(src)).json()).sources.aisstream;
+        if (!a) {
+          verdict.textContent =
+            "Down: aisstream.io has delivered nothing since our server last restarted.";
+          return;
+        }
+        verdict.textContent =
+          a.last_age_s < QUIET_S
+            ? "Up: aisstream.io is delivering."
+            : `Down: aisstream.io's last message was ${ago(a.last_age_s)}.`;
+        show("age", ago(a.last_age_s));
+        show("vessels", a.vessels.toLocaleString());
+        show("events", a.events.last_24h.toLocaleString());
+      } catch {
+        verdict.textContent = "Live status is unavailable right now.";
+      }
+    };
+    poll();
+    setInterval(poll, 5000);
+  }
+</script>

@@ -92,7 +92,8 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M9 5l7 7-7 7"></path>
+                    d="M9 5l7 7-7 7"
+                  ></path>
                 </svg>
               </a>
             </p>
@@ -108,10 +109,10 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
       <div class="text-fg-strong mx-auto max-w-3xl text-center">
         <h2 class="text-fg-strong mb-4">Start Exploring Tides</h2>
         <p class="text-fg-muted mb-8 text-xl">
-          Find tides for your favorite places on <a
-            href="https://slackwater.xyz/tides/">slackwater.xyz</a
-          > and in the <a href="https://slackwater.xyz/">Slackwater app</a> for iPhone,
-          or integrate our API into your application.
+          Find tides for your favorite places on{" "}
+          <a href="https://slackwater.xyz/tides/">slackwater.xyz</a> and in the{" "}
+          <a href="https://slackwater.xyz/">Slackwater app</a> for iPhone, or
+          integrate our API into your application.
         </p>
         <div class="flex flex-wrap justify-center gap-4">
           <a href="https://slackwater.xyz/tides/" class="btn btn-primary">
@@ -120,7 +121,10 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
           <a href="https://slackwater.xyz/" class="btn btn-secondary">
             Get the iPhone App
           </a>
-          <a href="/api/" class="btn btn-secondary"> View API Docs </a>
+          <a href="/api/" class="btn btn-secondary">
+            {" "}
+            View API Docs{" "}
+          </a>
         </div>
       </div>
     </Container>

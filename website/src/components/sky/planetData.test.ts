@@ -20,9 +20,11 @@ test("night spans sunset to the following sunrise with finite planet samples", (
   assert.ok(Math.abs(night.samples.at(-1)!.sun) < 2);
   assert.ok(
     night.samples.every(
-      (s) => s.altitudes.length === 5 && s.altitudes.every(Number.isFinite),
+      (s) => s.altitudes.length === 7 && s.altitudes.every(Number.isFinite),
     ),
   );
+  // Uranus and Neptune each get a track and an event search.
+  assert.equal(night.events.length, 7);
 });
 test("polar daylight gives an explicit full-day fallback; invalid dates fail", () => {
   const night = planetNight("2026-06-21", {
