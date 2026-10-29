@@ -1,5 +1,5 @@
 // URL serialization percent-encodes everything that would break XML except `&`, which
-// it leaves intact — so an ampersand in a station id is the only thing left to escape.
+// it leaves intact — so an ampersand is the only thing left to escape.
 const escape = (value: string) => value.replace(/&/g, "&amp;");
 
 /**

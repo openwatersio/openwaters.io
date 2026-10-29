@@ -33,6 +33,16 @@ test("the 404 page is not listed in the sitemap", { skip }, () => {
   assert.doesNotMatch(read("sitemap.xml"), /404/);
 });
 
+test("station pages live on slackwater.xyz, not here", { skip }, () => {
+  assert.doesNotMatch(read("sitemap.xml"), /\/tides\/stations\//);
+  assert.ok(!existsSync(new URL("tides/stations/", dist)));
+  for (const page of ["tides/", "tides/slackwater/", "tides/database/"]) {
+    const md = read(`${page}index.md`);
+    assert.match(md, /https:\/\/slackwater\.xyz\/tides\//, page);
+    assert.match(md, /https:\/\/slackwater\.xyz\/\)/, `${page}: app link`);
+  }
+});
+
 test(
   "openapi.json is an OpenAPI 3 document served from the site root",
   { skip },
@@ -115,9 +125,6 @@ test(
         `${page}: link runs into the following word without a space`,
       );
     }
-    const stations = read("tides/stations/index.md");
-    assert.match(stations, /slackwater\.xyz\/tides\//);
-    assert.match(stations, /api\.openwaters\.io\/tides\/stations\?query=/);
   },
 );
 
@@ -363,18 +370,9 @@ test(
   { skip },
   () => {
     const html = read("api/ais/index.html");
-    assert.match(
-      html,
-      /<title>Open Waters AIS API \| Open Waters<\/title>/,
-    );
-    assert.match(
-      html,
-      /<h1[^>]*>Open Waters AIS API<\/h1>/,
-    );
-    assert.match(
-      read("api/ais/index.md"),
-      /^# Open Waters AIS API/m,
-    );
+    assert.match(html, /<title>Open Waters AIS API \| Open Waters<\/title>/);
+    assert.match(html, /<h1[^>]*>Open Waters AIS API<\/h1>/);
+    assert.match(read("api/ais/index.md"), /^# Open Waters AIS API/m);
   },
 );
 

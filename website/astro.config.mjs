@@ -59,6 +59,23 @@ const mapLibreWorkerUrl = {
   },
 };
 
+// src/pages/tides/stations/[...id].ts redirects station URLs to slackwater.xyz by id.
+// The map is computed here, in Node, because the database it reads is far too large
+// to bundle into the Worker.
+const stationRedirects = {
+  name: "openwaters:station-redirects",
+  resolveId(id) {
+    if (id === "virtual:station-redirects")
+      return "\0virtual:station-redirects";
+  },
+  async load(id) {
+    if (id !== "\0virtual:station-redirects") return;
+    const db = await import("@slackwater/database");
+    const { stationTargets } = await import("./src/utils/station-redirects.ts");
+    return `export default ${JSON.stringify(stationTargets(db))};`;
+  },
+};
+
 // Every prerendered page gets a Markdown sibling (index.md) that src/worker.ts serves
 // for `Accept: text/markdown`. Written after the build so it sees the final HTML.
 const markdownPages = {
@@ -104,7 +121,12 @@ export default defineConfig({
   integrations: [react(), icon(), markdownPages],
   vite: {
     cacheDir,
-    plugins: [tailwindcss(), optimizeSsrDeps, mapLibreWorkerUrl],
+    plugins: [
+      tailwindcss(),
+      optimizeSsrDeps,
+      mapLibreWorkerUrl,
+      stationRedirects,
+    ],
     optimizeDeps: {
       // Pre-bundling separates MapLibre from the worker it loads relative to itself, so dev
       // maps reached through dependencies like @vis.gl/react-maplibre would request a 404.
@@ -118,23 +140,10 @@ export default defineConfig({
       dedupe: ["react", "react-dom", "react/jsx-runtime"],
     },
     ssr: {
-      // Process these through Vite's bundler for SSR (instead of externalizing to Node)
-      // so that resolve.dedupe applies to React, and browser-only packages don't fail.
-      // Includes @slackwater/react and all its dependencies (which live in the slackwater workspace
-      // and have ESM extensionless imports that Node.js can't resolve natively).
-      noExternal: [
-        "@slackwater/react",
-        // @slackwater/react dependencies (and their transitive deps that use ESM
-        // extensionless imports, which Node.js can't resolve natively)
-        /^@visx\//,
-        "@tanstack/react-query",
-        "astronomy-engine",
-        "d3-array",
-        "date-fns",
-        // map dependencies
-        "maplibre-gl",
-        "react-map-gl",
-      ],
+      // Process the map libraries through Vite's bundler for SSR (instead of
+      // externalizing to Node) so that resolve.dedupe applies to React, and
+      // browser-only packages don't fail.
+      noExternal: ["maplibre-gl", "react-map-gl"],
     },
   },
   // Images are optimized at build time into static files, so they don't depend on the

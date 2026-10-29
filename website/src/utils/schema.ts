@@ -1,8 +1,8 @@
 export const SITE = "https://openwaters.io";
 const MIT = "https://opensource.org/licenses/MIT";
 
-// Station names arrive from the API, so a name containing "</script>" would close the
-// tag early. Escaping "<" is the standard mitigation and leaves the JSON valid.
+// A value containing "</script>" would close the tag early. Escaping "<" is the
+// standard mitigation and leaves the JSON valid.
 export const jsonLd = (data: unknown) =>
   JSON.stringify(data).replace(/</g, "\\u003c");
 
@@ -117,31 +117,4 @@ export const softwareSourceCode = (project: {
   license: MIT,
   isAccessibleForFree: true,
   author: publisher,
-});
-
-export const place = (station: {
-  name: string;
-  latitude: number;
-  longitude: number;
-  region?: string;
-  country?: string;
-}) => ({
-  "@context": "https://schema.org",
-  "@type": "Place",
-  name: station.name,
-  geo: {
-    "@type": "GeoCoordinates",
-    latitude: station.latitude,
-    longitude: station.longitude,
-  },
-  // Omitted entirely when the catalogue has neither, rather than emitting empty fields.
-  ...(station.region || station.country
-    ? {
-        address: {
-          "@type": "PostalAddress",
-          ...(station.region ? { addressRegion: station.region } : {}),
-          ...(station.country ? { addressCountry: station.country } : {}),
-        },
-      }
-    : {}),
 });
