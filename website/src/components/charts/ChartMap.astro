@@ -43,7 +43,10 @@ const {
       container,
       // Styles are fetched at runtime rather than built from the style packages,
       // so a chart restyle ships without redeploying the site.
-      style: `${TILES}/${chart}/style.json${view ? `?view=${view}` : ""}`,
+      // Seascape's chart draws the vector depth bands, as in the viewer.
+      style: `${TILES}/${chart}/style.json${
+        view ? `?view=${view}` : chart === "seascape" ? "?shading=bands" : ""
+      }`,
       center: JSON.parse(container.dataset.center ?? "[0,0]"),
       zoom: Number(container.dataset.zoom ?? 1),
       interactive,
