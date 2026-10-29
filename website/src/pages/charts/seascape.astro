@@ -56,7 +56,7 @@ const examples = [
     // Hawaiʻi: volcanoes that run from the summits to the abyssal plain
     center: [-157, 20.4] as [number, number],
     zoom: 5.8,
-    body: "Shaded relief of land and seafloor together, with land elevation from Mapterhorn.",
+    body: "Shaded relief of land and seafloor together.",
   },
   {
     title: "Globe",
@@ -79,7 +79,7 @@ const examples = [
     // Gulf of Maine: banks, basins, and ledges across a broad shelf
     center: [-69, 42.3] as [number, number],
     zoom: 6.2,
-    body: "A red-to-blue depth tint with labelled contours, in the style of survey and fishing charts.",
+    body: "A red-to-blue depth tint with labelled metric contours, in the style of survey and fishing charts.",
   },
 ];
 ---
@@ -181,8 +181,17 @@ const examples = [
         Examples
       </h2>
       <p class="text-fg-muted mb-6">
-        The same data drawn as other kinds of maps. These are demonstrations and
-        may change.
+        The same data drawn as other kinds of maps. Land elevation in the relief
+        and globe maps comes from{" "}
+        <a
+          href="https://mapterhorn.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent hover:text-accent-hover"
+        >
+          Mapterhorn
+        </a>
+        .
       </p>
       <div class="mb-12 grid gap-8 sm:grid-cols-2">
         {examples.map((example) => (
@@ -201,7 +210,11 @@ const examples = [
                 interactive={false}
               />
             </a>
-            <h3 class="mb-1 text-lg font-semibold">{example.title}</h3>
+            <h3 class="mb-1 text-lg font-semibold">
+              <a href={viewerHref(example)} class="hover:text-accent">
+                {example.title}
+              </a>
+            </h3>
             <p class="text-fg-muted text-sm">{example.body}</p>
           </div>
         ))}

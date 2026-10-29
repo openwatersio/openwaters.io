@@ -45,7 +45,25 @@ const about = {
 </div>
 
 {/* Bottom left, in place of MapLibre's scale bar */}
-<div class="pointer-events-none absolute bottom-0 left-0 z-10 p-4">
+<div class="pointer-events-none absolute bottom-0 left-0 z-10 flex flex-col items-start gap-2 p-4">
+  {chart === "seascape" && (
+    <div
+      class="card-glass pointer-events-auto inline-flex flex-wrap gap-1 p-1! text-sm"
+      role="group"
+      aria-label="Map style"
+    >
+      {["chart", "relief", "globe", "hillshade", "topo"].map((style) => (
+        <button
+          type="button"
+          data-view={style}
+          aria-pressed="false"
+          class="rounded px-3 py-1 font-medium capitalize"
+        >
+          {style}
+        </button>
+      ))}
+    </div>
+  )}
   <div
     id="unit-toggle"
     class="card-glass pointer-events-auto inline-flex gap-1 p-1! text-sm"
@@ -85,18 +103,23 @@ const about = {
   const container = document.getElementById("map") as HTMLElement;
   const chart = (container.dataset.chart ?? "seascape") as
     "seascape" | "seamap";
-  // ?view= opens one of Seascape's demo views. They carry no chart layers, so
-  // the unit toggle and the land relief below apply to the chart alone.
-  // Unknown values fall back to the chart; the tile server rejects them.
+  // ?view= opens one of Seascape's demo views, listed by the style buttons
+  // (rendered for Seascape only). They carry no chart layers, so the unit
+  // toggle and the land relief below apply to the chart alone. Unknown values
+  // fall back to the chart, since the tile server rejects them.
+  const viewButtons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>("[data-view]"),
+  );
   const param = new URLSearchParams(location.search).get("view");
-  const view = ["relief", "globe", "hillshade", "topo"].includes(param ?? "")
-    ? param
-    : null;
+  const view =
+    param !== "chart" && viewButtons.some((b) => b.dataset.view === param)
+      ? param
+      : null;
   if (view) document.getElementById("unit-toggle")!.hidden = true;
 
   const map = new maplibregl.Map({
     container,
-    style: `${TILES}/${chart}/style.json${view ? `?view=${encodeURIComponent(view)}` : ""}`,
+    style: `${TILES}/${chart}/style.json${view ? `?view=${view}` : ""}`,
     center: chart === "seascape" ? [-23, 65.4] : [10.24, 56.155],
     zoom: chart === "seascape" ? 9 : 12,
     hash: true,
@@ -140,6 +163,22 @@ const about = {
     button.addEventListener("click", () =>
       setUnit(button.dataset.unit as Unit),
     );
+
+  // ─── Map style ────────────────────────────────────────────────────────────
+  // Reloads with the new ?view= so the chart-only setup above runs only on the
+  // chart; the #zoom/lat/lng hash keeps the position.
+  for (const button of viewButtons) {
+    const on = button.dataset.view === (view ?? "chart");
+    button.setAttribute("aria-pressed", String(on));
+    button.classList.add(...(on ? ACTIVE : IDLE));
+    button.addEventListener("click", () => {
+      if (on) return;
+      const url = new URL(location.href);
+      if (button.dataset.view === "chart") url.searchParams.delete("view");
+      else url.searchParams.set("view", button.dataset.view!);
+      location.assign(url);
+    });
+  }
 
   map.on("load", () => {
     if (view) return;
