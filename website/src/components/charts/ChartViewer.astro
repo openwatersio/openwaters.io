@@ -31,7 +31,7 @@ const about = {
     edge to edge behind it */}
 <div class="header-padding pointer-events-none absolute inset-x-0 top-0 z-10">
   <div class="flex items-start gap-3 p-4">
-    <div class="card-glass pointer-events-auto mr-8 flex flex-wrap items-baseline gap-x-2 p-3 text-sm">
+    <div class="card-glass pointer-events-auto mr-8 flex flex-wrap items-baseline gap-x-2 rounded-full! px-4! py-3! text-sm">
       <span class="font-semibold">{about.name}</span>·
       <span class="text-fg-muted hidden sm:inline">{about.description}</span>{" "}
       <a
@@ -45,9 +45,28 @@ const about = {
 </div>
 
 {/* Bottom left, in place of MapLibre's scale bar */}
-<div class="pointer-events-none absolute bottom-0 left-0 z-10 p-4">
+<div class="pointer-events-none absolute bottom-0 left-0 z-10 flex flex-wrap items-end gap-2 p-4">
+  {chart === "seascape" && (
+    <div
+      class="card-glass pointer-events-auto inline-flex rounded-full! flex-wrap gap-1 p-1! text-sm"
+      role="group"
+      aria-label="Map style"
+    >
+      {["chart", "relief", "globe", "hillshade", "topo"].map((style) => (
+        <button
+          type="button"
+          data-view={style}
+          aria-pressed="false"
+          class="rounded-full px-3 py-1 font-medium capitalize"
+        >
+          {style}
+        </button>
+      ))}
+    </div>
+  )}
   <div
-    class="card-glass pointer-events-auto inline-flex gap-1 p-1! text-sm"
+    id="unit-toggle"
+    class="card-glass pointer-events-auto inline-flex rounded-full! gap-1 p-1! text-sm"
     role="group"
     aria-label="Depth units"
   >
@@ -55,7 +74,7 @@ const about = {
       type="button"
       data-unit="m"
       aria-pressed="true"
-      class="rounded px-3 py-1 font-medium"
+      class="rounded-full px-3 py-1 font-medium"
     >
       m
     </button>
@@ -63,7 +82,7 @@ const about = {
       type="button"
       data-unit="ft"
       aria-pressed="false"
-      class="rounded px-3 py-1 font-medium"
+      class="rounded-full px-3 py-1 font-medium"
     >
       ft
     </button>
@@ -84,10 +103,26 @@ const about = {
   const container = document.getElementById("map") as HTMLElement;
   const chart = (container.dataset.chart ?? "seascape") as
     "seascape" | "seamap";
+  // ?view= opens one of Seascape's demo views, listed by the style buttons
+  // (rendered for Seascape only). They carry no chart layers, so the unit
+  // toggle and the land relief below apply to the chart alone. Unknown values
+  // fall back to the chart, since the tile server rejects them.
+  const viewButtons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>("[data-view]"),
+  );
+  const param = new URLSearchParams(location.search).get("view");
+  const view =
+    param !== "chart" && viewButtons.some((b) => b.dataset.view === param)
+      ? param
+      : null;
+  if (view) document.getElementById("unit-toggle")!.hidden = true;
 
   const map = new maplibregl.Map({
     container,
-    style: `${TILES}/${chart}/style.json`,
+    // Seascape's chart draws the vector depth bands; Seamap's style ships them.
+    style: `${TILES}/${chart}/style.json${
+      view ? `?view=${view}` : chart === "seascape" ? "?shading=bands" : ""
+    }`,
     center: chart === "seascape" ? [-23, 65.4] : [10.24, 56.155],
     zoom: chart === "seascape" ? 9 : 12,
     hash: true,
@@ -101,8 +136,16 @@ const about = {
   });
   map.touchZoomRotate.disableRotation();
   map.keyboard.disableRotation();
-  // No compass: with the map locked north-up there's no bearing to reset.
-  map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
+  // Bottom right: the top corners sit under the site header. No compass: with
+  // the map locked north-up there's no bearing to reset.
+  map.addControl(
+    new maplibregl.NavigationControl({ showCompass: false }),
+    "bottom-right",
+  );
+  map.addControl(
+    new maplibregl.GeolocateControl({ trackUserLocation: true }),
+    "bottom-right",
+  );
 
   // ─── Depth units ──────────────────────────────────────────────────────────
   const unitButtons = Array.from(
@@ -112,13 +155,9 @@ const about = {
   const IDLE = ["cursor-pointer", "text-fg-muted", "hover:text-fg"];
 
   function setUnit(unit: Unit) {
-    // seamap's style.json ships vector depth bands; applyState defaults
-    // shading to "relief", which would filter the bands out above z6
-    applyState(map, {
-      unit,
-      safety: SAFETY_DEPTH,
-      shading: chart === "seamap" ? "bands" : "relief",
-    });
+    // Both charts draw the vector depth bands; applyState defaults shading
+    // to "relief", which would filter the bands out above z6
+    applyState(map, { unit, safety: SAFETY_DEPTH, shading: "bands" });
     for (const button of unitButtons) {
       const on = button.dataset.unit === unit;
       button.setAttribute("aria-pressed", String(on));
@@ -132,7 +171,24 @@ const about = {
       setUnit(button.dataset.unit as Unit),
     );
 
+  // ─── Map style ────────────────────────────────────────────────────────────
+  // Reloads with the new ?view= so the chart-only setup above runs only on the
+  // chart; the #zoom/lat/lng hash keeps the position.
+  for (const button of viewButtons) {
+    const on = button.dataset.view === (view ?? "chart");
+    button.setAttribute("aria-pressed", String(on));
+    button.classList.add(...(on ? ACTIVE : IDLE));
+    button.addEventListener("click", () => {
+      if (on) return;
+      const url = new URL(location.href);
+      if (button.dataset.view === "chart") url.searchParams.delete("view");
+      else url.searchParams.set("view", button.dataset.view!);
+      location.assign(url);
+    });
+  }
+
   map.on("load", () => {
+    if (view) return;
     if (chart === "seascape") {
       // Mapterhorn: open global terrain, far finer on land than the bathymetry
       // mosaic. Ocean is flat 0 there, so this shades land only. Attribution

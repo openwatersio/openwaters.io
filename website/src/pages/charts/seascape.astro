@@ -37,13 +37,51 @@ sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
 const viewerHref = ({
   center,
   zoom,
+  view,
 }: {
   center: [number, number];
   zoom: number;
-}) => `/charts/seascape/viewer/#${zoom}/${center[1]}/${center[0]}`;
+  view?: string;
+}) =>
+  `/charts/seascape/viewer/${view ? `?view=${view}` : ""}#${zoom}/${center[1]}/${center[0]}`;
 
 // Westfjords, Iceland: fjords and shoals in high-resolution survey data
 const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
+
+// Seascape's demo views (style.json?view=), each framed where it reads best.
+const examples = [
+  {
+    title: "Relief",
+    view: "relief" as const,
+    // Hawaiʻi: volcanoes that run from the summits to the abyssal plain
+    center: [-157, 20.4] as [number, number],
+    zoom: 5.8,
+    body: "Shaded relief of land and seafloor together.",
+  },
+  {
+    title: "Globe",
+    view: "globe" as const,
+    center: [-40, 25] as [number, number],
+    zoom: 1,
+    body: "The same relief on a globe, flattening to a map as you zoom in.",
+  },
+  {
+    title: "Hillshade",
+    view: "hillshade" as const,
+    // Monterey Canyon: a submarine canyon cutting the continental shelf
+    center: [-122.2, 36.7] as [number, number],
+    zoom: 8.5,
+    body: "Grey hillshading of the seafloor alone, with land in flat grey.",
+  },
+  {
+    title: "Topo",
+    view: "topo" as const,
+    // Gulf of Maine: banks, basins, and ledges across a broad shelf
+    center: [-69, 42.3] as [number, number],
+    zoom: 6.2,
+    body: "A red-to-blue depth tint with labelled metric contours, in the style of survey and fishing charts.",
+  },
+];
 ---
 
 <MainLayout
@@ -105,6 +143,10 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
         class="border-line bg-surface mb-12 rounded-lg border px-5 py-4 text-sm"
       >
         <span class="mr-2 font-semibold">On this page:</span>
+        <a href="#examples" class="text-accent hover:text-accent-hover">
+          Examples
+        </a>
+        <span class="text-fg-faint mx-2">·</span>
         <a href="#sources" class="text-accent hover:text-accent-hover">
           Sources
         </a>
@@ -132,6 +174,50 @@ const hero = { center: [-23, 65.4] as [number, number], zoom: 9 };
           on official charts. Always consult official nautical charts for
           navigation.
         </p>
+      </div>
+
+      <!-- Examples -->
+      <h2 id="examples" class="mb-4 scroll-mt-24 text-3xl font-semibold">
+        Examples
+      </h2>
+      <p class="text-fg-muted mb-6">
+        The same data drawn as other kinds of maps. Land elevation in the relief
+        and globe maps comes from{" "}
+        <a
+          href="https://mapterhorn.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent hover:text-accent-hover"
+        >
+          Mapterhorn
+        </a>
+        .
+      </p>
+      <div class="mb-12 grid gap-8 sm:grid-cols-2">
+        {examples.map((example) => (
+          <div>
+            <a
+              href={viewerHref(example)}
+              class="border-line mb-3 block overflow-hidden rounded-lg border shadow-sm transition-shadow hover:shadow-md"
+              aria-label={`Open the ${example.title} example in the viewer`}
+            >
+              {/* pointer-events-none so the whole preview acts as a link */}
+              <ChartMap
+                class="pointer-events-none aspect-4/3 w-full"
+                view={example.view}
+                center={example.center}
+                zoom={example.zoom}
+                interactive={false}
+              />
+            </a>
+            <h3 class="mb-1 text-lg font-semibold">
+              <a href={viewerHref(example)} class="hover:text-accent">
+                {example.title}
+              </a>
+            </h3>
+            <p class="text-fg-muted text-sm">{example.body}</p>
+          </div>
+        ))}
       </div>
 
       <!-- Data sources -->
