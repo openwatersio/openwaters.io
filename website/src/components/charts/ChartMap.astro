@@ -2,6 +2,8 @@
 interface Props {
   class?: string;
   chart?: "seascape" | "seamap";
+  // Seascape's demo views, served by its style.json?view=
+  view?: "relief" | "globe" | "hillshade" | "topo";
   center: [number, number]; // [lng, lat]
   zoom: number;
   interactive?: boolean;
@@ -10,6 +12,7 @@ interface Props {
 const {
   class: className,
   chart = "seascape",
+  view,
   center,
   zoom,
   interactive = true,
@@ -20,6 +23,7 @@ const {
   class={className}
   data-chart-map
   data-chart={chart}
+  data-view={view}
   data-center={JSON.stringify(center)}
   data-zoom={zoom}
   data-interactive={String(interactive)}
@@ -34,11 +38,12 @@ const {
   function init(container: HTMLElement) {
     const interactive = container.dataset.interactive !== "false";
     const chart = container.dataset.chart ?? "seascape";
+    const view = container.dataset.view;
     const map = new maplibregl.Map({
       container,
       // Styles are fetched at runtime rather than built from the style packages,
       // so a chart restyle ships without redeploying the site.
-      style: `${TILES}/${chart}/style.json`,
+      style: `${TILES}/${chart}/style.json${view ? `?view=${view}` : ""}`,
       center: JSON.parse(container.dataset.center ?? "[0,0]"),
       zoom: Number(container.dataset.zoom ?? 1),
       interactive,

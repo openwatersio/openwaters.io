@@ -47,6 +47,7 @@ const about = {
 {/* Bottom left, in place of MapLibre's scale bar */}
 <div class="pointer-events-none absolute bottom-0 left-0 z-10 p-4">
   <div
+    id="unit-toggle"
     class="card-glass pointer-events-auto inline-flex gap-1 p-1! text-sm"
     role="group"
     aria-label="Depth units"
@@ -84,10 +85,18 @@ const about = {
   const container = document.getElementById("map") as HTMLElement;
   const chart = (container.dataset.chart ?? "seascape") as
     "seascape" | "seamap";
+  // ?view= opens one of Seascape's demo views. They carry no chart layers, so
+  // the unit toggle and the land relief below apply to the chart alone.
+  // Unknown values fall back to the chart; the tile server rejects them.
+  const param = new URLSearchParams(location.search).get("view");
+  const view = ["relief", "globe", "hillshade", "topo"].includes(param ?? "")
+    ? param
+    : null;
+  if (view) document.getElementById("unit-toggle")!.hidden = true;
 
   const map = new maplibregl.Map({
     container,
-    style: `${TILES}/${chart}/style.json`,
+    style: `${TILES}/${chart}/style.json${view ? `?view=${encodeURIComponent(view)}` : ""}`,
     center: chart === "seascape" ? [-23, 65.4] : [10.24, 56.155],
     zoom: chart === "seascape" ? 9 : 12,
     hash: true,
@@ -133,6 +142,7 @@ const about = {
     );
 
   map.on("load", () => {
+    if (view) return;
     if (chart === "seascape") {
       // Mapterhorn: open global terrain, far finer on land than the bathymetry
       // mosaic. Ocean is flat 0 there, so this shades land only. Attribution
