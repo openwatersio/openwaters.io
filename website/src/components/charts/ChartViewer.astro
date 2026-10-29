@@ -48,7 +48,7 @@ const about = {
 <div class="pointer-events-none absolute bottom-0 left-0 z-10 flex flex-wrap items-end gap-2 p-4">
   {chart === "seascape" && (
     <div
-      class="card-glass pointer-events-auto inline-flex flex-wrap gap-1 p-1! text-sm"
+      class="card-glass pointer-events-auto inline-flex rounded-full! flex-wrap gap-1 p-1! text-sm"
       role="group"
       aria-label="Map style"
     >
@@ -57,7 +57,7 @@ const about = {
           type="button"
           data-view={style}
           aria-pressed="false"
-          class="rounded-xl px-3 py-1 font-medium capitalize"
+          class="rounded-full px-3 py-1 font-medium capitalize"
         >
           {style}
         </button>
@@ -66,7 +66,7 @@ const about = {
   )}
   <div
     id="unit-toggle"
-    class="card-glass pointer-events-auto inline-flex gap-1 p-1! text-sm"
+    class="card-glass pointer-events-auto inline-flex rounded-full! gap-1 p-1! text-sm"
     role="group"
     aria-label="Depth units"
   >
@@ -74,7 +74,7 @@ const about = {
       type="button"
       data-unit="m"
       aria-pressed="true"
-      class="rounded-xl px-3 py-1 font-medium"
+      class="rounded-full px-3 py-1 font-medium"
     >
       m
     </button>
@@ -82,7 +82,7 @@ const about = {
       type="button"
       data-unit="ft"
       aria-pressed="false"
-      class="rounded-xl px-3 py-1 font-medium"
+      class="rounded-full px-3 py-1 font-medium"
     >
       ft
     </button>
