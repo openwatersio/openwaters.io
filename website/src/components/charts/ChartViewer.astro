@@ -23,7 +23,9 @@ const about = {
 
 {/* Positioning lives on the wrapper: MapLibre forces position:relative on its
     own container, which would override an `absolute` here and collapse it. */}
-<div class="absolute inset-0">
+{/* bg-canvas fills the space around the globe view, which MapLibre leaves
+    transparent, so the page behind doesn't show through. */}
+<div class="bg-canvas absolute inset-0">
   <div id="map" data-chart={chart} class="h-full w-full"></div>
 </div>
 
