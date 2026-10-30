@@ -1,0 +1,81 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import Container from "../components/ui/Container.astro";
+---
+
+<MainLayout
+  title="Apps"
+  image="/og/nightwatch.png"
+  description="Apps from Open Waters: Slackwater for offline tide and current predictions, and Nightwatch, a guide to setting up a red display on iOS."
+>
+  <Container class="py-16 md:py-24">
+    <div class="mx-auto max-w-5xl">
+      <div class="mb-16 max-w-2xl">
+        <p class="eyebrow mb-4">Open Waters</p>
+        <h1 class="mb-6">Apps for time on the water.</h1>
+        <p class="text-lead">
+          Tools for reading the tides, finding slack water, and settling into a
+          night watch. Here’s what you can use today and what we’re working on.
+        </p>
+      </div>
+
+      <section
+        aria-labelledby="slackwater"
+        class="grid items-center gap-10 md:grid-cols-[1fr_auto] md:gap-16"
+      >
+        <div>
+          <p class="eyebrow mb-4">Available now · iPhone and Apple Watch</p>
+          <h2 id="slackwater" class="mb-4">
+            Slackwater
+          </h2>
+          <p class="text-fg-strong mb-6 text-2xl tracking-tight">
+            The tide and currents app that works without signal.
+          </p>
+          <p class="text-fg-muted mb-6">
+            See tide heights around the world and tidal currents across the US
+            and Canada. Find the next slack, max flood, or max ebb, with
+            predictions computed on your device, even when you’re offline.
+          </p>
+          <p class="text-fg-muted mb-8">
+            The core app is free, with no ads and no account to create.
+          </p>
+          <p class="text-fg-muted mb-6">Android coming soon.</p>
+          <a href="https://slackwater.xyz/" class="btn btn-primary">
+            Explore Slackwater →
+          </a>
+        </div>
+        <img
+          src="/apps/slackwater-currents.webp"
+          alt="Slackwater showing a tidal current prediction and its flood, ebb, and slack periods."
+          width="780"
+          height="1695"
+          class="mx-auto h-auto w-64 rounded-3xl"
+        />
+      </section>
+
+      <section
+        aria-labelledby="nightwatch"
+        class="border-line mt-16 border-t pt-12 md:mt-24"
+      >
+        <div class="max-w-2xl">
+          <p class="eyebrow mb-4">Setup guide · iOS only</p>
+          <h2 id="nightwatch" class="mb-4">
+            Nightwatch
+          </h2>
+          <p class="text-fg-strong mb-6 text-2xl tracking-tight">
+            A red display for the night watch.
+          </p>
+          <p class="text-fg-muted mb-8">
+            Set up a red tint across your iPhone, including other apps and the
+            lock screen, using the display settings and Shortcuts already in
+            iOS. Nightwatch is a working set of instructions you can follow
+            today.
+          </p>
+          <a href="/apps/nightwatch/" class="btn btn-secondary">
+            Set up Nightwatch →
+          </a>
+        </div>
+      </section>
+    </div>
+  </Container>
+</MainLayout>

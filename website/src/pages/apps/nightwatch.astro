@@ -1,0 +1,88 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import { Content as SetupGuide } from "../../components/nightwatch/SetupGuide.md";
+---
+
+<MainLayout
+  title="Nightwatch: a red display for your iPhone"
+  description="Set up a red display across your iPhone with iOS Color Filters, an Accessibility Shortcut, and optional Shortcuts automations."
+  image="/og/nightwatch.png"
+>
+  <Container class="py-16 md:py-24">
+    <div class="mx-auto max-w-4xl">
+      <a href="/apps/" class="text-sm">
+        ← Apps
+      </a>
+      <div class="mt-8 grid items-center gap-10 md:grid-cols-[1fr_auto]">
+        <div>
+          <p class="eyebrow mb-4">Setup guide · iOS only</p>
+          <h1 class="mb-6">Nightwatch</h1>
+          <p class="text-lead mb-6">A red display for the night watch.</p>
+          <p class="text-fg-muted">
+            An app’s dark theme stops at its edges. iOS Color Filters can tint
+            your whole display red, including other apps and the lock screen.
+            These instructions use settings already on your iPhone. There’s no
+            Nightwatch app to install.
+          </p>
+        </div>
+        <figure class="mx-auto max-w-64">
+          <img
+            src="/og/nightwatch.png"
+            width="850"
+            height="1850"
+            alt="Illustration of Slackwater with a red tint across the entire interface."
+            class="h-auto w-full rounded-3xl"
+          />
+          <figcaption class="text-fg-faint mt-3 text-sm">
+            Red-tint illustration. iOS screenshots don’t capture the display
+            filter.
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="prose prose-lg mt-16 max-w-none">
+        <SetupGuide />
+
+        <h2>Making this easier</h2>
+        <p>
+          We’re trying to turn this setup into a Nightwatch app that makes
+          configuration, controls, and troubleshooting easier. We’ve asked Apple
+          to add the APIs we need to manage the system-wide red tint directly.
+          For now, iOS settings and Shortcuts are the way to do it, and you can
+          use this guide without waiting for an app.
+        </p>
+      </div>
+    </div>
+  </Container>
+</MainLayout>
+
+<style>
+  .prose :global(.setup-screenshots) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-block: 2rem;
+  }
+  .prose :global(.setup-screenshots figure) {
+    flex: 1 1 16rem;
+    max-width: 20rem;
+    margin: 0;
+  }
+  .prose :global(table) {
+    display: block;
+    overflow-x: auto;
+  }
+  .prose :global(td) {
+    min-width: 12rem;
+  }
+  .prose :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 1rem;
+  }
+  .prose :global(pre) {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+</style>
