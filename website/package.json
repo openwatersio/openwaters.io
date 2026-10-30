@@ -27,7 +27,7 @@
     "@openwaters/seascape": "^0.4.0",
     "@slackwater/api": "^1.0.0-beta.3",
     "@slackwater/database": "^1.0.0-beta.20261028",
-    "@slackwater/engine": "^1.0.0-beta.0",
+    "@slackwater/engine": "^1.0.0-beta.7",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.8",
