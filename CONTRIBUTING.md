@@ -10,7 +10,7 @@ This repository contains the Open Waters website and the workers behind its publ
 
 ## Setup and development
 
-Use Node.js 22.12 or newer and npm.
+Use Node.js 22.23.4 or newer and npm.
 
 ```sh
 npm ci
