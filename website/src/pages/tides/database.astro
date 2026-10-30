@@ -2,9 +2,11 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
-import { stations } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
 import Icon from "../../components/Icon.astro";
 import { SITE, publisher } from "../../utils/schema";
+
+const { accepted: stations } = await loadStations();
 
 // Sources and counts mirror what the page itself renders below, so the structured data
 // cannot drift from the visible content.
