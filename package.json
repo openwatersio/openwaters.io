@@ -22,9 +22,12 @@
     "wrangler": "^4.151.3"
   },
   "dependencies": {
-    "@slackwater/api": "^1.0.0-beta.3",
-    "@slackwater/database": "^1.0.0-beta.20261028",
+    "@slackwater/api": "https://pkg.pr.new/@slackwater/api@0912bce",
+    "@slackwater/database": "https://pkg.pr.new/@slackwater/database@372",
     "@slackwater/engine": "^1.0.0-beta.0",
-    "slackwater": "^1.0.0-beta.0"
+    "slackwater": "https://pkg.pr.new/openwatersio/slackwater/slackwater@0912bce"
+  },
+  "overrides": {
+    "slackwater": "$slackwater"
   }
 }
