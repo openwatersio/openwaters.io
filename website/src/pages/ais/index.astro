@@ -7,6 +7,7 @@ import AisNav from "../../components/ais/AisNav.astro";
 import AisStats from "../../components/ais/AisStats.astro";
 import SectionDivider from "../../components/ui/SectionDivider.astro";
 import { CONTACT_EMAIL } from "../../utils/constants";
+import { SITE, faqPage, publisher } from "../../utils/schema";
 
 const SERVER = "ais.openwaters.io";
 const REPO = "https://github.com/openwatersio/aiscast";
@@ -121,12 +122,63 @@ const licenses = [
     obligation: "Best effort. source: aisstream.",
   },
 ];
+
+const faq = [
+  {
+    q: "Is Open Waters AIS free?",
+    a: "Personal use is free. Read the live stream with no account and no key. Get a free personal token when you outgrow the anonymous limits. Qualifying receiver contributors get higher limits. Contact us about commercial access for products and businesses.",
+  },
+  {
+    q: "How does coverage compare to aisstream.io?",
+    a: "Terrestrial coverage is strongest in the Nordics and wherever our volunteers run receivers. Elsewhere positions come from partner aggregates and run about a minute behind. Open Waters AIS also reads aisstream.io as an upstream when it is available. Check your own waters on the live map and the current delay on the network page.",
+  },
+  {
+    q: "How fresh are the positions?",
+    a: "Government feeds and volunteer receivers stream positions as they are heard. Positions from AISHub are a periodic snapshot and run about a minute behind. The network page shows the current delay for each source.",
+  },
+  {
+    q: "Do I need an account or an API key?",
+    a: "No account is required. The /v1/stream WebSocket accepts anonymous subscriptions without a token. The aisstream-compatible /v0/stream endpoint requires an Open Waters token as APIKey. Generate a token in your browser with no account or email; it never expires.",
+  },
+  {
+    q: "Can I switch from aisstream.io without rewriting my client?",
+    a: "The /v0/stream endpoint accepts aisstream.io's subscription format. Point your client at wss://ais.openwaters.io/v0/stream and use an Open Waters token as APIKey. Check the access limits before switching; vessel coverage and source terms can differ.",
+  },
+  {
+    q: "Can I use the data commercially?",
+    a: "Qualifying receiver contributors can use the service commercially within contributor limits. For other commercial access, contact us to confirm the service tier and source terms for your product. Licensing is per source, and the aggregate is not relicensed. If you display or redistribute the data, carry the source's attribution through. The license table on this page lists each source's terms.",
+  },
+];
+
+// The graph below carries the context, so the FAQ node does not repeat it.
+const { "@context": _faqContext, ...faqNode } = faqPage("/ais/", faq);
+
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebAPI",
+      name: "Open Waters AIS",
+      url: `${SITE}/ais/`,
+      description:
+        "A real-time AIS network. Live ship positions from coastal authorities, partner aggregates, and volunteer receivers, streamed over WebSocket and SSE, with raw NMEA available to qualifying contributors and paid plans.",
+      documentation: `${SITE}/api/ais/`,
+      termsOfService: `${REPO}/blob/main/docs/policy.md`,
+      provider: publisher,
+      isAccessibleForFree: true,
+      // Commercial pricing is quoted through the contact page.
+      offers: { "@type": "Offer", url: `${SITE}/contact/` },
+    },
+    faqNode,
+  ],
+};
 ---
 
 <MainLayout
   title="Open Waters AIS: free, real-time vessel data"
   image="/og/ais.png"
   description="Open Waters AIS is a free AIS network with an aisstream-compatible API, streaming live ship positions from coastal authorities and volunteer receivers."
+  schema={schema}
 >
   <!-- Hero: the live map runs full bleed under the header and fades into the page -->
   <section class="-mt-header relative overflow-hidden">
@@ -468,6 +520,31 @@ const licenses = [
         </a>
         .
       </p>
+    </Container>
+  </section>
+
+  <section class="py-16 lg:py-24">
+    <Container>
+      <div class="mx-auto max-w-3xl">
+        <h2 id="faq" class="mb-10 scroll-mt-24">
+          Questions
+        </h2>
+        <div class="divide-line divide-y">
+          {faq.map((item) => (
+            <div class="py-6 first:pt-0">
+              <h3 class="text-fg-strong mb-2 text-lg font-semibold">
+                {item.q}
+              </h3>
+              <p class="text-fg-muted">{item.a}</p>
+            </div>
+          ))}
+        </div>
+        <p class="text-fg-faint mt-8 text-sm">
+          See <a href="/api/ais/#limits">access limits</a>, check the{" "}
+          <a href="/ais/network">network's current coverage and delays</a>, or{" "}
+          <a href="/contact/">contact us about commercial access</a>.
+        </p>
+      </div>
     </Container>
   </section>
 
