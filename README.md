@@ -4,7 +4,7 @@ The source for [openwaters.io](https://openwaters.io), including the Astro websi
 
 ## Development
 
-Use Node.js 22.12 or newer and npm.
+Use Node.js 22.23.4 or newer and npm.
 
 ```sh
 npm ci
