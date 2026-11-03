@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import * as database from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
 
 import {
   type Database,
@@ -23,8 +23,8 @@ const fixture = (
   rejected: string[] = [],
 ): Database => ({
   stationRoutes: (kind) => routes[kind] ?? [],
-  stationsById: new Map(Object.entries(records)),
-  stations: Object.keys(records)
+  byId: (id) => records[id],
+  accepted: Object.keys(records)
     .filter((id) => !rejected.includes(id))
     .map((id) => ({ id })),
 });
@@ -197,8 +197,9 @@ test("stationRedirect: other paths are left alone", () => {
   }
 });
 
-test("stationTargets: the real database", () => {
-  const real = stationTargets(database as unknown as Database);
+test("stationTargets: the real database", async () => {
+  const database = await loadStations();
+  const real = stationTargets(database);
   // A NOAA reference station, a NOAA subordinate, and a CHS current gate.
   assert.equal(real.pages["noaa/8722588"], "/tides/us/fl/port-of-palm-beach/");
   assert.equal(real.pages["noaa/1611401"], "/tides/us/hi/waimea-bay/");

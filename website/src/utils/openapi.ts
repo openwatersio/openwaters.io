@@ -1,19 +1,17 @@
 import { isDeepStrictEqual } from "node:util";
-import { type openapi, type currentsOpenapi } from "@slackwater/api";
+import type { CurrentsOpenapi, Openapi } from "@slackwater/api";
 
-// Infer types from the imported openapi specs
-type OpenAPISpec = typeof openapi;
 type ParametersOf<Spec extends { components: { parameters: object } }> =
   Spec["components"]["parameters"];
-type TideParameters = ParametersOf<OpenAPISpec>;
-type CurrentParameters = ParametersOf<typeof currentsOpenapi>;
+type TideParameters = ParametersOf<Openapi>;
+type CurrentParameters = ParametersOf<CurrentsOpenapi>;
 type ParameterObject =
   | TideParameters[keyof TideParameters]
   | CurrentParameters[keyof CurrentParameters];
 
 /**
  * Structural shape of an OpenAPI document as this site renders it: satisfied by
- * both the typed @slackwater/api export and a spec fetched as JSON (the AIS
+ * both the typed specs from @slackwater/api and a spec fetched as JSON (the AIS
  * server's).
  */
 export interface SpecDocument {
@@ -48,15 +46,15 @@ function mount<T extends { paths: Record<string, unknown> }>(
 }
 
 /** The tides spec from @slackwater/api, mounted at /tides. */
-export async function getOpenAPISpec(): Promise<OpenAPISpec> {
-  const { openapi } = await import("@slackwater/api");
-  return mount(openapi, TIDES_PREFIX);
+export async function getOpenAPISpec(): Promise<Openapi> {
+  const { loadOpenapi } = await import("@slackwater/api");
+  return mount(await loadOpenapi(), TIDES_PREFIX);
 }
 
 /** The tidal currents spec from @slackwater/api, mounted at /currents. */
 export async function getCurrentsOpenAPISpec() {
-  const { currentsOpenapi } = await import("@slackwater/api");
-  return mount(currentsOpenapi, CURRENTS_PREFIX);
+  const { loadCurrentsOpenapi } = await import("@slackwater/api");
+  return mount(await loadCurrentsOpenapi(), CURRENTS_PREFIX);
 }
 
 /**

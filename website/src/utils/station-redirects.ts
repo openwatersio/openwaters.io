@@ -17,8 +17,8 @@ interface StationRecord {
 
 export interface Database {
   stationRoutes: (kind: Kind) => Route[];
-  stationsById: Map<string, StationRecord>;
-  stations: { id: string }[];
+  byId: (id: string) => StationRecord | undefined;
+  accepted: { id: string }[];
 }
 
 const KIND_ROOT: Record<Kind, string> = {
@@ -44,7 +44,7 @@ export function hasPage(
   accepted: Set<string>,
 ): boolean {
   return route.stationIds.some((id) => {
-    const record = db.stationsById.get(id);
+    const record = db.byId(id);
     if (!record) return false;
     if (!id.includes("/")) {
       return record.source?.name === "Canadian Hydrographic Service";
@@ -73,7 +73,7 @@ export interface Targets {
  * sits under it, and otherwise to the kind's directory.
  */
 export function stationTargets(db: Database): Targets {
-  const accepted = new Set(db.stations.map((s) => s.id));
+  const accepted = new Set(db.accepted.map((s) => s.id));
   const routes = (["tide", "current"] as Kind[]).flatMap((kind) =>
     db.stationRoutes(kind).map((route) => ({
       kind,
