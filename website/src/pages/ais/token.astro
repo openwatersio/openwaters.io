@@ -3,6 +3,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
 import Icon from "../../components/Icon.astro";
+import AisCatcherGuiSetup from "../../components/ais/AisCatcherGuiSetup.astro";
 import { CONTACT_EMAIL } from "../../utils/constants";
 
 const SERVER = "https://ais.openwaters.io";
@@ -79,16 +80,24 @@ const tokenPre = pre.replace("text-sm", "text-xs");
             is in the <a href="/ais/privacy/">privacy policy</a>.
           </span>
         </label>
-        <label class="text-fg-muted mb-5 flex items-start gap-3 text-sm">
-          <input type="checkbox" data-bind class="mt-1" />
-          <span>
-            Also bind this network address, so a UDP receiver sending from here
-            counts toward this token and takes its name. The token then only
-            works from this address. If your address changes, so does the UDP
-            station, so a receiver that can use the token below keeps its name
-            better.
-          </span>
-        </label>
+        <details class="text-fg-muted mb-5 text-sm">
+          <summary class="cursor-pointer font-medium">
+            UDP setup — advanced
+          </summary>
+          <label class="mt-3 flex items-start gap-3">
+            <input type="checkbox" data-bind class="mt-1" />
+            <span>
+              <span class="text-fg-strong block font-medium">
+                Credit UDP data from this public IP address
+              </span>
+              Associate UDP reception from your current public IP address with
+              this station. This also restricts your token to that address.
+              Leave unchecked for AIS-catcher MQTT or HTTP. If your public IP
+              address changes, regenerate the token from your receiver's network
+              with this option checked.
+            </span>
+          </label>
+        </details>
         <div class="flex flex-wrap items-center gap-3">
           <button
             type="button"
@@ -119,27 +128,6 @@ const tokenPre = pre.replace("text-sm", "text-xs");
               <Icon name="mdi:chevron-right" class="size-4" />
             </a>
           </div>
-          <div class="bg-well mb-5 flex items-center gap-3 rounded-lg p-4">
-            <span class="relative flex size-3 shrink-0">
-              <span
-                data-rx-ping
-                hidden
-                class="bg-cta absolute inline-flex size-full animate-ping rounded-full opacity-75"
-              ></span>
-              <span
-                data-rx-dot
-                class="bg-fg-faint relative size-3 rounded-full"
-              ></span>
-            </span>
-            <div>
-              <p class="text-fg-faint text-xs font-medium tracking-wide uppercase">
-                Live status
-              </p>
-              <p data-rx role="status" class="text-fg-strong font-medium">
-                Checking for data…
-              </p>
-            </div>
-          </div>
           <h3 class="mb-2 text-base font-semibold">Token</h3>
           <pre data-token class={tokenPre}></pre>
           <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
@@ -159,40 +147,139 @@ const tokenPre = pre.replace("text-sm", "text-xs");
 
         <Card>
           <h2 class="mb-4 text-xl font-semibold">Send your receiver's data</h2>
-          <h3 class="mb-1 text-base font-semibold">AIS-catcher</h3>
-          <p class="text-fg-muted mb-3 text-sm">
-            Starting with a USB RTL-SDR? Download a config with your token,
-            receiver input, and Open Waters output already filled in. Follow the{" "}
-            <a href="/ais/getting-started/ashore/#install">shore setup guide</a>{" "}
-            to install and launch it, then press Start in the dashboard.
-          </p>
-          <a
-            data-config-download
-            download="aiscatcher.json"
-            class="btn btn-primary mb-3"
+          <h3
+            id="ais-catcher"
+            class="mb-2 scroll-mt-24 text-base font-semibold"
           >
-            Download AIS-catcher config
-          </a>
+            Already running AIS-catcher?
+          </h3>
+          <p class="text-fg-muted mb-4 text-sm">
+            Add an Open Waters output to your working receiver. Keep your
+            receiver settings and other feeds.
+          </p>
+          <details open class="border-line mb-3 rounded-lg border p-4">
+            <summary class="cursor-pointer font-semibold">Web GUI</summary>
+            <div class="mt-4">
+              <AisCatcherGuiSetup>
+                <label
+                  for="mqtt-url"
+                  class="mt-3 mb-1 block text-sm font-medium"
+                >
+                  Your Open Waters MQTT URL
+                </label>
+                <input
+                  id="mqtt-url"
+                  data-mqtt-url
+                  type="text"
+                  readonly
+                  spellcheck="false"
+                  autocomplete="off"
+                  aria-describedby="mqtt-url-help"
+                  class="border-line bg-well text-fg-strong w-full min-w-0 rounded-lg border p-3 font-mono text-xs select-text"
+                />
+                <button
+                  type="button"
+                  data-copy-mqtt
+                  class="btn btn-primary mt-3 text-sm"
+                >
+                  <Icon name="mdi:content-copy" class="size-4" />
+                  <span data-copy-mqtt-label aria-live="polite">
+                    Copy MQTT URL
+                  </span>
+                </button>
+                <p id="mqtt-url-help" class="text-fg-faint mt-2 text-sm">
+                  This URL contains your private token. Keep it out of messages
+                  and screenshots. Copy the entire URL, including{" "}
+                  <code>:443</code>.
+                </p>
+              </AisCatcherGuiSetup>
+            </div>
+          </details>
+          <details class="border-line mb-3 rounded-lg border p-4">
+            <summary class="cursor-pointer font-semibold">Command line</summary>
+            <p class="text-fg-muted mt-4 mb-2 text-sm">
+              Append the options starting at <code>-Q</code> to your existing
+              startup command, keeping your input settings and other outputs:
+            </p>
+            <pre data-cmd-aiscatcher class={`${pre} mb-3 select-text`}></pre>
+            <p class="text-fg-muted mb-3 text-sm">
+              Keep <code>:443</code> and <code>MSGFORMAT NMEA</code>.{" "}
+              <code>NMEA_TAG</code> also works for receive timestamps. Save the
+              updated command and restart your existing receiver process.
+            </p>
+            <p class="text-fg-muted mb-2 text-sm">
+              Or append the HTTP options starting at <code>-H</code>, sending
+              one batch every five seconds:
+            </p>
+            <pre data-cmd-aiscatcher-http class={`${pre} select-text`}></pre>
+          </details>
+          <details class="border-line mb-5 rounded-lg border p-4">
+            <summary class="cursor-pointer font-semibold">
+              New installation
+            </summary>
+            <p class="text-fg-muted mt-4 mb-3 text-sm">
+              Starting with a USB RTL-SDR? Download a config with your token,
+              receiver input, and Open Waters output already filled in. Follow
+              the{" "}
+              <a href="/ais/getting-started/ashore/#install">
+                shore setup guide
+              </a>{" "}
+              to install and launch it, then press Start in the dashboard.
+            </p>
+            <a
+              data-config-download
+              download="aiscatcher.json"
+              class="btn btn-secondary mb-3"
+            >
+              Download AIS-catcher config
+            </a>
+            <p class="text-fg-muted text-sm">
+              This file contains your private token. Keep it private. It is for
+              a new RTL-SDR setup; don't replace an existing receiver's config.
+              AIS-catcher's separate community sharing is disabled.
+            </p>
+          </details>
+          <div class="bg-well mb-5 rounded-lg p-4">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="relative flex size-3 shrink-0">
+                <span
+                  data-rx-ping
+                  hidden
+                  class="bg-cta absolute inline-flex size-full animate-ping rounded-full opacity-75"
+                ></span>
+                <span
+                  data-rx-dot
+                  class="bg-fg-faint relative size-3 rounded-full"
+                ></span>
+              </span>
+              <div class="min-w-0 flex-1">
+                <h4 class="text-base font-semibold">Check reception</h4>
+                <p data-rx role="status" class="text-fg-strong text-sm">
+                  Checking for data…
+                </p>
+              </div>
+              <button
+                type="button"
+                data-rx-check
+                class="btn btn-secondary text-sm disabled:cursor-wait disabled:opacity-50"
+              >
+                Check now
+              </button>
+            </div>
+            <p data-rx-help hidden class="text-fg-muted mt-3 text-sm">
+              If AIS-catcher is receiving vessels locally, check that the Open
+              Waters MQTT output is active and{" "}
+              <strong>Advanced settings → Message Format</strong> is{" "}
+              <strong>NMEA</strong>, then save and apply the settings. Reception
+              appears here when your receiver next hears a vessel.
+            </p>
+            <p class="text-fg-faint mt-2 text-xs">
+              Status refreshes automatically every minute. You can check again
+              after saving your output.
+            </p>
+          </div>
           <p class="text-fg-muted mb-5 text-sm">
-            This file contains your private token. Keep it private. It is for a
-            new RTL-SDR setup; don't replace an existing receiver's config.
-            AIS-catcher's separate community sharing is disabled.
-          </p>
-          <p class="text-fg-muted mb-2 text-sm">
-            Already have a receiver setup? Append the options starting at
-            <code>-Q</code> to its existing command, keeping your input settings
-            and other outputs. The full MQTT example:
-          </p>
-          <pre data-cmd-aiscatcher class={`${pre} mb-3`}></pre>
-          <p class="text-fg-muted mb-2 text-sm">
-            Or append the HTTP output options starting at <code>-H</code>,
-            sending one batch every five seconds:
-          </p>
-          <pre data-cmd-aiscatcher-http class={`${pre} mb-5`}></pre>
-          <p class="text-fg-muted mb-5 text-sm">
-            MQTT requires the explicit <code>:443</code> port and{" "}
-            <code>MSGFORMAT NMEA</code> (or <code>NMEA_TAG</code> for receive
-            timestamps). To read network traffic into AIS-catcher, follow the{" "}
+            To read network traffic into AIS-catcher, follow the{" "}
             <a href="/ais/ais-catcher/#readback">
               separate network viewer guide
             </a>
@@ -325,14 +412,19 @@ const tokenPre = pre.replace("text-sm", "text-xs");
   }
 
   let configUrl: string | undefined;
+  let currentSub: string | undefined;
   function show(token: string, claims: Claims) {
+    const config = aiscatcherConfig(token);
     if (configUrl) URL.revokeObjectURL(configUrl);
     configUrl = URL.createObjectURL(
-      new Blob([aiscatcherConfig(token)], {
+      new Blob([config], {
         type: "application/json",
       }),
     );
     $<HTMLAnchorElement>("[data-config-download]").href = configUrl;
+    $<HTMLInputElement>("[data-mqtt-url]").value =
+      JSON.parse(config).mqtt[0].url;
+    $("[data-copy-mqtt-label]").textContent = "Copy MQTT URL";
     $("[data-token]").textContent = token;
     const subEl = $("[data-sub]");
     subEl.textContent = abbreviate(claims.sub);
@@ -355,6 +447,7 @@ const tokenPre = pre.replace("text-sm", "text-xs");
       `websocat ${server.replace(/^http/, "ws")}/v0/stream\n{"APIKey":"${token}","BoundingBoxes":[[[41,-71.5],[42.5,-69.5]]]}`;
     $("[data-out]").hidden = false;
     form.hidden = true;
+    currentSub = claims.sub;
     clearInterval(rxTimer);
     checkReceiving(claims.sub);
     rxTimer = setInterval(() => checkReceiving(claims.sub, true), 60_000);
@@ -380,6 +473,10 @@ const tokenPre = pre.replace("text-sm", "text-xs");
     const text = $("[data-rx]");
     const dot = $("[data-rx-dot]");
     const ping = $("[data-rx-ping]");
+    const check = $<HTMLButtonElement>("[data-rx-check]");
+    const help = $("[data-rx-help]");
+    check.disabled = true;
+    check.textContent = "Checking…";
     const light = (color: string) => {
       dot.className = `relative size-3 rounded-full ${color}`;
       ping.hidden = color !== "bg-cta";
@@ -396,6 +493,12 @@ const tokenPre = pre.replace("text-sm", "text-xs");
         : null;
       if (seq !== rxSeq) return;
       const { receiving, message } = stationStatus(lastAge);
+      help.hidden =
+        receiving ||
+        (lastAge !== null &&
+          (typeof lastAge !== "number" ||
+            !Number.isFinite(lastAge) ||
+            lastAge < 0));
       say(message);
       light(
         receiving ? "bg-cta" : lastAge == null ? "bg-fg-faint" : "bg-highlight",
@@ -407,9 +510,14 @@ const tokenPre = pre.replace("text-sm", "text-xs");
     } catch {
       if (seq !== rxSeq) return;
       say("Couldn't check station status");
+      help.hidden = true;
       light("bg-fg-faint");
     } finally {
-      if (seq === rxSeq) rxBusy = false;
+      if (seq === rxSeq) {
+        rxBusy = false;
+        check.disabled = false;
+        check.textContent = "Check now";
+      }
     }
   }
 
@@ -516,6 +624,24 @@ const tokenPre = pre.replace("text-sm", "text-xs");
     const label = $("[data-copy-label]");
     label.textContent = "Copied";
     setTimeout(() => (label.textContent = "Copy"), 1500);
+  });
+
+  $("[data-copy-mqtt]").addEventListener("click", async () => {
+    const input = $<HTMLInputElement>("[data-mqtt-url]");
+    const label = $("[data-copy-mqtt-label]");
+    try {
+      await navigator.clipboard.writeText(input.value);
+      label.textContent = "Copied";
+      setTimeout(() => (label.textContent = "Copy MQTT URL"), 1500);
+    } catch {
+      input.focus();
+      input.select();
+      label.textContent = "Copy manually";
+    }
+  });
+
+  $("[data-rx-check]").addEventListener("click", async () => {
+    if (currentSub && !rxBusy) await checkReceiving(currentSub);
   });
 
   // Reopens the form rather than regenerating at once, so the name and

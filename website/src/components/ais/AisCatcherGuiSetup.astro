@@ -1,0 +1,48 @@
+<ol class="text-fg-muted list-decimal space-y-4 pl-5 text-sm">
+  <li>
+    In AIS-catcher's web viewer, click the toolbox icon at the top left, labeled{" "}
+    <strong>System and receiver statistics</strong>. Scroll to the bottom of
+    that page and click <strong>System</strong> to open the control panel. If
+    you already see the control panel, go straight to <strong>Output</strong>.
+  </li>
+  <li>
+    Choose <strong>Output → MQTT → Add</strong> (or{" "}
+    <strong>Add MQTT output</strong>) and paste your Open Waters MQTT URL into{" "}
+    <strong>URL</strong>.
+    <slot />
+  </li>
+  <li>
+    Open <strong>Advanced settings</strong> and set{" "}
+    <strong>Message Format</strong> to <strong>NMEA</strong>. The default JSON
+    format does not work with this output.
+  </li>
+  <li>
+    Keep the output <strong>Active</strong>, save it, and apply the changes or
+    restart the receiver if prompted. Return to the Open Waters token page to
+    check reception.
+  </li>
+</ol>
+<details class="text-fg-muted mt-4 text-sm">
+  <summary class="cursor-pointer">Show MQTT settings screenshot</summary>
+  <figure class="mt-3">
+    <a
+      href="/ais/ais-catcher-mqtt.png"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Open the annotated AIS-catcher MQTT settings screenshot at full size"
+    >
+      <img
+        src="/ais/ais-catcher-mqtt.png"
+        alt="AIS-catcher MQTT settings: choose MQTT under Output, paste the Open Waters URL, then expand Advanced settings and select NMEA for Message Format."
+        width="1200"
+        height="1500"
+        loading="lazy"
+        class="border-line w-full rounded-lg border"
+      />
+    </a>
+    <figcaption class="text-fg-faint mt-2 text-xs">
+      MQTT output settings in the AIS-catcher control panel. Layout varies by
+      version. Select the image to enlarge it.
+    </figcaption>
+  </figure>
+</details>

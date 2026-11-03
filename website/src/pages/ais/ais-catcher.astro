@@ -222,6 +222,20 @@ const faqSchema = {
         Send what you hear
       </h2>
       <div class="text-fg-muted mb-8 space-y-4">
+        <aside class="bg-well mb-6 rounded-lg p-5">
+          <h3 class="mb-2 text-lg font-semibold">
+            Using AIS-catcher's web GUI?
+          </h3>
+          <p class="text-fg-muted">
+            <a href="/ais/token/#ais-catcher">
+              Generate a token and copy your MQTT URL
+            </a>
+            , then follow the Web GUI steps on that page to add an output. Set{" "}
+            <strong>Advanced settings → Message Format</strong> to{" "}
+            <strong>NMEA</strong> and check reception after saving. Your
+            existing receiver settings and other feeds stay in place.
+          </p>
+        </aside>
         <p>
           Use MQTT unless your setup needs another transport. Add the options
           starting at <code>-Q</code>, <code>-H</code>, or <code>-u</code> to
