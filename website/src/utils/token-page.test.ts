@@ -38,6 +38,7 @@ function page(
     statusCode?: number;
     analyticsError?: boolean;
     clipboardError?: boolean;
+    hash?: string;
   } = {},
 ) {
   const events: unknown[] = [];
@@ -52,6 +53,7 @@ function page(
   const polls: (() => unknown)[] = [];
   const copied: string[] = [];
   const statusRequests: string[] = [];
+  const scrolled: string[] = [];
   let releaseStatus: (() => void) | undefined;
   let pendingStatus: Promise<void> | undefined;
   for (const selector of [
@@ -81,6 +83,8 @@ function page(
     "data-copy-mqtt-label",
     "data-rx-check",
     "data-rx-help",
+    "data-receiver-setup",
+    "data-udp-settings",
   ]) {
     let text = "";
     elements.set(`[${selector}]`, {
@@ -92,7 +96,9 @@ function page(
       select() {
         this.selected = true;
       },
-      scrollIntoView() {},
+      scrollIntoView() {
+        scrolled.push(selector);
+      },
       addEventListener(type: string, fn: () => unknown) {
         handlers.set(`${selector}:${type}`, fn);
       },
@@ -132,6 +138,9 @@ function page(
             ? { aiscatcherConfig }
             : null,
     document: { querySelector: () => root },
+    addEventListener: (type: string, fn: () => unknown) =>
+      handlers.set(`window:${type}`, fn),
+    location: { hash: options.hash ?? "" },
     localStorage: {
       getItem: (key: string) => saved.get(key) ?? null,
       setItem: (key: string, value: string) => {
@@ -201,6 +210,7 @@ function page(
     elements,
     copied,
     statusRequests,
+    scrolled,
     click(selector: string) {
       return handlers.get(`${selector}:click`)?.();
     },
@@ -228,6 +238,9 @@ function page(
     },
     reopen() {
       handlers.get("data-regen:click")!();
+    },
+    restorePage() {
+      handlers.get("window:pageshow")?.();
     },
   };
 }
@@ -408,13 +421,15 @@ test("Check now prevents overlapping checks and recovers after a status error", 
   const count = p.statusRequests.length;
   p.holdStatus();
   const check = p.click("data-rx-check");
-  assert.equal(p.elements.get("[data-rx-check]").disabled, true);
+  assert.equal(p.elements.get("[data-rx-check]").disabled, false);
+  assert.equal(p.elements.get("[data-rx-check]").ariaDisabled, "true");
   await p.click("data-rx-check");
   assert.equal(p.statusRequests.length, count + 1);
   p.setStatus({}, 503);
   p.releaseStatus();
   await check;
   assert.equal(p.elements.get("[data-rx-check]").disabled, false);
+  assert.equal(p.elements.get("[data-rx-check]").ariaDisabled, "false");
   assert.equal(
     p.elements.get("[data-rx]").textContent,
     "Couldn't check station status",
@@ -423,4 +438,54 @@ test("Check now prevents overlapping checks and recovers after a status error", 
   p.setStatus({}, 404);
   await p.click("data-rx-check");
   assert.equal(p.elements.get("[data-rx-help]").hidden, false);
+});
+
+test("the GUI setup link scrolls to the instructions after issuance or restore", async () => {
+  const fresh = page({ hash: "#ais-catcher" });
+  assert.deepEqual(fresh.scrolled, []);
+  await fresh.generate();
+  assert.deepEqual(fresh.scrolled, ["data-receiver-setup"]);
+  const restored = page({
+    hash: "#ais-catcher",
+    cache: JSON.stringify(issued),
+  });
+  assert.deepEqual(restored.scrolled, ["data-receiver-setup"]);
+  const ordinary = page({ cache: JSON.stringify(issued) });
+  assert.deepEqual(ordinary.scrolled, []);
+});
+
+test("a rejected station name keeps the warning visible on the GUI setup link", async () => {
+  const p = page({
+    hash: "#ais-catcher",
+    response: { ...issued, name_error: "name unavailable" },
+  });
+  await p.generate();
+  assert.equal(p.elements.get("[data-form]").hidden, false);
+  assert.match(p.elements.get("[data-status]").textContent, /name unavailable/);
+  assert.deepEqual(p.scrolled, []);
+});
+
+test("reopening a bound token makes its UDP setting visible", async () => {
+  const p = page({ cache: JSON.stringify(issued) });
+  p.elements.get("[data-bind]").checked = true;
+  p.reopen();
+  assert.equal(p.elements.get("[data-udp-settings]").open, true);
+  p.elements.get("[data-udp-settings]").open = false;
+  p.restorePage();
+  assert.equal(p.elements.get("[data-udp-settings]").open, true);
+});
+
+test("reception hints distinguish stale or missing data from invalid status", async () => {
+  const p = page();
+  await p.generate();
+  for (const [age, hidden] of [
+    [300, false],
+    [299, true],
+    [-1, true],
+    ["0", true],
+    [NaN, true],
+  ] as const) {
+    await p.poll({ station: { last_age_s: age } });
+    assert.equal(p.elements.get("[data-rx-help]").hidden, hidden);
+  }
 });

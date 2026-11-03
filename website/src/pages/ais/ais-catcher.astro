@@ -97,7 +97,7 @@ const faq = [
   },
   {
     q: "Why does my UDP station not get the contributor tier?",
-    a: "UDP carries no authentication, so the network cannot tell whose station it is. Create a personal token from the same address with address binding turned on, and that station starts counting toward it. Switching to the MQTT or HTTP output instead does the same thing without the binding step.",
+    a: "UDP carries no authentication, so the network cannot tell whose station it is. Create a personal token from the same address with “Credit UDP data from this public IP address” checked under “UDP setup — advanced”, and that station starts counting toward it. Switching to the MQTT or HTTP output instead does the same thing without the binding step.",
   },
   {
     q: "Can I keep feeding AISHub, MarineTraffic, or aiscatcher.org?",
@@ -192,8 +192,9 @@ const faqSchema = {
         <p class="text-fg-muted mb-4 text-sm" data-cta-body>
           Open the token page, accept the contributor agreement, and generate
           your token. Return to this tab and the authenticated commands below
-          will contain it. For MQTT or HTTP, leave network-address binding
-          unchecked. Keep commands containing your token private.
+          will contain it. For MQTT or HTTP, leave “Credit UDP data from this
+          public IP address” under “UDP setup — advanced” unchecked. Keep
+          commands containing your token private.
         </p>
         <p class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm">
           <a
