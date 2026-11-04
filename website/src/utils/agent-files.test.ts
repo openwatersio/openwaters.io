@@ -246,8 +246,7 @@ test("/ais/ describes the service and its questions", { skip }, () => {
   assert.equal(api.url, "https://openwaters.io/ais/");
   assert.equal(api.documentation, "https://openwaters.io/api/ais/");
   assert.equal(api.isAccessibleForFree, true);
-  // Commercial inquiries use the contact page until published pricing exists.
-  assert.equal(api.offers.url, "https://openwaters.io/contact/");
+  assert.equal(api.offers.url, "https://openwaters.io/ais/pricing/");
   assert.ok(!("price" in api.offers), "offer must not quote a price");
 
   const faq = graph.find((b) => b["@type"] === "FAQPage");
@@ -255,7 +254,7 @@ test("/ais/ describes the service and its questions", { skip }, () => {
   assert.equal(faq.mainEntity.length, 6);
   // Check visible content separately so the JSON-LD cannot satisfy the assertion.
   const visible = pageToMarkdown(html);
-  assert.doesNotMatch(html, /\/ais\/pricing\//);
+  assert.match(html, /href="\/ais\/pricing\/"/);
   assert.ok(existsSync(new URL("contact/index.html", dist)));
   for (const q of faq.mainEntity) {
     assert.ok(visible.includes(q.name), `question not rendered: ${q.name}`);
