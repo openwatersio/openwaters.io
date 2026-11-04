@@ -1,0 +1,347 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import AisNav from "../../components/ais/AisNav.astro";
+
+const example = "https://www.wikidata.org/wiki/Q142010092";
+const tracker =
+  "https://www.myshiptracking.com/vessels/usv-elite-unmanned-mmsi-533134283-imo-0";
+---
+
+<MainLayout
+  title="How to add or update a vessel in Wikidata"
+  description="Correct missing or incorrect vessel details with sourced Wikidata statements. Learn how to identify the right ship, add references and qualifiers, and date MMSI and call-sign information."
+  image="/og/ais.png"
+>
+  <Container class="py-12 lg:py-16">
+    <article class="mx-auto max-w-3xl">
+      <AisNav class="mb-8" />
+      <h1 class="mb-6">How to add or update a vessel in Wikidata</h1>
+      <p class="text-lead mb-8">
+        Found a missing builder, an incorrect operator, or a vessel described
+        only as “Other”? You can contribute sourced vessel details to Wikidata,
+        the shared public database used by Open Waters AIS and many other
+        projects.
+      </p>
+      <nav
+        aria-label="On this page"
+        class="border-line mb-10 rounded-xl border p-5"
+      >
+        <ol class="grid gap-2 sm:grid-cols-2">
+          <li>
+            <a href="#what-changes">What an edit can change</a>
+          </li>
+          <li>
+            <a href="#find-the-vessel">Find the right vessel</a>
+          </li>
+          <li>
+            <a href="#add-details">Add or correct a fact</a>
+          </li>
+          <li>
+            <a href="#references">Add a reference</a>
+          </li>
+          <li>
+            <a href="#identifiers">Add MMSI and call sign</a>
+          </li>
+          <li>
+            <a href="#after-publishing">After publishing</a>
+          </li>
+        </ol>
+      </nav>
+
+      <div class="prose prose-lg max-w-none">
+        <h2 id="what-changes">What an edit can change</h2>
+        <p>
+          A vessel page combines the ship’s own radio reports with documented
+          particulars. Wikidata can supply facts such as vessel type, builder,
+          operator, year built, dimensions and former names. Check the source
+          links under <strong>Particulars</strong> to see where a fact came
+          from.
+        </p>
+        <p>
+          Wikidata edits do not change the vessel’s broadcast name, call sign,
+          position, speed, destination or numeric AIS type. For example, a
+          survey vessel can correctly broadcast AIS type 90, “Other.” A more
+          specific Wikidata type describes its role alongside that radio
+          classification. Incorrect transponder settings need to be corrected
+          aboard the vessel.
+        </p>
+        <p>
+          Open Waters AIS currently imports Wikidata particulars by{" "}
+          <strong>IMO number</strong> on a weekly schedule. Adding an MMSI is
+          useful for Wikidata, but does not yet make a vessel without an IMO
+          appear in our enrichment. Not every Wikidata property is imported, and
+          an official registry may take precedence over Wikidata for a
+          particular fact.
+        </p>
+
+        <h2 id="find-the-vessel">1. Find the right vessel</h2>
+        <ol>
+          <li>
+            Open the <strong>Wikidata</strong> source link on the vessel page,
+            if one is present. Otherwise,{" "}
+            <a href="https://www.wikidata.org/wiki/Special:Search">
+              search Wikidata
+            </a>{" "}
+            for its name and identifiers. Try former names and alternative
+            spellings too.
+          </li>
+          <li>
+            Check that the item represents this individual vessel, rather than
+            its class, manufacturer, or another ship with the same name. Compare
+            its IMO, operator and history. An MMSI can be reassigned, so do not
+            use an MMSI match alone as proof of identity.
+          </li>
+          <li>
+            If no item exists, read{" "}
+            <a href="https://www.wikidata.org/wiki/Wikidata:Notability">
+              Wikidata’s inclusion criteria
+            </a>{" "}
+            before{" "}
+            <a href="https://www.wikidata.org/wiki/Special:NewItem">
+              creating an item
+            </a>
+            . A Wikipedia article is not required, but the vessel must meet
+            Wikidata’s criteria.
+          </li>
+        </ol>
+        <p>
+          For a new item, enter the vessel’s name as the <strong>label</strong>,
+          a short description that distinguishes it from namesakes, and
+          documented alternative names as <strong>aliases</strong>. An observed
+          AIS spelling can be an alias; it does not need to replace the normal
+          name. An account makes it easier to follow your contributions and
+          discussions.
+        </p>
+
+        <h2 id="add-details">2. Add or correct a fact</h2>
+        <p>
+          Each row under <strong>Statements</strong> is a property and a value.
+          Click <strong>edit</strong> beside an existing fact, or{" "}
+          <strong>add statement</strong> for a missing one. Search for the
+          property by its name or the P-number below, enter the value, add its
+          source, and click <strong>publish</strong>.
+        </p>
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>What you know</th>
+                <th>Property</th>
+                <th>What to enter</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Kind of vessel</td>
+                <td>instance of (P31)</td>
+                <td>A type, such as survey vessel or ferry</td>
+              </tr>
+              <tr>
+                <td>IMO number</td>
+                <td>IMO ship number (P458)</td>
+                <td>The documented IMO number</td>
+              </tr>
+              <tr>
+                <td>MMSI</td>
+                <td>MMSI (P587)</td>
+                <td>The verified radio identifier</td>
+              </tr>
+              <tr>
+                <td>Call sign</td>
+                <td>call sign (P2317)</td>
+                <td>The verified call sign</td>
+              </tr>
+              <tr>
+                <td>Builder</td>
+                <td>manufacturer (P176)</td>
+                <td>The correct company item</td>
+              </tr>
+              <tr>
+                <td>Operator</td>
+                <td>operator (P137)</td>
+                <td>The correct company item</td>
+              </tr>
+              <tr>
+                <td>Flag</td>
+                <td>country of registry (P8047)</td>
+                <td>The country of registration</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Company and vessel-type values link to other Wikidata items. Open the
+          candidate item and check its identity before selecting it: an
+          unrelated company may have exactly the same name. If the correct item
+          is missing, leave the fact out until that item can be established. Do
+          not invent an IMO number or a service-entry date to fill a gap.
+        </p>
+        <p>
+          A fact that was true in the past is different from an error. For a
+          documented former operator or identifier, preserve its history and add
+          dates supported by sources. If you cannot resolve a disagreement, use
+          the item’s <strong>Discussion</strong> page rather than repeatedly
+          replacing another contributor’s edits. See the{" "}
+          <a href="https://www.wikidata.org/wiki/Wikidata:WikiProject_Ships/Properties/en">
+            ship property guide
+          </a>{" "}
+          for more fields.
+        </p>
+
+        <h2 id="references">
+          3. Add a reference: where did the fact come from?
+        </h2>
+        <p>
+          Use a vessel registry, the operator’s fleet page, the builder’s
+          announcement, or a reputable maritime publication. For radio
+          identifiers, a separate AIS tracker can corroborate the vessel name,
+          MMSI and call sign. Verify that the source actually supports the
+          specific fact.
+        </p>
+        <p>
+          Prefer sources outside Open Waters. Citing our vessel page for a fact
+          that we will then import back from Wikidata creates circular sourcing.
+          A source for a vessel’s construction may not establish its current
+          operator.
+        </p>
+        <ol>
+          <li>
+            Under the statement, click <strong>add reference</strong>.
+          </li>
+          <li>
+            Choose <strong>reference URL (P854)</strong> and paste the
+            supporting page’s full address.
+          </li>
+          <li>
+            Within that same reference block, add{" "}
+            <strong>retrieved (P813)</strong> and the date you checked the page.
+          </li>
+          <li>Save the reference and publish any remaining unsaved edits.</li>
+        </ol>
+        <p>
+          A reference belongs to the statement it supports. Repeat it on another
+          statement if it supports that fact too. If citing two separate
+          sources, add two reference blocks.{" "}
+          <a href="https://www.wikidata.org/wiki/Help:Sources">
+            Wikidata’s reference guide
+          </a>{" "}
+          covers other source types.
+        </p>
+
+        <h2 id="identifiers">4. Add MMSI and call sign, with dates</h2>
+        <p>
+          An IMO identifies a hull throughout its life. An MMSI identifies a
+          radio assignment and can later belong to another vessel; a call sign
+          can also change. Record when the identifier is known to apply.{" "}
+          <a href="https://www.wikidata.org/wiki/Property:P587">
+            Wikidata recommends point-in-time qualifiers for MMSIs
+          </a>
+          .
+        </p>
+        <ol>
+          <li>
+            Add a statement: <strong>MMSI (P587)</strong>, followed by the
+            verified number.
+          </li>
+          <li>
+            On that statement, click <strong>add qualifier</strong>. Choose{" "}
+            <strong>point in time (P585)</strong> and enter the date the source
+            establishes the identifier, or the date you verified its listing on
+            a current source. Use the source’s observation date for a historical
+            report.
+          </li>
+          <li>
+            Click <strong>add reference</strong>. Add the source’s{" "}
+            <strong>reference URL</strong> and a <strong>retrieved</strong>{" "}
+            date, as above.
+          </li>
+          <li>
+            Repeat for <strong>call sign (P2317)</strong>, including its
+            qualifier and reference.
+          </li>
+        </ol>
+        <p>
+          Leave <strong>start time</strong> and <strong>end time</strong> unset
+          unless a source establishes when the assignment began or ended. A
+          tracker’s last-position timestamp does not establish the assignment
+          date.
+        </p>
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Where it goes</th>
+                <th>Field</th>
+                <th>What it means</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Main statement</td>
+                <td>call sign → 9M4417</td>
+                <td>The identifier</td>
+              </tr>
+              <tr>
+                <td>Qualifier on that statement</td>
+                <td>point in time → 4 November 2026</td>
+                <td>As of this date</td>
+              </tr>
+              <tr>
+                <td>Reference block</td>
+                <td>reference URL → supporting page</td>
+                <td>Where the fact was checked</td>
+              </tr>
+              <tr>
+                <td>Same reference block</td>
+                <td>retrieved → 4 November 2026</td>
+                <td>When the page was checked</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          This example uses <a href={example}>USV Elite</a>, with MMSI{" "}
+          <strong>533134283</strong> and call sign <strong>9M4417</strong>.
+          Compare its <a href={tracker}>independent tracker listing</a> with
+          other sources before editing. The dates illustrate a check made on 4
+          November 2026. Use the dates your own sources support when editing
+          another vessel. USV Elite has no IMO number, so this example improves
+          its Wikidata record but will not yet update its Open Waters AIS
+          particulars.
+        </p>
+
+        <h2 id="after-publishing">
+          5. Check your edit and allow time for updates
+        </h2>
+        <p>
+          Expand the reference to check its URL and retrieved date. The
+          point-in-time qualifier should sit directly under the main statement,
+          outside the reference block. If Wikidata warns that point in time is
+          not allowed “as reference,” remove it from the reference and add it
+          again using <strong>add qualifier</strong> on the statement.
+        </p>
+        <p>
+          A flag suggesting <strong>inception</strong> or{" "}
+          <strong>service entry</strong> is a completeness suggestion, not a
+          reason to guess a date. Leave unsupported facts unset. The{" "}
+          <a href="https://www.wikidata.org/wiki/Help:Qualifiers">
+            qualifier guide
+          </a>{" "}
+          explains how dates and other context attach to statements.
+        </p>
+        <p>
+          Your edit becomes public on Wikidata when you publish it. Open Waters
+          AIS reads a local copy refreshed weekly, so supported changes are not
+          immediate. If the vessel has no IMO, the current importer will not
+          pick it up yet. If a fact comes from a registry, follow that
+          registry’s correction process; changing Wikidata will not override it
+          here.
+        </p>
+        <p>
+          <a href="/ais/vessels">Return to the vessel map →</a>
+        </p>
+      </div>
+    </article>
+  </Container>
+</MainLayout>
