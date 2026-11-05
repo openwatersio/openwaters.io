@@ -5,24 +5,27 @@ import { Content as SetupGuide } from "../../components/nightwatch/SetupGuide.md
 ---
 
 <MainLayout
-  title="Nightwatch: a red display for your iPhone"
-  description="Set up a red display across your iPhone with iOS Color Filters, an Accessibility Shortcut, and optional Shortcuts automations."
+  title="Nightwatch: a dim red display for your iPhone"
+  description="Set up a dim red display across your iPhone with Reduce White Point, Color Filters, and Nightwatch Focus automations."
   image="/og/nightwatch.png"
 >
   <Container class="py-16 md:py-24">
     <div class="mx-auto max-w-4xl">
       <a href="/apps/" class="text-sm">
-        ← Apps
+        {" "}
+        ← Apps{" "}
       </a>
       <div class="mt-8 grid items-center gap-10 md:grid-cols-[1fr_auto]">
         <div>
           <p class="eyebrow mb-4">Setup guide · iOS only</p>
           <h1 class="mb-6">Nightwatch</h1>
-          <p class="text-lead mb-6">A red display for the night watch.</p>
+          <p class="text-lead mb-6">A dim red display for the night watch.</p>
           <p class="text-fg-muted">
             An app’s dark theme stops at its edges. iOS Color Filters can tint
             your whole display red, including other apps and the lock screen.
-            These instructions use settings already on your iPhone. There’s no
+            Reduce White Point dims bright colors further while leaving
+            brightness and Auto-Brightness under your normal controls. These
+            instructions use settings already on your iPhone. There’s no
             Nightwatch app to install.
           </p>
         </div>
@@ -44,6 +47,18 @@ import { Content as SetupGuide } from "../../components/nightwatch/SetupGuide.md
 
       <div class="prose prose-lg mt-16 max-w-none">
         <SetupGuide />
+
+        <h2>Questions or problems?</h2>
+        <p>
+          <a href="https://github.com/openwatersio/nightwatch-ios/issues">
+            Report an issue
+          </a>
+          or browse the{" "}
+          <a href="https://github.com/openwatersio/nightwatch-ios">
+            Nightwatch setup repository
+          </a>
+          . Include your iPhone model, iOS version, and which step did not work.
+        </p>
 
         <h2>Making this easier</h2>
         <p>

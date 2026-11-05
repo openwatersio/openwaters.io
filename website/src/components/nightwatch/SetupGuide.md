@@ -1,6 +1,19 @@
 ## 1. Create the shortcuts
 
-If Nightwatch On and Nightwatch Off already exist, skip to [saving the red tint](#2-save-the-red-tint), or [connecting Focus](#4-connect-focus-to-the-shortcuts) if your tint is already configured.
+### Configure Reduce White Point
+
+1. Open **Settings → Accessibility → Display & Text Size → Reduce White Point**. Note whether it is already on and its strength before changing it.
+2. Turn it on and start with **80%** reduction. Higher percentages dim bright colors more. Try **100%** if you want additional dimming, and check that essential text and recovery controls remain readable with the red tint in your actual nighttime conditions. Lower the reduction if needed.
+3. Turn Reduce White Point off after configuring its strength. The On shortcut will enable the saved setting automatically. If you normally keep it enabled, leave it on and customize Nightwatch Off as described below.
+4. Add **Reduce White Point** under **Settings → Accessibility → Accessibility Shortcut** so you can triple-click the side or Home button to recover if the screen is too dim. If several features are selected, choose Reduce White Point from the menu.
+
+Nightwatch leaves brightness and Auto-Brightness unchanged. Its dimming control is [Reduce White Point](https://support.apple.com/guide/iphone/iph3e2e1fb0/ios), which reduces bright-color intensity. There is no brightness percentage to choose, saved state file, or file permission to configure.
+
+80% is an adjustable starting suggestion, not an Apple recommendation or a tested night-vision threshold. In our iPhone setup, 80% was already selected and 100% produced substantially more dimming. A [hands-on setup guide](https://www.idownloadblog.com/2024/07/26/reduce-white-point-automation-iphone/) also reports 80% as its default. Neither observation establishes a universal default or optimum. The [National Park Service explains that even a small bright light can impair dark adaptation](https://www.nps.gov/subjects/nightskies/how-light-works.htm); red tint alone does not establish that the display is dim enough.
+
+The [Set White Point action](https://matthewcassinelli.com/actions/set-white-point/) provides On, Off, and Toggle, with no strength parameter or state result. We found no supported built-in action for reading the current Reduce White Point state or strength. Nightwatch Off explicitly turns it off; it does not restore a detected previous state. If you use Reduce White Point every day, change its **Set White Point** action in Nightwatch Off to **Turn On** so it remains enabled after exit. Strength stays at the value saved in Settings, even after Off. Restore a different daytime strength manually; these shortcuts cannot preserve separate daytime and nighttime strengths.
+
+If the shortcuts already exist, edit them to match the action table below, keeping their names so existing Focus automations continue to find them. If your tint and Focus are configured, proceed to [testing both directions](#test-both-directions).
 
 In Shortcuts, open the description-based builder and paste each block separately. Keep these exact names so the automations can reference them.
 
@@ -19,13 +32,13 @@ Tap the highlighted strip to paste your copied prompt. Highlight added for guida
 ### Nightwatch On
 
 ```text
-Create a shortcut named exactly "Nightwatch On". Add one Set Color Filters action configured to Turn On. Use the existing color filter selected in Accessibility settings. Do not use Toggle, change brightness, add an automation, show an alert, or open another app.
+Create a shortcut named exactly "Nightwatch On" using only built-in actions. Add exactly two actions in this order: Set White Point configured to Turn On, then Set Color Filters configured to Turn On. Use the existing Reduce White Point strength and color filter saved in Accessibility settings. Do not use Toggle, change brightness or Auto-Brightness, set a white-point percentage, read or write files, ask for input, add an automation, show an alert, or open another app.
 ```
 
 ### Nightwatch Off
 
 ```text
-Create a shortcut named exactly "Nightwatch Off". Add one Set Color Filters action configured to Turn Off. Keep the saved filter type, hue, and intensity unchanged. Do not use Toggle, change brightness, add an automation, show an alert, or open another app.
+Create a shortcut named exactly "Nightwatch Off" using only built-in actions. Add exactly two actions in this order: Set Color Filters configured to Turn Off, then Set White Point configured to Turn Off. Keep the saved filter type, hue, intensity, and Reduce White Point strength unchanged. Do not use Toggle, change brightness or Auto-Brightness, read or write files, ask for input, add an automation, show an alert, or open another app.
 ```
 
 ### Nightwatch Toggle, optional
@@ -34,15 +47,15 @@ Create a shortcut named exactly "Nightwatch Off". Add one Set Color Filters acti
 Create a shortcut named exactly "Nightwatch Toggle". Add one Set Color Filters action configured to Toggle. Use the existing color filter selected in Accessibility settings. Do not change brightness, add an automation, show an alert, or open another app.
 ```
 
-Toggle is a manual override. Keep it out of the Focus automations, where it could turn the filter off when you wanted it on.
+Toggle changes only the filter; it leaves Reduce White Point and brightness unchanged. It is a manual override. Keep it out of the Focus automations, where it could turn the filter off when you wanted it on.
 
-Inspect each generated shortcut against this table. If the builder is unavailable, create a new shortcut, search for **Set Color Filters**, configure its action as shown, and save it with the exact name. There are no shared install links yet.
+Inspect each generated shortcut against this table. If the builder is unavailable, create a new shortcut, add the actions listed for that shortcut in the order shown, and save it with the exact name. There are no shared install links yet.
 
-| Shortcut                    | Entire action list     |
-| --------------------------- | ---------------------- |
-| Nightwatch On               | Turn Color Filters On  |
-| Nightwatch Off              | Turn Color Filters Off |
-| Nightwatch Toggle, optional | Toggle Color Filters   |
+| Shortcut                    | Entire action list                                                                                 |
+| --------------------------- | -------------------------------------------------------------------------------------------------- |
+| Nightwatch On               | Turn White Point On → Turn Color Filters On                                                        |
+| Nightwatch Off              | Turn Color Filters Off → Turn White Point Off (Turn On instead for daily Reduce White Point users) |
+| Nightwatch Toggle, optional | Toggle Color Filters                                                                               |
 
 <div class="setup-screenshots">
 <figure>
@@ -64,7 +77,7 @@ Run Nightwatch On. A device with the default filter may become grayscale. That s
 4. Move **Intensity** all the way right. Adjust **Hue** until the display is red.
 5. Return to Shortcuts. Run Nightwatch Off, then Nightwatch On. Regular colors should return, followed by the same red tint.
 
-This is our provisional red preset. Research into hue, intensity, and night-vision performance is still outstanding. Adjust screen brightness separately for the conditions.
+Color Tint intensity controls the tint, not screen brightness. Adjust Reduce White Point in Settings for a dim, readable display; a red screen can still be too bright. This red preset is provisional, and we have not measured its effect on night vision.
 
 <div class="setup-screenshots">
 <figure>
@@ -81,7 +94,7 @@ Select Color Tint, then scroll down to reach both sliders.
 </figure>
 </div>
 
-The shortcut only changes whether Color Filters is enabled. Hue, intensity, and filter type are configured in Settings. If you use a different accessibility filter every day, this setup changes that saved selection; Nightwatch Off disables the filter rather than restoring your previous selection. [Apple's Color Filters guide](https://support.apple.com/guide/iphone/iph3e2e1fb0/ios).
+The Color Filters action only changes whether filtering is enabled. Set White Point separately enables or disables the saved reduction strength. Hue, intensity, and filter type are configured in Settings. If you use a different accessibility filter every day, this setup changes that saved selection; Nightwatch Off disables the filter rather than restoring your previous selection. [Apple's Color Filters guide](https://support.apple.com/guide/iphone/iph3e2e1fb0/ios).
 
 ## 3. Create Nightwatch Focus
 
@@ -149,14 +162,16 @@ One entry runs when Nightwatch turns on; the other runs when it turns off. Both 
 
 ### Test both directions
 
-Start with Nightwatch Focus off and run Nightwatch Off once.
+Start with Nightwatch Focus off and run Nightwatch Off once. Inspect both shortcuts: each should contain only the two actions in the table, with no brightness or file actions.
 
-1. In Control Center, open Focus and turn Nightwatch on. Check that the display becomes red.
-2. Open another app and check the Lock Screen. The tint should remain.
-3. Turn Nightwatch Focus off. Check that regular colors return.
-4. Repeat the cycle. Also test turning Nightwatch off while the phone is locked and switching from Nightwatch to another Focus.
+1. In Control Center, open Focus and turn Nightwatch on. Check that Reduce White Point turns on and the display becomes red. Judge readability on the physical screen, including essential navigation and recovery controls.
+2. Open another app and check the Lock Screen. The tint and white-point reduction should remain active.
+3. Turn Nightwatch Focus off. Check that regular colors return and Reduce White Point turns off, or remains on if you customized Off for daily use. Its Settings strength should remain unchanged.
+4. Run Nightwatch On twice and Nightwatch Off twice. Repeated runs should keep applying the explicit states without reversing them. Confirm that neither shortcut changes your brightness setting or Auto-Brightness configuration; Auto-Brightness can still respond to ambient light normally.
+5. Repeat the Focus cycle, then test turning Nightwatch off while locked, a short schedule, and switching to another Focus.
+6. Compare 80% and 100% reduction in nighttime conditions and confirm the Accessibility Shortcut provides a readable recovery path. Keep whichever strength is dim enough while remaining readable.
 
-If Off fails, run Nightwatch Off manually to distinguish a shortcut problem from an automation problem. You can always disable Color Filters directly in Settings.
+If Off fails, run Nightwatch Off manually to distinguish a shortcut problem from an automation problem. You can disable Color Filters and Reduce White Point directly in Settings, or use the configured Accessibility Shortcut for Reduce White Point.
 
 ## 5. Put the controls where you need them
 
@@ -198,15 +213,18 @@ If you share Focus across devices, configure and test the filter and automations
 
 ## Fix an incomplete setup
 
-| What you see                                | What to check                                                                                                                              |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Grayscale instead of red                    | In Settings, select Color Tint and adjust Hue and Intensity                                                                                |
-| Red, but other colors remain                | Scroll down and check Intensity; confirm Hue is red                                                                                        |
-| Focus turns on but the display stays normal | Run Nightwatch On manually; then check the On automation and automatic execution                                                           |
-| Red remains after Focus turns off           | Run Nightwatch Off manually; check that a separate Off automation exists and uses Off, not Toggle                                          |
-| Results seem reversed or inconsistent       | Disable duplicate toggle automations and check for a manual filter override                                                                |
-| A shortcut is missing or was edited         | Recreate its single action from the table, then reselect it in the automation and any controls                                             |
-| Tint changes unexpectedly                   | Check other automations and Night Shift; Apple's display guide notes that Night Shift can remove color-filter effects other than grayscale |
+| What you see                                          | What to check                                                                                                                              |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Grayscale instead of red                              | In Settings, select Color Tint and adjust Hue and Intensity                                                                                |
+| Red, but other colors remain                          | Scroll down and check Intensity; confirm Hue is red                                                                                        |
+| Focus turns on but the display stays normal           | Run Nightwatch On manually; then check the On automation and automatic execution                                                           |
+| Red remains after Focus turns off                     | Run Nightwatch Off manually; check that a separate Off automation exists and uses Off, not Toggle                                          |
+| Results seem reversed or inconsistent                 | Disable duplicate toggle automations and check for a manual filter override                                                                |
+| A shortcut is missing or was edited                   | Recreate its actions in the order shown in the table, then reselect it in the automation and any controls                                  |
+| Red screen is still too bright                        | Confirm Reduce White Point is on; try increasing its Settings strength from 80% toward 100%, checking readability                          |
+| Focus changes the tint but does not dim bright colors | Run Nightwatch On manually; check its Set White Point action is Turn On and inspect the saved strength in Settings                         |
+| Reduce White Point has the wrong state after Off      | Off explicitly disables it; if you use it daily, change Off's Set White Point action to Turn On                                            |
+| Screen is too dim to recover                          | Use the configured Accessibility Shortcut to disable Reduce White Point, then lower its strength in Settings                               |
+| Tint changes unexpectedly                             | Check other automations and Night Shift; Apple's display guide notes that Night Shift can remove color-filter effects other than grayscale |
 
 Judge the tint on the display itself. Our device screenshots did not capture the red filter; a photograph of the screen did.
-
