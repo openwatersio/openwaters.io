@@ -3,7 +3,7 @@
 ### Configure Reduce White Point
 
 1. Open **Settings → Accessibility → Display & Text Size → Reduce White Point**. Note whether it is already on and its strength before changing it.
-2. Turn it on and start with **80%** reduction. Higher percentages dim bright colors more. Try **100%** if you want additional dimming, and check that essential text and recovery controls remain readable with the red tint in your actual nighttime conditions. Lower the reduction if needed.
+2. Turn it on and start with **80%** reduction. Higher percentages dim bright colors more. Try **100%** if you want additional dimming, and check that essential text and recovery controls remain readable in your actual nighttime conditions. Lower the reduction if needed.
 3. Turn Reduce White Point off after configuring its strength. The On shortcut will enable the saved setting automatically. If you normally keep it enabled, leave it on and customize Nightwatch Off as described below.
 4. Add **Reduce White Point** under **Settings → Accessibility → Accessibility Shortcut** so you can triple-click the side or Home button to recover if the screen is too dim. If several features are selected, choose Reduce White Point from the menu.
 
@@ -23,7 +23,20 @@ Nightwatch leaves brightness and Auto-Brightness unchanged. Its dimming control 
 
 The [Set White Point action](https://matthewcassinelli.com/actions/set-white-point/) provides On, Off, and Toggle, with no strength parameter or state result. We found no supported built-in action for reading the current Reduce White Point state or strength. Nightwatch Off explicitly turns it off; it does not restore a detected previous state. If you use Reduce White Point every day, change its **Set White Point** action in Nightwatch Off to **Turn On** so it remains enabled after exit. Strength stays at the value saved in Settings, even after Off. Restore a different daytime strength manually; these shortcuts cannot preserve separate daytime and nighttime strengths.
 
-If the shortcuts already exist, edit them to match the action table below, keeping their names so existing Focus automations continue to find them. If your tint and Focus are configured, proceed to [testing both directions](#test-both-directions).
+### Dim full-colour for reading charts
+
+Choose this option when you need to distinguish chart colours. With Nightwatch Focus off, turn off **Color Filters** in **Settings → Accessibility → Display & Text Size**. In Shortcuts, create or edit these two shortcuts, keeping the names exactly as shown:
+
+| Shortcut | Only action |
+| --- | --- |
+| Nightwatch On | Set White Point → Turn On |
+| Nightwatch Off | Set White Point → Turn Off (choose Turn On if you use Reduce White Point during the day) |
+
+If you already use the dim red tint, run the existing Nightwatch Off before editing the shortcuts to clear the tint. Continue to [Create Nightwatch Focus](#3-create-nightwatch-focus), or [test both directions](#test-both-directions) if your Focus automations are already connected.
+
+### Dim red tint
+
+Use both Reduce White Point and Color Filters for this option. If the shortcuts already exist, edit them in place so your Focus automations can keep using them.
 
 In Shortcuts, open the description-based builder and paste each block separately. Keep these exact names so the automations can reference them.
 
@@ -172,11 +185,11 @@ One entry runs when Nightwatch turns on; the other runs when it turns off. Both 
 
 ### Test both directions
 
-Start with Nightwatch Focus off and run Nightwatch Off once. Inspect both shortcuts: each should contain only the two actions in the table, with no brightness or file actions.
+Start with Nightwatch Focus off and run Nightwatch Off once. Check the actions in each shortcut against the table for your chosen option.
 
-1. In Control Center, open Focus and turn Nightwatch on. Check that Reduce White Point turns on and the display becomes red. Judge readability on the physical screen, including essential navigation and recovery controls.
-2. Open another app and check the Lock Screen. The tint and white-point reduction should remain active.
-3. Turn Nightwatch Focus off. Check that regular colors return and Reduce White Point turns off, or remains on if you customized Off for daily use. Its Settings strength should remain unchanged.
+1. In Control Center, open Focus and turn Nightwatch on. Check that Reduce White Point turns on. For the dim red tint, the display should also turn red. For dim full-colour, open a familiar chart and check that you can distinguish buoy colours and read depth labels. Adjust the reduction in Settings until the details are legible.
+2. Open another app and check the Lock Screen. Check that your chosen display settings still apply.
+3. Turn Nightwatch Focus off. If you chose the tint, check that regular colours return. Reduce White Point should turn off unless you configured it for daily use. Its Settings strength should remain unchanged.
 4. Run Nightwatch On twice and Nightwatch Off twice. Repeated runs should keep applying the explicit states without reversing them. Confirm that neither shortcut changes your brightness setting or Auto-Brightness configuration; Auto-Brightness can still respond to ambient light normally.
 5. Repeat the Focus cycle, then test turning Nightwatch off while locked, a short schedule, and switching to another Focus.
 6. Compare 80% and 100% reduction in nighttime conditions and confirm the Accessibility Shortcut provides a readable recovery path. Keep whichever strength is dim enough while remaining readable.
