@@ -1,14 +1,16 @@
-Ask Claude, ChatGPT, or an agent of your own about ship traffic. Open Waters AIS is an MCP (Model Context Protocol) server at `https://ais.openwaters.io/mcp`, with no account and no key. The assistant learns the coverage caveats and the credit line when it connects, then answers from the same live positions the rest of the API serves.
+Ask Claude, ChatGPT, or an agent of your own about ship traffic. Open Waters AIS is an MCP (Model Context Protocol) server at `https://ais.openwaters.io/mcp`, with no account and no key. The assistant can look up the last report from a vessel, trace its route, or check which receivers have heard traffic in an area.
+
+Coverage depends on what the receivers hear. Check the time of each report. For navigation and collision avoidance, use onboard instruments and official charts.
 
 ### What you can ask
 
-**Track your fleet.** Where is MMSI 257123000 right now? Where is Viking Cinderella going, and when does she arrive? What flag is IMO 9319466 under, and how long is she? Which of these ten vessels has not reported in the last half hour?
+**Track your fleet.** Where was MMSI 257123000 last heard? What destination and ETA did Viking Cinderella report? Where did she sail yesterday? Which of these ten vessels has not reported in the last half hour?
 
 **Monitor your waters.** What is in the port of Rotterdam right now? List the tankers in the Great Belt. Is anything within five miles of 59.9 N, 10.7 E? What is around the ferry Pearl Seaways?
 
 **Check coverage.** Do you cover the Gulf of Mexico? How fresh is the data around Helsinki? Which stations hear Bergen?
 
-Every answer is the last report heard, up to 30 minutes old, and says when it was heard. The assistant answers one question at a time; for continuous updates use the [WebSocket](#stream-v1). Not for safety of navigation.
+Area and radius searches show vessels heard in the last 30 minutes. Searches by name or MMSI can return older reports. For continuous updates, use the [WebSocket](#stream-v1).
 
 ### Enable it
 
@@ -20,7 +22,7 @@ Every answer is the last report heard, up to 30 minutes old, and says when it wa
 claude mcp add --transport http open-waters-ais https://ais.openwaters.io/mcp
 ```
 
-**Claude.ai and Claude Desktop:** Settings, Connectors, Add custom connector, paste `https://ais.openwaters.io/mcp`, and leave the OAuth fields empty. A free Claude plan allows one custom connector.
+**Claude.ai and Claude Desktop:** In Customize → Connectors, add a custom web connector named **Open Waters AIS**. Enter `https://ais.openwaters.io/mcp` and choose **No sign-in** if prompted. On Team and Enterprise plans, an organization owner can add it in organization settings. [Claude’s custom connector guide](https://claude.com/docs/connectors/custom/add-unlisted)
 
 **ChatGPT:** Settings, Connectors, turn on Developer mode, then add `https://ais.openwaters.io/mcp` with no authentication.
 
@@ -71,28 +73,30 @@ curl -X POST https://ais.openwaters.io/mcp \
 
 ### Authentication
 
-Without a token the assistant gets the anonymous limits, which cover most questions: an area of up to 100 square degrees, about 10° by 10°, or up to 10 vessels per call, by MMSI or IMO number. A [personal token](#authentication) raises that to 400 square degrees and 50 vessels, and the tool says so when a question exceeds the limit. Contributor and commercial tokens work the same way with their own limits; see [Limits](#limits).
+Anonymous calls can search an area of up to 100 square degrees (about 10° by 10°) or look up 10 MMSIs at a time. A [personal token](#authentication) raises those limits to 400 square degrees and 50 MMSIs. Lookup by IMO number requires feeder or partner access. Every tier can see the IMO number when a vessel reports one. See [Limits](#limits) for the access tiers.
 
 Send the token as an `Authorization: Bearer` header. Where to put it depends on the client:
 
 - **Claude Code:** add `--header "Authorization: Bearer <token>"` to the `claude mcp add` command.
 - **Cursor, VS Code, and Gemini CLI:** add `"headers": { "Authorization": "Bearer <token>" }` to the server entry.
-- **Claude.ai, Claude Desktop, and ChatGPT:** custom connectors take no headers, so these run at the anonymous limits.
+- **Claude.ai and Claude Desktop:** if your custom connector has a **Request headers** section, choose **No sign-in** and set `Authorization` to `Bearer <token>`. Otherwise, use anonymous access.
+- **ChatGPT:** use anonymous access.
 
 Never put the token in the URL. A credential in a query string ends up in logs and browser history, and the MCP specification forbids it.
 
-Each tool call is one request against the 120-per-minute HTTP limit, and a call returns at most 200 rows, 50 unless asked.
+Each tool call counts toward the HTTP limit of 120 requests per minute. Area, radius, and name searches return up to 50 vessels by default, and tracks return up to 50 positions. Set `limit` to request up to 200.
 
 ### Tools
 
-Five read-only tools, so a client that asks before running write tools never prompts for these.
+The server provides six read-only tools.
 
-| Tool                     | Answers                                                                                                                                                                            |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `get_vessels`            | Position and particulars for a list of MMSIs or IMO numbers: destination, ETA, draught, dimensions, call sign, flag, and which identifiers matched nothing in the last 30 minutes. |
-| `find_vessels_in_area`   | What is inside a bounding box, newest report first, with optional kind and ship-type filters.                                                                                      |
-| `find_vessels_near`      | What is within a radius of up to 50 NM of a point or of another vessel, nearest first, with distance and bearing.                                                                  |
-| `search_vessels_by_name` | Vessels whose name contains the text, to turn a name into an MMSI.                                                                                                                 |
-| `get_coverage`           | Which sources and stations are delivering, how fresh they are, and whether a box has any coverage at all.                                                                          |
+| Tool                     | Answers                                                                                                                                                                                 |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_vessels`            | Last report and available particulars by MMSI, including destination and ETA. Lists identifiers the network has never heard. Feeder and partner access also allow lookup by IMO number. |
+| `find_vessels_in_area`   | What is inside a bounding box, newest report first, with optional kind and ship-type filters.                                                                                           |
+| `find_vessels_near`      | What is within a radius of up to 50 NM of a point or of another vessel, nearest first, with distance and bearing.                                                                       |
+| `search_vessels_by_name` | MMSIs and last known positions for vessels whose names contain the search text, regardless of when they last reported.                                                                  |
+| `get_vessel_track`       | Positions heard from one vessel, oldest first, with gaps marked in the default track. Covers the last 24 hours by default or a requested span of up to 366 days.                        |
+| `get_coverage`           | Reporting sources and stations, feed delays, and vessel counts for an area. Counts cover the last 30 minutes by default. Use `max_age` to include older reports.                        |
 
-Every row carries decoded labels (`type_name`, `nav_status_name`) beside the codes, `seen` and `age_s` for freshness, the flag from the MMSI, the source and station it came from, and, once the vessel's static data has been heard, its IMO number, call sign, destination, ETA, draught, length, and beam. The flag is present when the MMSI's maritime identification digits are known. The area, radius, and name searches take a `flag` filter, an ISO 3166-1 alpha-2 code such as `NO` or `MH`. Every result carries an `attribution` map with the credit line per source, and says when it cut the list so the assistant can narrow the question.
+Vessel rows carry `seen` and `age_s` for freshness, plus the source and station that heard the report. When available, they include the flag, ship type, navigational status, IMO number, call sign, destination, ETA, draught, and dimensions. The area, radius, and name searches take a `flag` filter, an ISO 3166-1 alpha-2 code such as `NO` or `MH`. When displaying vessels or tracks, include the source credits in `attribution`. For registered particulars from `get_vessels`, `provenance` identifies the source of each field and `sources` supplies its credit and license.
