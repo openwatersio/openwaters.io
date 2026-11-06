@@ -73,7 +73,7 @@ curl -X POST https://ais.openwaters.io/mcp \
 
 ### Authentication
 
-Anonymous calls can search an area of up to 100 square degrees (about 10° by 10°) or look up 10 MMSIs at a time. A [personal token](#authentication) raises those limits to 400 square degrees and 50 MMSIs. Lookup by IMO number requires feeder or partner access. Every tier can see the IMO number when a vessel reports one. See [Limits](#limits) for the access tiers.
+Anonymous calls can search an area of up to 100 square degrees (about 10° by 10°) or look up 10 MMSIs at a time. A [personal token](#authentication) raises those limits to 400 square degrees and 50 MMSIs. Looking up a vessel by IMO number requires access to the raw NMEA feed. Contributors (the server calls this the feeder tier) and partners have that access. Every tier can see the IMO number when a vessel reports one. See [Limits](#limits) for the access tiers.
 
 Send the token as an `Authorization: Bearer` header. Where to put it depends on the client:
 
@@ -84,19 +84,21 @@ Send the token as an `Authorization: Bearer` header. Where to put it depends on 
 
 Never put the token in the URL. A credential in a query string ends up in logs and browser history, and the MCP specification forbids it.
 
-Each tool call counts toward the HTTP limit of 120 requests per minute. Area, radius, and name searches return up to 50 vessels by default, and tracks return up to 50 positions. Set `limit` to request up to 200.
+Each tool call counts toward the HTTP limit of 120 requests per minute. Area, radius, and name searches return up to 50 vessels by default. Set `limit` to request up to 200 vessels.
 
 ### Tools
 
 The server provides six read-only tools.
 
-| Tool                     | Answers                                                                                                                                                                                 |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `get_vessels`            | Last report and available particulars by MMSI, including destination and ETA. Lists identifiers the network has never heard. Feeder and partner access also allow lookup by IMO number. |
-| `find_vessels_in_area`   | What is inside a bounding box, newest report first, with optional kind and ship-type filters.                                                                                           |
-| `find_vessels_near`      | What is within a radius of up to 50 NM of a point or of another vessel, nearest first, with distance and bearing.                                                                       |
-| `search_vessels_by_name` | MMSIs and last known positions for vessels whose names contain the search text, regardless of when they last reported.                                                                  |
-| `get_vessel_track`       | Positions heard from one vessel, oldest first, with gaps marked in the default track. Covers the last 24 hours by default or a requested span of up to 366 days.                        |
-| `get_coverage`           | Reporting sources and stations, feed delays, and vessel counts for an area. Counts cover the last 30 minutes by default. Use `max_age` to include older reports.                        |
+| Tool                     | Answers                                                                                                                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_vessels`            | Last report and available particulars by MMSI, including destination and ETA. Lists identifiers the network has never heard. Accepts IMO numbers if you have raw-feed access. |
+| `find_vessels_in_area`   | What is inside a bounding box, newest report first, with optional kind and ship-type filters.                                                                                 |
+| `find_vessels_near`      | What is within a radius of up to 50 NM of a point or of another vessel, nearest first, with distance and bearing.                                                             |
+| `search_vessels_by_name` | MMSIs and last known positions for vessels whose names contain the search text, regardless of when they last reported.                                                        |
+| `get_vessel_track`       | Positions heard from one vessel, oldest first, with gaps marked in the default track. Covers the last 24 hours by default or a requested span of up to 366 days.              |
+| `get_coverage`           | Reporting sources and stations, feed delays, and vessel counts for an area. Counts cover the last 30 minutes by default. Use `max_age` to include older reports.              |
+
+A track returns up to 50 positions by default. Set `limit` to request up to 200 positions per call, even for a 366-day range. The default track keeps the points that show the shape of the route. If the server simplifies it further or leaves out older positions to stay within its limits, it sets `truncated`. With `interval_minutes`, it keeps the newest positions when more match than the limit. Request a shorter time range for more detail.
 
 Vessel rows carry `seen` and `age_s` for freshness, plus the source and station that heard the report. When available, they include the flag, ship type, navigational status, IMO number, call sign, destination, ETA, draught, and dimensions. The area, radius, and name searches take a `flag` filter, an ISO 3166-1 alpha-2 code such as `NO` or `MH`. When displaying vessels or tracks, include the source credits in `attribution`. For registered particulars from `get_vessels`, `provenance` identifies the source of each field and `sources` supplies its credit and license.
