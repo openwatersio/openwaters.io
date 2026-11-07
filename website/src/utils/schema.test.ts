@@ -22,7 +22,7 @@ test("organization: contactPoint carries the support email", () => {
   });
 });
 
-test("organization: public service offers distinguish free access from quoted commercial pricing", () => {
+test("organization: public service offers distinguish free access from paid commercial plans", () => {
   const offers = organization("hello@openwaters.io").makesOffer;
   assert.ok(offers.length > 0);
   for (const offer of offers) {
@@ -42,7 +42,8 @@ test("organization: public service offers distinguish free access from quoted co
   )!;
   assert.ok(commercial);
   assert.ok(!("price" in commercial));
-  assert.match(commercial.description, /Paid.*contact us/i);
+  assert.match(commercial.description, /Paid.*\$49/);
+  assert.equal(commercial.url, "https://openwaters.io/ais/pricing/");
 });
 
 test("website: names Open Waters and keeps the domain as a fallback", () => {
