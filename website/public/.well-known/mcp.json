@@ -5,6 +5,6 @@
   "endpoint": "https://ais.openwaters.io/mcp",
   "transport": "streamable-http",
   "authentication": "none",
-  "documentation": "https://openwaters.io/api/ais/#mcp",
+  "documentation": "https://openwaters.io/ais/mcp/",
   "registry": "io.openwaters/ais"
 }
