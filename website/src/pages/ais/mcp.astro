@@ -1,0 +1,119 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import AisNav from "../../components/ais/AisNav.astro";
+import Icon from "../../components/Icon.astro";
+import { SITE, faqPage, publisher } from "../../utils/schema";
+import { Content as Guide } from "./_mcp.md";
+
+const ENDPOINT = "https://ais.openwaters.io/mcp";
+const CLAUDE_DIRECTORY = "https://claude.ai/directory/open-waters-ais";
+const REPO = "https://github.com/openwatersio/aiscast";
+
+const description =
+  "Ask Claude, ChatGPT, Cursor, or your own agent where a ship is, what is in a port, or where a vessel has been. A free MCP server for live AIS vessel data, with no account and no key.";
+
+const faq = [
+  {
+    q: "Is there an Open Waters AIS connector for Claude?",
+    a: `Yes. Open Waters AIS is listed in Claude's connector directory at ${CLAUDE_DIRECTORY}. Connect it from there in Claude.ai or Claude Desktop, or add ${ENDPOINT} as a custom connector.`,
+  },
+  {
+    q: "Does it work with ChatGPT?",
+    a: `Yes, on paid ChatGPT plans. Turn on Developer mode in Settings, then create an app with the server URL ${ENDPOINT} and no authentication.`,
+  },
+  {
+    q: "Do I need an account or an API key?",
+    a: "No. The MCP server answers anonymous calls. A free personal token raises the area and vessel limits.",
+  },
+  {
+    q: "Is it free?",
+    a: "Personal use is free, with the same limits as the rest of Open Waters AIS. Qualifying receiver contributors can also use it commercially; for other commercial access, contact us. Each source keeps its own license, and vessel and track results carry the credit to show.",
+  },
+];
+
+// The graph below carries the context, so the FAQ node does not repeat it.
+const { "@context": _faqContext, ...faqNode } = faqPage("/ais/mcp/", faq);
+
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebAPI",
+      name: "Open Waters AIS MCP server",
+      url: `${SITE}/ais/mcp/`,
+      description,
+      documentation: `${SITE}/ais/mcp/`,
+      provider: publisher,
+      isAccessibleForFree: true,
+      sameAs: [CLAUDE_DIRECTORY],
+    },
+    faqNode,
+  ],
+};
+---
+
+<MainLayout
+  title="Open Waters AIS MCP server for Claude and ChatGPT"
+  description={description}
+  image="/og/ais.png"
+  schema={schema}
+>
+  <Container class="py-12 lg:py-16">
+    <article class="mx-auto max-w-3xl">
+      <AisNav class="mb-8" />
+      <h1 class="mb-6">Open Waters AIS MCP server</h1>
+      <p class="text-lead mb-6">
+        Ask Claude, ChatGPT, or an agent of your own about ship traffic. The
+        Open Waters AIS MCP (Model Context Protocol) server looks up a vessel’s
+        last report, lists what is in a harbor, traces where a ship has been,
+        and says which receivers cover an area. No account, no key.
+      </p>
+      <p class="text-fg-muted mb-3 text-sm">Server URL</p>
+      <pre class="mb-8"><code>{ENDPOINT}</code></pre>
+      <div class="mb-12 flex flex-wrap gap-3">
+        <a href={CLAUDE_DIRECTORY} class="btn btn-primary">
+          Add to Claude
+          <Icon name="mdi:arrow-right" class="size-4" />
+        </a>
+        <a href="#add-it-to-your-assistant" class="btn btn-secondary">
+          ChatGPT, Cursor, and more
+        </a>
+        <a
+          href={REPO}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-secondary"
+        >
+          <Icon name="mdi:github" class="size-4" />
+          Source
+        </a>
+      </div>
+
+      <div class="prose prose-lg ais-mcp max-w-none">
+        <Guide />
+
+        <h2 id="questions">Questions</h2>
+        {faq.map((item) => (
+          <>
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </>
+        ))}
+        <p>
+          The rest of the AIS API, including the WebSocket stream and vessel
+          tracks over HTTP, is in the{" "}
+          <a href="/api/ais/">Open Waters AIS API reference</a>.
+        </p>
+      </div>
+    </article>
+  </Container>
+</MainLayout>
+
+<style>
+  /* The tools table is wide; scroll it rather than the page. */
+  .ais-mcp :global(table) {
+    display: block;
+    overflow-x: auto;
+  }
+</style>

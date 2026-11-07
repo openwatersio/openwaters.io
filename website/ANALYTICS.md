@@ -25,7 +25,7 @@ Issuance excludes button clicks, failed or malformed responses, failed persisten
 
 Receiving uses `station-status.ts` and emits at most once per page lifecycle. It excludes 404s, failed requests, invalid ages, stale data, and superseded checks. An already active returning station can produce it. Analytics exceptions never block token issuance, status rendering, or navigation.
 
-The handoff map covers the AIS project and contributor guides, receiver tools, Signal K's package and README, crowd-depth, database releases, chart projects/manifests, and community links. Matching ignores query and fragment values and emits fixed labels. Same-origin documentation links remain ordinary pageviews; no internal campaign tags are added. Click, keyboard activation, modified clicks, and middle-clicks use the same delegated handler without delaying or preventing navigation. Canceled or right-button events do not count.
+The handoff map covers the AIS project and contributor guides, the AIS MCP server's Claude directory listing and Cursor and VS Code install links, receiver tools, Signal K's package and README, crowd-depth, database releases, chart projects/manifests, and community links. Matching ignores query and fragment values and emits fixed labels. Same-origin documentation links remain ordinary pageviews; no internal campaign tags are added. Click, keyboard activation, modified clicks, and middle-clicks use the same delegated handler without delaying or preventing navigation. Canceled or right-button events do not count.
 
 ## Attribution boundaries
 

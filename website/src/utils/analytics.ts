@@ -62,6 +62,18 @@ const resources: Record<string, { resource: string; action: string }> = {
     resource: "aiscast-discussions",
     action: "community",
   },
+  "https://claude.ai/directory/open-waters-ais": {
+    resource: "ais-mcp-claude",
+    action: "install",
+  },
+  "https://cursor.com/en/install-mcp": {
+    resource: "ais-mcp-cursor",
+    action: "install",
+  },
+  "https://vscode.dev/redirect/mcp/install": {
+    resource: "ais-mcp-vscode",
+    action: "install",
+  },
   "https://www.npmjs.com/package/signalk-aiscast": {
     resource: "signalk-package",
     action: "package",

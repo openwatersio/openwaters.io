@@ -59,6 +59,7 @@ const open = [
 const footer = [
   { label: "Vessels", href: "/ais/vessels" },
   { label: "API docs", href: "/api/ais/" },
+  { label: "MCP server", href: "/ais/mcp/" },
   { label: "Coverage and sources", href: "/ais/network" },
   { label: "Contributor agreement", href: AGREEMENT },
   { label: "Data licenses", href: "#license" },
@@ -145,6 +146,10 @@ const faq = [
     a: "The /v0/stream endpoint accepts aisstream.io's subscription format. Point your client at wss://ais.openwaters.io/v0/stream and use an Open Waters token as APIKey. Check the access limits before switching; vessel coverage and source terms can differ.",
   },
   {
+    q: "Can I ask Claude or ChatGPT about ship traffic?",
+    a: "Yes. The Open Waters AIS MCP server at https://ais.openwaters.io/mcp works with Claude, Cursor, other MCP clients, and paid ChatGPT plans, with no account or key. Claude lists it in its connector directory.",
+  },
+  {
     q: "Can I use the data commercially?",
     a: "Qualifying receiver contributors can use the service commercially within contributor limits. For other commercial access, contact us to confirm the service tier and source terms for your product. Licensing is per source, and the aggregate is not relicensed. If you display or redistribute the data, carry the source's attribution through. The license table on this page lists each source's terms.",
   },
@@ -177,7 +182,7 @@ const schema = {
 <MainLayout
   title="Open Waters AIS: free, real-time vessel data"
   image="/og/ais.png"
-  description="Open Waters AIS is a free AIS network with an aisstream-compatible API, streaming live ship positions from coastal authorities and volunteer receivers."
+  description="Open Waters AIS is a free AIS network: live ship positions from coastal authorities and volunteer receivers, an aisstream-compatible API, and an MCP server for Claude and ChatGPT."
   schema={schema}
 >
   <!-- Hero: the live map runs full bleed under the header and fades into the page -->
@@ -203,6 +208,9 @@ const schema = {
           <a href="/api/ais/" class="btn btn-primary">
             Use the API
             <Icon name="mdi:arrow-right" class="size-4" />
+          </a>
+          <a href="/ais/mcp/" class="btn btn-secondary">
+            Ask Claude or ChatGPT
           </a>
           <a href="/ais/contribute/" class="btn btn-secondary">
             Contribute
