@@ -17,9 +17,9 @@
     "check:gateway": "wrangler types -c gateway/wrangler.jsonc gateway/worker-configuration.d.ts && tsc -p gateway"
   },
   "devDependencies": {
-    "concurrently": "^10.0.6",
+    "concurrently": "^10.0.7",
     "typescript": "^6.0.3",
-    "wrangler": "^4.156.2"
+    "wrangler": "^4.159.0"
   },
   "dependencies": {
     "@slackwater/api": "^1.0.0-beta.4",
