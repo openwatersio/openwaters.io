@@ -134,8 +134,19 @@ const link = "text-accent hover:text-accent-hover font-medium";
             <code>maxFlood</code>, or <code>maxEbb</code>. Maximum flood and ebb
             also carry a <code>direction</code> in degrees true when the station
             has one. Slack carries the small residual speed left at the turn.
-            The timeline endpoints return a signed speed every 10 minutes
-            instead.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="mb-3 text-xl font-semibold">Timelines</h3>
+          <p class="text-fg-muted">
+            The timeline endpoints return a point every 10 minutes. Each point
+            has a signed <code>speed</code> along the flood axis and a{" "}
+            <code>magnitude</code> in knots. Stations that publish minor-axis
+            data add a <code>direction</code> that follows the current as it
+            rotates. Other stations give their flood or ebb bearing instead.
+            Points with no magnitude, or no known bearing, leave{" "}
+            <code>direction</code> out.
           </p>
         </div>
 

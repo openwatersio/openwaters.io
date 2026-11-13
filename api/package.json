@@ -12,12 +12,12 @@
   },
   "dependencies": {
     "@slackwater/api": "^1.0.0-beta.6",
-    "@slackwater/database": "^1.0.0-beta.20261102",
+    "@slackwater/database": "^1.0.1-beta.20261107",
     "express": "^5.3.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "typescript": "^7.0.2",
-    "wrangler": "^4.156.2"
+    "wrangler": "^4.159.0"
   }
 }
