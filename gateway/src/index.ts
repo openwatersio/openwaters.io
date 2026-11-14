@@ -31,6 +31,10 @@ export default {
       return env.BATHYMETRY.fetch(request);
     }
 
+    if (pathname === "/water-levels" || pathname.startsWith("/water-levels/")) {
+      return env.WATER_LEVELS.fetch(request);
+    }
+
     if (pathname === "/") {
       return Response.json({
         name: "Open Waters API",
