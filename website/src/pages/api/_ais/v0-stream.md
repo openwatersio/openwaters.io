@@ -22,7 +22,13 @@ Send one subscribe message within 3 seconds of connecting:
 - `FilterMessageTypes` takes any of the 24 aisstream.io type names.
 - Sending another subscribe message replaces the subscription.
 
-Each frame is one decoded message in aisstream.io's shape:
+Each accepted subscribe message, including a replacement, is answered with a confirmation, and the first one arrives before any data. `CompressionEnabled` reports whether `permessage-deflate` was negotiated for the connection. A rejected subscription gets an error frame instead.
+
+```json
+{ "Message": { "CompressionEnabled": true }, "MessageType": "SubscriptionConfirmation" }
+```
+
+Every other frame is one decoded message in aisstream.io's shape:
 
 ```json
 {
