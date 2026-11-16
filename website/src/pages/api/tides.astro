@@ -82,11 +82,9 @@ const sections = [
         <div>
           <h3 class="mb-3 text-xl font-semibold">User-Agent</h3>
           <p class="text-fg-muted">
-            Send a <code>User-Agent</code> header that names your app, its
-            version, and a URL or email address, such as{" "}
-            <code>my-app/1.2 (you@example.org)</code>. Starting in 2027,
-            requests without one are refused. Browsers send their own and need
-            nothing. See the{" "}
+            All requests require a valid <code>User-Agent</code> header that
+            names your app, version, and a URL or email address, such as{" "}
+            <code>my-app/1.2 (you@example.org)</code>. See the{" "}
             <a
               href="/api/user-agent/"
               class="text-accent hover:text-accent-hover font-medium"
