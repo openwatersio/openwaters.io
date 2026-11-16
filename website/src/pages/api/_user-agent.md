@@ -5,6 +5,8 @@ my-app/1.2 (https://example.org/my-app)
 my-app/1.2 (you@example.org)
 ```
 
+`stillwell.openwaters.io` refuses requests without one. `api.openwaters.io`, `ais.openwaters.io` and `tiles.openwaters.io` start refusing them in 2027.
+
 The contact lets us reach you about a change that affects your app, or about traffic that causes trouble, before we have to block it. Use one name per app, and keep it the same across releases.
 
 ## Browsers

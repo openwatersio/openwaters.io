@@ -80,6 +80,24 @@ const sections = [
         </div>
 
         <div>
+          <h3 class="mb-3 text-xl font-semibold">User-Agent</h3>
+          <p class="text-fg-muted">
+            Send a <code>User-Agent</code> header that names your app, its
+            version, and a URL or email address, such as{" "}
+            <code>my-app/1.2 (you@example.org)</code>. Starting in 2027,
+            requests without one are refused. Browsers send their own and need
+            nothing. See the{" "}
+            <a
+              href="/api/user-agent/"
+              class="text-accent hover:text-accent-hover font-medium"
+            >
+              User-Agent policy
+            </a>
+            .
+          </p>
+        </div>
+
+        <div>
           <h3 class="mb-3 text-xl font-semibold">Rate Limits</h3>
           <ul class="text-fg-muted ml-4 list-inside list-disc space-y-1">
             <li>100 requests per minute per IP address</li>
