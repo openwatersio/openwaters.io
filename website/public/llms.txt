@@ -6,7 +6,7 @@ Every page also serves Markdown for `Accept: text/markdown`. The chart viewers a
 
 ## When to use this
 
-Open Waters answers questions about the water itself: what the tide and the tidal current will do at a coordinate, what ships are moving in an area, what the seafloor looks like, and where the sun and moon will be. Most answers take one request and no account or key.
+Open Waters answers questions about the water itself: what the tide and the tidal current will do at a coordinate, what ships are moving in an area, what the seafloor looks like, and where the sun and moon will be. Most answers take one request and no account or key. All requests require a valid `User-Agent` header that names your app, version, and a URL or email address, such as `my-app/1.2 (you@example.org)`; see https://openwaters.io/api/user-agent/.
 
 - Tide heights for a place and time: `GET https://api.openwaters.io/tides/extremes?latitude=48.42&longitude=-123.37` returns the high and low waters for the nearest station, along with that station's name, chart datum, source and licence. `/tides/timeline` returns a continuous curve instead of the turns. Add `units=feet` for feet, and `start` and `end` in ISO 8601 for a window other than the next seven days.
 - Choosing the station yourself, rather than letting the API pick the nearest: `GET https://api.openwaters.io/tides/stations?query=Victoria` searches by name, `latitude` with `longitude` and `maxDistance` searches by proximity, and `bbox=minLon,minLat,maxLon,maxLat` searches a box. The `id` that comes back is already `source/id`, so it drops straight into `/tides/stations/{source}/{id}/extremes`.
@@ -23,6 +23,7 @@ Open Waters is the wrong tool for navigation of any kind, for ocean currents oth
 - [API documentation](https://openwaters.io/api/): overview of the APIs available
 - [Tides API](https://openwaters.io/api/tides/): tide prediction endpoints reference, rate limits, and error format. No authentication required.
 - [Currents API](https://openwaters.io/api/currents/): tidal current prediction endpoints reference, depth bins, signed speeds, and why Canadian stations return 451. No authentication required.
+- [User-Agent policy](https://openwaters.io/api/user-agent/): the `User-Agent` every request outside a browser sends, what is refused, the exemptions, and when each host enforces it
 - [OpenAPI specification](https://openwaters.io/openapi.json): machine-readable spec for the tides and currents APIs at https://api.openwaters.io
 - [AIS API](https://openwaters.io/api/ais/): real-time vessel traffic over WebSocket, REST vessel lookups, and historical vessel tracks in GeoJSON or GPX. Its HTTP endpoints have their own OpenAPI specification at https://ais.openwaters.io/openapi.json
 - [AIS MCP server](https://openwaters.io/ais/mcp/): https://ais.openwaters.io/mcp, Streamable HTTP, no sign-in. Look up vessels by MMSI or name, find traffic in an area or near a point or vessel, trace a vessel’s track, and check receiver coverage. All six tools are read-only. Vessel and track results include source credits. Claude lists it in its connector directory at https://claude.ai/directory/open-waters-ais.

@@ -271,7 +271,7 @@ export async function openApiDocument(host: string) {
       ...tides.info,
       title: "Open Waters API",
       // The AIS API lives on its own host with its own spec; point agents at it.
-      description: `Tide predictions under ${TIDES_PREFIX} and tidal current predictions under ${CURRENTS_PREFIX}, from harmonic constituents. The AIS API is described separately at ${AIS_OPENAPI_URL}.`,
+      description: `Tide predictions under ${TIDES_PREFIX} and tidal current predictions under ${CURRENTS_PREFIX}, from harmonic constituents. The AIS API is described separately at ${AIS_OPENAPI_URL}. All requests require a valid User-Agent header that names your app, version, and a URL or email address, such as \`my-app/1.2 (you@example.org)\`. See https://openwaters.io/api/user-agent/.`,
     },
     servers: [{ url: host }],
     // The API is open: an explicit empty requirement says so in-spec.
