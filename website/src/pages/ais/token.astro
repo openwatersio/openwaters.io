@@ -322,6 +322,15 @@ const tokenPre = pre.replace("text-sm", "text-xs");
             key = your token. Or from a shell:
           </p>
           <pre data-cmd-ws class={pre}></pre>
+          <p class="text-fg-muted mt-3 text-sm">
+            All requests require a valid{" "}
+            <code class="bg-surface rounded px-1">User-Agent</code> header that
+            names your app, version, and a URL or email address, such as{" "}
+            <code class="bg-surface rounded px-1">
+              my-app/1.2 (you@example.org)
+            </code>
+            . See the <a href="/api/user-agent/">User-Agent policy</a>.
+          </p>
         </Card>
       </div>
 
