@@ -5,31 +5,47 @@ import ChartMap from "../../components/charts/ChartMap.astro";
 import Icon from "../../components/Icon.astro";
 
 // Source list comes from the currently deployed tiles manifest, joined with
-// per-source metadata (producer, license, website) from the seascape repo.
+// per-source metadata (producer, license, website, notice) from the seascape repo.
 interface Source {
   id: string;
   name?: string;
   producer?: string;
   website?: string;
   license?: string;
+  // licence-required text for derived products, paragraphs split by a blank line
+  notice?: string;
 }
 
-let sources: Source[] = [];
-try {
-  const manifest = await (
-    await fetch("https://tiles.openwaters.io/seascape/manifest.json")
-  ).json();
-  sources = await Promise.all(
-    (manifest.source_ids as string[]).map(async (id) => {
-      const res = await fetch(
-        `https://raw.githubusercontent.com/openwatersio/seascape/main/sources/${id}/metadata.json`,
-      );
-      return res.ok ? { id, ...(await res.json()) } : { id, name: id };
-    }),
-  );
-} catch {
-  // page still builds without the table if the manifest is unreachable
+// A notice can be a licence condition, so a build that can't read the metadata
+// fails rather than publishes without it, and the previous deploy stays live.
+// Keep a source's metadata on seascape main until the tiles stop serving it.
+async function fetchJson(url: string) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+      if (res.ok) return await res.json();
+      throw new Error(`HTTP ${res.status}`);
+    } catch (err) {
+      if (attempt === 3) throw new Error(`[seascape] ${url}: ${err}`);
+      await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
+    }
+  }
 }
+
+const manifest = await fetchJson(
+  "https://tiles.openwaters.io/seascape/manifest.json",
+);
+if (!manifest.source_ids?.length) {
+  throw new Error("[seascape] tiles manifest lists no sources");
+}
+const sources: Source[] = await Promise.all(
+  (manifest.source_ids as string[]).map(async (id) => ({
+    id,
+    ...(await fetchJson(
+      `https://raw.githubusercontent.com/openwatersio/seascape/main/sources/${id}/metadata.json`,
+    )),
+  })),
+);
 // Manifest order is alphabetical by internal id; sort by display name instead.
 sources.sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
 
@@ -225,50 +241,41 @@ const examples = [
         Sources
       </h2>
       <p class="text-fg-muted mb-4">
-        Seascape is a mosaic of {sources.length || "many"} sources. Global
-        coverage is at ~450 m resolution (zoom 8), and regional detail is as low
-        as ~8 m (zoom 14) where high-resolution sources exist. Where sources
-        overlap, datum-authoritative sources (e.g. NOAA S-102, already on a
-        chart datum) are the highest priority, and then higher-resolution
-        sources are preferred.
+        Seascape is a mosaic of {sources.length} sources. Global coverage is at
+        ~450 m resolution (zoom 8), and regional detail is as low as ~8 m (zoom
+        14) where high-resolution sources exist. Where sources overlap,
+        datum-authoritative sources (e.g. NOAA S-102, already on a chart datum)
+        are the highest priority, and then higher-resolution sources are
+        preferred.
       </p>
-      {sources.length > 0 ? (
-        <ul class="mb-12 ml-6 list-disc space-y-3 text-sm">
-          {sources.map((source) => (
-            <li>
-              {source.website ? (
-                <a
-                  href={source.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-accent hover:text-accent-hover"
-                >
-                  {source.name ?? source.id}
-                </a>
-              ) : (
-                (source.name ?? source.id)
-              )}
-              <br />
-              <span class="text-fg-muted">
-                {source.producer} · License: {source.license}
-              </span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p class="text-fg-muted mb-12">
-          See the{" "}
-          <a
-            href="https://tiles.openwaters.io/seascape/manifest.json"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-accent hover:text-accent-hover"
-          >
-            deployed manifest
-          </a>{" "}
-          for the full source list.
-        </p>
-      )}
+      <ul class="mb-12 ml-6 list-disc space-y-3 text-sm">
+        {sources.map((source) => (
+          <li>
+            {source.website ? (
+              <a
+                href={source.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-accent hover:text-accent-hover"
+              >
+                {source.name ?? source.id}
+              </a>
+            ) : (
+              (source.name ?? source.id)
+            )}
+            <br />
+            <span class="text-fg-muted">
+              {source.producer} · License: {source.license}
+            </span>
+            {source.notice
+              ?.trim()
+              .split(/\n\s*\n/)
+              .map((para) => (
+                <p class="text-fg-muted mt-2">{para}</p>
+              ))}
+          </li>
+        ))}
+      </ul>
 
       <!-- How to use -->
       <h2 id="how-to-use" class="mb-4 scroll-mt-24 text-3xl font-semibold">
@@ -323,8 +330,8 @@ const examples = [
         The TileJSON endpoints carry that credit in their{" "}
         <code class="bg-surface rounded px-1">attribution</code> field, so
         MapLibre's attribution control displays it automatically, linking back
-        to this page. The underlying data remains under each source's own open
-        terms, listed above.
+        to this page. The underlying data remains under each source's own terms,
+        listed above with any notice a source requires.
       </p>
       <p class="text-fg-muted mb-4">
         <strong>Code</strong> — the build pipeline is{" "}
