@@ -82,7 +82,7 @@ export const organization = (email: string) => ({
       name: "Open Waters AIS free personal access",
       price: 0,
       priceCurrency: "USD",
-      url: `${SITE}/api/ais/#limits`,
+      url: `${SITE}/ais/pricing/`,
       description:
         "Real-time vessel data from coastal authorities and volunteer receivers, free for personal use through an aisstream-compatible API. Anonymous and Personal tiers have published usage limits; contributing receiver data earns the free Contributor tier. Source data terms apply.",
       itemOffered: { "@type": "Service", name: "Open Waters AIS" },
@@ -100,9 +100,9 @@ export const organization = (email: string) => ({
     {
       "@type": "Offer",
       name: "Open Waters AIS Commercial",
-      url: `${SITE}/contact/`,
+      url: `${SITE}/ais/pricing/`,
       description:
-        "Paid AIS access for products, fleets, or support. Pricing is arranged by email; contact us for a quote.",
+        "Paid AIS plans for products and fleets: Fleet, Region, and World from $49 a month with a 30-day trial, and Custom plans with an SLA by arrangement.",
       itemOffered: {
         "@type": "Service",
         name: "Open Waters AIS Commercial tier",
