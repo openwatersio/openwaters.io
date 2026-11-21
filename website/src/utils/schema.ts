@@ -111,8 +111,8 @@ export const organization = (email: string) => ({
   ],
 });
 
-// Every Open Waters project is MIT unless stated otherwise — see /license/. Projects
-// whose licensing is genuinely per-source (Seascape's tiles) don't use this.
+// For MIT projects only. /license/ lists each project's license, and a project
+// under another license needs its own schema.
 export const softwareSourceCode = (project: {
   name: string;
   description: string;
