@@ -26,3 +26,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the repository layout, conventions, a
 ## Deployment
 
 Cloudflare Workers Builds creates pull request previews and deploys merges to `main`. This website does not use versioned releases.
+
+## License
+
+openwaters.io is © Open Water Software, LLC. The code is [MIT](LICENSE). The site's written content is [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Data served by the APIs and shown on the site keeps its own license, listed at [openwaters.io/license](https://openwaters.io/license/). Neither license covers the Open Waters, Slackwater, and project names, logos, or icons.
