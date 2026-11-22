@@ -45,7 +45,7 @@ const open = [
   {
     icon: "mdi:open-source-initiative",
     title: "Open-source software",
-    text: "The server is aiscast, MIT licensed. Read it, change it, run your own.",
+    text: "The server is aiscast, licensed AGPL-3.0. Read it, change it, run your own.",
     link: { label: "Source code", href: REPO },
   },
   {
@@ -509,9 +509,17 @@ const schema = {
         </table>
       </div>
       <p class="text-fg-faint mt-6 text-sm">
-        The server, viewer, and plugin are{" "}
+        The server and viewer are{" "}
         <a
           href={`${REPO}/blob/main/LICENSE`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          AGPL-3.0
+        </a>
+        , and the Signal K plugin is{" "}
+        <a
+          href={`${REPO}/blob/main/signalk-plugin/LICENSE`}
           target="_blank"
           rel="noopener noreferrer"
         >

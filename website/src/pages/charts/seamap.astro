@@ -273,35 +273,29 @@ const sources = [
         License
       </h2>
       <p class="text-fg-muted mb-4">
-        <strong>Tiles</strong> — the tiles, styles, and sprites served at{" "}
+        <strong>Tiles</strong> — the tiles served at{" "}
         <code class="bg-surface rounded px-1">tiles.openwaters.io/seamap</code>{" "}
-        are licensed{" "}
+        carry OpenStreetMap features, so they are licensed{" "}
         <a
-          href="https://creativecommons.org/licenses/by/4.0/"
+          href="https://opendatacommons.org/licenses/odbl/"
           target="_blank"
           rel="noopener noreferrer"
           class="text-accent hover:text-accent-hover"
         >
-          CC BY 4.0
+          ODbL
         </a>
-        : free for any use with the following attribution:
+        , like the OpenStreetMap data they come from. Use them with the
+        following attribution, within the terms of the sources listed above:
       </p>
       <div class="bg-well text-fg-strong mb-4 overflow-x-auto rounded-lg p-4">
-        <pre class="text-sm"><code>© Open Waters: Seamap &lt;https://openwaters.io/charts/seamap&gt;</code></pre>
+        <pre class="text-sm"><code>© Open Waters: Seamap &lt;https://openwaters.io/charts/seamap&gt;
+© OpenStreetMap contributors &lt;https://www.openstreetmap.org/copyright&gt;</code></pre>
       </div>
       <p class="text-fg-muted mb-4">
-        They derive from OpenStreetMap data,{" "}
-        <a
-          href="https://www.openstreetmap.org/copyright"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-accent hover:text-accent-hover"
-        >
-          © OpenStreetMap contributors
-        </a>{" "}
-        (ODbL), and each source listed above carries its own license and
-        attribution requirements. The style carries the full attribution list,
-        which MapLibre's attribution control displays automatically.
+        A database you derive from the tiles and publish must also be ODbL. Each
+        source listed above carries its own license and attribution
+        requirements. The style carries the full attribution list, which
+        MapLibre's attribution control displays automatically.
       </p>
       <p class="text-fg-muted mb-4">
         <strong>Code</strong> — the pipeline is{" "}
@@ -322,6 +316,16 @@ const sources = [
           class="text-accent hover:text-accent-hover"
         >
           MIT
+        </a>
+        , apart from its chart symbols, which are adapted from
+        quantenschaum/mapping and{" "}
+        <a
+          href="https://github.com/openwatersio/seamap/blob/main/style/sprites/PROVENANCE.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent hover:text-accent-hover"
+        >
+          used with permission
         </a>
         . The project is a fork of{" "}
         <a

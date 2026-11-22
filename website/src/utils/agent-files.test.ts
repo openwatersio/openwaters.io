@@ -392,6 +392,20 @@ test(
   },
 );
 
+test(
+  "the license table keeps its columns in the Markdown copy",
+  { skip },
+  () => {
+    // The Markdown converter flattens tables into one paragraph per cell, so a
+    // cell that doesn't name its column can't be told apart from its neighbours.
+    const md = read("license/index.md");
+    for (const label of ["Code", "Data", "Hosted service"]) {
+      assert.match(md, new RegExp(`^${label}: \\S`, "m"), `no ${label} cells`);
+    }
+    assert.match(md, /^Data: Tiles are ODbL/m);
+  },
+);
+
 test("every internal link on a prerendered page resolves", { skip }, () => {
   // Routes served by the AIS Worker on openwaters.io, not built here.
   const external = /^\/ais\/(vessels|stations|network|map|sitemap)([/.?#]|$)/;
