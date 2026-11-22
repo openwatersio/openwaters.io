@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { jsonLd, organization, website } from "./schema.ts";
+import { faqPage, jsonLd, organization, website } from "./schema.ts";
 
 test("jsonLd: a value cannot close the script tag", () => {
   const html = jsonLd({ name: "</script><img src=x>" });
@@ -52,5 +52,25 @@ test("website: names Open Waters and keeps the domain as a fallback", () => {
     name: "Open Waters",
     alternateName: "openwaters.io",
     url: "https://openwaters.io/",
+  });
+});
+
+test("faqPage: absolute url and one Question per item", () => {
+  assert.deepEqual(faqPage("/ais/", [{ q: "Is it free?", a: "Yes." }]), {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    url: "https://openwaters.io/ais/",
+    publisher: {
+      "@type": "Organization",
+      name: "Open Waters",
+      url: "https://openwaters.io",
+    },
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Is it free?",
+        acceptedAnswer: { "@type": "Answer", text: "Yes." },
+      },
+    ],
   });
 });

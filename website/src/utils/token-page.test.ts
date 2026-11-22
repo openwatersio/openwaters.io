@@ -37,6 +37,8 @@ function page(
     status?: unknown;
     statusCode?: number;
     analyticsError?: boolean;
+    clipboardError?: boolean;
+    hash?: string;
   } = {},
 ) {
   const events: unknown[] = [];
@@ -49,6 +51,11 @@ function page(
   const elements = new Map<string, any>();
   const order: string[] = [];
   const polls: (() => unknown)[] = [];
+  const copied: string[] = [];
+  const statusRequests: string[] = [];
+  const scrolled: string[] = [];
+  let releaseStatus: (() => void) | undefined;
+  let pendingStatus: Promise<void> | undefined;
   for (const selector of [
     "data-form",
     "data-token",
@@ -71,6 +78,13 @@ function page(
     "data-copy",
     "data-copy-label",
     "data-regen",
+    "data-mqtt-url",
+    "data-copy-mqtt",
+    "data-copy-mqtt-label",
+    "data-rx-check",
+    "data-rx-help",
+    "data-receiver-setup",
+    "data-udp-settings",
   ]) {
     let text = "";
     elements.set(`[${selector}]`, {
@@ -79,7 +93,12 @@ function page(
       checked: selector === "data-agree",
       disabled: false,
       focus() {},
-      scrollIntoView() {},
+      select() {
+        this.selected = true;
+      },
+      scrollIntoView() {
+        scrolled.push(selector);
+      },
       addEventListener(type: string, fn: () => unknown) {
         handlers.set(`${selector}:${type}`, fn);
       },
@@ -119,6 +138,9 @@ function page(
             ? { aiscatcherConfig }
             : null,
     document: { querySelector: () => root },
+    addEventListener: (type: string, fn: () => unknown) =>
+      handlers.set(`window:${type}`, fn),
+    location: { hash: options.hash ?? "" },
     localStorage: {
       getItem: (key: string) => saved.get(key) ?? null,
       setItem: (key: string, value: string) => {
@@ -150,7 +172,14 @@ function page(
     },
     clearInterval() {},
     setTimeout() {},
-    navigator: { clipboard: { writeText: async () => {} } },
+    navigator: {
+      clipboard: {
+        writeText: async (value: string) => {
+          if (options.clipboardError) throw Error("clipboard denied");
+          copied.push(value);
+        },
+      },
+    },
     fetch: async (_url: string, init?: { method: string }) => {
       if (init?.method === "POST") {
         if (options.networkError) throw Error("network");
@@ -162,6 +191,8 @@ function page(
             options.response === undefined ? issued : options.response,
         };
       }
+      statusRequests.push(_url);
+      await pendingStatus;
       return {
         ok: statusCode === 200,
         status: statusCode,
@@ -177,6 +208,25 @@ function page(
     saved,
     order,
     elements,
+    copied,
+    statusRequests,
+    scrolled,
+    click(selector: string) {
+      return handlers.get(`${selector}:click`)?.();
+    },
+    setStatus(value: unknown, code = 200) {
+      status = value;
+      statusCode = code;
+    },
+    holdStatus() {
+      pendingStatus = new Promise<void>((resolve) => {
+        releaseStatus = resolve;
+      });
+    },
+    releaseStatus() {
+      pendingStatus = undefined;
+      releaseStatus?.();
+    },
     async generate() {
       await handlers.get("data-go:click")!();
       await new Promise((resolve) => setImmediate(resolve));
@@ -188,6 +238,9 @@ function page(
     },
     reopen() {
       handlers.get("data-regen:click")!();
+    },
+    restorePage() {
+      handlers.get("window:pageshow")?.();
     },
   };
 }
@@ -310,4 +363,129 @@ test("restored and regenerated tokens have a downloadable config without retaini
   assert.notEqual(nextUrl, firstUrl);
   assert.deepEqual(p.revoked, [firstUrl]);
   assert.equal(await p.downloads.get(nextUrl)!.text(), aiscatcherConfig(token));
+});
+
+test("GUI copies the complete MQTT URL for restored and regenerated tokens", async () => {
+  const renewedToken = `${token.slice(0, -86)}${"B".repeat(86)}`;
+  const p = page({
+    cache: JSON.stringify(issued),
+    response: { token: renewedToken, claims },
+  });
+  const expected = `wssmqtt://x:${token}@ais.openwaters.io:443/v1/stream`;
+  assert.equal(p.elements.get("[data-mqtt-url]").value, expected);
+  await p.click("data-copy-mqtt");
+  assert.deepEqual(p.copied, [expected]);
+  assert.equal(p.elements.get("[data-copy-mqtt-label]").textContent, "Copied");
+  await p.generate();
+  await p.click("data-copy-mqtt");
+  assert.deepEqual(p.copied, [
+    expected,
+    `wssmqtt://x:${renewedToken}@ais.openwaters.io:443/v1/stream`,
+  ]);
+});
+
+test("clipboard failure selects the MQTT URL for manual copying", async () => {
+  const p = page({ cache: JSON.stringify(issued), clipboardError: true });
+  await p.click("data-copy-mqtt");
+  assert.equal(p.elements.get("[data-mqtt-url]").selected, true);
+  assert.match(
+    p.elements.get("[data-copy-mqtt-label]").textContent,
+    /copy manually/i,
+  );
+});
+
+test("Check now refreshes reception for the current station without reissuing a token", async () => {
+  const p = page();
+  await p.generate();
+  assert.equal(p.elements.get("[data-rx-help]").hidden, false);
+  p.setStatus({ station: { last_age_s: 0 } });
+  await p.click("data-rx-check");
+  assert.equal(
+    p.statusRequests.at(-1),
+    `https://ais.test/v1/stations/station:${claims.sub}`,
+  );
+  assert.equal(
+    p.elements.get("[data-rx]").textContent,
+    "Receiving data sent with this token",
+  );
+  assert.equal(p.elements.get("[data-rx-help]").hidden, true);
+  assert.equal(
+    p.events.filter((e: any) => e.name === "ais_token_issued").length,
+    1,
+  );
+});
+
+test("Check now prevents overlapping checks and recovers after a status error", async () => {
+  const p = page();
+  await p.generate();
+  const count = p.statusRequests.length;
+  p.holdStatus();
+  const check = p.click("data-rx-check");
+  assert.equal(p.elements.get("[data-rx-check]").disabled, false);
+  assert.equal(p.elements.get("[data-rx-check]").ariaDisabled, "true");
+  await p.click("data-rx-check");
+  assert.equal(p.statusRequests.length, count + 1);
+  p.setStatus({}, 503);
+  p.releaseStatus();
+  await check;
+  assert.equal(p.elements.get("[data-rx-check]").disabled, false);
+  assert.equal(p.elements.get("[data-rx-check]").ariaDisabled, "false");
+  assert.equal(
+    p.elements.get("[data-rx]").textContent,
+    "Couldn't check station status",
+  );
+  assert.equal(p.elements.get("[data-rx-help]").hidden, true);
+  p.setStatus({}, 404);
+  await p.click("data-rx-check");
+  assert.equal(p.elements.get("[data-rx-help]").hidden, false);
+});
+
+test("the GUI setup link scrolls to the instructions after issuance or restore", async () => {
+  const fresh = page({ hash: "#ais-catcher" });
+  assert.deepEqual(fresh.scrolled, []);
+  await fresh.generate();
+  assert.deepEqual(fresh.scrolled, ["data-receiver-setup"]);
+  const restored = page({
+    hash: "#ais-catcher",
+    cache: JSON.stringify(issued),
+  });
+  assert.deepEqual(restored.scrolled, ["data-receiver-setup"]);
+  const ordinary = page({ cache: JSON.stringify(issued) });
+  assert.deepEqual(ordinary.scrolled, []);
+});
+
+test("a rejected station name keeps the warning visible on the GUI setup link", async () => {
+  const p = page({
+    hash: "#ais-catcher",
+    response: { ...issued, name_error: "name unavailable" },
+  });
+  await p.generate();
+  assert.equal(p.elements.get("[data-form]").hidden, false);
+  assert.match(p.elements.get("[data-status]").textContent, /name unavailable/);
+  assert.deepEqual(p.scrolled, []);
+});
+
+test("reopening a bound token makes its UDP setting visible", async () => {
+  const p = page({ cache: JSON.stringify(issued) });
+  p.elements.get("[data-bind]").checked = true;
+  p.reopen();
+  assert.equal(p.elements.get("[data-udp-settings]").open, true);
+  p.elements.get("[data-udp-settings]").open = false;
+  p.restorePage();
+  assert.equal(p.elements.get("[data-udp-settings]").open, true);
+});
+
+test("reception hints distinguish stale or missing data from invalid status", async () => {
+  const p = page();
+  await p.generate();
+  for (const [age, hidden] of [
+    [300, false],
+    [299, true],
+    [-1, true],
+    ["0", true],
+    [NaN, true],
+  ] as const) {
+    await p.poll({ station: { last_age_s: age } });
+    assert.equal(p.elements.get("[data-rx-help]").hidden, hidden);
+  }
 });

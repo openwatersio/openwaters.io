@@ -17,7 +17,8 @@
   ],
   "services": [
     { "binding": "TIDES", "service": "openwaters-api" },
-    { "binding": "BATHYMETRY", "service": "crowd-depth-api" }
+    { "binding": "BATHYMETRY", "service": "crowd-depth-api" },
+    { "binding": "WATER_LEVELS", "service": "water-levels-api" }
   ],
   "workers_dev": true,
   "preview_urls": true,

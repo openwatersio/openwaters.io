@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { test } from "node:test";
+import { pageToMarkdown } from "./markdown.ts";
 
 // Checks the built site, so it only runs after `npm run build`. CI never
 // skips, so a build that stops writing dist/client fails instead of passing.
@@ -175,7 +176,7 @@ test("AIS metadata uses its own 1200x630 social image", { skip }, () => {
   );
   assert.match(
     html,
-    /name="description" content="Open Waters AIS is a free AIS network with an aisstream-compatible API, streaming live ship positions from coastal authorities and volunteer receivers\."/,
+    /name="description" content="Open Waters AIS is a free AIS network: live ship positions from coastal authorities and volunteer receivers, an aisstream-compatible API, and an MCP server for Claude and ChatGPT\."/,
   );
 });
 
@@ -230,6 +231,76 @@ test(
     });
   },
 );
+
+test("/ais/ describes the service and its questions", { skip }, () => {
+  const html = read("ais/index.html");
+  const graph = [
+    ...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g),
+  ]
+    .map((m) => JSON.parse(m[1]))
+    .flatMap((b) => b["@graph"] ?? b);
+
+  const api = graph.find((b) => b["@type"] === "WebAPI");
+  assert.ok(api, "no WebAPI JSON-LD on /ais/");
+  assert.equal(api.name, "Open Waters AIS");
+  assert.equal(api.url, "https://openwaters.io/ais/");
+  assert.equal(api.documentation, "https://openwaters.io/api/ais/");
+  assert.equal(api.isAccessibleForFree, true);
+  // Commercial inquiries use the contact page until published pricing exists.
+  assert.equal(api.offers.url, "https://openwaters.io/contact/");
+  assert.ok(!("price" in api.offers), "offer must not quote a price");
+
+  const faq = graph.find((b) => b["@type"] === "FAQPage");
+  assert.ok(faq, "no FAQPage JSON-LD on /ais/");
+  assert.equal(faq.mainEntity.length, 7);
+  // Check visible content separately so the JSON-LD cannot satisfy the assertion.
+  const visible = pageToMarkdown(html);
+  assert.doesNotMatch(html, /\/ais\/pricing\//);
+  assert.ok(existsSync(new URL("contact/index.html", dist)));
+  for (const q of faq.mainEntity) {
+    assert.ok(visible.includes(q.name), `question not rendered: ${q.name}`);
+    assert.equal(q.acceptedAnswer["@type"], "Answer");
+    assert.ok(
+      visible.includes(q.acceptedAnswer.text),
+      `answer not rendered: ${q.name}`,
+    );
+  }
+});
+
+test("/ais/mcp/ is the MCP server's page", { skip }, () => {
+  const html = read("ais/mcp/index.html");
+  const graph = [
+    ...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g),
+  ]
+    .map((m) => JSON.parse(m[1]))
+    .flatMap((b) => b["@graph"] ?? b);
+
+  const api = graph.find((b) => b["@type"] === "WebAPI");
+  assert.equal(api?.url, "https://openwaters.io/ais/mcp/");
+
+  const faq = graph.find((b) => b["@type"] === "FAQPage");
+  assert.ok(faq, "no FAQPage JSON-LD on /ais/mcp/");
+  const visible = pageToMarkdown(html);
+  for (const q of faq.mainEntity) {
+    assert.ok(visible.includes(q.name), `question not rendered: ${q.name}`);
+    assert.ok(
+      visible.includes(q.acceptedAnswer.text),
+      `answer not rendered: ${q.name}`,
+    );
+  }
+
+  // The hero links to a heading the Markdown guide generates.
+  assert.match(html, /href="#add-it-to-your-assistant"/);
+  assert.match(html, /id="add-it-to-your-assistant"/);
+
+  // Absolute links outside the built HTML, which the dead-link test does not read.
+  assert.match(read("sitemap.xml"), /https:\/\/openwaters\.io\/ais\/mcp\//);
+  assert.equal(
+    JSON.parse(read(".well-known/mcp.json")).documentation,
+    "https://openwaters.io/ais/mcp/",
+  );
+  assert.match(read("llms.txt"), /\(https:\/\/openwaters\.io\/ais\/mcp\/\)/);
+});
 
 test(
   "openapi.json operations all carry an operationId and description",
@@ -318,6 +389,20 @@ test(
     for (const href of ["/about/", "/contact/", "/privacy/", "/license/"]) {
       assert.ok(footer.includes(`href="${href}"`), `footer missing ${href}`);
     }
+  },
+);
+
+test(
+  "the license table keeps its columns in the Markdown copy",
+  { skip },
+  () => {
+    // The Markdown converter flattens tables into one paragraph per cell, so a
+    // cell that doesn't name its column can't be told apart from its neighbours.
+    const md = read("license/index.md");
+    for (const label of ["Code", "Data", "Hosted service"]) {
+      assert.match(md, new RegExp(`^${label}: \\S`, "m"), `no ${label} cells`);
+    }
+    assert.match(md, /^Data: Tiles are ODbL/m);
   },
 );
 

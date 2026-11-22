@@ -196,7 +196,7 @@ const start = new Date();
 const end = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
 // Get water level predictions for San Francisco
-const { timeline } = getTimelinePrediction({
+const { timeline } = await getTimelinePrediction({
   latitude: 37.8063,
   longitude: -122.4659,
   start,
@@ -204,7 +204,7 @@ const { timeline } = getTimelinePrediction({
 });
 
 // Find high and low tides
-const { extremes } = getExtremesPrediction({
+const { extremes } = await getExtremesPrediction({
   latitude: 37.8063,
   longitude: -122.4659,
   start,
@@ -223,9 +223,9 @@ const { extremes } = getExtremesPrediction({
             Free & Open Source
           </h2>
           <p class="text-fg-muted mb-6 text-xl text-balance">
-            Slackwater is open source software, available under the MIT license.
-            Use it freely in your projects, contribute improvements, or fork it
-            for your own needs.
+            The Slackwater engine is open source software, available under the
+            MIT license. Use it freely in your projects, contribute
+            improvements, or fork it for your own needs.
           </p>
           <div class="flex flex-wrap justify-center gap-4">
             <a

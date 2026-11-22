@@ -70,8 +70,9 @@ const stationRedirects = {
   },
   async load(id) {
     if (id !== "\0virtual:station-redirects") return;
-    const db = await import("@slackwater/database");
+    const { loadStations } = await import("@slackwater/database");
     const { stationTargets } = await import("./src/utils/station-redirects.ts");
+    const db = await loadStations();
     return `export default ${JSON.stringify(stationTargets(db))};`;
   },
 };

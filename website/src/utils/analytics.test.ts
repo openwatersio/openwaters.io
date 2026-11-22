@@ -160,6 +160,23 @@ test("resource and contact handoffs use fixed labels instead of destination stri
     },
   );
   assert.deepEqual(
+    handoff(
+      "https://cursor.com/en/install-mcp?name=open-waters-ais&config=SECRET",
+      "/ais/mcp/",
+    ),
+    {
+      name: "resource_handoff",
+      props: { resource: "ais-mcp-cursor", action: "install" },
+    },
+  );
+  assert.deepEqual(
+    handoff("https://claude.ai/directory/open-waters-ais", "/ais/mcp/"),
+    {
+      name: "resource_handoff",
+      props: { resource: "ais-mcp-claude", action: "install" },
+    },
+  );
+  assert.deepEqual(
     handoff("mailto:hello@openwaters.io?body=SECRET", "/ais/token/"),
     { name: "contact_started", props: { context: "ais-token" } },
   );

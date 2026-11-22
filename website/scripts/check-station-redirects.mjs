@@ -1,7 +1,7 @@
 // Compares the station redirect map with what slackwater.xyz publishes, since the two
 // sites deploy from separate copies of @slackwater/database. Run it after bumping the
 // database here, or when slackwater.xyz changes which stations get a page.
-import * as database from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
 
 import { stationTargets } from "../src/utils/station-redirects.ts";
 
@@ -27,7 +27,7 @@ const stationPages = new Set([
 ]);
 const published = new Set([...stationPages, ...(await sitemap("static"))]);
 
-const { pages, fallbacks } = stationTargets(database);
+const { pages, fallbacks } = stationTargets(await loadStations());
 const targeted = new Set(Object.values(pages));
 const problems = [
   ...Object.entries(pages)

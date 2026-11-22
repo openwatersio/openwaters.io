@@ -20,6 +20,19 @@ export const website = {
   url: `${SITE}/`,
 };
 
+// Callers render the same questions and answers on the page.
+export const faqPage = (path: string, items: { q: string; a: string }[]) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  url: `${SITE}${path}`,
+  publisher,
+  mainEntity: items.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+});
+
 // Emitted on every page by MainLayout. Takes the address rather than importing
 // constants.ts, which reads import.meta.env and so cannot be loaded by node --test.
 export const organization = (email: string) => ({
@@ -98,8 +111,8 @@ export const organization = (email: string) => ({
   ],
 });
 
-// Every Open Waters project is MIT unless stated otherwise — see /license/. Projects
-// whose licensing is genuinely per-source (Seascape's tiles) don't use this.
+// For MIT projects only. /license/ lists each project's license, and a project
+// under another license needs its own schema.
 export const softwareSourceCode = (project: {
   name: string;
   description: string;
