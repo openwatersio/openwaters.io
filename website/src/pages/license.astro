@@ -1,4 +1,5 @@
 ---
+import { slackwaterLink } from "../utils/slackwater-link";
 import MainLayout from "../layouts/MainLayout.astro";
 import Container from "../components/ui/Container.astro";
 import Card from "../components/ui/Card.astro";
@@ -35,7 +36,7 @@ const projects: Row[] = [
   },
   {
     project: "Slackwater for iOS and Android",
-    href: "https://slackwater.xyz",
+    href: slackwaterLink("/", "license"),
     code: "GPL-3.0. Contributions to the iOS app need the CLA.",
     data: "Bundled station data keeps its license from the database.",
     service: "None beyond the APIs the app calls.",

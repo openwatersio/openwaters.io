@@ -1,4 +1,5 @@
 ---
+import { slackwaterLink } from "../../utils/slackwater-link";
 import Logo from "./Logo.astro";
 
 const columns = [
@@ -8,7 +9,7 @@ const columns = [
       { label: "Apps", href: "/apps/" },
       {
         label: "Slackwater",
-        href: "https://slackwater.xyz/",
+        href: slackwaterLink("/", "footer"),
       },
       { label: "Tides", href: "/tides/" },
       { label: "Charts", href: "/charts/" },

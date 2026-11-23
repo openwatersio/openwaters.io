@@ -1,4 +1,5 @@
 ---
+import { slackwaterLink } from "../../utils/slackwater-link";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { softwareSourceCode } from "../../utils/schema";
 import Container from "../../components/ui/Container.astro";
@@ -211,7 +212,7 @@ print(sirius.altDeg, sirius.azDeg)`;
       <p class="text-fg-muted mt-8">
         The same astronomy engine powers{" "}
         <a
-          href="https://slackwater.xyz/"
+          href={slackwaterLink("/", "sky")}
           class="text-accent font-medium underline-offset-4 hover:underline"
         >
           Slackwater's Sun and Moon views

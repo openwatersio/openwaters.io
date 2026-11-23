@@ -1,4 +1,5 @@
 ---
+import { slackwaterLink } from "../utils/slackwater-link";
 import MainLayout from "../layouts/MainLayout.astro";
 import Container from "../components/ui/Container.astro";
 import Icon from "../components/Icon.astro";
@@ -95,7 +96,7 @@ import { CONTACT_EMAIL } from "../utils/constants";
         <div class="space-y-6">
           <div class="border-accent border-l-4 pl-6">
             <h3 class="mb-2 text-xl font-semibold">
-              <a href="https://slackwater.xyz/">Slackwater</a>
+              <a href={slackwaterLink("/", "about")}>Slackwater</a>
             </h3>
             <p class="mb-2">
               Tide and current predictions for iPhone and Apple Watch.

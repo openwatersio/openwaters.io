@@ -1,4 +1,5 @@
 ---
+import { slackwaterLink } from "../../utils/slackwater-link";
 import ApiLayout from "../../layouts/ApiLayout.astro";
 import ApiEndpoint from "../../components/api/ApiEndpoint.astro";
 import Card from "../../components/ui/Card.astro";
@@ -51,11 +52,11 @@ const link = "text-accent hover:text-accent-hover font-medium";
       OpenAPI specification
     </a>
     . Browse current stations at{" "}
-    <a href="https://slackwater.xyz/currents/" class={link}>
+    <a href={slackwaterLink("/currents/", "api-currents")} class={link}>
       slackwater.xyz
     </a>{" "}
     or in the{" "}
-    <a href="https://slackwater.xyz/" class={link}>
+    <a href={slackwaterLink("/", "api-currents-app")} class={link}>
       Slackwater app
     </a>
     .
