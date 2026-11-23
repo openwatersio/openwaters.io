@@ -1,4 +1,5 @@
 ---
+import { slackwaterLink } from "../../utils/slackwater-link";
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
@@ -178,7 +179,7 @@ import { TideChart } from "../../components/tides/TideCharts";
         and on{" "}
         <a
           class="text-fg-muted hover:text-accent-hover"
-          href="https://slackwater.xyz/tides/"
+          href={slackwaterLink("/tides/", "harmonics")}
         >
           slackwater.xyz
         </a>{" "}

@@ -1,4 +1,5 @@
 ---
+import { slackwaterLink } from "../../utils/slackwater-link";
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
 import Card from "../../components/ui/Card.astro";
@@ -28,7 +29,7 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
       <!-- Features Grid -->
       <div class="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2">
         <FeatureCard
-          href="https://slackwater.xyz/tides/"
+          href={slackwaterLink("/tides/", "tides-card")}
           title="Tide Predictions"
           description="Tides and currents for every station, organized by place, on slackwater.xyz."
           action="Browse stations"
@@ -110,15 +111,22 @@ import FeatureCard from "../../components/ui/FeatureCard.astro";
         <h2 class="text-fg-strong mb-4">Start Exploring Tides</h2>
         <p class="text-fg-muted mb-8 text-xl">
           Find tides for your favorite places on{" "}
-          <a href="https://slackwater.xyz/tides/">slackwater.xyz</a> and in the{" "}
-          <a href="https://slackwater.xyz/">Slackwater app</a> for iPhone, or
-          integrate our API into your application.
+          <a href={slackwaterLink("/tides/", "tides-text")}>slackwater.xyz</a>{" "}
+          and in the{" "}
+          <a href={slackwaterLink("/", "tides-app-text")}>Slackwater app</a> for
+          iPhone, or integrate our API into your application.
         </p>
         <div class="flex flex-wrap justify-center gap-4">
-          <a href="https://slackwater.xyz/tides/" class="btn btn-primary">
+          <a
+            href={slackwaterLink("/tides/", "tides-button")}
+            class="btn btn-primary"
+          >
             Browse Stations
           </a>
-          <a href="https://slackwater.xyz/" class="btn btn-secondary">
+          <a
+            href={slackwaterLink("/", "tides-app-button")}
+            class="btn btn-secondary"
+          >
             Get the iPhone App
           </a>
           <a href="/api/" class="btn btn-secondary">

@@ -52,3 +52,17 @@ test("pageToMarkdown: drops decorative images, keeps described ones", () => {
   assert.ok(!md.includes("[]("));
   assert.match(md, /!\[A chart\]\(\/b\.png\)/);
 });
+
+test("pageToMarkdown: drops UTM tags from slackwater.xyz links only", () => {
+  const md = pageToMarkdown(
+    `<main><a href="https://slackwater.xyz/tides/?utm_source=openwaters.io&amp;utm_medium=referral&amp;utm_content=tides-button">Tides</a>
+<a href="https://slackwater.xyz/?utm_source=openwaters.io&#38;utm_content=home">Home</a>
+<a href="https://example.com/?q=a%20b&amp;utm_source=x">Other</a></main>`,
+  );
+  assert.match(md, /\[Tides\]\(https:\/\/slackwater\.xyz\/tides\/\)/);
+  assert.match(md, /\[Home\]\(https:\/\/slackwater\.xyz\/\)/);
+  assert.match(
+    md,
+    /\[Other\]\(https:\/\/example\.com\/\?q=a%20b&utm_source=x\)/,
+  );
+});

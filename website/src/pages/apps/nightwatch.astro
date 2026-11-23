@@ -1,4 +1,5 @@
 ---
+import { slackwaterLink } from "../../utils/slackwater-link";
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
 import { Content as SetupGuide } from "../../components/nightwatch/SetupGuide.md";
@@ -19,7 +20,10 @@ import { Content as SetupGuide } from "../../components/nightwatch/SetupGuide.md
         <div>
           <p class="eyebrow mb-4">Setup guide · iOS only</p>
           <h1 class="mb-6">Nightwatch</h1>
-          <p class="text-lead mb-6">A dim red tint for the night watch, or dim full-colour for reading charts.</p>
+          <p class="text-lead mb-6">
+            A dim red tint for the night watch, or dim full-colour for reading
+            charts.
+          </p>
           <p class="text-fg-muted">
             An app’s dark theme stops at its edges. iOS Color Filters can tint
             your whole display red, including other apps and the lock screen.
@@ -38,9 +42,9 @@ import { Content as SetupGuide } from "../../components/nightwatch/SetupGuide.md
             class="h-auto w-full rounded-3xl"
           />
           <figcaption class="text-fg-faint mt-3 text-sm">
-            <a href="https://slackwater.xyz/">Slackwater</a> with the red tint
-            on. This is an illustration, since iOS screenshots don’t capture the
-            display filter.
+            <a href={slackwaterLink("/", "nightwatch")}>Slackwater</a> with the
+            red tint on. This is an illustration, since iOS screenshots don’t
+            capture the display filter.
           </figcaption>
         </figure>
       </div>

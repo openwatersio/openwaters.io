@@ -44,6 +44,16 @@ test("station pages live on slackwater.xyz, not here", { skip }, () => {
   }
 });
 
+test("every link to slackwater.xyz names its placement", { skip }, () => {
+  for (const file of globSync("**/*.html", { cwd: dist })) {
+    for (const [, href] of read(file).matchAll(
+      /href="(https:\/\/slackwater\.xyz[^"]*)"/g,
+    )) {
+      assert.match(href, /utm_content=/, `${file}: ${href}`);
+    }
+  }
+});
+
 test(
   "openapi.json is an OpenAPI 3 document served from the site root",
   { skip },

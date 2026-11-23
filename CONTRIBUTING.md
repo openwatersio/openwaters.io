@@ -46,6 +46,8 @@ The AIS service is "Open Waters AIS" in prose, titles, and metadata. `aiscast` n
 
 Tide and current station pages live on slackwater.xyz. `/tides/stations/` URLs redirect there by station id, using a map built from `@slackwater/database` routes in `website/src/utils/station-redirects.ts`. Its rule for which stations have a page mirrors slackwater.xyz's catalogue. Run `npm run check:station-redirects -w website` after bumping `@slackwater/database`, or when slackwater.xyz changes which stations it publishes; it compares the map with that site's sitemaps. When the bump is ahead of what slackwater.xyz has deployed, point it at that site's preview with `SLACKWATER_ORIGIN=https://pr-NNN-slackwater-xyz.clarkbw.workers.dev`.
 
+Link to slackwater.xyz with `slackwaterLink(path, placement)` from `website/src/utils/slackwater-link.ts`, not a bare URL. Plausible on slackwater.xyz only sees the referring domain, so the UTM tags it adds are what tell one openwaters.io link from another. Name the placement after the page and the spot on it, such as `tides-button`. The Markdown copies for agents drop the tags.
+
 Avoid spreading large numeric arrays into `Math.min` or `Math.max`; the argument list can overflow. Scan the values in a loop instead.
 
 ## Updates

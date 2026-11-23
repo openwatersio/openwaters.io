@@ -1,4 +1,5 @@
 ---
+import { slackwaterLink } from "../../utils/slackwater-link";
 import ApiLayout from "../../layouts/ApiLayout.astro";
 import ApiEndpoint from "../../components/api/ApiEndpoint.astro";
 import Card from "../../components/ui/Card.astro";
@@ -53,14 +54,14 @@ const sections = [
     </a>
     . Browse tide stations at{" "}
     <a
-      href="https://slackwater.xyz/tides/"
+      href={slackwaterLink("/tides/", "api-tides")}
       class="text-accent hover:text-accent-hover font-medium"
     >
       slackwater.xyz
     </a>{" "}
     or in the{" "}
     <a
-      href="https://slackwater.xyz/"
+      href={slackwaterLink("/", "api-tides-app")}
       class="text-accent hover:text-accent-hover font-medium"
     >
       Slackwater app

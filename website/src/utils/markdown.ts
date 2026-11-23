@@ -41,9 +41,31 @@ turndown.addRule("blockLink", {
   },
 });
 
+// slackwaterLink() tags links so slackwater.xyz can tell which one a person
+// followed. An agent copies the URL, so the Markdown keeps the plain one. Other
+// hosts' links are left exactly as written.
+const untracked = (html: string) =>
+  html.replace(
+    /href="(https:\/\/slackwater\.xyz\/[^"]*\?[^"]*)"/g,
+    (attr, raw: string) => {
+      let url: URL;
+      try {
+        url = new URL(raw.replaceAll("&amp;", "&").replaceAll("&#38;", "&"));
+      } catch {
+        return attr;
+      }
+      for (const key of [...url.searchParams.keys()]) {
+        if (key.startsWith("utm_")) url.searchParams.delete(key);
+      }
+      return `href="${url.toString().replaceAll("&", "&amp;")}"`;
+    },
+  );
+
 /** The Markdown representation of a built page: its <main> content. */
 export function pageToMarkdown(html: string): string {
-  const main = html.match(/<main[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? html;
+  const main = untracked(
+    html.match(/<main[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? html,
+  );
   return (
     turndown
       .turndown(main)

@@ -1,4 +1,5 @@
 ---
+import { slackwaterLink } from "../../utils/slackwater-link";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { softwareSourceCode } from "../../utils/schema";
 import Container from "../../components/ui/Container.astro";
@@ -49,9 +50,14 @@ import Icon from "../../components/Icon.astro";
         </p>
         <p>
           Slackwater powers the{" "}
-          <a href="https://slackwater.xyz/">Slackwater app</a> for iPhone and
-          the station pages on{" "}
-          <a href="https://slackwater.xyz/tides/">slackwater.xyz</a>.
+          <a href={slackwaterLink("/", "tides-slackwater-app")}>
+            Slackwater app
+          </a>{" "}
+          for iPhone and the station pages on{" "}
+          <a href={slackwaterLink("/tides/", "tides-slackwater")}>
+            slackwater.xyz
+          </a>
+          .
         </p>
       </div>
 
