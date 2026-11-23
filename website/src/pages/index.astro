@@ -1,5 +1,4 @@
 ---
-import { slackwaterLink } from "../utils/slackwater-link";
 import MainLayout from "../layouts/MainLayout.astro";
 import Container from "../components/ui/Container.astro";
 import Card from "../components/ui/Card.astro";
@@ -101,7 +100,7 @@ const charts = [
           <p class="text-fg-muted">
             Tide predictions powered by the{" "}
             <a
-              href={slackwaterLink("/", "home")}
+              href="/apps/slackwater/"
               class="text-accent hover:text-accent-hover underline"
             >
               Slackwater
