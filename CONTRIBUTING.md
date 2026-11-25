@@ -2,6 +2,8 @@
 
 This repository contains the Open Waters website and the workers behind its public APIs.
 
+Every change follows the org-wide [rigor rules](https://github.com/openwatersio/.github/blob/main/docs/agents/rigor.md). The first of them: when something fails or looks wrong, find the cause and fix it there instead of working around it.
+
 ## Layout
 
 - `website/` contains the Astro site and its React islands. Astro pages live in `website/src/pages/`, shared components in `website/src/components/`, and global styles in `website/src/styles/global.css`.
