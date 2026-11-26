@@ -7,6 +7,15 @@ import Container from "../../components/ui/Container.astro";
 <MainLayout
   title="Slackwater: tide and current predictions for iPhone"
   description="Find tides, tidal currents, and slack water with Slackwater, an offline app for iPhone and Apple Watch."
+  image="/og/slackwater.png"
+  schema={{
+    "@context": "https://schema.org",
+    "@type": "MobileApplication",
+    name: "Slackwater",
+    operatingSystem: "iOS 26 or later; iPadOS 26 or later",
+    applicationCategory: "UtilitiesApplication",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  }}
 >
   <Container class="py-16 md:py-24">
     <div class="mx-auto max-w-4xl">
