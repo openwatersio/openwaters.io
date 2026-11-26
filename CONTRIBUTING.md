@@ -25,6 +25,8 @@ Run `npm ci` again whenever a pull moves `package-lock.json`. A stale `node_modu
 
 ## Checks
 
+Run `gh actions-lock` after adding, removing, or renaming a workflow or changing an action reference, and commit the generated lockfile with the workflow changes. Install it with `gh extension install github/gh-actions-lock`. Dependabot updates lockfile entries for action version bumps in onboarded workflows.
+
 Run these before opening a pull request:
 
 ```sh
