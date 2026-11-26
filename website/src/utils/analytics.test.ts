@@ -131,6 +131,16 @@ test("analytics only sends defined events and enumerated properties", () => {
 test("resource and contact handoffs use fixed labels instead of destination strings", () => {
   assert.deepEqual(
     handoff(
+      "https://apps.apple.com/app/slackwater-tides-current/id6813654837?pt=128699520&ct=openwaters-app-page",
+      "/apps/slackwater/",
+    ),
+    {
+      name: "resource_handoff",
+      props: { resource: "slackwater-app-store", action: "download" },
+    },
+  );
+  assert.deepEqual(
+    handoff(
       "https://www.npmjs.com/package/signalk-aiscast?token=SECRET#SECRET",
       "/ais/signalk/",
     ),

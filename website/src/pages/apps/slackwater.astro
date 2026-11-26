@@ -1,0 +1,67 @@
+---
+import { slackwaterLink } from "../../utils/slackwater-link";
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+---
+
+<MainLayout
+  title="Slackwater: tide and current predictions for iPhone"
+  description="Find tides, tidal currents, and slack water with Slackwater, an offline app for iPhone and Apple Watch."
+  image="/og/slackwater.png"
+  schema={{
+    "@context": "https://schema.org",
+    "@type": "MobileApplication",
+    name: "Slackwater",
+    operatingSystem: "iOS 26 or later; iPadOS 26 or later",
+    applicationCategory: "UtilitiesApplication",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  }}
+>
+  <Container class="py-16 md:py-24">
+    <div class="mx-auto max-w-4xl">
+      <a href="/apps/" class="text-sm">
+        ← Apps
+      </a>
+      <div class="mt-8 grid items-center gap-10 md:grid-cols-[1fr_auto]">
+        <div>
+          <p class="eyebrow mb-4">iPhone and Apple Watch</p>
+          <h1 class="mb-6">Slackwater</h1>
+          <p class="text-lead mb-6">Tides and currents, even without signal.</p>
+          <p class="text-fg-muted mb-6">
+            See tide heights around the world and tidal currents across the US
+            and Canada. Find the next slack, max flood, or max ebb, with
+            predictions computed on your device, even when you’re offline.
+          </p>
+          <p class="text-fg-muted mb-8">
+            The core app is free, with no ads and no account to create. Android
+            is coming soon.
+          </p>
+          <a
+            href="https://apps.apple.com/app/slackwater-tides-current/id6813654837?pt=128699520&ct=openwaters-app-page"
+            class="btn btn-primary"
+          >
+            Download on the App Store →
+          </a>
+        </div>
+        <img
+          src="/apps/slackwater-currents.webp"
+          alt="Slackwater showing a tidal current prediction and its flood, ebb, and slack periods."
+          width="780"
+          height="1695"
+          class="mx-auto h-auto w-64 rounded-3xl"
+        />
+      </div>
+      <div class="prose prose-lg mt-16 max-w-none">
+        <h2>Plan around the water</h2>
+        <p>
+          Check tide heights and current predictions before heading out, and
+          keep them close at hand when you’re away from a connection.
+        </p>
+        <p>
+          Visit <a href={slackwaterLink("/", "app-page")}>slackwater.xyz</a> for
+          station pages, support, and more about the app.
+        </p>
+      </div>
+    </div>
+  </Container>
+</MainLayout>

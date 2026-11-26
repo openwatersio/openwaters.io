@@ -44,6 +44,10 @@ const referrers = [
 ];
 
 const resources: Record<string, { resource: string; action: string }> = {
+  "https://apps.apple.com/app/slackwater-tides-current/id6813654837": {
+    resource: "slackwater-app-store",
+    action: "download",
+  },
   "https://github.com/openwatersio/aiscast": {
     resource: "aiscast-project",
     action: "project",

@@ -169,6 +169,34 @@ test("sky metadata uses its own 1200x630 social image", { skip }, () => {
   );
 });
 
+test(
+  "Slackwater app page describes the app and uses its screenshot",
+  { skip },
+  () => {
+    const html = read("apps/slackwater/index.html");
+    assert.match(
+      html,
+      /property="og:image" content="https:\/\/openwaters\.io\/og\/slackwater\.png"/,
+    );
+    const image = readBuffer("og/slackwater.png");
+    assert.deepEqual(
+      [image.readUInt32BE(16), image.readUInt32BE(20)],
+      [1200, 630],
+    );
+    const schemas = [
+      ...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g),
+    ].map((match) => JSON.parse(match[1]!));
+    const app = schemas.find(
+      (schema) => schema["@type"] === "MobileApplication",
+    );
+    assert.equal(app.name, "Slackwater");
+    assert.equal(app.applicationCategory, "UtilitiesApplication");
+    assert.match(app.operatingSystem, /iOS/);
+    assert.equal(app.offers.price, "0");
+    assert.equal(app.offers.priceCurrency, "USD");
+  },
+);
+
 test("AIS metadata uses its own 1200x630 social image", { skip }, () => {
   const html = read("ais/index.html");
   const src = html.match(/property="og:image" content="([^"]+)"/)?.[1];
