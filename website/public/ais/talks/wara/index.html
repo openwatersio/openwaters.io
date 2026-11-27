@@ -1,0 +1,1189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A 20-minute amateur radio club talk about AIS, receive-only SDR stations, and how ship reports become a map of the Salish Sea."
+    />
+    <meta name="theme-color" content="#092438" />
+    <title>From VHF to vessel tracks | Open Waters AIS</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --water: #092438;
+        --deep: #061a2a;
+        --panel: #10354b;
+        --line: #42657a;
+        --ink: #f0f7fa;
+        --muted: #bdd3df;
+        --signal: #84e2d3;
+        --amber: #ffce87;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        line-height: 1.55;
+        color: var(--ink);
+        background: var(--deep);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      a {
+        color: var(--signal);
+        text-underline-offset: 0.2em;
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button,
+      .action {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 0.35rem;
+        color: var(--ink);
+        padding: 0.45rem 0.75rem;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.55;
+        cursor: default;
+      }
+      :focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: 4px;
+      }
+      .presenting .slide :is(h1, h2):focus-visible {
+        outline: none;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .bar {
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: var(--deep);
+      }
+      .bar-inner,
+      main {
+        width: min(76rem, calc(100% - 2rem));
+        margin-inline: auto;
+      }
+      .bar-inner,
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .bar-inner {
+        min-height: 4rem;
+        justify-content: space-between;
+        padding-block: 0.55rem;
+      }
+      .brand {
+        color: var(--ink);
+        font-weight: 750;
+        text-decoration: none;
+      }
+      .skip {
+        position: absolute;
+        top: 0.4rem;
+        left: 0.4rem;
+        transform: translateY(-150%);
+        z-index: 2;
+        background: var(--deep);
+        padding: 0.4rem;
+      }
+      .skip:focus {
+        transform: none;
+      }
+      .muted,
+      figcaption,
+      .timing {
+        color: var(--muted);
+      }
+      .timing {
+        font-variant-numeric: tabular-nums;
+      }
+      .contents {
+        margin: 1rem 0 0;
+      }
+      .contents ol {
+        columns: 2;
+        padding-inline-start: 1.7rem;
+      }
+      .contents li {
+        margin-block: 0.35rem;
+      }
+      summary {
+        color: var(--signal);
+        cursor: pointer;
+      }
+      .slide {
+        padding: clamp(1rem, 3.5vw, 3.5rem);
+        margin-block: 1rem;
+        border: 1px solid var(--line);
+        border-radius: 0.55rem;
+        background: var(--water);
+        scroll-margin-top: 6rem;
+      }
+      .slide > :first-child {
+        margin-top: 0;
+      }
+      h1,
+      h2,
+      h3,
+      p,
+      figure,
+      ul,
+      ol,
+      dl {
+        margin-top: 0;
+      }
+      h1,
+      h2,
+      h3 {
+        line-height: 1.1;
+        text-wrap: balance;
+      }
+      h1 {
+        font-size: clamp(3rem, 7.5vw, 6.2rem);
+        letter-spacing: -0.05em;
+        margin-bottom: 1.2rem;
+      }
+      h2 {
+        font-size: clamp(1.9rem, 4.6vw, 3.75rem);
+        letter-spacing: -0.045em;
+        margin-bottom: 1.2rem;
+      }
+      h3 {
+        font-size: 1.2em;
+        margin-bottom: 0.45rem;
+      }
+      p,
+      li,
+      dd {
+        max-width: 70ch;
+      }
+      .lead {
+        font-size: clamp(1.16rem, 2.05vw, 1.55rem);
+        line-height: 1.4;
+        max-width: 47ch;
+      }
+      .split {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: clamp(1.2rem, 4vw, 3.5rem);
+        align-items: start;
+      }
+      .hero .split {
+        align-items: center;
+      }
+      figure {
+        margin-inline: 0;
+      }
+      figcaption {
+        font-size: 0.9em;
+        margin-top: 0.65rem;
+      }
+      .route {
+        margin: 0;
+        padding: 0.5rem 1.1rem;
+        list-style: none;
+        border: 1px solid var(--line);
+        background-color: var(--panel);
+        background-image:
+          linear-gradient(#ffffff12 1px, transparent 1px),
+          linear-gradient(90deg, #ffffff12 1px, transparent 1px);
+        background-size: 1.5rem 1.5rem;
+      }
+      .route li {
+        padding: 0.65rem 0 0.65rem 1.3rem;
+        position: relative;
+        border-left: 2px solid var(--signal);
+        margin-left: 0.5rem;
+      }
+      .route li::before {
+        content: "";
+        position: absolute;
+        left: -0.43rem;
+        top: 1rem;
+        width: 0.66rem;
+        height: 0.66rem;
+        border-radius: 50%;
+        background: var(--signal);
+      }
+      .route strong,
+      .readout strong {
+        display: block;
+        font-size: 1.2em;
+      }
+      .freq {
+        font-family: ui-monospace, monospace;
+        color: var(--amber);
+        font-variant-numeric: tabular-nums;
+      }
+      .compare,
+      .readout {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin-block: 1rem;
+      }
+      .compare > div,
+      .readout > div {
+        padding-top: 0.8rem;
+        border-top: 2px solid var(--line);
+      }
+      dt {
+        font-weight: 740;
+      }
+      dd {
+        margin: 0.2rem 0 0.8rem;
+      }
+      pre {
+        padding: 0.85rem;
+        border: 1px solid var(--line);
+        background: var(--deep);
+        color: var(--amber);
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      code {
+        font-family: ui-monospace, monospace;
+      }
+      .sources {
+        font-size: 0.88em;
+        margin-block: 1.1rem 0;
+      }
+      .notes {
+        border-top: 1px solid var(--line);
+        padding-top: 0.85rem;
+        margin-top: 1.1rem;
+      }
+      .notes p {
+        margin-block: 0.55rem;
+      }
+      .reveal {
+        margin: 0.85rem 0;
+      }
+      .reveal[open] > :last-child {
+        margin-bottom: 0;
+      }
+      .horizon-control {
+        margin-block: 0.7rem;
+      }
+      input[type="range"] {
+        width: min(100%, 25rem);
+        display: block;
+        accent-color: var(--signal);
+        margin: 0.7rem 0;
+      }
+      output {
+        font-variant-numeric: tabular-nums;
+      }
+      .track {
+        list-style: none;
+        margin: 0.8rem 0;
+        padding: 0;
+      }
+      .track li {
+        display: grid;
+        grid-template-columns: 4.5rem 1fr;
+        gap: 0.7rem;
+        padding-block: 0.45rem;
+        border-top: 1px solid var(--line);
+      }
+      .channel {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1.1fr 1fr;
+        align-items: stretch;
+        min-height: 8rem;
+        margin-bottom: 0;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        font-size: 0.78em;
+        text-align: center;
+      }
+      .channel > span {
+        padding: 0.45rem 0.2rem;
+      }
+      .shore {
+        background: var(--deep);
+        color: var(--muted);
+      }
+      .island {
+        display: grid;
+        align-content: end;
+      }
+      .points {
+        position: relative;
+        color: var(--signal);
+      }
+      .points::before {
+        content: "";
+        position: absolute;
+        bottom: 38%;
+        left: 45%;
+        width: 2px;
+        height: 36%;
+        background: var(--signal);
+        transform: rotate(-36deg);
+      }
+      .point {
+        position: absolute;
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+        white-space: nowrap;
+      }
+      .point::before {
+        content: "";
+        width: 0.65rem;
+        height: 0.65rem;
+        border-radius: 50%;
+        background: var(--signal);
+      }
+      .point-first {
+        bottom: 31%;
+        left: 52%;
+      }
+      .point-last {
+        bottom: 60%;
+        left: 30%;
+      }
+      .point-last::before {
+        background: var(--amber);
+      }
+      .presenting .contents,
+      .presenting .notes {
+        display: none;
+      }
+      .presenting .slide {
+        min-height: calc(100dvh - 8rem);
+        font-size: clamp(1rem, 1.75vw, 1.32rem);
+      }
+      @media (max-width: 42rem) {
+        .split,
+        .compare {
+          grid-template-columns: 1fr;
+          gap: 0.6rem;
+        }
+        .contents ol {
+          columns: 1;
+        }
+        .presenting .slide {
+          min-height: 0;
+        }
+      }
+      @media print {
+        :root {
+          color-scheme: light;
+          --ink: #122331;
+          --muted: #334e61;
+          --signal: #005d57;
+          --amber: #694000;
+          --line: #8ca2ad;
+          --deep: white;
+          --water: white;
+          --panel: #edf4f6;
+          font-size: 9pt;
+        }
+        .bar,
+        .contents,
+        .notes,
+        .skip,
+        .horizon-control {
+          display: none !important;
+        }
+        main {
+          width: 100%;
+        }
+        .slide,
+        .slide[hidden] {
+          display: block !important;
+          break-after: page;
+          border: 0;
+          margin: 0;
+          padding: 0;
+          min-height: 0 !important;
+        }
+        .slide:last-child {
+          break-after: auto;
+        }
+        h1 {
+          font-size: 54pt;
+        }
+        h2 {
+          font-size: 30pt;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a href="#talk" class="skip">Skip to the talk</a>
+    <header class="bar">
+      <div class="bar-inner">
+        <a class="brand" href="https://openwaters.io/ais/">Open Waters AIS</a>
+        <div
+          class="controls"
+          id="controls"
+          hidden
+          aria-label="Presentation controls"
+        >
+          <button
+            type="button"
+            id="previous"
+            aria-label="Previous slide"
+            hidden
+          >
+            ←
+          </button>
+          <span id="count" aria-live="polite" hidden></span>
+          <button type="button" id="next" aria-label="Next slide" hidden>
+            →
+          </button>
+          <button type="button" id="mode">Present</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="talk">
+      <details class="contents">
+        <summary>Talk outline and presentation keys</summary>
+        <p>
+          Open the speaker notes under each section in reading mode. In
+          presentation mode, use ← and → to move between slides or Esc to return
+          to reading mode.
+        </p>
+        <ol>
+          <li><a href="#opening">From VHF to vessel tracks</a></li>
+          <li><a href="#aprs">An iGate for ship reports</a></li>
+          <li><a href="#air">Two channels, one shared clock</a></li>
+          <li><a href="#packet">Read a packet</a></li>
+          <li><a href="#bench">Build it on the bench</a></li>
+          <li><a href="#horizon">Move the antenna</a></li>
+          <li><a href="#network">From three receptions to one update</a></li>
+          <li><a href="#demo">Read the Salish Sea map</a></li>
+          <li><a href="#pilot">Try one receiver at an existing site</a></li>
+          <li><a href="#close">What would your antenna hear?</a></li>
+        </ol>
+      </details>
+
+      <section class="slide hero" id="opening">
+        <div class="split">
+          <div>
+            <h1 tabindex="-1">From VHF to vessel tracks</h1>
+            <p class="lead">
+              How ships report their position, how a spare SDR can hear them,
+              and how those reports become a map.
+            </p>
+            <p class="muted">
+              Bryan Clark · Open Waters · A 20-minute talk for WARA / VE7VIC
+            </p>
+          </div>
+          <figure>
+            <ol class="route">
+              <li><strong>Ship</strong>Position broadcast on marine VHF</li>
+              <li>
+                <strong>Shore receiver</strong>Decode the burst into an AIS
+                message
+              </li>
+              <li>
+                <strong>Internet feed</strong>Forward the message with its
+                reception time
+              </li>
+              <li>
+                <strong>Vessel map</strong>Combine reports from multiple
+                stations
+              </li>
+            </ol>
+            <figcaption>
+              The path of a position report from Haro Strait to a browser.
+            </figcaption>
+          </figure>
+        </div>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 0:00–1:30</span>
+          </summary>
+          <p>
+            Hold up the SDR or the whole receiver. “If a ferry comes out of the
+            Strait of Juan de Fuca during this talk, this little box might hear
+            it tell us where it is. The ferry sends the same report to anybody
+            in range. It has no idea we’re listening.”
+          </p>
+          <p>
+            I run a small AIS receiver in Oak Bay. I got interested in what my
+            antenna could hear, then in what I was missing. AIS stands for
+            Automatic Identification System. Ships use it to share their
+            identity and movement with nearby ships and shore stations. Tonight
+            we’ll follow one report all the way to a map and see what changes
+            when we put the receiver somewhere better.
+          </p>
+        </details>
+      </section>
+
+      <section class="slide" id="aprs">
+        <h2 tabindex="-1">An iGate for ship reports</h2>
+        <p class="lead">
+          WARA’s original VE7VIC-14 already did the familiar part. Hear a beacon
+          over RF and forward it to a shared service.
+        </p>
+        <div class="compare">
+          <div>
+            <h3>VE7VIC-14 APRS iGate</h3>
+            <p>
+              <span class="freq">144.390 MHz</span><br />APRS beacon →
+              receive-only iGate → APRS-IS
+            </p>
+          </div>
+          <div>
+            <h3>Shore AIS station</h3>
+            <p>
+              <span class="freq">161.975 / 162.025 MHz</span><br />Marine report
+              → receive-only SDR → AIS network
+            </p>
+          </div>
+        </div>
+        <p>
+          AIS has its own physical layer, time-slot rules, and message formats.
+          The shore box listens on marine VHF and forwards over IP.
+        </p>
+        <p class="sources">
+          <a
+            href="https://www.ve7vic.ca/the-wara-aprs-upgrade-dec-2018-jan-2019/"
+            >WARA’s APRS upgrade write-up</a
+          >
+        </p>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 1:30–3:30</span>
+          </summary>
+          <p>
+            Ask who remembers the original VE7VIC-14 or has set up an iGate.
+            WARA’s write-up describes it as receive-only. The later VE7VIC-15 at
+            Triangle Mountain also supported digipeating and two-way gating. For
+            this project, the receive-only box is the analogy. There’s no marine
+            transmitter in it, and no return path to the ship.
+          </p>
+          <p>
+            The iGate analogy gives us useful troubleshooting instincts. You can
+            be hearing RF and failing to forward it. You can be forwarding
+            successfully from a site that hears almost nothing. Those are two
+            different problems, and you can measure them independently.
+          </p>
+        </details>
+      </section>
+
+      <section class="slide" id="air">
+        <h2 tabindex="-1">Two channels, one shared clock</h2>
+        <p class="lead">
+          <span class="freq">AIS 1 · 161.975 MHz</span><br /><span class="freq"
+            >AIS 2 · 162.025 MHz</span
+          >
+        </p>
+        <div class="readout">
+          <div><strong>9,600 bit/s</strong>GMSK on each channel</div>
+          <div>
+            <strong>2,250 slots/min</strong>Per channel, about 26.7 ms per slot
+          </div>
+        </div>
+        <p>
+          Class A uses self-organizing TDMA. Stations track slot use and
+          advertise future slot use as they broadcast. Class B includes both
+          self-organizing and carrier-sense variants.
+        </p>
+        <p>
+          A moving Class A ship normally sends position every 2–10 seconds,
+          depending on speed and course changes. Its name and other static or
+          voyage data normally arrive every six minutes.
+        </p>
+        <p class="sources">
+          <a href="https://www.itu.int/rec/R-REC-M.1371-6-202602-I/en"
+            >ITU-R M.1371-6</a
+          >
+          ·
+          <a href="https://navcen.uscg.gov/how-ais-works"
+            >US Coast Guard AIS overview</a
+          >
+        </p>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 3:30–6:00</span>
+          </summary>
+          <p>
+            Divide 60 seconds by 2,250 with the room. A common Class A position
+            report fits a slot. Some messages use more than one. A receiver that
+            samples both channels can demodulate them separately since their
+            centers are only 50 kHz apart.
+          </p>
+          <p>
+            Ask what a hilltop receiver hears that a ship down in the channel
+            might not. A third receiver can be in range of two transmitters that
+            can’t hear each other. Time-slot coordination helps local stations
+            share the channel, and collisions can still occur at a receiver.
+            This matters even before we add internet transport.
+          </p>
+          <p>
+            Most listeners notice the reporting schedules before they notice
+            TDMA. A new contact may show up as a number and a position. The
+            label fills in when the relevant identity message reaches the
+            receiver.
+          </p>
+        </details>
+      </section>
+
+      <section class="slide" id="packet">
+        <h2 tabindex="-1">What’s in one packet?</h2>
+        <p class="lead">
+          After demodulation, the receiver can wrap the AIS payload in an
+          <code>!AIVDM</code> sentence.
+        </p>
+        <pre><code>!AIVDM,1,1,,A,1&gt;pf7wPP2Uo&lt;2@0KgI0&lt;&lt;?vH0000,0*5D</code></pre>
+        <p class="muted">
+          A synthetic example for the talk. It represents one received Type 1
+          position report.
+        </p>
+        <details class="reveal">
+          <summary>Show the decoded fields</summary>
+          <dl class="readout">
+            <div>
+              <dt>MMSI</dt>
+              <dd>999000062 (demo value)</dd>
+            </div>
+            <div>
+              <dt>Position</dt>
+              <dd>48.480° N, 123.200° W</dd>
+            </div>
+            <div>
+              <dt>Speed over ground</dt>
+              <dd>16.5 knots</dd>
+            </div>
+            <div>
+              <dt>Course over ground</dt>
+              <dd>312.0° true · heading unavailable</dd>
+            </div>
+          </dl>
+        </details>
+        <p>
+          The sentence identifies channel A and carries an ASCII-armored
+          payload. Its final checksum covers the sentence text.
+        </p>
+        <p class="sources">
+          <a href="https://navcen.uscg.gov/ais-class-a-reports"
+            >US Coast Guard Class A position-report fields</a
+          >
+        </p>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 6:00–8:00</span>
+          </summary>
+          <p>
+            Ask what should appear on the map from just this sentence. Reveal
+            the fields. The MMSI is the Maritime Mobile Service Identity, the
+            number we can use to join a position to a later identity report.
+            Here we have speed and course over ground. True heading is
+            unavailable, even though we know which way the vessel is moving.
+          </p>
+          <p>
+            Point out the layers. The SDR receives a radio burst, the decoder
+            checks the received frame, and this text is a receiver output. The
+            text checksum checks the wrapper for errors. A valid frame and a
+            valid wrapper still leave us with values reported by somebody else’s
+            equipment.
+          </p>
+        </details>
+      </section>
+
+      <section class="slide" id="bench">
+        <h2 tabindex="-1">Build it on the bench</h2>
+        <div class="split">
+          <div>
+            <p class="lead">
+              A vertical antenna, an RTL-SDR, and a Raspberry Pi running
+              AIS-catcher.
+            </p>
+            <ol>
+              <li>
+                Start with a vertical antenna suited to 162 MHz and a clear view
+                of the water.
+              </li>
+              <li>
+                Connect the RTL-SDR to a Pi or computer. Install AIS-catcher
+                using the shore guide.
+              </li>
+              <li>
+                Watch for decoded NMEA locally. Check the vessel viewer before
+                adding an internet output.
+              </li>
+            </ol>
+          </div>
+          <div>
+            <h3>Try a local decode</h3>
+            <pre><code>AIS-catcher -o 1</code></pre>
+            <p>
+              Run this on a bench install with the RTL-SDR selected as the input
+              and available to the process. If AIS-catcher already runs as a
+              service, use its existing viewer.
+            </p>
+            <p>
+              Once local reports are coming in, add an authenticated output on
+              ordinary internet and check the station’s last-heard time.
+            </p>
+          </div>
+        </div>
+        <p class="sources">
+          <a href="https://openwaters.io/ais/getting-started/ashore/"
+            >Hardware and installation guide</a
+          >
+          ·
+          <a href="https://openwaters.io/ais/contribute/"
+            >Forward messages and confirm reception</a
+          >
+        </p>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 8:00–10:30</span>
+          </summary>
+          <p>
+            Pass the receiver around or point out the antenna connection,
+            dongle, USB, and Ethernet. A quarter-wave in free space at 162 MHz
+            is about 46 cm. For a first test, use an antenna at a window facing
+            open water and start with ordinary gain. Compare successful decodes
+            as you make changes. A noisy waterfall or a high signal reading can
+            coexist with very few good packets.
+          </p>
+          <p>
+            If there are local packets but no upstream activity, check the
+            output settings, logs, and authentication. If there are no local
+            packets, work back from the dongle to the antenna. At a repeater
+            site I’d specifically test whether nearby transmitters overload the
+            front end before deciding on gain or filtering. If the room can hear
+            traffic, show the terminal. Otherwise use the example we just
+            decoded and stay on time.
+          </p>
+        </details>
+      </section>
+
+      <section class="slide" id="horizon">
+        <h2 tabindex="-1">What if we move the antenna?</h2>
+        <div class="split">
+          <div>
+            <p class="lead">
+              A headland can take an entire approach out of earshot. Height
+              helps when it opens a clear path to the water.
+            </p>
+            <p>
+              Our first comparison would be Oak Bay versus a higher site. Which
+              part of a track starts earlier, and which disappears behind land?
+            </p>
+          </div>
+          <div>
+            <h3>Play with the geometric horizon</h3>
+            <p>
+              Ship antenna fixed at <strong>15 m</strong> above the water. Shore
+              antenna starts at <strong>10 m</strong>.
+            </p>
+            <div class="horizon-control" id="horizon-control" hidden>
+              <label for="height"
+                >Shore antenna height ·
+                <output id="height-value" for="height">10 m</output></label
+              >
+              <input
+                type="range"
+                id="height"
+                min="0"
+                max="300"
+                step="5"
+                value="10"
+              />
+            </div>
+            <p class="lead">
+              <strong
+                ><output id="distance" for="height"
+                  >25 km · 14 nmi</output
+                ></strong
+              >
+            </p>
+            <p class="muted">
+              Smooth-Earth estimate from the sum of both horizons. Terrain,
+              refraction, feed line losses, and interference affect what
+              decodes.
+            </p>
+          </div>
+        </div>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 10:30–13:00</span>
+          </summary>
+          <p>
+            Ask for a guess before raising the shore antenna from 10 to 100
+            metres. The simple estimate uses 3.57 times the sum of the square
+            roots of the heights in metres, giving distance in kilometres. That
+            coefficient comes from the tangent to a sphere of radius about 6,371
+            km. It’s a geometry exercise with no terrain or atmospheric model.
+            The example heights are hypothetical.
+          </p>
+          <p>
+            Ask what will matter more from a particular site, another 10 m of
+            height or clearing the ridge in the direction we care about. Look
+            for repeatable new sections of track in a weak sector and keep an
+            eye on overlaps and outages. One unusually good propagation evening
+            can make a mediocre site look great.
+          </p>
+        </details>
+      </section>
+
+      <section class="slide" id="network">
+        <h2 tabindex="-1">Three receptions, one vessel update</h2>
+        <p class="lead">
+          Three antennas hear the same transmission. Keep the reception records,
+          fold the duplicate into one message for the live stream, and update
+          the vessel by MMSI.
+        </p>
+        <div class="compare">
+          <div>
+            <h3>Receivers add perspective</h3>
+            <p>
+              Overlap keeps the track going if one path drops. A well-placed
+              station can also hear sections of the track the others miss.
+            </p>
+          </div>
+          <div>
+            <h3>Time and source matter</h3>
+            <p>
+              A delayed upload can carry an older position. Inspect when the
+              report was heard and which station or upstream feed delivered it.
+            </p>
+          </div>
+        </div>
+        <p>
+          Open Waters publishes volunteer receptions under CC0 and the combined
+          volunteer database under ODbL. Partner data follows its own terms. You
+          can keep feeding other networks.
+        </p>
+        <p class="sources">
+          <a href="https://openwaters.io/ais/#license"
+            >Contribution and licensing</a
+          >
+          ·
+          <a
+            href="https://github.com/openwatersio/aiscast/blob/main/docs/architecture.md"
+            >aiscast reception and deduplication design</a
+          >
+        </p>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 13:00–15:00</span>
+          </summary>
+          <p>
+            Imagine Oak Bay hears the burst and two other stations hear it too.
+            The live feed only needs one position update. For coverage analysis,
+            we still care that three stations heard it. Network redundancy and a
+            station’s additional coverage are both useful, and the reception
+            records tell those stories.
+          </p>
+          <p>
+            Explain the arrangement in plain terms. Volunteer receptions are
+            public domain. The volunteer database has an open, share-alike
+            database licence. Contributors who qualify get higher limits to read
+            the live network back. Open Waters also offers paid hosted access.
+            That matters for the backhaul discussion near the end.
+          </p>
+        </details>
+      </section>
+
+      <section class="slide" id="demo">
+        <h2 tabindex="-1">Read the Salish Sea map</h2>
+        <div class="split">
+          <div>
+            <p class="lead">
+              Pick a moving vessel in Haro Strait. Read its report age and
+              source before interpreting the track.
+            </p>
+            <p>
+              <a
+                class="action"
+                href="https://openwaters.io/ais/vessels"
+                target="_blank"
+                rel="noopener"
+                >Open the live map in a new tab</a
+              >
+            </p>
+            <ol>
+              <li>Zoom to Victoria, Haro Strait, and the San Juans.</li>
+              <li>
+                Select a vessel. Find its MMSI, speed, course, and last report.
+              </li>
+              <li>
+                Open Stations or Network. Compare viewpoints and feed delay.
+              </li>
+            </ol>
+          </div>
+          <div>
+            <h3>Offline walkthrough</h3>
+            <figure
+              class="channel"
+              role="img"
+              aria-label="Schematic of Haro Strait between Vancouver Island and San Juan Island. The second report is northwest of the first. Positions are exaggerated."
+            >
+              <span class="shore">Vancouver<br />Island</span>
+              <span class="points" aria-hidden="true"
+                >Haro Strait<span class="point point-first">+00 s</span
+                ><span class="point point-last">+07 s</span></span
+              >
+              <span class="shore island">San Juan<br />Island</span>
+            </figure>
+            <ol class="track">
+              <li>
+                <span class="freq">+00 s</span
+                ><span>Oak Bay hears the demo vessel at 16.5 kn.</span>
+              </li>
+              <li>
+                <span class="freq">+07 s</span
+                ><span
+                  >Two receivers hear the next burst. The map gets one position
+                  update.</span
+                >
+              </li>
+              <li>
+                <span class="freq">+42 s</span
+                ><span
+                  >No further report has arrived. The last position is now 35
+                  seconds old.</span
+                >
+              </li>
+            </ol>
+            <details class="reveal">
+              <summary>Why might the track stop?</summary>
+              <p>
+                Land shadow, a missed burst, a receiver outage, or delayed
+                forwarding can all leave an old dot on the screen. Compare the
+                reception ages of nearby vessels and check whether other
+                stations still hear this one.
+              </p>
+            </details>
+          </div>
+        </div>
+        <p class="muted">
+          Use the internet map for observation. Vessels without AIS are absent,
+          and received positions can be stale or wrong.
+        </p>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 15:00–17:30</span>
+          </summary>
+          <p>
+            Before the meeting, open the map in another tab, pan to Victoria,
+            and confirm it has recent reports. During the talk, give the
+            audience ten seconds to decide which vessel to inspect. A ferry
+            makes a good example if one is in view, since the route is familiar
+            and it moves far enough to see updates during the demo. Show the
+            last report and the visible track where available, then compare with
+            a station or source view. Make clear which sources the map actually
+            credits.
+          </p>
+          <p>
+            If the connection is slow, use the walkthrough on this slide. Pause
+            at +42 seconds. “We stopped receiving updates. What else would you
+            look at before deciding what the boat did?” Ask about other targets,
+            other stations, and the age of the last report. The live map is an
+            observation tool. On a boat, AIS is one input alongside lookout,
+            radar, and other navigation information.
+          </p>
+        </details>
+      </section>
+
+      <section class="slide" id="pilot">
+        <h2 tabindex="-1">Could we try one receiver beside an iGate?</h2>
+        <p class="lead">
+          Triangle Mountain and Oak Bay are two places to discuss with WARA’s
+          Technical Committee. A member’s shore-facing antenna could also make a
+          good test site.
+        </p>
+        <div class="compare">
+          <div>
+            <h3>What we’d measure</h3>
+            <p>
+              Compare both stations over the same period. Look at useful new
+              stretches of track, overlap, and gaps. Start with the approaches
+              the room knows from Swiftsure.
+            </p>
+          </div>
+          <div>
+            <h3>How we’d connect it</h3>
+            <p>
+              Ordinary internet is the straightforward option. Open Waters
+              accepts plain UDP, but any HamWAN use would need a separate
+              discussion about the club’s policy and our paid hosted service.
+            </p>
+          </div>
+        </div>
+        <p>
+          Open Waters can supply the receiver. Site access, antenna placement,
+          interference, and backhaul are for the site operators to evaluate.
+        </p>
+        <p class="sources">
+          <a href="https://www.ve7vic.ca/repeaters/">WARA repeater sites</a> ·
+          <a href="https://www.ve7vic.ca/amateur-radio-data-network/"
+            >WARA’s HamWAN page and policy</a
+          >
+        </p>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 17:30–19:00</span>
+          </summary>
+          <p>
+            “Would somebody from the Technical Committee be willing to think
+            through one receive-only trial with us? We can supply the box. I’d
+            love to hear where you’d put the antenna based on what you’ve
+            learned from your sites.” Give the club space to suggest its own
+            candidate sites.
+          </p>
+          <p>
+            Explain that plain UDP describes the transport. The club has its own
+            rules for use of its amateur data network, and the paid service
+            needs to be part of that conversation. Settle the backhaul question
+            with the site operator before putting anything on the network. Agree
+            on how the station will be identified and how its reception coverage
+            will be shared.
+          </p>
+        </details>
+      </section>
+
+      <section class="slide" id="close">
+        <h2 tabindex="-1">What would your antenna hear?</h2>
+        <p class="lead">
+          Start with one receiver and a view of the water. Look for where your
+          first and last reports fall on a familiar route.
+        </p>
+        <ul>
+          <li>
+            <a href="https://openwaters.io/ais/getting-started/ashore/"
+              >Build a shore receiver</a
+            >
+          </li>
+          <li>
+            <a href="https://openwaters.io/ais/contribute/"
+              >Share your existing receiver’s reports</a
+            >
+          </li>
+          <li>
+            <a href="https://openwaters.io/ais/network"
+              >Check network coverage, sources, and delay</a
+            >
+          </li>
+        </ul>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 19:00–20:00</span>
+          </summary>
+          <p>
+            Thank the club and bring back the iGate. “You already know how much
+            a different site can change what you hear. The experiment is to find
+            out which water we gain from a second antenna.” Invite questions
+            about RF, decoding, or the data pipeline. If the formal slot ends
+            here, offer to continue the site conversation afterward.
+          </p>
+          <p>
+            For another club, swap in its own receive-and-forward example and
+            choose a local route everyone knows for the map walkthrough. The RF,
+            hardware, and network sections can stay as they are.
+          </p>
+        </details>
+      </section>
+    </main>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const controls = document.querySelector("#controls");
+      const mode = document.querySelector("#mode");
+      const previous = document.querySelector("#previous");
+      const next = document.querySelector("#next");
+      const count = document.querySelector("#count");
+      let presenting = false;
+      let active = 0;
+
+      function showSlide(index) {
+        active = Math.max(0, Math.min(index, slides.length - 1));
+        for (const [position, slide] of slides.entries()) {
+          slide.hidden = presenting && position !== active;
+        }
+        previous.disabled = active === 0;
+        next.disabled = active === slides.length - 1;
+        count.textContent = active + 1 + " / " + slides.length;
+        slides[active].querySelector("h1, h2").focus({ preventScroll: true });
+        if (presenting) {
+          window.scrollTo(0, 0);
+        } else {
+          slides[active].scrollIntoView();
+        }
+      }
+
+      function togglePresentation() {
+        if (!presenting) {
+          const headingLine = document.querySelector(".bar").offsetHeight + 32;
+          const visibleSlide = slides.findIndex(
+            (slide) => slide.getBoundingClientRect().bottom > headingLine,
+          );
+          active = visibleSlide === -1 ? active : visibleSlide;
+        }
+        presenting = !presenting;
+        document.body.classList.toggle("presenting", presenting);
+        for (const control of [previous, next, count])
+          control.hidden = !presenting;
+        mode.textContent = presenting ? "Reading mode" : "Present";
+        showSlide(active);
+      }
+
+      controls.hidden = false;
+      mode.addEventListener("click", togglePresentation);
+      previous.addEventListener("click", () => showSlide(active - 1));
+      next.addEventListener("click", () => showSlide(active + 1));
+
+      document.addEventListener("keydown", (event) => {
+        if (
+          !presenting ||
+          event.altKey ||
+          event.ctrlKey ||
+          event.metaKey ||
+          event.shiftKey
+        )
+          return;
+        if (event.key === "Escape") {
+          togglePresentation();
+          return;
+        }
+        if (event.target instanceof HTMLInputElement) return;
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+          event.preventDefault();
+          showSlide(active + (event.key === "ArrowRight" ? 1 : -1));
+        }
+      });
+
+      const height = document.querySelector("#height");
+      const heightValue = document.querySelector("#height-value");
+      const distance = document.querySelector("#distance");
+      height.addEventListener("input", () => {
+        const kilometres =
+          3.57 * (Math.sqrt(height.valueAsNumber) + Math.sqrt(15));
+        heightValue.value = height.value + " m";
+        distance.value =
+          Math.round(kilometres) +
+          " km · " +
+          Math.round(kilometres / 1.852) +
+          " nmi";
+      });
+      document.querySelector("#horizon-control").hidden = false;
+    </script>
+  </body>
+</html>

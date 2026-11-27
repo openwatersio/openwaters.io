@@ -17,6 +17,7 @@
       "!/_astro/*",
       "!/og/*",
       "!/@*",
+      "!/ais/talks/*",
       "!/tides/neaps",
       "!/tides/neaps/",
     ],
