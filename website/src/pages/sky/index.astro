@@ -43,8 +43,8 @@ const features = [
   },
   {
     icon: "mdi:call-split",
-    title: "Twin ports, one behavior",
-    body: "TypeScript and Swift implementations validated against a shared corpus of JPL Horizons, USNO and Espenak fixtures. Neither port is the other's oracle.",
+    title: "Three ports, one behavior",
+    body: "TypeScript, Swift, and Kotlin/JVM implementations validated against the same JPL Horizons, USNO, and Espenak fixtures.",
   },
   {
     icon: "mdi:weather-night",
@@ -122,19 +122,31 @@ if let latitude = anywhere.latitudeDeg, let longitude = anywhere.longitudeDeg {
 
 let sirius = try starAltAz(raDeg: 101.287, decDeg: -16.716, at: now, observer: observer)
 print(sirius.altDeg, sirius.azDeg)`;
+
+const kotlinCode = `import io.openwaters.almanac.Observer
+import io.openwaters.almanac.sunEvents
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+
+val observer = Observer(latitudeDeg = 48.5, longitudeDeg = -123.0)
+val now = Instant.now()
+val tomorrow = now.plus(1, ChronoUnit.DAYS)
+for (event in sunEvents(now, tomorrow, observer)) {
+    println(event.kind.toString() + " " + event.time)
+}`;
 ---
 
 <MainLayout
   title="Sky"
-  description="Explore a live star field for your own location, then the Sun and Moon: twilight, phases and eclipses. Almanac computes the Sun, Moon, stars, and lunar and solar eclipses offline in Swift and TypeScript."
+  description="Explore a live star field for your location, plus twilight, Moon phases, and eclipses. Almanac is an offline sky engine for Swift, TypeScript, and Kotlin/JVM."
   image="/og/sky.png"
   schema={softwareSourceCode({
     name: "Almanac",
     description:
-      "An offline celestial engine for Swift and TypeScript: Sun, Moon and planet positions, rise and set, twilight, golden and blue hour, upper and lower transits, moon phase and orientation, lunar and solar eclipses, and alt/az for any catalog star, computed from pure geometry with no network.",
+      "An offline celestial engine for Swift, TypeScript, and Kotlin/JVM: Sun, Moon and planet positions, rise and set, twilight, golden and blue hour, upper and lower transits, moon phase and orientation, lunar and solar eclipses, and alt/az for any catalog star.",
     path: "/sky/",
     codeRepository: "https://github.com/openwatersio/almanac",
-    programmingLanguage: ["Swift", "TypeScript"],
+    programmingLanguage: ["Swift", "TypeScript", "Kotlin"],
   })}
 >
   <Container class="py-16">
@@ -158,7 +170,7 @@ print(sirius.altDeg, sirius.azDeg)`;
       </div>
 
       <div class="text-lead mt-2 mb-4">
-        An offline sky engine for Swift and TypeScript
+        An offline sky engine for Swift, TypeScript, and Kotlin/JVM
       </div>
 
       <div class="prose prose-xl mb-10 max-w-none">
@@ -248,15 +260,16 @@ print(sirius.altDeg, sirius.azDeg)`;
           <p class="text-fg-muted">
             Almanac uses astronomy translated from Don Cross's Astronomy Engine,
             with optimized event searches and TypeScript Sun calculations. Scrub
-            the sky above to see positions update in your browser. Both ports
-            share correctness fixtures and a performance suite covering 30
-            workloads, including planetary tracks and rise/set.
+            the sky above to see positions update in your browser. TypeScript,
+            Swift, and Kotlin/JVM run the same 39 benchmark workloads, including
+            planetary tracks and rise and set.
           </p>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left tabular-nums">
             <caption class="text-fg-muted mb-3 text-left text-sm">
-              Median query time saved compared with Almanac 0.4.1
+              Historical TypeScript and Swift speedups compared with Almanac
+              0.4.1
             </caption>
             <thead>
               <tr class="border-line border-b">
@@ -335,6 +348,22 @@ print(sirius.altDeg, sirius.azDeg)`;
                 class="mb-3"
               />
               <CodeBlock code={swiftCode} />
+            </div>
+
+            <div>
+              <h3 class="mb-3 text-xl font-semibold">Kotlin/JVM</h3>
+              <p class="text-fg-muted mb-3">
+                Add Almanac as a Gradle source dependency for JVM or Android
+                (API 26 and up). Follow the{" "}
+                <a
+                  href={`${REPO}/tree/main/kotlin#readme`}
+                  class="text-accent hover:underline"
+                >
+                  Kotlin setup instructions
+                </a>
+                .
+              </p>
+              <CodeBlock code={kotlinCode} />
             </div>
           </div>
         </Card>
