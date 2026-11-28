@@ -472,6 +472,10 @@
           <li><a href="#bench">Build it on the bench</a></li>
           <li><a href="#horizon">Move the antenna</a></li>
           <li><a href="#network">From three receptions to one update</a></li>
+          <li>
+            <a href="#open-data">What happens to the reports you share?</a>
+          </li>
+          <li><a href="#reuse">Could another club run a mirror?</a></li>
           <li><a href="#demo">Read the Salish Sea map</a></li>
           <li><a href="#pilot">Try one receiver at an existing site</a></li>
           <li><a href="#close">What would your antenna hear?</a></li>
@@ -513,7 +517,7 @@
         </div>
         <details class="notes">
           <summary>
-            Speaker notes <span class="timing">· 0:00–1:30</span>
+            Speaker notes <span class="timing">· 0:00–1:15</span>
           </summary>
           <p>
             Hold up the SDR or the whole receiver. “If a ferry comes out of the
@@ -566,7 +570,7 @@
         </p>
         <details class="notes">
           <summary>
-            Speaker notes <span class="timing">· 1:30–3:30</span>
+            Speaker notes <span class="timing">· 1:15–3:00</span>
           </summary>
           <p>
             Ask who remembers the original VE7VIC-14 or has set up an iGate.
@@ -618,7 +622,7 @@
         </p>
         <details class="notes">
           <summary>
-            Speaker notes <span class="timing">· 3:30–6:00</span>
+            Speaker notes <span class="timing">· 3:00–5:15</span>
           </summary>
           <p>
             Divide 60 seconds by 2,250 with the room. A common Class A position
@@ -685,7 +689,7 @@
         </p>
         <details class="notes">
           <summary>
-            Speaker notes <span class="timing">· 6:00–8:00</span>
+            Speaker notes <span class="timing">· 5:15–7:00</span>
           </summary>
           <p>
             Ask what should appear on the map from just this sentence. Reveal
@@ -752,7 +756,7 @@
         </p>
         <details class="notes">
           <summary>
-            Speaker notes <span class="timing">· 8:00–10:30</span>
+            Speaker notes <span class="timing">· 7:00–9:30</span>
           </summary>
           <p>
             Pass the receiver around or point out the antenna connection,
@@ -823,7 +827,7 @@
         </div>
         <details class="notes">
           <summary>
-            Speaker notes <span class="timing">· 10:30–13:00</span>
+            Speaker notes <span class="timing">· 9:30–11:45</span>
           </summary>
           <p>
             Ask for a guess before raising the shore antenna from 10 to 100
@@ -846,9 +850,9 @@
       <section class="slide" id="network">
         <h2 tabindex="-1">Three receptions, one vessel update</h2>
         <p class="lead">
-          Three antennas hear the same transmission. Keep the reception records,
-          fold the duplicate into one message for the live stream, and update
-          the vessel by MMSI.
+          aiscast is the open-source server behind Open Waters AIS. When three
+          antennas hear the same transmission, it keeps the reception records
+          and sends one vessel update in the live stream.
         </p>
         <div class="compare">
           <div>
@@ -866,16 +870,7 @@
             </p>
           </div>
         </div>
-        <p>
-          Open Waters publishes volunteer receptions under CC0 and the combined
-          volunteer database under ODbL. Partner data follows its own terms. You
-          can keep feeding other networks.
-        </p>
         <p class="sources">
-          <a href="https://openwaters.io/ais/#license"
-            >Contribution and licensing</a
-          >
-          ·
           <a
             href="https://github.com/openwatersio/aiscast/blob/main/docs/architecture.md"
             >aiscast reception and deduplication design</a
@@ -883,7 +878,7 @@
         </p>
         <details class="notes">
           <summary>
-            Speaker notes <span class="timing">· 13:00–15:00</span>
+            Speaker notes <span class="timing">· 11:45–13:15</span>
           </summary>
           <p>
             Imagine Oak Bay hears the burst and two other stations hear it too.
@@ -892,12 +887,143 @@
             station’s additional coverage are both useful, and the reception
             records tell those stories.
           </p>
+        </details>
+      </section>
+
+      <section class="slide" id="open-data">
+        <h2 tabindex="-1">What happens to the reports you share?</h2>
+        <div class="compare">
+          <div>
+            <h3>Your station’s receptions · CC0</h3>
+            <p>
+              By sending your own over-the-air receptions, you dedicate them to
+              the public domain. Anyone can copy, republish, or use them
+              commercially without asking. You can keep feeding other networks.
+            </p>
+          </div>
+          <div>
+            <h3>The volunteer database · ODbL</h3>
+            <p>
+              Anyone can copy, mirror, or build with the combined volunteer
+              database. Credit the source when you use it publicly and share
+              publicly used adaptations of the database under the same licence.
+              Partner feeds keep their own terms.
+            </p>
+          </div>
+        </div>
+        <p>
+          You can stop feeding at any time. Reports already released stay open.
+          If you include your own vessel’s <code>!AIVDO</code> messages, you
+          also share its position publicly.
+        </p>
+        <p class="sources">
+          <a
+            href="https://github.com/openwatersio/aiscast/blob/main/docs/contributor-agreement.md"
+            >AIS Contributor Agreement</a
+          >
+          ·
+          <a href="https://creativecommons.org/publicdomain/zero/1.0/"
+            >CC0 deed</a
+          >
+          ·
+          <a href="https://opendatacommons.org/licenses/odbl/summary/"
+            >ODbL summary</a
+          >
+        </p>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 13:15–15:00</span>
+          </summary>
           <p>
-            Explain the arrangement in plain terms. Volunteer receptions are
-            public domain. The volunteer database has an open, share-alike
-            database licence. Contributors who qualify get higher limits to read
-            the live network back. Open Waters also offers paid hosted access.
-            That matters for the backhaul discussion near the end.
+            “Say your Oak Bay receiver hears a ferry. You can send the same
+            reception here, to a second network, and to a club server. Once you
+            share it with us under CC0, the club down the road can reuse that
+            reception too. Open Waters has the same rights as everyone else.
+            Stopping your feed stops new contributions. It leaves the earlier
+            ones available.”
+          </p>
+          <p>
+            The share-alike rule applies to the combined volunteer database. If
+            a club edits that database and uses the result publicly, it must
+            offer the adapted database under ODbL. The agreement commits Open
+            Waters to keeping the volunteer database open even if the project
+            changes hands. Use your receiver’s own reports when contributing. If
+            your setup also forwards your boat’s position, review that setting
+            before sending.
+          </p>
+        </details>
+      </section>
+
+      <section class="slide" id="reuse">
+        <h2 tabindex="-1">Could another club run a mirror?</h2>
+        <p class="lead">
+          A station can send the same report to several networks. The terms for
+          passing on what you get back depend on the network.
+        </p>
+        <dl class="compare">
+          <div>
+            <dt>Open Waters AIS</dt>
+            <dd>Yes, for the open volunteer database under ODbL.</dd>
+          </div>
+          <div>
+            <dt>AISHub</dt>
+            <dd>
+              Its published terms allow credited maps, research, and commercial
+              products. They prohibit passing on raw AIS messages, positions, or
+              tracks from AISHub.
+            </dd>
+          </div>
+          <div>
+            <dt>MarineTraffic</dt>
+            <dd>
+              Active contributors can request selected vessel or area feeds for
+              personal use. Its business terms require written consent for
+              public redistribution of service data.
+            </dd>
+          </div>
+        </dl>
+        <p class="sources">
+          <a href="https://openwaters.io/ais/contribute/"
+            >Open Waters contribution terms</a
+          >
+          · <a href="https://www.aishub.net/terms">AISHub terms</a> ·
+          <a
+            href="https://support.marinetraffic.com/en/articles/9552990-as-an-active-ais-partner-can-i-get-ais-data"
+            >MarineTraffic contributor access</a
+          >
+          ·
+          <a
+            href="https://www.marinetraffic.com/js/p/business-terms-and-conditions"
+            >MarineTraffic business terms</a
+          >
+        </p>
+        <details class="notes">
+          <summary>
+            Speaker notes <span class="timing">· 15:00–16:30</span>
+          </summary>
+          <p>
+            Ask, “If our club wants to pass the reports on to the next club,
+            what can we actually give them?” We can always share our own CC0
+            receptions. We can also copy or mirror the Open Waters volunteer
+            database under ODbL when we have a copy. Separate partner data by
+            source and follow its terms.
+          </p>
+          <p>
+            AISHub’s October 2026 terms apply immediately to new members and
+            from January 2027 to existing members. MarineTraffic also says
+            operators using their own receiving equipment can decide where to
+            forward their own data. Its personal-use offer applies to data it
+            sends back to active contributors.
+            <a
+              href="https://support.marinetraffic.com/en/articles/9552986-will-i-be-able-to-share-my-data-with-other-services"
+              >MarineTraffic guidance on sharing your own reports</a
+            >
+          </p>
+          <p>
+            Open Waters offers higher hosted limits to qualifying stations and
+            charges for some hosted access. The licence governs what you can do
+            with a copy of the open data. Access limits govern how much you can
+            pull from the hosted service.
           </p>
         </details>
       </section>
@@ -980,7 +1106,7 @@
         </p>
         <details class="notes">
           <summary>
-            Speaker notes <span class="timing">· 15:00–17:30</span>
+            Speaker notes <span class="timing">· 16:30–18:30</span>
           </summary>
           <p>
             Before the meeting, open the map in another tab, pan to Victoria,
@@ -1040,7 +1166,7 @@
         </p>
         <details class="notes">
           <summary>
-            Speaker notes <span class="timing">· 17:30–19:00</span>
+            Speaker notes <span class="timing">· 18:30–19:30</span>
           </summary>
           <p>
             “Would somebody from the Technical Committee be willing to think
@@ -1085,7 +1211,7 @@
         </ul>
         <details class="notes">
           <summary>
-            Speaker notes <span class="timing">· 19:00–20:00</span>
+            Speaker notes <span class="timing">· 19:30–20:00</span>
           </summary>
           <p>
             Thank the club and bring back the iGate. “You already know how much
